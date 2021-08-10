@@ -1,0 +1,114 @@
+// TODO Varargs???
+import { buildTransform } from '../types';
+import { mapImage, isTransparent } from '../utils';
+import { colorParam, positiveIntParam } from './params';
+
+// const DEFAULT_COLORS = [
+//   '0x4F7A8E',
+//   '0x1E4F66',
+//   '0x4F7A8E',
+//   '0x1E4F66',
+//   '0x4F7A8E',
+//   '0x1E4F66',
+// ];
+const DEFAULT_COLORS = [
+  '0xFF0000',
+  '0xFF9600',
+  '0xFFFF00',
+  '0x00FF00',
+  '0x00FF96',
+  '0x00FFFF',
+  '0x0000FF',
+  '0xB400FF',
+  '0x0000FF',
+  '0x00FFFF',
+  '0x00FF96',
+  '0x00FF00',
+  '0xFFFF00',
+  '0xFF9600',
+];
+
+export const pinwheel = buildTransform({
+  name: 'pinwheel',
+  // validateParams: (args) => {
+  //   if (args.length === 0) {
+  //     return {
+  //       groups: 2,
+  //       colors: DEFAULT_COLORS.map(fromHexColor),
+  //     };
+  //   }
+
+  //   assert(
+  //     args.length >= 2,
+  //     'pinwheel requires either no arguments, or at least two arguments'
+  //   );
+
+  //   const groups = parseInt(args[0], 10);
+  //   assert(
+  //     groups > 0,
+  //     'pinwheel groups first argument must be a positive integer'
+  //   );
+
+  //   const rawColors = args.slice(1);
+  //   const colors = rawColors.map((c, idx) => {
+  //     assert(
+  //       isHexColor(c),
+  //       `pinwheel color ${idx} must be a valid hex number in the format 0xRRGGBB`
+  //     );
+  //     return fromHexColor(c);
+  //   });
+  //   return { groups, colors };
+  // },
+  params: [
+    positiveIntParam('Number of Groups'),
+    colorParam('Color 1'),
+    colorParam('Color 2'),
+  ] as const,
+  fn: mapImage(
+    ({
+      coord,
+      dimensions,
+      frameCount,
+      frameIndex,
+      getSrcPixel,
+      parameters,
+    }) => {
+      const srcPixel = getSrcPixel(coord);
+
+      const [groups, ...colors] = parameters;
+
+      const ribbonCount = colors.length * groups;
+      const ribbonArcDegrees = Math.round(360 / ribbonCount);
+      // Need to make sure ribbonCount is always a multiple of the number of images, otherwise we
+      //  won't get a smooth transition.
+      // We'll cut off colors from the end of the list until we get an even multiple.
+      let colorsLength = colors.length;
+      while ((ribbonCount / colorsLength).toFixed(2).slice(-2) !== '00') {
+        colorsLength -= 1;
+      }
+
+      // Make the transparent parts colorful
+      if (isTransparent(srcPixel)) {
+        const centerX = dimensions[0] / 2;
+        const centerY = (dimensions[1] * 4) / 5;
+        const [x, y] = coord;
+        const xRelCenter = x - centerX;
+        const yRelCenter = y - centerY;
+
+        const pointAngle =
+          (360 + (Math.atan2(yRelCenter, xRelCenter) * 180) / Math.PI) % 360;
+
+        const colorIdx =
+          Math.floor(pointAngle / ribbonArcDegrees) % colorsLength;
+
+        // Increment colorIdx based on current frame progress
+        const frameProgress = frameIndex / frameCount;
+        const idx =
+          (Math.floor(frameProgress * colorsLength) + colorIdx) % colorsLength;
+        return colors[idx];
+      }
+
+      return srcPixel;
+    }
+  ),
+});

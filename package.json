@@ -1,0 +1,54 @@
+{
+  "name": "partymoji",
+  "version": "1.0.0",
+  "private": false,
+  "homepage": "https://mikeyburkman.github.io/partymoji/",
+  "engines": {
+    "node": "14.x"
+  },
+  "dependencies": {
+    "@types/node": "^14.0.0",
+    "@types/react": "^17.0.0",
+    "@types/react-color": "^3.0.5",
+    "@types/react-dom": "^17.0.0",
+    "@types/seedrandom": "^2.4.28",
+    "@types/uuid": "^8.3.1",
+    "classnames": "^2.3.1",
+    "del-cli": "^4.0.1",
+    "get-pixels": "^3.3.3",
+    "gif-encoder": "^0.7.2",
+    "react": "^17.0.2",
+    "react-color": "^2.19.3",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3",
+    "seedrandom": "^3.0.5",
+    "typescript": "^4.3.5"
+  },
+  "scripts": {
+    "tsc": "tsc",
+    "start": "react-scripts start",
+    "build": "react-scripts build && del ./docs && mkdir ./docs && mv ./build/* ./docs",
+    "eject": "react-scripts eject",
+    "pretty": "prettier --write \"**/*.{js,md,ts,html,tsx,json}\""
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "prettier": "^2.3.2"
+  }
+}
