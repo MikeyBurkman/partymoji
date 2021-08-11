@@ -39,6 +39,9 @@ export const App: React.FC = () => {
   return (
     <section>
       <div className="container">
+        <h1 className="title" style={{ paddingTop: '16px' }}>
+          Partymoji
+        </h1>
         <div>
           <ImagePicker
             currentImageUrl={state.baseImage}
@@ -78,6 +81,18 @@ export const App: React.FC = () => {
               <code>{JSON.stringify(state, null, 2)}</code>
             </div>
           )}
+          <a
+            href="https://github.com/MikeyBurkman/partymoji"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img
+              src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+              width={64}
+              height={64}
+              alt="Github Link"
+            ></img>
+          </a>
         </div>
       </div>
     </section>
