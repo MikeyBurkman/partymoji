@@ -2,7 +2,7 @@ import React from 'react';
 
 import { ParamFunction, ParamValue, Transform } from './domain/types';
 import { ImagePicker } from './ImagePicker';
-import { TransformList } from './TransformList';
+import { ImageTransformList } from './ImageTransformList';
 import { POSSIBLE_TRANSFORMS } from './domain/transforms';
 import { ComputeBox } from './ComputeBox';
 
@@ -50,7 +50,7 @@ export const App: React.FC = () => {
               });
             }}
           />
-          <TransformList
+          <ImageTransformList
             currentTransforms={state.transforms}
             possibleTransforms={POSSIBLE_TRANSFORMS}
             onTransformsChange={(transforms) =>

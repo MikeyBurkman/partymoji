@@ -14,6 +14,7 @@ interface ImageTransformProps {
   possibleTransforms: Transform<any>[];
   onSelect: (selected: SelectedTransform) => void;
   onRemove: () => void;
+  onMoveLeft?: () => void;
 }
 
 export const ImageTransform: React.FC<ImageTransformProps> = ({
@@ -22,6 +23,7 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
   possibleTransforms,
   onSelect,
   onRemove,
+  onMoveLeft,
 }) => {
   return (
     <div>
@@ -50,7 +52,16 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
             }}
           />
         </div>
-        <button className="delete column" onClick={() => onRemove()} />
+        {onMoveLeft && (
+          <span className="icon" onClick={onMoveLeft}>
+            <i className="fas fa-chevron-left" aria-hidden="true"></i>
+          </span>
+        )}
+        <span className="icon" onClick={onRemove}>
+          <i className="fas fa-trash" aria-hidden="true"></i>
+        </span>
+        {/*<button className="delete column" onClick={() => onRemove()} />
+        <button className="delete column" onClick={() => onRemove()} />*/}
       </div>
       <div>
         {selectedTransform.transform.params.map(
