@@ -41,7 +41,10 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
         New Transform
       </button>
     </div>
-    <div className="columns">
+    <div
+      className="columns"
+      style={{ overflowX: 'scroll', overflowY: 'hidden' }}
+    >
       {currentTransforms.map((t, tIdx) => (
         <ImageTransform
           image={undefined}

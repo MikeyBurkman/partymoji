@@ -1,6 +1,6 @@
 import { buildTransform, Color, Dimensions } from '../types';
 import { assert, getPixelFromSource, writePixel } from '../utils';
-import { intParam } from './params/intParam';
+import { intParam } from '../../params/intParam';
 
 export const resizeBackground = buildTransform({
   name: 'Resize Background',

@@ -33,7 +33,7 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
         </span>
       </label>
     </div>
-    {currentImageUrl && <img src={currentImageUrl}></img>}
+    {currentImageUrl && <img src={currentImageUrl} alt="Source"></img>}
   </div>
 );
 

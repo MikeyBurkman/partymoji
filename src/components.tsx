@@ -45,8 +45,12 @@ export const Dropdown: React.FC<DropdownProps> = ({
         role="menu"
         style={{ visibility: hidden ? 'hidden' : 'visible' }}
       >
-        <div className="dropdown-content">
+        <div
+          className="dropdown-content"
+          style={{ height: '16em', overflowY: 'auto' }}
+        >
           {options.map(({ name, value }) => (
+            // eslint-disable-next-line jsx-a11y/anchor-is-valid
             <a
               key={value}
               href="#"
@@ -80,9 +84,12 @@ export const Expandable: React.FC<ExpandableProps> = ({
 
   return (
     <div>
-      <div className="is-clickable" onClick={() => setCollapsed(!collapsed)}>
-        {mainEle}
-        <span className="icon">
+      <div
+        className="is-clickable columns"
+        onClick={() => setCollapsed(!collapsed)}
+      >
+        <div className="column is-four-fifths">{mainEle}</div>
+        <span className="icon column">
           <i
             className={cn(
               'fas',

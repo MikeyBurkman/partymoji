@@ -1,5 +1,4 @@
-import { buildTransform } from '../types';
-import { Color } from '../types';
+import { buildTransform, Color } from '../types';
 import { mapImage, isTransparent } from '../utils';
 
 const PARTY_COLORS: Color[] = [

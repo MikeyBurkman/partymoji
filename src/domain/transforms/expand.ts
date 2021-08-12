@@ -1,6 +1,6 @@
 import { buildTransform } from '../types';
 import { mapImage } from '../utils';
-import { floatParam } from './params/floatParam';
+import { floatParam } from '../../params/floatParam';
 
 export const expand = buildTransform({
   name: 'Expand',

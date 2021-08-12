@@ -1,6 +1,6 @@
 import { mapImage } from '../utils';
 import { buildTransform, Coord } from '../types';
-import { dropdownParam } from './params/dropdownParam';
+import { dropdownParam } from '../../params/dropdownParam';
 
 export const rotate = buildTransform({
   name: 'Rotate',

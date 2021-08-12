@@ -1,6 +1,6 @@
 import { buildTransform, Dimensions } from '../types';
-import { getImageIndex, getPixelFromSource, writePixel } from '../utils';
-import { intParam } from './params/intParam';
+import { getPixelFromSource, writePixel } from '../utils';
+import { intParam } from '../../params/intParam';
 
 export const resize = buildTransform({
   name: 'Resize',

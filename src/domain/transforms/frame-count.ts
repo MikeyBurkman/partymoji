@@ -1,6 +1,6 @@
 import { Frame, buildTransform } from '../types';
 import { repeat } from '../utils';
-import { intParam } from './params/intParam';
+import { intParam } from '../../params/intParam';
 
 export const frameCount = buildTransform({
   name: 'Frame Count',

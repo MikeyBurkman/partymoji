@@ -1,5 +1,5 @@
 import React from 'react';
-import { ParamValue, ParamFunction } from '../../types';
+import { ParamValue, ParamFunction } from '../domain/types';
 
 type ParsedParam<T> =
   | { valid: true; value: T }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ParamFunction, ParamValue } from '../../types';
+import { ParamFunction, ParamValue } from '../domain/types';
 
 const TextParam: React.FC<{
   name: string;

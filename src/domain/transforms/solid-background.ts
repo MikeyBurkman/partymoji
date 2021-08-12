@@ -1,13 +1,13 @@
 import { buildTransform } from '../types';
 import { mapImage, isTransparent, fromHexColor } from '../utils';
-import { colorPickerParam } from './params/colorPickerParam';
+import { colorPickerParam } from '../../params/colorPickerParam';
 
 export const solidBackground = buildTransform({
   name: 'Solid Background',
   params: [
     colorPickerParam({
       name: 'Background Color',
-      defaultValue: fromHexColor('#FFFFFF'),
+      defaultValue: fromHexColor('#000000'),
     }),
   ],
   fn: mapImage(({ coord, getSrcPixel, parameters }) => {

@@ -8,7 +8,7 @@ import {
   getPixelFromSource,
   isTransparent,
 } from '../utils';
-import { textParam } from './params/textParam';
+import { textParam } from '../../params/textParam';
 
 const lightningIntensities: Color[] = [
   [0, 15, 40, 255], // dark color

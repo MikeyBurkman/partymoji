@@ -3,7 +3,7 @@ import cn from 'classnames';
 import { assert } from './domain/utils';
 import { runTransforms } from './domain/run';
 import { TransformInput, TransformWithParams } from './domain/types';
-import { intParam } from './domain/transforms/params/intParam';
+import { intParam } from './params/intParam';
 
 interface ComputeBoxProps {
   isDirty: boolean;
@@ -100,7 +100,10 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
             state.results.map((gif, idx) => (
               <div className="column">
                 <div>{transforms[idx].transform.name}</div>
-                <img src={gif}></img>
+                <img
+                  src={gif}
+                  alt={`gif-${transforms[idx].transform.name}`}
+                ></img>
               </div>
             ))}
         </div>

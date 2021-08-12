@@ -1,6 +1,6 @@
 import React from 'react';
-import { Dropdown } from '../../../components';
-import { ParamValue, ParamFunction } from '../../types';
+import { Dropdown } from '../components';
+import { ParamValue, ParamFunction } from '../domain/types';
 
 const DropdownParam: React.FC<{
   name: string;

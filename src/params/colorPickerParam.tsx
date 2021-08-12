@@ -1,9 +1,19 @@
 import React from 'react';
 import { SketchPicker } from 'react-color';
-import { Expandable } from '../../../components';
+import { Expandable } from '../components';
 
-import { ParamValue, ParamFunction, Color } from '../../types';
-import { fromHexColor, toHexColor } from '../../utils';
+import { ParamValue, ParamFunction, Color } from '../domain/types';
+import { fromHexColor, toHexColor } from '../domain/utils';
+
+const ColorBox: React.FC<{ color: Color }> = ({ color }) => (
+  <div
+    style={{
+      width: '1.5em',
+      height: '1.5em',
+      backgroundColor: toHexColor(color),
+    }}
+  />
+);
 
 const ColorPickerParam: React.FC<{
   name: string;
@@ -13,15 +23,11 @@ const ColorPickerParam: React.FC<{
   return (
     <Expandable
       mainEle={
-        <div className="is-flex-direction-column">
-          {name}
-          <div
-            style={{
-              width: '1.0em',
-              height: '1.0em',
-              backgroundColor: toHexColor(value),
-            }}
-          />
+        <div className="columns">
+          <label className="label column is-four-fifths">{name}</label>
+          <span className="column">
+            <ColorBox color={value} />
+          </span>
         </div>
       }
     >

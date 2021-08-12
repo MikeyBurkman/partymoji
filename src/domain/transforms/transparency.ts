@@ -1,7 +1,7 @@
 import { buildTransform } from '../types';
 import { fromHexColor, mapImage } from '../utils';
-import { colorPickerParam } from './params/colorPickerParam';
-import { intParam } from './params/intParam';
+import { colorPickerParam } from '../../params/colorPickerParam';
+import { intParam } from '../../params/intParam';
 
 export const transparency = buildTransform({
   name: 'Transparent Color',

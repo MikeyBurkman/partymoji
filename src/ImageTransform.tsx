@@ -28,9 +28,9 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
   onMoveRight,
 }) => {
   return (
-    <div className="card">
+    <div className="card" style={{ width: '300px' }}>
       <div className="card-header-title">
-        <div className="columns">
+        <div className="columns is-desktop">
           <div className="column">
             <Dropdown
               selected={selectedTransform.transform.name}
