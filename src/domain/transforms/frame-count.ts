@@ -1,5 +1,5 @@
 import { Frame, buildTransform } from '../types';
-import { assert, repeat } from '../utils';
+import { repeat } from '../utils';
 import { intParam } from './params/intParam';
 
 export const frameCount = buildTransform({
@@ -12,16 +12,18 @@ export const frameCount = buildTransform({
     }),
   ],
   fn: ({ image, parameters }) => {
-    assert(
-      image.frames.length === 1,
-      'The frame-count transform requires a static image with just one frame'
-    );
-
     const [frameCount] = parameters;
 
+    const currentFrames = image.frames;
+
+    // Resulting image will contain frameCount frames.
+    // If the original image had less than that, then we'll copy the last frame until we have enough.
+    // If the original has more frames, then we'll discard the last ones.
     const frames = repeat(frameCount).map(
-      (): Frame => ({
-        data: image.frames[0].data,
+      (i): Frame => ({
+        data: currentFrames[i]
+          ? currentFrames[i].data
+          : currentFrames[currentFrames.length - 1].data,
       })
     );
 

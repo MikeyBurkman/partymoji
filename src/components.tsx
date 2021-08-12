@@ -48,6 +48,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
         <div className="dropdown-content">
           {options.map(({ name, value }) => (
             <a
+              key={value}
               href="#"
               className={cn('dropdown-item', {
                 'is-active': selected === value,

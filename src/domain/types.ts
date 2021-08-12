@@ -16,9 +16,22 @@ export type Coord = [number, number];
 export type Dimensions = [number, number];
 
 /**
- * a one-dimensional array of pixels; looks like [r1,g1,b1,a1, r2,g2,b2,a2,...]
+ * A one-dimensional array of pixels.
+ * A 3x2 image would contain 24 (6*4) numbers, and would look like this:
+ *  [
+ *    r1,g1,b1,a1, r2,g2,b2,a2, r3,g3,b3,a3,
+ *    r4,g4,b4,a4, r5,g5,b5,a5, r6,g6,b6,a6
+ *  ]
+ *
+ * [0, 0] = index 0
+ * [1, 0] = index 4
+ * [2, 0] = index 8
+ * [0, 1] = index 12
+ * [1, 1] = index 16
+ * [2, 1] = index 20
+ * To get pixel [x, y], do (x + y * width) * 4
  */
-export type ImageData = number[];
+export type ImageData = Uint8Array;
 
 export type Frame = {
   data: ImageData;

@@ -58,16 +58,19 @@ const encodeTransparency = (
   transparentColor: Color | undefined
 ): ImageData[] => {
   const image = frames.map((frame) => {
-    const img: ImageData = [];
+    const img = new Uint8Array(frame.length);
     for (let i = 0; i < frame.length; i += 4) {
       if (transparentColor && frame[i + 3] < 128) {
         // Anything more than halfway transparent is considered transparent
-        img.push(...transparentColor);
+        img[i] = transparentColor[0];
+        img[i + 1] = transparentColor[1];
+        img[i + 2] = transparentColor[2];
+        img[i + 3] = transparentColor[3];
       } else {
-        img.push(frame[i]);
-        img.push(frame[i + 1]);
-        img.push(frame[i + 2]);
-        img.push(255); // Gifs don't do transparency, I dunno why they take in an alpha value...
+        img[i] = frame[i];
+        img[i + 1] = frame[i + 1];
+        img[i + 2] = frame[i + 2];
+        img[i + 3] = 255; // Gifs don't do transparency, I dunno why they take in an alpha value...
       }
     }
     return img;
@@ -86,6 +89,15 @@ const createGif = async (
     const [width, height] = dimensions;
     const gif = new gifEncoder(width, height);
 
+    gif.setFrameRate(fps);
+    gif.setRepeat(0); // Loop indefinitely
+    if (transparentColor) {
+      gif.setTransparent(toHexColor(transparentColor));
+    }
+
+    // gif.setQuality(10);
+    gif.writeHeader();
+
     let data: any[] = [];
     gif.on('data', (chunk: any) => {
       data.push(chunk);
@@ -96,15 +108,6 @@ const createGif = async (
       );
       resolve(dataUrl);
     });
-
-    gif.setFrameRate(fps);
-    gif.setRepeat(0); // Loop indefinitely
-    if (transparentColor) {
-      gif.setTransparent(toHexColor(transparentColor));
-    }
-
-    // gif.setQuality(10);
-    gif.writeHeader();
 
     frames.forEach((f) => {
       gif.addFrame(f);
@@ -124,10 +127,10 @@ const readImage = (dataUrl: string): Promise<Image> =>
           return res({
             frames: [
               {
-                data: getPixelResults.data,
+                data: Uint8Array.from(getPixelResults.data),
               },
             ],
-            dimensions: getPixelResults.shape,
+            dimensions: [getPixelResults.shape[0], getPixelResults.shape[1]],
           });
         }
       }

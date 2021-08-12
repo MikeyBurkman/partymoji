@@ -62,7 +62,7 @@ export const getPixelFromSource = (
     return [0, 0, 0, 0]; // Default to transparent if an invalid coordinate
   }
 
-  const idx = x * 4 + y * 4 * width;
+  const idx = getImageIndex(dimensions, x, y);
   return [image[idx], image[idx + 1], image[idx + 2], image[idx + 3]];
 };
 
@@ -113,10 +113,15 @@ export const mapCoords = (
   cb: (coord: Coord) => Color
 ): ImageData => {
   const [width, height] = dimensions;
-  const transformedImageData: ImageData = [];
+  const transformedImageData = new Uint8Array(width * height * 4);
   for (let y = 0; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
-      transformedImageData.push(...clampColor(cb([x, y])));
+      const c = clampColor(cb([x, y]));
+      const idx = getImageIndex(dimensions, x, y);
+      transformedImageData[idx] = c[0];
+      transformedImageData[idx + 1] = c[1];
+      transformedImageData[idx + 2] = c[2];
+      transformedImageData[idx + 3] = c[3];
     }
   }
   return transformedImageData;
@@ -159,3 +164,19 @@ export const mapImage = <T>(
 /** Create a new array [0, 1, 2, ...N-1] */
 export const repeat = (times: number): number[] =>
   [...new Array(times)].map((_, i) => i);
+
+export const getImageIndex = ([width]: Dimensions, x: number, y: number) =>
+  (x + y * width) * 4;
+
+export const writePixel = (args: {
+  image: ImageData;
+  dimensions: Dimensions;
+  coord: Coord;
+  color: Color;
+}): void => {
+  const idx = getImageIndex(args.dimensions, args.coord[0], args.coord[1]);
+  args.image[idx] = args.color[0];
+  args.image[idx + 1] = args.color[1];
+  args.image[idx + 2] = args.color[2];
+  args.image[idx + 3] = args.color[3];
+};

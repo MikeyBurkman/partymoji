@@ -1,6 +1,5 @@
-import { buildTransform } from '../types';
-import { ImageData } from '../types';
-import { assert, getPixelFromSource } from '../utils';
+import { buildTransform, Color, Dimensions } from '../types';
+import { assert, getPixelFromSource, writePixel } from '../utils';
 import { intParam } from './params/intParam';
 
 export const resizeBackground = buildTransform({
@@ -21,14 +20,16 @@ export const resizeBackground = buildTransform({
       'New height for resize-background needs to be greater than or equal to the original'
     );
 
+    const newDimensions: Dimensions = [newWidth, newHeight];
+
     const xPadding = (newWidth - width) / 2;
     const yPadding = (newHeight - height) / 2;
 
     const newFrames = image.frames.map((frame) => {
-      const transformedImageData: ImageData = [];
+      const transformedImageData = new Uint8Array(newWidth * newHeight * 4);
       for (let y = 0; y < newHeight; y += 1) {
         for (let x = 0; x < newWidth; x += 1) {
-          const pixel =
+          const pixel: Color =
             x > xPadding &&
             x < newWidth - xPadding &&
             y > yPadding &&
@@ -38,7 +39,12 @@ export const resizeBackground = buildTransform({
                   y - yPadding,
                 ])
               : [0, 0, 0, 0];
-          transformedImageData.push(...pixel);
+          writePixel({
+            color: pixel,
+            coord: [x, y],
+            dimensions: newDimensions,
+            image: transformedImageData,
+          });
         }
       }
       return {
@@ -48,7 +54,7 @@ export const resizeBackground = buildTransform({
 
     return {
       frames: newFrames,
-      dimensions: [newWidth, newHeight],
+      dimensions: newDimensions,
     };
   },
 });

@@ -1,5 +1,5 @@
-import { ImageData, buildTransform } from '../types';
-import { getPixelFromSource } from '../utils';
+import { buildTransform, Dimensions } from '../types';
+import { getImageIndex, getPixelFromSource, writePixel } from '../utils';
 import { intParam } from './params/intParam';
 
 export const resize = buildTransform({
@@ -22,8 +22,10 @@ export const resize = buildTransform({
     const xRatio = width / newWidth;
     const yRatio = height / newHeight;
 
+    const newDimensions: Dimensions = [newWidth, newHeight];
+
     const newFrames = image.frames.map((frame) => {
-      const transformedImageData: ImageData = [];
+      const transformedImageData = new Uint8Array(newWidth * newHeight * 4);
       for (let y = 0; y < newHeight; y += 1) {
         for (let x = 0; x < newWidth; x += 1) {
           // Simple nearest-neighbor image scaling.
@@ -31,9 +33,17 @@ export const resize = buildTransform({
           //  and we're generally dealing with small images anyhow.
           const srcX = Math.floor(x * xRatio);
           const srcY = Math.floor(y * yRatio);
-          transformedImageData.push(
-            ...getPixelFromSource(image.dimensions, frame.data, [srcX, srcY])
-          );
+
+          const pixel = getPixelFromSource(image.dimensions, frame.data, [
+            srcX,
+            srcY,
+          ]);
+          writePixel({
+            color: pixel,
+            coord: [x, y],
+            dimensions: newDimensions,
+            image: transformedImageData,
+          });
         }
       }
       return {
