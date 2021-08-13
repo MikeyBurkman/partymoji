@@ -73,13 +73,13 @@ export interface Parameter<T> {
 }
 
 export interface Params<T> {
-  value: T;
+  value: ParamValue<T>;
   onChange: (v: ParamValue<T>) => void;
 }
 
 export type ParamFunction<T> = {
   name: string;
-  defaultValue: T;
+  defaultValue: ParamValue<T>;
   fn: (params: Params<T>) => JSX.Element;
 };
 

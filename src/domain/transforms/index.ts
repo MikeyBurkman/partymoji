@@ -1,4 +1,5 @@
 import { backgroundParty } from './background-party';
+import { backgroundImage } from './background-image';
 import { bounce } from './bounce';
 import { circle } from './circle';
 import { expand } from './expand';
@@ -21,6 +22,7 @@ import { transpose } from './transpose';
 export const POSSIBLE_TRANSFORMS = [
   frameCount,
   backgroundParty,
+  backgroundImage,
   bounce,
   circle,
   expand,

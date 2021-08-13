@@ -46,10 +46,7 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
                 onSelect({
                   transform: t,
                   paramValues: t.params.map(
-                    (p: ParamFunction<any>): ParamValue<any> => ({
-                      valid: true,
-                      value: p.defaultValue,
-                    })
+                    (p: ParamFunction<any>) => p.defaultValue
                   ),
                 });
               }}
@@ -78,12 +75,12 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
           // Each of these would get an onChange event so we know when the user has
           //  selected a value.
           (param: ParamFunction<any>, idx: number) => {
-            const value = selectedTransform.paramValues[idx];
             const ele = param.fn({
-              value: value.valid ? value.value : param.defaultValue,
+              value: selectedTransform.paramValues[idx],
               onChange: (v) => {
+                console.log('changing to ', v);
                 onSelect({
-                  transform: selectedTransform.transform,
+                  ...selectedTransform,
                   paramValues: selectedTransform.paramValues.map((x, i) => {
                     if (i === idx) {
                       return v;

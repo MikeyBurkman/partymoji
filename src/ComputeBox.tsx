@@ -43,7 +43,7 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
       <h3 className="title">Create Gif</h3>
       <div className="block">
         {fpsParam.fn({
-          value: fps,
+          value: { valid: true, value: fps },
           onChange: (x) => {
             if (x.valid) {
               setFps(x.value);

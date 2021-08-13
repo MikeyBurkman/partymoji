@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  ParamFunction,
-  ParamValue,
-  Transform,
-  TransformWithParams,
-} from './domain/types';
+import { ParamFunction, Transform, TransformWithParams } from './domain/types';
 import { ImageTransform } from './ImageTransform';
 
 interface TransformListProps {
@@ -29,10 +24,7 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
             {
               transform: possibleTransforms[0],
               paramsValues: possibleTransforms[0].params.map(
-                (p: ParamFunction<any>): ParamValue<any> =>
-                  p.defaultValue !== undefined
-                    ? { valid: true, value: p.defaultValue }
-                    : { valid: false }
+                (p: ParamFunction<any>) => p.defaultValue
               ),
             },
           ])

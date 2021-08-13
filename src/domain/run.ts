@@ -116,7 +116,7 @@ const createGif = async (
     gif.finish();
   });
 
-const readImage = (dataUrl: string): Promise<Image> =>
+export const readImage = (dataUrl: string): Promise<Image> =>
   new Promise<Image>((res, rej) =>
     getPixels(
       dataUrl,

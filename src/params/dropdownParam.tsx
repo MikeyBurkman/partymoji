@@ -4,8 +4,8 @@ import { ParamValue, ParamFunction } from '../domain/types';
 
 const DropdownParam: React.FC<{
   name: string;
-  options: { name: string; value: any }[];
-  value: any;
+  options: readonly { name: string; value: any }[];
+  value?: any;
   onChange: (v: ParamValue<any>) => void;
 }> = ({ name, options, value, onChange }) => {
   return (
@@ -23,17 +23,19 @@ const DropdownParam: React.FC<{
 
 export function dropdownParam<T>(args: {
   name: string;
-  options: { name: string; value: T }[];
-  defaultValue: T;
+  options: readonly { name: string; value: T }[];
+  defaultValue?: T;
 }): ParamFunction<T> {
   return {
     name: args.name,
-    defaultValue: args.defaultValue,
+    defaultValue: args.defaultValue
+      ? { valid: true, value: args.defaultValue }
+      : { valid: false },
     fn: (params) => {
       return (
         <DropdownParam
           name={args.name}
-          value={params.value}
+          value={params.value.valid ? params.value.value : undefined}
           options={args.options}
           onChange={params.onChange}
         />

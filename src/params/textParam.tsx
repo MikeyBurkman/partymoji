@@ -3,7 +3,7 @@ import { ParamFunction, ParamValue } from '../domain/types';
 
 const TextParam: React.FC<{
   name: string;
-  value: string;
+  value?: string;
   onChange: (v: ParamValue<string>) => void;
 }> = ({ name, value, onChange }) => {
   const [val, setVal] = React.useState(value);
@@ -17,7 +17,9 @@ const TextParam: React.FC<{
         value={val}
         name={name}
         onChange={(e) => setVal(e.target.value)}
-        onBlur={() => onChange({ valid: true, value })}
+        onBlur={() =>
+          onChange(value ? { valid: true, value } : { valid: false })
+        }
       />
     </div>
   );
@@ -25,15 +27,18 @@ const TextParam: React.FC<{
 
 export const textParam = (args: {
   name: string;
-  defaultValue: string;
+  defaultValue?: string;
 }): ParamFunction<string> => ({
   name: args.name,
-  defaultValue: args.defaultValue,
+  defaultValue:
+    args.defaultValue !== undefined
+      ? { valid: true, value: args.defaultValue }
+      : { valid: false },
   fn: (params) => (
     <TextParam
       name={args.name}
       onChange={params.onChange}
-      value={params.value}
+      value={params.value.valid ? params.value.value : undefined}
     />
   ),
 });

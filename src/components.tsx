@@ -3,7 +3,7 @@ import cn from 'classnames';
 
 interface DropdownProps {
   selected: any;
-  options: { name: string; value: any }[];
+  options: readonly { name: string; value: any }[];
   onChange: (value: any) => void;
 }
 
@@ -47,7 +47,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
       >
         <div
           className="dropdown-content"
-          style={{ height: '16em', overflowY: 'auto' }}
+          style={{ maxHeight: '16em', overflowY: 'auto' }}
         >
           {options.map(({ name, value }) => (
             // eslint-disable-next-line jsx-a11y/anchor-is-valid

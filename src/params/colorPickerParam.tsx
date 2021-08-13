@@ -17,24 +17,23 @@ const ColorBox: React.FC<{ color: Color }> = ({ color }) => (
 
 const ColorPickerParam: React.FC<{
   name: string;
-  value: Color;
+  value?: Color;
   onChange: (v: ParamValue<Color>) => void;
 }> = ({ name, value, onChange }) => {
+  console.log('value', value);
   return (
     <Expandable
       mainEle={
         <div className="columns">
           <label className="label column is-four-fifths">{name}</label>
-          <span className="column">
-            <ColorBox color={value} />
-          </span>
+          <span className="column">{value && <ColorBox color={value} />}</span>
         </div>
       }
     >
       <SketchPicker
         disableAlpha={true}
         presetColors={[]}
-        color={toHexColor(value)}
+        color={value ? toHexColor(value) : undefined}
         onChangeComplete={(c) =>
           onChange({ valid: true, value: fromHexColor(c.hex) })
         }
@@ -45,17 +44,22 @@ const ColorPickerParam: React.FC<{
 
 export function colorPickerParam(args: {
   name: string;
-  defaultValue: Color;
+  defaultValue?: Color;
 }): ParamFunction<Color> {
   return {
     name: args.name,
-    defaultValue: args.defaultValue,
-    fn: (params) => (
-      <ColorPickerParam
-        name={args.name}
-        value={params.value}
-        onChange={params.onChange}
-      />
-    ),
+    defaultValue: args.defaultValue
+      ? { valid: true, value: args.defaultValue }
+      : { valid: false },
+    fn: (params) => {
+      console.log('params', params);
+      return (
+        <ColorPickerParam
+          name={args.name}
+          value={params.value.valid ? params.value.value : undefined}
+          onChange={params.onChange}
+        />
+      );
+    },
   };
 }

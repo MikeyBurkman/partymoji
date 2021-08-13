@@ -7,15 +7,22 @@ type ParsedParam<T> =
 
 const FloatParam: React.FC<{
   name: string;
-  value: number;
+  value?: number;
   parse: (s: string) => ParsedParam<number>;
   onChange: (v: ParamValue<number>) => void;
 }> = ({ name, value, parse, onChange }) => {
-  const [val, setVal] = React.useState(value.toString());
+  const [val, setVal] = React.useState(
+    value === undefined ? undefined : value.toString()
+  );
   const [invalidText, setInvalidText] = React.useState('');
 
   const onBlur = () => {
-    if (val === value.toString()) {
+    if (val === undefined) {
+      // Only if no default value provided and no changes have happened
+      return;
+    }
+
+    if (value && val === value.toString()) {
       return; // Don't fire an onChange event if things haven't changed
     }
     const n = parse(val);
@@ -48,12 +55,15 @@ const FloatParam: React.FC<{
 
 export const floatParam = (args: {
   name: string;
-  defaultValue: number;
+  defaultValue?: number;
   min?: number;
   max?: number;
 }): ParamFunction<number> => ({
   name: args.name,
-  defaultValue: args.defaultValue,
+  defaultValue:
+    args.defaultValue !== undefined
+      ? { valid: true, value: args.defaultValue }
+      : { valid: false },
   fn: (params) => {
     const { min, max } = args;
     const parse = (s: string): ParsedParam<number> => {
@@ -78,7 +88,7 @@ export const floatParam = (args: {
         name={args.name}
         parse={parse}
         onChange={params.onChange}
-        value={params.value}
+        value={params.value.valid ? params.value.value : undefined}
       />
     );
   },

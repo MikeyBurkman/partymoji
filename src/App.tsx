@@ -25,6 +25,10 @@ export const App: React.FC = () => {
     baseImage: undefined,
   });
 
+  if (DEBUG) {
+    (window as any).STATE = state;
+  }
+
   const computeBtnDisbled =
     !state.baseImage ||
     state.transforms.length === 0 ||
@@ -43,16 +47,19 @@ export const App: React.FC = () => {
           Partymoji
         </h1>
         <div>
-          <ImagePicker
-            currentImageUrl={state.baseImage}
-            onChange={(baseImage) => {
-              setState({
-                ...state,
-                baseImage,
-                dirty: true,
-              });
-            }}
-          />
+          <div className="box">
+            <h3 className="title">Source Image</h3>
+            <ImagePicker
+              currentImageUrl={state.baseImage}
+              onChange={(baseImage) => {
+                setState({
+                  ...state,
+                  baseImage,
+                  dirty: true,
+                });
+              }}
+            />
+          </div>
           <ImageTransformList
             currentTransforms={state.transforms}
             possibleTransforms={POSSIBLE_TRANSFORMS}

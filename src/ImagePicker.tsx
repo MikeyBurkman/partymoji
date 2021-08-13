@@ -2,15 +2,18 @@ import React from 'react';
 
 interface ImagePickerProps {
   currentImageUrl?: string;
+  width?: number;
+  height?: number;
   onChange: (imageUrl: string) => void;
 }
 
 export const ImagePicker: React.FC<ImagePickerProps> = ({
   currentImageUrl,
+  width,
+  height,
   onChange,
 }) => (
-  <div className="box">
-    <h3 className="title">Source Image</h3>
+  <>
     <div className="file block">
       <label className="file-label">
         <input
@@ -33,8 +36,15 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
         </span>
       </label>
     </div>
-    {currentImageUrl && <img src={currentImageUrl} alt="Source"></img>}
-  </div>
+    {currentImageUrl && (
+      <img
+        width={width}
+        height={height}
+        src={currentImageUrl}
+        alt="Source"
+      ></img>
+    )}
+  </>
 );
 
 const readFile = (file: File) =>
