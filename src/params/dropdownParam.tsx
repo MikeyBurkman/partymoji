@@ -9,14 +9,15 @@ const DropdownParam: React.FC<{
   onChange: (v: ParamValue<any>) => void;
 }> = ({ name, options, value, onChange }) => {
   return (
-    <div>
-      <label>{name}</label>
-      <br />
-      <Dropdown
-        onChange={(value) => onChange({ valid: true, value })}
-        selected={value}
-        options={options}
-      />
+    <div className="field" style={{ maxWidth: '12em' }}>
+      <label className="label">{name}</label>
+      <div className="control">
+        <Dropdown
+          onChange={(value) => onChange({ valid: true, value })}
+          selected={value}
+          options={options}
+        />
+      </div>
     </div>
   );
 };

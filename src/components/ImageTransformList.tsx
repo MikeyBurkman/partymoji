@@ -13,7 +13,7 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
   possibleTransforms,
   onTransformsChange,
 }) => (
-  <div className="box">
+  <div className="box" style={{ overflowY: 'clip', overflowX: 'scroll' }}>
     <h3 className="title">Image Transforms</h3>
     <div className="block">
       <button
@@ -35,75 +35,76 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
     </div>
     <div className="columns">
       {currentTransforms.map((t, tIdx) => (
-        <ImageTransform
-          image={undefined}
-          possibleTransforms={possibleTransforms}
-          selectedTransform={{
-            transform: t.transform,
-            paramValues: t.paramsValues,
-          }}
-          onRemove={() =>
-            onTransformsChange(
-              currentTransforms.filter((nextT, newIdx) => newIdx !== tIdx)
-            )
-          }
-          onMoveLeft={
-            tIdx > 0
-              ? () =>
-                  onTransformsChange(
-                    currentTransforms.map((nextT, newIdx) => {
-                      if (newIdx === tIdx - 1) {
-                        // This is the next item in the list
-                        return currentTransforms[newIdx + 1];
-                      } else if (tIdx === newIdx) {
-                        // This is the previous item
-                        return currentTransforms[tIdx - 1];
-                      } else {
-                        return nextT;
-                      }
-                    })
-                  )
-              : undefined
-          }
-          onMoveRight={
-            tIdx < currentTransforms.length - 1
-              ? () =>
-                  onTransformsChange(
-                    currentTransforms.map((nextT, newIdx) => {
-                      if (newIdx === tIdx + 1) {
-                        // This is the previous item in the list
-                        return currentTransforms[newIdx - 1];
-                      } else if (tIdx === newIdx) {
-                        // This is the next item
-                        return currentTransforms[tIdx + 1];
-                      } else {
-                        return nextT;
-                      }
-                    })
-                  )
-              : undefined
-          }
-          onSelect={(selected) =>
-            onTransformsChange(
-              currentTransforms.map((nextT, nextTIdx) => {
-                if (tIdx === nextTIdx) {
-                  // This is the one we just changed
+        <div className="column">
+          <ImageTransform
+            possibleTransforms={possibleTransforms}
+            selectedTransform={{
+              transform: t.transform,
+              paramValues: t.paramsValues,
+            }}
+            onRemove={() =>
+              onTransformsChange(
+                currentTransforms.filter((nextT, newIdx) => newIdx !== tIdx)
+              )
+            }
+            onMoveLeft={
+              tIdx > 0
+                ? () =>
+                    onTransformsChange(
+                      currentTransforms.map((nextT, newIdx) => {
+                        if (newIdx === tIdx - 1) {
+                          // This is the next item in the list
+                          return currentTransforms[newIdx + 1];
+                        } else if (tIdx === newIdx) {
+                          // This is the previous item
+                          return currentTransforms[tIdx - 1];
+                        } else {
+                          return nextT;
+                        }
+                      })
+                    )
+                : undefined
+            }
+            onMoveRight={
+              tIdx < currentTransforms.length - 1
+                ? () =>
+                    onTransformsChange(
+                      currentTransforms.map((nextT, newIdx) => {
+                        if (newIdx === tIdx + 1) {
+                          // This is the previous item in the list
+                          return currentTransforms[newIdx - 1];
+                        } else if (tIdx === newIdx) {
+                          // This is the next item
+                          return currentTransforms[tIdx + 1];
+                        } else {
+                          return nextT;
+                        }
+                      })
+                    )
+                : undefined
+            }
+            onSelect={(selected) =>
+              onTransformsChange(
+                currentTransforms.map((nextT, nextTIdx) => {
+                  if (tIdx === nextTIdx) {
+                    // This is the one we just changed
+                    return {
+                      transform: selected.transform,
+                      paramsValues: selected.paramValues,
+                      computedImage: undefined,
+                    };
+                  }
+                  // Reset all the images if we changed anything
                   return {
-                    transform: selected.transform,
-                    paramsValues: selected.paramValues,
+                    transform: nextT.transform,
+                    paramsValues: nextT.paramsValues,
                     computedImage: undefined,
                   };
-                }
-                // Reset all the images if we changed anything
-                return {
-                  transform: nextT.transform,
-                  paramsValues: nextT.paramsValues,
-                  computedImage: undefined,
-                };
-              })
-            )
-          }
-        />
+                })
+              )
+            }
+          />
+        </div>
       ))}
       <div className="box" style={{ display: 'none' }}>
         {/* Placeholder, because the last box has no bottom padding */}

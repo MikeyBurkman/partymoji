@@ -2,7 +2,7 @@ import React from 'react';
 
 interface ImagePickerProps {
   currentImageUrl?: string;
-  name: string;
+  name?: string;
   width?: number;
   height?: number;
   onChange: (imageUrl: string) => void;

@@ -9,7 +9,6 @@ interface SelectedTransform {
 }
 
 interface ImageTransformProps {
-  image?: string;
   selectedTransform: SelectedTransform;
   possibleTransforms: Transform<any>[];
   onSelect: (selected: SelectedTransform) => void;
@@ -19,7 +18,6 @@ interface ImageTransformProps {
 }
 
 export const ImageTransform: React.FC<ImageTransformProps> = ({
-  image,
   selectedTransform,
   possibleTransforms,
   onSelect,
@@ -28,7 +26,7 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
   onMoveRight,
 }) => {
   return (
-    <div className="card" style={{ width: '300px' }}>
+    <div className="card" style={{ padding: '0.75rem', maxWidth: '20rem' }}>
       <div className="card-header-title">
         <div className="columns is-desktop">
           <div className="column">
@@ -55,12 +53,12 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
           <div className="column columns">
             {onMoveLeft && (
               <div className="icon column is-clickable" onClick={onMoveLeft}>
-                <i className="fas fa-chevron-left" aria-hidden="true"></i>
+                <i className="fas fa-arrow-left" aria-hidden="true"></i>
               </div>
             )}
             {onMoveRight && (
               <div className="icon column is-clickable" onClick={onMoveRight}>
-                <i className="fas fa-chevron-right" aria-hidden="true"></i>
+                <i className="fas fa-arrow-right" aria-hidden="true"></i>
               </div>
             )}
             <div className="icon column is-clickable" onClick={onRemove}>

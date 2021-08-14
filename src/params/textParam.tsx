@@ -9,18 +9,19 @@ const TextParam: React.FC<{
   const [val, setVal] = React.useState(value);
 
   return (
-    <div>
-      <label>{name}</label>
-      <br />
-      <input
-        type="text"
-        value={val}
-        name={name}
-        onChange={(e) => setVal(e.target.value)}
-        onBlur={() =>
-          onChange(value ? { valid: true, value } : { valid: false })
-        }
-      />
+    <div className="field" style={{ maxWidth: '12em' }}>
+      <label className="label">{name}</label>
+      <div className="control has-icons-left has-icons-right">
+        <input
+          type="text"
+          value={val}
+          name={name}
+          onChange={(e) => setVal(e.target.value)}
+          onBlur={() =>
+            onChange(value ? { valid: true, value } : { valid: false })
+          }
+        />
+      </div>
     </div>
   );
 };

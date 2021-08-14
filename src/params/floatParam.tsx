@@ -35,7 +35,7 @@ const FloatParam: React.FC<{
   };
 
   return (
-    <div className="field">
+    <div className="field" style={{ maxWidth: '12em' }}>
       <label className="label">{name}</label>
       <div className="control has-icons-left has-icons-right">
         <input

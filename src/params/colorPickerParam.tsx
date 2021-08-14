@@ -52,7 +52,6 @@ export function colorPickerParam(args: {
       ? { valid: true, value: args.defaultValue }
       : { valid: false },
     fn: (params) => {
-      console.log('params', params);
       return (
         <ColorPickerParam
           name={args.name}
