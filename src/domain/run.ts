@@ -92,7 +92,9 @@ const createGif = async (
     gif.setFrameRate(fps);
     gif.setRepeat(0); // Loop indefinitely
     if (transparentColor) {
-      gif.setTransparent(toHexColor(transparentColor));
+      // Need to convert '#RRGGBB' to '0xRRGGBB'
+      const hexColor = toHexColor(transparentColor).slice(1);
+      gif.setTransparent(`0x${hexColor}`);
     }
 
     // gif.setQuality(10);
