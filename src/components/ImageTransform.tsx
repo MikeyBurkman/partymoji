@@ -1,7 +1,7 @@
 import React from 'react';
-import { Dropdown } from './components';
+import { Dropdown } from './Dropdown';
 
-import { ParamFunction, ParamValue, Transform } from './domain/types';
+import { ParamFunction, ParamValue, Transform } from '../domain/types';
 
 interface SelectedTransform {
   transform: Transform<any>;

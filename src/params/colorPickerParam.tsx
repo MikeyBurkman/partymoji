@@ -1,6 +1,6 @@
 import React from 'react';
 import { SketchPicker } from 'react-color';
-import { Expandable } from '../components';
+import { Expandable } from '../components/Expandable';
 
 import { ParamValue, ParamFunction, Color } from '../domain/types';
 import { fromHexColor, toHexColor } from '../domain/utils';

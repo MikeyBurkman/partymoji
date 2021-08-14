@@ -1,9 +1,9 @@
 import React from 'react';
 import cn from 'classnames';
-import { assert } from './domain/utils';
-import { runTransforms } from './domain/run';
-import { TransformInput, TransformWithParams } from './domain/types';
-import { intParam } from './params/intParam';
+import { assert } from '../domain/utils';
+import { runTransforms } from '../domain/run';
+import { TransformInput, TransformWithParams } from '../domain/types';
+import { intParam } from '../params/intParam';
 
 interface ComputeBoxProps {
   isDirty: boolean;

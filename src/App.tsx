@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { ParamFunction, ParamValue, Transform } from './domain/types';
-import { ImagePicker } from './ImagePicker';
-import { ImageTransformList } from './ImageTransformList';
 import { POSSIBLE_TRANSFORMS } from './domain/transforms';
-import { ComputeBox } from './ComputeBox';
+import { ParamFunction, ParamValue, Transform } from './domain/types';
+import { ComputeBox } from './components/ComputeBox';
+import { ImagePicker } from './components/ImagePicker';
+import { ImageTransformList } from './components/ImageTransformList';
 
 const DEBUG = false;
 
@@ -50,6 +50,7 @@ export const App: React.FC = () => {
           <div className="box">
             <h3 className="title">Source Image</h3>
             <ImagePicker
+              name="Choose a source image"
               currentImageUrl={state.baseImage}
               onChange={(baseImage) => {
                 setState({

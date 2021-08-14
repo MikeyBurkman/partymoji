@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dropdown } from '../components';
+import { Dropdown } from '../components/Dropdown';
 import { ParamValue, ParamFunction } from '../domain/types';
 
 const DropdownParam: React.FC<{

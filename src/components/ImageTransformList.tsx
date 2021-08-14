@@ -1,5 +1,5 @@
 import React from 'react';
-import { ParamFunction, Transform, TransformWithParams } from './domain/types';
+import { ParamFunction, Transform, TransformWithParams } from '../domain/types';
 import { ImageTransform } from './ImageTransform';
 
 interface TransformListProps {

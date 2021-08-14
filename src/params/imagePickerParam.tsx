@@ -2,7 +2,7 @@ import React from 'react';
 import { readImage } from '../domain/run';
 
 import { ParamFunction, Image } from '../domain/types';
-import { ImagePicker } from '../ImagePicker';
+import { ImagePicker } from '../components/ImagePicker';
 
 export function imagePickerParam(args: {
   name: string;
@@ -15,6 +15,7 @@ export function imagePickerParam(args: {
         <label>{args.name}</label>
         <br />
         <ImagePicker
+          name="Image"
           currentImageUrl={
             params.value.valid ? params.value.value.dataUrl : undefined
           }

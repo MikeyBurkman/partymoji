@@ -2,6 +2,7 @@ import React from 'react';
 
 interface ImagePickerProps {
   currentImageUrl?: string;
+  name: string;
   width?: number;
   height?: number;
   onChange: (imageUrl: string) => void;
@@ -9,6 +10,7 @@ interface ImagePickerProps {
 
 export const ImagePicker: React.FC<ImagePickerProps> = ({
   currentImageUrl,
+  name,
   width,
   height,
   onChange,
@@ -32,7 +34,7 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
           <span className="file-icon">
             <i className="fas fa-upload"></i>
           </span>
-          <span className="file-label">Choose a source image</span>
+          <span className="file-label">{name}</span>
         </span>
       </label>
     </div>
