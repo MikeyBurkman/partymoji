@@ -1,4 +1,5 @@
 import React from 'react';
+import { Tooltip } from '../components/Tooltip';
 import { ParamValue, ParamFunction } from '../domain/types';
 
 type ParsedParam<T> =
@@ -8,9 +9,10 @@ type ParsedParam<T> =
 const FloatParam: React.FC<{
   name: string;
   value?: number;
+  description?: string;
   parse: (s: string) => ParsedParam<number>;
   onChange: (v: ParamValue<number>) => void;
-}> = ({ name, value, parse, onChange }) => {
+}> = ({ name, value, description, parse, onChange }) => {
   const [val, setVal] = React.useState(
     value === undefined ? undefined : value.toString()
   );
@@ -36,7 +38,12 @@ const FloatParam: React.FC<{
 
   return (
     <div className="field" style={{ maxWidth: '12em' }}>
-      <label className="label">{name}</label>
+      <label className="label">
+        <div>
+          <span>{name}</span>
+          {description && <Tooltip text={description} />}
+        </div>
+      </label>
       <div className="control has-icons-left has-icons-right">
         <input
           className="input"
@@ -58,6 +65,7 @@ export const floatParam = (args: {
   defaultValue?: number;
   min?: number;
   max?: number;
+  description?: string;
 }): ParamFunction<number> => ({
   name: args.name,
   defaultValue:
@@ -86,6 +94,7 @@ export const floatParam = (args: {
     return (
       <FloatParam
         name={args.name}
+        description={args.description}
         parse={parse}
         onChange={params.onChange}
         value={params.value.valid ? params.value.value : undefined}

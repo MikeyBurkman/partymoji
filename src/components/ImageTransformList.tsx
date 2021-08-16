@@ -13,7 +13,7 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
   possibleTransforms,
   onTransformsChange,
 }) => (
-  <div className="box" style={{ overflowY: 'clip', overflowX: 'scroll' }}>
+  <div className="box">
     <h3 className="title">Image Transforms</h3>
     <div className="block">
       <button
@@ -33,10 +33,14 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
         New Transform
       </button>
     </div>
-    <div className="columns">
+    <div
+      className="columns"
+      style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)' }}
+    >
       {currentTransforms.map((t, tIdx) => (
         <div className="column">
           <ImageTransform
+            index={tIdx}
             possibleTransforms={possibleTransforms}
             selectedTransform={{
               transform: t.transform,

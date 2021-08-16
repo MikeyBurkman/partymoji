@@ -11,6 +11,7 @@ import {
 
 export const backgroundImage = buildTransform({
   name: 'Background Image',
+  description: 'Select another image to be used as a background or foreground',
   params: [
     imagePickerParam({
       name: 'Image',

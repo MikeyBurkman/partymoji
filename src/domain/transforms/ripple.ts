@@ -8,11 +8,13 @@ export const ripple = buildTransform({
     floatParam({
       name: 'Amplitude',
       defaultValue: 10,
+      description: 'How strong the ripple effect should be',
     }),
     floatParam({
       name: 'Period',
       defaultValue: 2,
       min: 0,
+      description: 'How many ripples you want',
     }),
   ],
   fn: ({ image, parameters }) =>

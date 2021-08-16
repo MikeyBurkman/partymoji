@@ -3,7 +3,7 @@ import cn from 'classnames';
 
 interface DropdownProps {
   selected: any;
-  options: readonly { name: string; value: any }[];
+  options: readonly { name: string | JSX.Element; value: any }[];
   onChange: (value: any) => void;
 }
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { SketchPicker } from 'react-color';
 import { Expandable } from '../components/Expandable';
+import { Tooltip } from '../components/Tooltip';
 
 import { ParamValue, ParamFunction, Color } from '../domain/types';
 import { fromHexColor, toHexColor } from '../domain/utils';
@@ -18,14 +19,17 @@ const ColorBox: React.FC<{ color: Color }> = ({ color }) => (
 const ColorPickerParam: React.FC<{
   name: string;
   value?: Color;
+  description?: string;
   onChange: (v: ParamValue<Color>) => void;
-}> = ({ name, value, onChange }) => {
-  console.log('value', value);
+}> = ({ name, value, description, onChange }) => {
   return (
     <Expandable
       mainEle={
         <div className="columns">
-          <label className="label column is-four-fifths">{name}</label>
+          <label className="label column is-four-fifths">
+            {name}
+            {description && <Tooltip text={description} />}
+          </label>
           <span className="column">{value && <ColorBox color={value} />}</span>
         </div>
       }
@@ -45,6 +49,7 @@ const ColorPickerParam: React.FC<{
 export function colorPickerParam(args: {
   name: string;
   defaultValue?: Color;
+  description?: string;
 }): ParamFunction<Color> {
   return {
     name: args.name,

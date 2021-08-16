@@ -90,6 +90,7 @@ type ParamType<Type> = Type extends ParamFunction<infer X> ? X : never;
 export interface Transform<T extends readonly ParamFunction<any>[]> {
   name: string;
   params: T;
+  description?: string;
   fn: TransformFn<{ [P in keyof T]: ParamType<T[P]> }>;
 }
 
@@ -106,9 +107,11 @@ export interface TransformInput<T extends ParamFunction<any>[]> {
 export const buildTransform = <T extends readonly ParamFunction<any>[]>(args: {
   name: string;
   params: T;
+  description?: string;
   fn: TransformFn<{ [P in keyof T]: ParamType<T[P]> }>;
 }): Transform<T> => ({
   name: args.name,
   params: args.params,
+  description: args.description,
   fn: args.fn,
 });

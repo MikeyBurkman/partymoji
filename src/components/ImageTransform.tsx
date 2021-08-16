@@ -11,6 +11,7 @@ interface SelectedTransform {
 interface ImageTransformProps {
   selectedTransform: SelectedTransform;
   possibleTransforms: Transform<any>[];
+  index: number;
   onSelect: (selected: SelectedTransform) => void;
   onRemove: () => void;
   onMoveLeft?: () => void;
@@ -20,6 +21,7 @@ interface ImageTransformProps {
 export const ImageTransform: React.FC<ImageTransformProps> = ({
   selectedTransform,
   possibleTransforms,
+  index,
   onSelect,
   onRemove,
   onMoveLeft,
@@ -30,25 +32,33 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
       <div className="card-header-title">
         <div className="columns is-desktop">
           <div className="column">
-            <Dropdown
-              selected={selectedTransform.transform.name}
-              options={possibleTransforms.map((t) => ({
-                name: t.name,
-                value: t.name,
-              }))}
-              onChange={(newTransformName) => {
-                const t = possibleTransforms.find(
-                  (t) => t.name === newTransformName
-                )!;
-                // Reset all the params when you select a new transform
-                onSelect({
-                  transform: t,
-                  paramValues: t.params.map(
-                    (p: ParamFunction<any>) => p.defaultValue
-                  ),
-                });
-              }}
-            />
+            <div className="block">
+              <span>{index + 1}</span>
+              <Dropdown
+                selected={selectedTransform.transform.name}
+                options={possibleTransforms.map((t) => ({
+                  name: t.name,
+                  value: t.name,
+                }))}
+                onChange={(newTransformName) => {
+                  const t = possibleTransforms.find(
+                    (t) => t.name === newTransformName
+                  )!;
+                  // Reset all the params when you select a new transform
+                  onSelect({
+                    transform: t,
+                    paramValues: t.params.map(
+                      (p: ParamFunction<any>) => p.defaultValue
+                    ),
+                  });
+                }}
+              />
+            </div>
+            {selectedTransform.transform.description && (
+              <div className="block" style={{ fontSize: '0.75rem' }}>
+                {selectedTransform.transform.description}
+              </div>
+            )}
           </div>
           <div className="column columns">
             {onMoveLeft && (
@@ -88,7 +98,11 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
                 });
               },
             });
-            return <div key={param.name}>{ele}</div>;
+            return (
+              <div className="block" key={param.name}>
+                {ele}
+              </div>
+            );
           }
         )}
       </div>
