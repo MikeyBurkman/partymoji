@@ -16,6 +16,7 @@ const PARTY_COLORS: Color[] = [
 
 export const backgroundParty = buildTransform({
   name: 'Background Party',
+  description: 'Transparent pixels will flash bright party colors',
   params: [],
   fn: mapImage(({ coord, frameCount, frameIndex, getSrcPixel }) => {
     const srcPixel = getSrcPixel(coord);

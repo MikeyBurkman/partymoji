@@ -4,6 +4,7 @@ import { intParam } from '../../params/intParam';
 
 export const frameCount = buildTransform({
   name: 'Frame Count',
+  description: 'Set how many frames of animation there will be. This is required for all animation transforms',
   params: [
     intParam({
       name: 'Number of Frames',
