@@ -4,6 +4,7 @@ import { floatParam } from '../../params/floatParam';
 
 export const bounce = buildTransform({
   name: 'Bounce',
+  description: 'Make the image bounce up and down',
   params: [
     floatParam({
       name: 'Bounce Speed',
