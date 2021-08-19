@@ -1,54 +1,34 @@
 // TODO Varargs
 import { buildTransform } from '../types';
-import { mapImage, isTransparent, repeat } from '../utils';
-import { positiveIntParam, colorParam } from './params';
+import { mapImage, isTransparent, repeat, fromHexColor } from '../utils';
+import { colorPickerParam } from '../../params/colorPickerParam';
+import { intParam } from '../../params/intParam';
 
 const DEFAULT_COLORS = [
-  '0xFF0000',
-  '0xFF9600',
-  '0xFFFF00',
-  '0x00FF00',
-  '0x00FF96',
-  '0x00FFFF',
-  '0x0000FF',
-  '0xB400FF',
+  '#FF0000',
+  '#FF9600',
+  '#FFFF00',
+  '#00FF00',
+  '#00FF96',
+  '#00FFFF',
+  '#0000FF',
+  '#B400FF',
 ];
 
 export const radiance = buildTransform({
-  name: 'radiance',
-  // validateParams: (args) => {
-  //   if (args.length === 0) {
-  //     return {
-  //       groups: 2,
-  //       colors: DEFAULT_COLORS.map(fromHexColor),
-  //     };
-  //   }
-
-  //   assert(
-  //     args.length >= 2,
-  //     'radiance requires either no arguments, or at least two arguments'
-  //   );
-
-  //   const groups = parseInt(args[0], 10);
-  //   assert(
-  //     groups > 0,
-  //     'radiance groups first argument must be a positive integer'
-  //   );
-
-  //   const rawColors = args.slice(1);
-  //   const colors = rawColors.map((c, idx) => {
-  //     assert(
-  //       isHexColor(c),
-  //       `radiance color ${idx} must be a valid hex number in the format 0xRRGGBB`
-  //     );
-  //     return fromHexColor(c);
-  //   });
-  //   return { groups, colors };
-  // },
+  name: 'Radiance',
   params: [
-    positiveIntParam('Number of Groups'),
-    colorParam('Color 1'),
-    colorParam('Color 2'),
+    intParam({
+      name: 'Group Count',
+      defaultValue: 1,
+      min: 1
+    }),
+    ...DEFAULT_COLORS.map((c, i) =>
+      colorPickerParam({
+        name: `Color ${i}`,
+        defaultValue: fromHexColor(c),
+      })
+    ),
   ] as const,
   fn: mapImage(
     ({
@@ -59,10 +39,10 @@ export const radiance = buildTransform({
       getSrcPixel,
       parameters,
     }) => {
-      const [groups, ...colors] = parameters;
       const srcPixel = getSrcPixel(coord);
-
-      const colorList = repeat(groups).flatMap(() => colors);
+      
+      const [groupCount, ...colors] = parameters;
+      const colorList = repeat(groupCount).flatMap(() => colors);
 
       // Make the transparent parts colorful
       if (isTransparent(srcPixel)) {
