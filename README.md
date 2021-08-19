@@ -2,7 +2,10 @@
 
 ## App for Creating Animated Gifs
 
-## Getting started
+### Use it
+https://mikeyburkman.github.io/partymoji/
+
+### Develop it locally
 
 1. `yarn` to install dependencies
 2. `yarn start` to run a local debug version
