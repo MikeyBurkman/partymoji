@@ -28,31 +28,33 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
   onMoveRight,
 }) => {
   return (
-    <div className="card" style={{ padding: '0.75rem', maxWidth: '20rem' }}>
+    <div className="card" style={{ padding: '0.75rem', maxWidth: '24rem' }}>
       <div className="card-header-title">
         <div className="columns is-desktop">
           <div className="column">
-            <div className="block">
-              <span>{index + 1}</span>
-              <Dropdown
-                selected={selectedTransform.transform.name}
-                options={possibleTransforms.map((t) => ({
-                  name: t.name,
-                  value: t.name,
-                }))}
-                onChange={(newTransformName) => {
-                  const t = possibleTransforms.find(
-                    (t) => t.name === newTransformName
-                  )!;
-                  // Reset all the params when you select a new transform
-                  onSelect({
-                    transform: t,
-                    paramValues: t.params.map(
-                      (p: ParamFunction<any>) => p.defaultValue
-                    ),
-                  });
-                }}
-              />
+            <div className="block columns">
+              <div className="column is-narrow">{index + 1}</div>
+              <div className="column">
+                <Dropdown
+                  selected={selectedTransform.transform.name}
+                  options={possibleTransforms.map((t) => ({
+                    name: t.name,
+                    value: t.name,
+                  }))}
+                  onChange={(newTransformName) => {
+                    const t = possibleTransforms.find(
+                      (t) => t.name === newTransformName
+                    )!;
+                    // Reset all the params when you select a new transform
+                    onSelect({
+                      transform: t,
+                      paramValues: t.params.map(
+                        (p: ParamFunction<any>) => p.defaultValue
+                      ),
+                    });
+                  }}
+                />
+              </div>
             </div>
             {selectedTransform.transform.description && (
               <div className="block" style={{ fontSize: '0.75rem' }}>
@@ -86,7 +88,6 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
             const ele = param.fn({
               value: selectedTransform.paramValues[idx],
               onChange: (v) => {
-                console.log('changing to ', v);
                 onSelect({
                   ...selectedTransform,
                   paramValues: selectedTransform.paramValues.map((x, i) => {

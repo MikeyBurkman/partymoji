@@ -1,8 +1,8 @@
-// TODO Varargs
 import { buildTransform } from '../types';
 import { mapImage, isTransparent, repeat, fromHexColor } from '../utils';
 import { colorPickerParam } from '../../params/colorPickerParam';
 import { intParam } from '../../params/intParam';
+import { variableLengthParam } from '../../params/variableLengthParam';
 
 const DEFAULT_COLORS = [
   '#FF0000',
@@ -13,7 +13,7 @@ const DEFAULT_COLORS = [
   '#00FFFF',
   '#0000FF',
   '#B400FF',
-];
+].map(fromHexColor);
 
 export const radiance = buildTransform({
   name: 'Radiance',
@@ -21,14 +21,18 @@ export const radiance = buildTransform({
     intParam({
       name: 'Group Count',
       defaultValue: 1,
-      min: 1
+      min: 1,
     }),
-    ...DEFAULT_COLORS.map((c, i) =>
-      colorPickerParam({
-        name: `Color ${i}`,
-        defaultValue: fromHexColor(c),
-      })
-    ),
+    variableLengthParam({
+      name: 'Colors',
+      newParamText: 'New Color',
+      description: 'Colors radiating outwards',
+      defaultValue: DEFAULT_COLORS,
+      createNewParam: () =>
+        colorPickerParam({
+          name: 'Color',
+        }),
+    }),
   ] as const,
   fn: mapImage(
     ({
@@ -40,8 +44,8 @@ export const radiance = buildTransform({
       parameters,
     }) => {
       const srcPixel = getSrcPixel(coord);
-      
-      const [groupCount, ...colors] = parameters;
+
+      const [groupCount, colors] = parameters;
       const colorList = repeat(groupCount).flatMap(() => colors);
 
       // Make the transparent parts colorful

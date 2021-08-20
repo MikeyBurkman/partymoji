@@ -1,8 +1,8 @@
-// TODO Varargs???
 import { buildTransform } from '../types';
 import { mapImage, isTransparent, fromHexColor } from '../utils';
 import { colorPickerParam } from '../../params/colorPickerParam';
 import { intParam } from '../../params/intParam';
+import { variableLengthParam } from '../../params/variableLengthParam';
 
 const DEFAULT_COLORS = [
   '#FF0000',
@@ -13,13 +13,7 @@ const DEFAULT_COLORS = [
   '#00FFFF',
   '#0000FF',
   '#B400FF',
-  '#0000FF',
-  '#00FFFF',
-  '#00FF96',
-  '#00FF00',
-  '#FFFF00',
-  '#FF9600',
-];
+].map(fromHexColor);
 
 export const pinwheel = buildTransform({
   name: 'Pinwheel',
@@ -36,14 +30,18 @@ export const pinwheel = buildTransform({
     intParam({
       name: 'Group Count',
       defaultValue: 1,
-      min: 1
+      min: 1,
     }),
-    ...DEFAULT_COLORS.map((c, i) =>
-      colorPickerParam({
-        name: `Color ${i}`,
-        defaultValue: fromHexColor(c),
-      })
-    ),
+    variableLengthParam({
+      name: 'Colors',
+      newParamText: 'New Color',
+      description: 'Colors for the pinwheel',
+      defaultValue: DEFAULT_COLORS,
+      createNewParam: () =>
+        colorPickerParam({
+          name: 'Color',
+        }),
+    }),
   ] as const,
   fn: mapImage(
     ({
@@ -56,7 +54,7 @@ export const pinwheel = buildTransform({
     }) => {
       const srcPixel = getSrcPixel(coord);
 
-      const [offsetX, offsetY, groupCount, ...colors] = parameters;
+      const [offsetX, offsetY, groupCount, colors] = parameters;
 
       const ribbonCount = colors.length * groupCount;
       const ribbonArcDegrees = Math.round(360 / ribbonCount);

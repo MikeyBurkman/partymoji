@@ -68,21 +68,26 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
             );
             setState({ loading: true });
             setTimeout(async () => {
-              assert(
-                baseImageUrl,
-                'No source image, this button should be disabled!'
-              );
-              const gifs = await runTransforms(
-                baseImageUrl,
-                transformInputs,
-                fps
-              );
-              setState({
-                loading: false,
-                results: gifs,
-              });
-              setFpsChanged(false);
-              onComputed();
+              try {
+                assert(
+                  baseImageUrl,
+                  'No source image, this button should be disabled!'
+                );
+                const gifs = await runTransforms(
+                  baseImageUrl,
+                  transformInputs,
+                  fps
+                );
+                setState({
+                  loading: false,
+                  results: gifs,
+                });
+                setFpsChanged(false);
+                onComputed();
+              } catch (err) {
+                console.error(err);
+                console.error(err.stack);
+              }
             });
           }}
         >

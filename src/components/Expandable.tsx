@@ -22,7 +22,7 @@ export const Expandable: React.FC<ExpandableProps> = ({
           <i
             className={cn(
               'fas',
-              collapsed ? 'fa-chevron-up' : 'fa-chevron-down'
+              collapsed ? 'fa-chevron-down' : 'fa-chevron-up'
             )}
           ></i>
         </span>
