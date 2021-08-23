@@ -3,6 +3,7 @@
 ## App for Creating Animated Gifs
 
 ### Use it
+
 https://mikeyburkman.github.io/partymoji/
 
 ### Develop it locally
@@ -10,3 +11,7 @@ https://mikeyburkman.github.io/partymoji/
 1. `yarn` to install dependencies
 2. `yarn start` to run a local debug version
 3. `yarn build` to create a new prod build ,and store in the `docs` folder, so it can be run through GH Pages.
+
+##### TODO
+
+- Dropdown param does not display default value

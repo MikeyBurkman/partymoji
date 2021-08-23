@@ -1,6 +1,11 @@
+import {
+  Tooltip,
+  Icon,
+  FormControl,
+  Select,
+  MenuItem,
+} from '@material-ui/core';
 import React from 'react';
-import { Dropdown } from '../components/Dropdown';
-import { Tooltip } from '../components/Tooltip';
 import { ParamValue, ParamFunction } from '../domain/types';
 
 const DropdownParam: React.FC<{
@@ -14,14 +19,28 @@ const DropdownParam: React.FC<{
     <div className="field" style={{ maxWidth: '12em' }}>
       <label className="label">
         {name}
-        {description && <Tooltip text={description} />}
+        {description && (
+          <Tooltip title={description}>
+            <Icon>help</Icon>
+          </Tooltip>
+        )}
       </label>
       <div className="control">
-        <Dropdown
-          onChange={(value) => onChange({ valid: true, value })}
-          selected={value}
-          options={options}
-        />
+        <FormControl fullWidth>
+          <Select
+            autoWidth
+            value={value}
+            onChange={(event) =>
+              onChange({ valid: true, value: event.target.value })
+            }
+          >
+            {options.map((t) => (
+              <MenuItem key={t.name} value={t.name}>
+                {t.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import React from 'react';
-import cn from 'classnames';
+import { Button, CircularProgress, Icon } from '@material-ui/core';
+
 import { assert } from '../domain/utils';
 import { runTransforms } from '../domain/run';
 import { TransformInput, TransformWithParams } from '../domain/types';
@@ -53,8 +54,11 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
         })}
       </div>
       <div className="block">
-        <button
-          className={cn('button', 'block', { 'is-loading': state.loading })}
+        <Button
+          variant="contained"
+          endIcon={
+            isDirty || fpsChanged ? <Icon>priority_high</Icon> : undefined
+          }
           disabled={buttonDisabled}
           onClick={async () => {
             const transformInputs = transforms.map(
@@ -91,13 +95,8 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
             });
           }}
         >
-          <span>Compute</span>{' '}
-          {(isDirty || fpsChanged) && (
-            <span className="icon is-small">
-              <i className="fas fa-exclamation-circle" aria-hidden="true"></i>
-            </span>
-          )}
-        </button>
+          {state.loading ? <CircularProgress color="inherit" /> : 'Compute'}
+        </Button>
       </div>
       <div className="block">
         <div className="columns">

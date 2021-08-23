@@ -1,3 +1,4 @@
+import { FormControl, FormHelperText, TextField } from '@material-ui/core';
 import React from 'react';
 import { ParamValue, ParamFunction } from '../domain/types';
 
@@ -8,9 +9,10 @@ type ParsedParam<T> =
 const IntParam: React.FC<{
   name: string;
   value?: number;
+  description?: string;
   parse: (s: string) => ParsedParam<number>;
   onChange: (v: ParamValue<number>) => void;
-}> = ({ name, value, parse, onChange }) => {
+}> = ({ name, value, description, parse, onChange }) => {
   const [val, setVal] = React.useState(
     value === undefined ? undefined : value.toString()
   );
@@ -35,21 +37,19 @@ const IntParam: React.FC<{
   };
 
   return (
-    <div className="field" style={{ maxWidth: '12em' }}>
-      <label className="label">{name}</label>
-      <div className="control has-icons-left has-icons-right">
-        <input
-          className="input"
-          type="text"
-          defaultValue={value}
-          onChange={(e) => {
-            setVal(e.target.value);
-          }}
-          onBlur={onBlur}
-        />
-      </div>
-      {invalidText && <p className="help is-danger">{invalidText}</p>}
-    </div>
+    <FormControl>
+      <FormHelperText>{description ?? ' '}</FormHelperText>
+      <TextField
+        label={name}
+        error={!!invalidText}
+        defaultValue={value}
+        onBlur={onBlur}
+        onChange={(e) => {
+          setVal(e.target.value);
+        }}
+      />
+      {invalidText && <FormHelperText>{invalidText}</FormHelperText>}
+    </FormControl>
   );
 };
 
@@ -58,6 +58,7 @@ export const intParam = (args: {
   defaultValue?: number;
   min?: number;
   max?: number;
+  description?: string;
 }): ParamFunction<number> => ({
   name: args.name,
   defaultValue:
@@ -86,6 +87,7 @@ export const intParam = (args: {
     return (
       <IntParam
         name={args.name}
+        description={args.description}
         parse={parse}
         onChange={params.onChange}
         value={params.value.valid ? params.value.value : undefined}

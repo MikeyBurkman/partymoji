@@ -1,4 +1,5 @@
 import React from 'react';
+import ScopedCssBaseline from '@material-ui/core/ScopedCssBaseline';
 
 import { POSSIBLE_TRANSFORMS } from './domain/transforms';
 import { ParamFunction, ParamValue, Transform } from './domain/types';
@@ -42,6 +43,7 @@ export const App: React.FC = () => {
 
   return (
     <section>
+      <ScopedCssBaseline />
       <div className="container">
         <h1 className="title" style={{ paddingTop: '16px' }}>
           Partymoji

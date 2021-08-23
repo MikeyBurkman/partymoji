@@ -1,7 +1,7 @@
+import { Icon, Tooltip } from '@material-ui/core';
 import React from 'react';
 import { SketchPicker } from 'react-color';
 import { Expandable } from '../components/Expandable';
-import { Tooltip } from '../components/Tooltip';
 
 import { ParamValue, ParamFunction, Color } from '../domain/types';
 import { fromHexColor, toHexColor } from '../domain/utils';
@@ -28,7 +28,11 @@ const ColorPickerParam: React.FC<{
         <div className="columns">
           <label className="label column is-four-fifths">
             {name}
-            {description && <Tooltip text={description} />}
+            {description && (
+              <Tooltip title={description}>
+                <Icon>help</Icon>
+              </Tooltip>
+            )}
           </label>
           <span className="column">{value && <ColorBox color={value} />}</span>
         </div>

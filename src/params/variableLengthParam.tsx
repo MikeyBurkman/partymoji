@@ -1,6 +1,6 @@
+import { Tooltip, Icon } from '@material-ui/core';
 import React from 'react';
 import { InlineIcon } from '../components/InlineIcon';
-import { Tooltip } from '../components/Tooltip';
 import { ParamValue, ParamFunction } from '../domain/types';
 
 interface VariableLengthProps<T> {
@@ -31,7 +31,12 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
     <div className="field" style={{ maxWidth: '12em' }}>
       <label className="label">
         <div>
-          {name} {description && <Tooltip text={description} />}
+          {name}{' '}
+          {description && (
+            <Tooltip title={description}>
+              <Icon>help</Icon>
+            </Tooltip>
+          )}
         </div>
       </label>
       <div className="control">

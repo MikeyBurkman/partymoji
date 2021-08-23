@@ -1,5 +1,5 @@
+import { FormControl, FormHelperText, TextField } from '@material-ui/core';
 import React from 'react';
-import { Tooltip } from '../components/Tooltip';
 import { ParamValue, ParamFunction } from '../domain/types';
 
 type ParsedParam<T> =
@@ -37,26 +37,19 @@ const FloatParam: React.FC<{
   };
 
   return (
-    <div className="field" style={{ maxWidth: '12em' }}>
-      <label className="label">
-        <div>
-          <span>{name}</span>
-          {description && <Tooltip text={description} />}
-        </div>
-      </label>
-      <div className="control has-icons-left has-icons-right">
-        <input
-          className="input"
-          type="text"
-          defaultValue={value}
-          onChange={(e) => {
-            setVal(e.target.value);
-          }}
-          onBlur={onBlur}
-        />
-      </div>
-      {invalidText && <p className="help is-danger">{invalidText}</p>}
-    </div>
+    <FormControl>
+      <FormHelperText>{description ?? ' '}</FormHelperText>
+      <TextField
+        label={name}
+        error={!!invalidText}
+        defaultValue={value}
+        onBlur={onBlur}
+        onChange={(e) => {
+          setVal(e.target.value);
+        }}
+      />
+      {invalidText && <FormHelperText>{invalidText}</FormHelperText>}
+    </FormControl>
   );
 };
 

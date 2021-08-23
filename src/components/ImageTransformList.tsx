@@ -1,3 +1,4 @@
+import { Button } from '@material-ui/core';
 import React from 'react';
 import { ParamFunction, Transform, TransformWithParams } from '../domain/types';
 import { ImageTransform } from './ImageTransform';
@@ -16,8 +17,8 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
   <div className="box">
     <h3 className="title">Image Transforms</h3>
     <div className="block">
-      <button
-        className="button"
+      <Button
+        variant="contained"
         onClick={() =>
           onTransformsChange([
             ...currentTransforms,
@@ -31,7 +32,7 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
         }
       >
         New Transform
-      </button>
+      </Button>
     </div>
     <div
       className="columns"

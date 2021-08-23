@@ -1,5 +1,12 @@
+import {
+  FormControl,
+  Select,
+  MenuItem,
+  IconButton,
+  Icon,
+  Tooltip,
+} from '@material-ui/core';
 import React from 'react';
-import { Dropdown } from './Dropdown';
 
 import { ParamFunction, ParamValue, Transform } from '../domain/types';
 
@@ -35,25 +42,31 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
             <div className="block columns">
               <div className="column is-narrow">{index + 1}</div>
               <div className="column">
-                <Dropdown
-                  selected={selectedTransform.transform.name}
-                  options={possibleTransforms.map((t) => ({
-                    name: t.name,
-                    value: t.name,
-                  }))}
-                  onChange={(newTransformName) => {
-                    const t = possibleTransforms.find(
-                      (t) => t.name === newTransformName
-                    )!;
-                    // Reset all the params when you select a new transform
-                    onSelect({
-                      transform: t,
-                      paramValues: t.params.map(
-                        (p: ParamFunction<any>) => p.defaultValue
-                      ),
-                    });
-                  }}
-                />
+                <FormControl fullWidth>
+                  <Select
+                    autoWidth
+                    value={selectedTransform.transform.name}
+                    onChange={(event) => {
+                      const newTransformName = event.target.value;
+                      const t = possibleTransforms.find(
+                        (t) => t.name === newTransformName
+                      )!;
+                      // Reset all the params when you select a new transform
+                      onSelect({
+                        transform: t,
+                        paramValues: t.params.map(
+                          (p: ParamFunction<any>) => p.defaultValue
+                        ),
+                      });
+                    }}
+                  >
+                    {possibleTransforms.map((t) => (
+                      <MenuItem key={t.name} value={t.name}>
+                        {t.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </div>
             </div>
             {selectedTransform.transform.description && (
@@ -64,18 +77,24 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
           </div>
           <div className="column columns">
             {onMoveLeft && (
-              <div className="icon column is-clickable" onClick={onMoveLeft}>
-                <i className="fas fa-arrow-left" aria-hidden="true"></i>
-              </div>
+              <Tooltip title="Move transform left">
+                <IconButton aria-label="delete" onClick={onMoveLeft}>
+                  <Icon>chevron_left</Icon>
+                </IconButton>
+              </Tooltip>
             )}
             {onMoveRight && (
-              <div className="icon column is-clickable" onClick={onMoveRight}>
-                <i className="fas fa-arrow-right" aria-hidden="true"></i>
-              </div>
+              <Tooltip title="Move transform right">
+                <IconButton aria-label="delete" onClick={onMoveRight}>
+                  <Icon>chevron_right</Icon>
+                </IconButton>
+              </Tooltip>
             )}
-            <div className="icon column is-clickable" onClick={onRemove}>
-              <i className="fas fa-trash" aria-hidden="true"></i>
-            </div>
+            <Tooltip title="Delete transform">
+              <IconButton aria-label="delete" onClick={onRemove}>
+                <Icon>delete</Icon>
+              </IconButton>
+            </Tooltip>
           </div>
         </div>
       </div>

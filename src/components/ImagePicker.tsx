@@ -1,3 +1,4 @@
+import { Button, Icon } from '@material-ui/core';
 import React from 'react';
 
 interface ImagePickerProps {
@@ -16,11 +17,16 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
   onChange,
 }) => (
   <>
-    <div className="file block">
-      <label className="file-label">
+    <div>
+      <Button
+        startIcon={<Icon>image</Icon>}
+        variant="contained"
+        component="label"
+      >
+        {name}
         <input
-          className="file-input"
           type="file"
+          hidden
           accept="image/png,image/jpg"
           name="source-png"
           onChange={async (event) => {
@@ -30,22 +36,18 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
             onChange(baseImage);
           }}
         />
-        <span className="file-cta">
-          <span className="file-icon">
-            <i className="fas fa-upload"></i>
-          </span>
-          <span className="file-label">{name}</span>
-        </span>
-      </label>
+      </Button>
     </div>
-    {currentImageUrl && (
-      <img
-        width={width}
-        height={height}
-        src={currentImageUrl}
-        alt="Source"
-      ></img>
-    )}
+    <div>
+      {currentImageUrl && (
+        <img
+          width={width}
+          height={height}
+          src={currentImageUrl}
+          alt="Source"
+        ></img>
+      )}
+    </div>
   </>
 );
 
