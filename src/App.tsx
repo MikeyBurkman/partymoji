@@ -7,6 +7,7 @@ import { ComputeBox } from './components/ComputeBox';
 import { ImagePicker } from './components/ImagePicker';
 import { ImageTransformList } from './components/ImageTransformList';
 
+// Set to true to print out the current state at the bottom of the page
 const DEBUG = false;
 
 type AppState = {

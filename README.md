@@ -14,4 +14,5 @@ https://mikeyburkman.github.io/partymoji/
 
 ##### TODO
 
-- Dropdown param does not display default value
+- MUI all the things
+- Fix variable length param formatting

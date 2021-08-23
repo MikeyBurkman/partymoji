@@ -1,33 +1,33 @@
+import { FormControl, FormHelperText, TextField } from '@material-ui/core';
 import React from 'react';
 import { ParamFunction, ParamValue } from '../domain/types';
 
 const TextParam: React.FC<{
   name: string;
   value?: string;
+  description?: string;
   onChange: (v: ParamValue<string>) => void;
-}> = ({ name, value, onChange }) => {
+}> = ({ name, value, description, onChange }) => {
   const [val, setVal] = React.useState(value);
 
   return (
-    <div className="field" style={{ maxWidth: '12em' }}>
-      <label className="label">{name}</label>
-      <div className="control has-icons-left has-icons-right">
-        <input
-          type="text"
-          value={val}
-          name={name}
-          onChange={(e) => setVal(e.target.value)}
-          onBlur={() =>
-            onChange(value ? { valid: true, value } : { valid: false })
-          }
-        />
-      </div>
-    </div>
+    <FormControl>
+      <FormHelperText>{description ?? ' '}</FormHelperText>
+      <TextField
+        label={name}
+        defaultValue={value}
+        onChange={(e) => setVal(e.target.value)}
+        onBlur={() =>
+          onChange(val ? { valid: true, value: val } : { valid: false })
+        }
+      />
+    </FormControl>
   );
 };
 
 export const textParam = (args: {
   name: string;
+  description?: string;
   defaultValue?: string;
 }): ParamFunction<string> => ({
   name: args.name,
@@ -38,6 +38,7 @@ export const textParam = (args: {
   fn: (params) => (
     <TextParam
       name={args.name}
+      description={args.description}
       onChange={params.onChange}
       value={params.value.valid ? params.value.value : undefined}
     />

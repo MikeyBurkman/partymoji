@@ -35,7 +35,7 @@ const DropdownParam: React.FC<{
             }
           >
             {options.map((t) => (
-              <MenuItem key={t.name} value={t.name}>
+              <MenuItem key={t.value} value={t.value}>
                 {t.name}
               </MenuItem>
             ))}

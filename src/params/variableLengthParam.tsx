@@ -1,6 +1,14 @@
-import { Tooltip, Icon } from '@material-ui/core';
+import {
+  Box,
+  Tooltip,
+  Icon,
+  IconButton,
+  Grid,
+  Button,
+  Paper,
+  Typography,
+} from '@material-ui/core';
 import React from 'react';
-import { InlineIcon } from '../components/InlineIcon';
 import { ParamValue, ParamFunction } from '../domain/types';
 
 interface VariableLengthProps<T> {
@@ -28,18 +36,24 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
       : value.map((v, idx) => ({ param: createNewParam(), pValue: v }))
   );
   return (
-    <div className="field" style={{ maxWidth: '12em' }}>
-      <label className="label">
-        <div>
-          {name}{' '}
-          {description && (
-            <Tooltip title={description}>
-              <Icon>help</Icon>
-            </Tooltip>
-          )}
-        </div>
-      </label>
-      <div className="control">
+    <Paper>
+      <Grid container>
+        <Grid item xs={12}>
+          <Grid container>
+            <Grid item>
+              <Typography variant="h5" component="div">
+                {name}
+              </Typography>
+            </Grid>
+            {description && (
+              <Grid item>
+                <Tooltip title={description}>
+                  <Icon>help</Icon>
+                </Tooltip>
+              </Grid>
+            )}
+          </Grid>
+        </Grid>
         {params.map(({ param, pValue }, idx) => {
           const ele = param.fn({
             value: { valid: true, value: pValue },
@@ -64,22 +78,25 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
           });
 
           return (
-            <div key={`${name}-${idx}`} className="columns">
-              <div className="column is-narrow">
-                <InlineIcon
-                  iconClassName="fa-trash"
-                  onClick={() => {
-                    setParams(params.filter((x, i) => i !== idx));
-                  }}
-                />
-              </div>
-              <div className="column">{ele}</div>
-            </div>
+            <Grid item xs={12}>
+              <Grid container spacing={4} key={`${name}-${idx}`}>
+                <Grid item xs={4}>
+                  <IconButton
+                    onClick={() =>
+                      setParams(params.filter((x, i) => i !== idx))
+                    }
+                  >
+                    <Icon>delete</Icon>
+                  </IconButton>
+                </Grid>
+                <Grid item>{ele}</Grid>
+              </Grid>
+            </Grid>
           );
         })}
-        <div>
-          <button
-            className="button"
+        <Grid item>
+          <Button
+            variant="contained"
             onClick={() => {
               const p = createNewParam();
               setParams([
@@ -92,10 +109,10 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
             }}
           >
             {newParamText}
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </Grid>
+      </Grid>
+    </Paper>
   );
 };
 
