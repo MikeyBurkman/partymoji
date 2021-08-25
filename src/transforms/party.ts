@@ -1,5 +1,5 @@
-import { buildTransform, Color } from '../types';
-import { isTransparent, getAveragePixelValue, mapImage } from '../utils';
+import { buildTransform, Color } from '../domain/types';
+import { isTransparent, getAveragePixelValue, mapImage } from '../domain/utils';
 
 const PARTY_COLORS: Color[] = [
   [255, 141, 139, 255],

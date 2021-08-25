@@ -1,5 +1,5 @@
-import { mapFrames, mapCoords, getPixelFromSource } from '../utils';
-import { buildTransform, Coord } from '../types';
+import { mapFrames, mapCoords, getPixelFromSource } from '../domain/utils';
+import { buildTransform, Coord } from '../domain/types';
 
 export const roxbury = buildTransform({
   name: 'Roxbury',

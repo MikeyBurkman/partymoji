@@ -1,7 +1,7 @@
 import React from 'react';
 import ScopedCssBaseline from '@material-ui/core/ScopedCssBaseline';
 
-import { POSSIBLE_TRANSFORMS } from './domain/transforms';
+import { POSSIBLE_TRANSFORMS } from './transforms';
 import { ParamFunction, ParamValue, Transform } from './domain/types';
 import { ComputeBox } from './components/ComputeBox';
 import { ImagePicker } from './components/ImagePicker';

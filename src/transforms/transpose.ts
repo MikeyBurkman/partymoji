@@ -1,6 +1,6 @@
-import { buildTransform } from '../types';
-import { mapImage } from '../utils';
-import { intParam } from '../../params/intParam';
+import { buildTransform } from '../domain/types';
+import { mapImage } from '../domain/utils';
+import { intParam } from '../params/intParam';
 
 export const transpose = buildTransform({
   name: 'Transpose',

@@ -1,6 +1,6 @@
-import { buildTransform } from '../types';
-import { mapImage, isTransparent } from '../utils';
-import { floatParam } from '../../params/floatParam';
+import { buildTransform } from '../domain/types';
+import { mapImage, isTransparent } from '../domain/utils';
+import { floatParam } from '../params/floatParam';
 
 export const staticc = buildTransform({
   name: 'Static',

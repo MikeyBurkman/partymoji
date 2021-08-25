@@ -1,5 +1,5 @@
-import { buildTransform } from '../types';
-import { mapImage, isTransparent, getAveragePixelValue } from '../utils';
+import { buildTransform } from '../domain/types';
+import { mapImage, isTransparent, getAveragePixelValue } from '../domain/utils';
 
 export const grayscale = buildTransform({
   name: 'Grayscale',

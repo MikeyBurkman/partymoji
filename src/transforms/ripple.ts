@@ -1,6 +1,6 @@
-import { buildTransform } from '../types';
-import { mapFrames, mapCoords, getPixelFromSource } from '../utils';
-import { floatParam } from '../../params/floatParam';
+import { buildTransform } from '../domain/types';
+import { mapFrames, mapCoords, getPixelFromSource } from '../domain/utils';
+import { floatParam } from '../params/floatParam';
 
 export const ripple = buildTransform({
   name: 'Ripple',

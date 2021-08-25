@@ -1,13 +1,13 @@
-import { dropdownParam } from '../../params/dropdownParam';
-import { imagePickerParam } from '../../params/imagePickerParam';
-import { buildTransform } from '../types';
+import { dropdownParam } from '../params/dropdownParam';
+import { imagePickerParam } from '../params/imagePickerParam';
+import { buildTransform } from '../domain/types';
 import {
   isTransparent,
   getPixelFromSource,
   mapFrames,
   mapCoords,
   resizeImage,
-} from '../utils';
+} from '../domain/utils';
 
 export const backgroundImage = buildTransform({
   name: 'Background Image',

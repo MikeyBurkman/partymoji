@@ -1,8 +1,8 @@
-import { buildTransform } from '../types';
-import { mapImage, isTransparent, repeat, fromHexColor } from '../utils';
-import { colorPickerParam } from '../../params/colorPickerParam';
-import { intParam } from '../../params/intParam';
-import { variableLengthParam } from '../../params/variableLengthParam';
+import { buildTransform } from '../domain/types';
+import { mapImage, isTransparent, repeat, fromHexColor } from '../domain/utils';
+import { colorPickerParam } from '../params/colorPickerParam';
+import { intParam } from '../params/intParam';
+import { variableLengthParam } from '../params/variableLengthParam';
 
 const DEFAULT_COLORS = [
   '#FF0000',

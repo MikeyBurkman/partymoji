@@ -1,6 +1,6 @@
-import { buildTransform } from '../types';
-import { resizeImage } from '../utils';
-import { intParam } from '../../params/intParam';
+import { buildTransform } from '../domain/types';
+import { resizeImage } from '../domain/utils';
+import { intParam } from '../params/intParam';
 
 export const resize = buildTransform({
   name: 'Resize',

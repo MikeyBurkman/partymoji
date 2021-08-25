@@ -1,14 +1,14 @@
-import { buildTransform } from '../types';
+import { buildTransform } from '../domain/types';
 import seedrandom from 'seedrandom';
 
-import { Color } from '../types';
+import { Color } from '../domain/types';
 import {
   mapFrames,
   mapCoords,
   getPixelFromSource,
   isTransparent,
-} from '../utils';
-import { textParam } from '../../params/textParam';
+} from '../domain/utils';
+import { textParam } from '../params/textParam';
 
 const lightningIntensities: Color[] = [
   [0, 15, 40, 255], // dark color

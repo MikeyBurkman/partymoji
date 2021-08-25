@@ -1,6 +1,6 @@
-import { buildTransform } from '../types';
-import { mapImage, isTransparent, fromHexColor } from '../utils';
-import { colorPickerParam } from '../../params/colorPickerParam';
+import { buildTransform } from '../domain/types';
+import { mapImage, isTransparent, fromHexColor } from '../domain/utils';
+import { colorPickerParam } from '../params/colorPickerParam';
 
 export const solidBackground = buildTransform({
   name: 'Solid Background',

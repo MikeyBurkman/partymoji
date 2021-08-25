@@ -1,10 +1,11 @@
-import { Frame, buildTransform } from '../types';
-import { repeat } from '../utils';
-import { intParam } from '../../params/intParam';
+import { Frame, buildTransform } from '../domain/types';
+import { repeat } from '../domain/utils';
+import { intParam } from '../params/intParam';
 
 export const frameCount = buildTransform({
   name: 'Frame Count',
-  description: 'Set how many frames of animation there will be. This is required for all animation transforms',
+  description:
+    'Set how many frames of animation there will be. This is required for all animation transforms',
   params: [
     intParam({
       name: 'Number of Frames',
