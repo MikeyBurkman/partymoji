@@ -1,4 +1,4 @@
-import { Grid, Icon, Tooltip } from '@material-ui/core';
+import { Icon, Stack, Tooltip } from '@material-ui/core';
 import React from 'react';
 import { SketchPicker } from 'react-color';
 import { Expandable } from '../components/Expandable';
@@ -25,21 +25,15 @@ const ColorPickerParam: React.FC<{
   return (
     <Expandable
       mainEle={
-        <Grid container spacing={4}>
-          <Grid item>{name}</Grid>
+        <Stack direction="row" spacing={4}>
+          <div>{name}</div>
           {description && (
-            <Grid item>
-              <Tooltip title={description}>
-                <Icon>help</Icon>
-              </Tooltip>
-            </Grid>
+            <Tooltip title={description}>
+              <Icon>help</Icon>
+            </Tooltip>
           )}
-          {value && (
-            <Grid item>
-              <ColorBox color={value} />
-            </Grid>
-          )}
-        </Grid>
+          {value && <ColorBox color={value} />}
+        </Stack>
       }
     >
       <SketchPicker

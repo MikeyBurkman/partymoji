@@ -1,12 +1,11 @@
 import React from 'react';
 import {
   Collapse,
-  Grid,
   Icon,
-  IconButton,
   Box,
   Button,
   ClickAwayListener,
+  Stack,
 } from '@material-ui/core';
 
 interface ExpandableProps {
@@ -21,17 +20,15 @@ export const Expandable: React.FC<ExpandableProps> = ({
 
   return (
     <ClickAwayListener onClickAway={() => setCollapsed(true)}>
-      <Box sx={{ flexGrow: 1 }}>
+      <Box>
         <Button
           onClick={() => setCollapsed(!collapsed)}
           style={{ textTransform: 'none' }}
         >
-          <Grid container spacing={6}>
-            <Grid item>{mainEle}</Grid>
-            <Grid item>
-              <Icon>{collapsed ? 'expand_less' : 'expand_more'}</Icon>
-            </Grid>
-          </Grid>
+          <Stack direction="row" spacing={4}>
+            <div>{mainEle}</div>
+            <Icon>{collapsed ? 'expand_less' : 'expand_more'}</Icon>
+          </Stack>
         </Button>
         <Collapse in={!collapsed}>{children}</Collapse>
       </Box>

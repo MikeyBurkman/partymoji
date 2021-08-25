@@ -1,12 +1,11 @@
 import {
-  Box,
   Tooltip,
   Icon,
   IconButton,
-  Grid,
   Button,
   Paper,
   Typography,
+  Stack,
 } from '@material-ui/core';
 import React from 'react';
 import { ParamValue, ParamFunction } from '../domain/types';
@@ -37,23 +36,17 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
   );
   return (
     <Paper>
-      <Grid container>
-        <Grid item xs={12}>
-          <Grid container>
-            <Grid item>
-              <Typography variant="h5" component="div">
-                {name}
-              </Typography>
-            </Grid>
-            {description && (
-              <Grid item>
-                <Tooltip title={description}>
-                  <Icon>help</Icon>
-                </Tooltip>
-              </Grid>
-            )}
-          </Grid>
-        </Grid>
+      <Stack>
+        <Stack direction="row" spacing={4}>
+          <Typography variant="h5" component="div">
+            {name}
+          </Typography>
+          {description && (
+            <Tooltip title={description}>
+              <Icon>help</Icon>
+            </Tooltip>
+          )}
+        </Stack>
         {params.map(({ param, pValue }, idx) => {
           const ele = param.fn({
             value: { valid: true, value: pValue },
@@ -78,40 +71,46 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
           });
 
           return (
-            <Grid item xs={12}>
-              <Grid container spacing={4} key={`${name}-${idx}`}>
-                <Grid item xs={4}>
-                  <IconButton
-                    onClick={() =>
-                      setParams(params.filter((x, i) => i !== idx))
-                    }
-                  >
-                    <Icon>delete</Icon>
-                  </IconButton>
-                </Grid>
-                <Grid item>{ele}</Grid>
-              </Grid>
-            </Grid>
+            <Stack direction="row" key={`${name}-${idx}`}>
+              <IconButton
+                onClick={() => {
+                  const newParams = params.filter((x, i) => i !== idx);
+                  setParams(newParams);
+                  onChange({
+                    valid: true,
+                    value: newParams.map((n) => n.pValue),
+                  });
+                }}
+              >
+                <Icon>delete</Icon>
+              </IconButton>
+              {ele}
+            </Stack>
           );
         })}
-        <Grid item>
-          <Button
-            variant="contained"
-            onClick={() => {
-              const p = createNewParam();
-              setParams([
-                ...params,
-                {
-                  param: p,
-                  pValue: p.defaultValue,
-                },
-              ]);
-            }}
-          >
-            {newParamText}
-          </Button>
-        </Grid>
-      </Grid>
+        <Button
+          variant="contained"
+          onClick={() => {
+            const p = createNewParam();
+            const newParams = [
+              ...params,
+              {
+                param: p,
+                pValue: p.defaultValue.valid ? p.defaultValue.value : undefined,
+              },
+            ];
+            setParams(newParams);
+            if (p.defaultValue.valid) {
+              onChange({
+                valid: true,
+                value: newParams.map((n) => n.pValue),
+              });
+            }
+          }}
+        >
+          {newParamText}
+        </Button>
+      </Stack>
     </Paper>
   );
 };

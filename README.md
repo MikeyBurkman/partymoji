@@ -15,4 +15,5 @@ https://mikeyburkman.github.io/partymoji/
 ##### TODO
 
 - MUI all the things
-- Fix variable length param formatting
+- Variable length params -- what to do if the default value is not valid?
+  - Means that our array has holes in it...
