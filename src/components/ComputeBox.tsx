@@ -21,7 +21,9 @@ interface ComputeBoxProps {
   onComputed: () => void;
 }
 
-type ComputeState = { loading: false; results: string[] } | { loading: true };
+type ComputeState =
+  | { loading: false; results: { transformName: string; gif: string }[] }
+  | { loading: true };
 
 const DEFAULT_FPS = 20;
 const fpsParam = intParam({
@@ -87,7 +89,10 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
               );
               setState({
                 loading: false,
-                results: gifs,
+                results: gifs.map((gif, idx) => ({
+                  transformName: transforms[idx].transform.name,
+                  gif,
+                })),
               });
               setFpsChanged(false);
               onComputed();
@@ -106,15 +111,10 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
         spacing={{ xs: 1, sm: 2, md: 4 }}
       >
         {!state.loading &&
-          state.results.map((gif, idx) => (
+          state.results.map(({ gif, transformName }, idx) => (
             <div>
-              <Typography variant="subtitle2">
-                {transforms[idx].transform.name}
-              </Typography>
-              <img
-                src={gif}
-                alt={`gif-${transforms[idx].transform.name}`}
-              ></img>
+              <Typography variant="subtitle2">{transformName}</Typography>
+              <img src={gif} alt={`gif-${transformName}-${idx}`}></img>
             </div>
           ))}
       </Stack>
