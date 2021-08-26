@@ -1,11 +1,5 @@
 import React from 'react';
 import ScopedCssBaseline from '@material-ui/core/ScopedCssBaseline';
-
-import { POSSIBLE_TRANSFORMS } from './transforms';
-import { ParamFunction, ParamValue, Transform } from './domain/types';
-import { ComputeBox } from './components/ComputeBox';
-import { ImagePicker } from './components/ImagePicker';
-import { ImageTransformList } from './components/ImageTransformList';
 import {
   Container,
   Stack,
@@ -14,13 +8,20 @@ import {
   Typography,
 } from '@material-ui/core';
 
+import { POSSIBLE_TRANSFORMS, transformByName } from './transforms';
+import { ParamFunction, ParamValue } from './domain/types';
+import { ComputeBox } from './components/ComputeBox';
+import { ImagePicker } from './components/ImagePicker';
+import { ImageTransformList } from './components/ImageTransformList';
+import { ImportExport } from './components/ImportExport';
+
 // Set to true to print out the current state at the bottom of the page
 const DEBUG = false;
 
 type AppState = {
   baseImage?: string;
   transforms: {
-    transform: Transform<any>;
+    transformName: string;
     paramsValues: ParamValue<any>[];
     computedImage?: string;
   }[];
@@ -43,7 +44,8 @@ export const App: React.FC = () => {
     state.transforms.length === 0 ||
     !state.dirty ||
     state.transforms.some((t) => {
-      const params = t.transform.params as ParamFunction<any>[];
+      const params = transformByName(t.transformName)
+        .params as ParamFunction<any>[];
       return (
         params.length > 0 && t.paramsValues.every((p, i) => p.valid === false)
       );
@@ -99,6 +101,12 @@ export const App: React.FC = () => {
                     dirty: false,
                   })
                 }
+              />
+            </Paper>
+            <Paper style={{ padding: 16 }}>
+              <ImportExport
+                state={state}
+                onImport={(newState) => setState({ ...newState, dirty: true })}
               />
             </Paper>
             {DEBUG && (

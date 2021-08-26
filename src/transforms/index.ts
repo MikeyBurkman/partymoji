@@ -7,6 +7,8 @@ import { expand } from './expand';
 import { fisheye } from './fisheye';
 import { frameCount } from './frame-count';
 import { grayscale } from './grayscale';
+import { hueParty } from './hue-party';
+import { hueShift } from './hue-shift';
 import { lightning } from './lightning';
 import { party } from './party';
 import { pinwheel } from './pinwheel';
@@ -22,6 +24,8 @@ import { staticc } from './static';
 import { transparency } from './transparency';
 import { transpose } from './transpose';
 
+import { assert } from '../domain/utils';
+
 export const POSSIBLE_TRANSFORMS = [
   backgroundImage,
   backgroundParty,
@@ -32,6 +36,8 @@ export const POSSIBLE_TRANSFORMS = [
   fisheye,
   frameCount,
   grayscale,
+  hueParty,
+  hueShift,
   lightning,
   party,
   pinwheel,
@@ -47,3 +53,9 @@ export const POSSIBLE_TRANSFORMS = [
   transparency,
   transpose,
 ];
+
+export const transformByName = (name: string) => {
+  const t = POSSIBLE_TRANSFORMS.find((t) => t.name === name);
+  assert(t);
+  return t;
+};

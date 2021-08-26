@@ -3,6 +3,7 @@ import {
   Button,
   CircularProgress,
   Divider,
+  Grid,
   Icon,
   Stack,
   Typography,
@@ -12,6 +13,7 @@ import { assert } from '../domain/utils';
 import { runTransforms } from '../domain/run';
 import { TransformInput, TransformWithParams } from '../domain/types';
 import { intParam } from '../params/intParam';
+import { transformByName } from '../transforms';
 
 interface ComputeBoxProps {
   isDirty: boolean;
@@ -22,7 +24,11 @@ interface ComputeBoxProps {
 }
 
 type ComputeState =
-  | { loading: false; results: { transformName: string; gif: string }[] }
+  | {
+      loading: false;
+      results: { transformName: string; gif: string }[];
+      computeTime: number | undefined;
+    }
   | { loading: true };
 
 const DEFAULT_FPS = 20;
@@ -42,6 +48,7 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
   const [state, setState] = React.useState<ComputeState>({
     loading: false,
     results: [],
+    computeTime: undefined,
   });
   const [fpsChanged, setFpsChanged] = React.useState(false);
   const [fps, setFps] = React.useState(DEFAULT_FPS);
@@ -68,7 +75,7 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
         onClick={async () => {
           const transformInputs = transforms.map(
             (t): TransformInput<any> => ({
-              transform: t.transform,
+              transform: transformByName(t.transformName),
               params: t.paramsValues.map((p) => {
                 assert(p.valid);
                 return p.value;
@@ -82,15 +89,18 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
                 baseImageUrl,
                 'No source image, this button should be disabled!'
               );
+              const start = Date.now();
               const gifs = await runTransforms(
                 baseImageUrl,
                 transformInputs,
                 fps
               );
+              const computeTime = Math.ceil((Date.now() - start) / 1000);
               setState({
                 loading: false,
+                computeTime,
                 results: gifs.map((gif, idx) => ({
-                  transformName: transforms[idx].transform.name,
+                  transformName: transforms[idx].transformName,
                   gif,
                 })),
               });
@@ -106,18 +116,28 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
         {state.loading ? <CircularProgress color="inherit" /> : 'Compute'}
       </Button>
       <Divider />
-      <Stack
-        direction={{ xs: 'column', sm: 'row', md: 'row' }}
-        spacing={{ xs: 1, sm: 2, md: 4 }}
+      <Grid
+        container
+        spacing={2}
+        padding={1}
+        columns={{ xs: 4, sm: 8, md: 12 }}
       >
-        {!state.loading &&
-          state.results.map(({ gif, transformName }, idx) => (
-            <div>
-              <Typography variant="subtitle2">{transformName}</Typography>
-              <img src={gif} alt={`gif-${transformName}-${idx}`}></img>
-            </div>
-          ))}
-      </Stack>
+        {!state.loading && (
+          <>
+            {state.computeTime && (
+              <Typography variant="caption">
+                Compute Time: {state.computeTime} seconds
+              </Typography>
+            )}
+            {state.results.map(({ gif, transformName }, idx) => (
+              <Grid item xs={4} sm={4} md={4}>
+                <Typography variant="subtitle2">{transformName}</Typography>
+                <img src={gif} alt={`gif-${transformName}-${idx}`}></img>
+              </Grid>
+            ))}
+          </>
+        )}
+      </Grid>
     </Stack>
   );
 };

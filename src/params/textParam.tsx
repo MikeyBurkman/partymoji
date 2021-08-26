@@ -1,6 +1,5 @@
 import {
   FormControl,
-  FormHelperText,
   Icon,
   Stack,
   TextField,

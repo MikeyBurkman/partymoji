@@ -1,6 +1,7 @@
 import { Button, Grid, Stack, Typography } from '@material-ui/core';
 import React from 'react';
 import { ParamFunction, Transform, TransformWithParams } from '../domain/types';
+import { transformByName } from '../transforms';
 import { ImageTransform } from './ImageTransform';
 
 interface TransformListProps {
@@ -23,7 +24,7 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
         onTransformsChange([
           ...currentTransforms,
           {
-            transform: possibleTransforms[0],
+            transformName: possibleTransforms[0].name,
             paramsValues: possibleTransforms[0].params.map(
               (p: ParamFunction<any>) => p.defaultValue
             ),
@@ -40,7 +41,7 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
             index={tIdx}
             possibleTransforms={possibleTransforms}
             selectedTransform={{
-              transform: t.transform,
+              transform: transformByName(t.transformName),
               paramValues: t.paramsValues,
             }}
             onRemove={() =>
@@ -90,14 +91,14 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
                   if (tIdx === nextTIdx) {
                     // This is the one we just changed
                     return {
-                      transform: selected.transform,
+                      transformName: selected.transform.name,
                       paramsValues: selected.paramValues,
                       computedImage: undefined,
                     };
                   }
                   // Reset all the images if we changed anything
                   return {
-                    transform: nextT.transform,
+                    transformName: nextT.transformName,
                     paramsValues: nextT.paramsValues,
                     computedImage: undefined,
                   };

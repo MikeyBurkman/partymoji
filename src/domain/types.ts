@@ -95,7 +95,7 @@ export interface Transform<T extends readonly ParamFunction<any>[]> {
 }
 
 export interface TransformWithParams<T extends readonly ParamFunction<any>[]> {
-  transform: Transform<T>;
+  transformName: string;
   paramsValues: ParamValue<T>[];
 }
 
