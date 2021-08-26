@@ -1,4 +1,12 @@
-import { FormControl, FormHelperText, TextField } from '@material-ui/core';
+import {
+  FormControl,
+  FormHelperText,
+  Icon,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
 import React from 'react';
 import { ParamValue, ParamFunction } from '../domain/types';
 
@@ -37,19 +45,27 @@ const IntParam: React.FC<{
   };
 
   return (
-    <FormControl>
-      <FormHelperText>{description ?? ' '}</FormHelperText>
-      <TextField
-        label={name}
-        error={!!invalidText}
-        defaultValue={value}
-        onBlur={onBlur}
-        onChange={(e) => {
-          setVal(e.target.value);
-        }}
-      />
-      {invalidText && <FormHelperText>{invalidText}</FormHelperText>}
-    </FormControl>
+    <Stack spacing={1}>
+      <Stack direction="row" spacing={1}>
+        <Typography variant="body2">{name}</Typography>
+        {description && (
+          <Tooltip title={description}>
+            <Icon fontSize="small">help</Icon>
+          </Tooltip>
+        )}
+      </Stack>
+      <FormControl>
+        <TextField
+          error={!!invalidText}
+          defaultValue={value}
+          onBlur={onBlur}
+          onChange={(e) => {
+            setVal(e.target.value);
+          }}
+        />
+        {invalidText && <FormHelperText>{invalidText}</FormHelperText>}
+      </FormControl>
+    </Stack>
   );
 };
 

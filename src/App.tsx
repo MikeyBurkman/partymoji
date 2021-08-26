@@ -6,6 +6,13 @@ import { ParamFunction, ParamValue, Transform } from './domain/types';
 import { ComputeBox } from './components/ComputeBox';
 import { ImagePicker } from './components/ImagePicker';
 import { ImageTransformList } from './components/ImageTransformList';
+import {
+  Container,
+  Stack,
+  Divider,
+  Paper,
+  Typography,
+} from '@material-ui/core';
 
 // Set to true to print out the current state at the bottom of the page
 const DEBUG = false;
@@ -43,69 +50,77 @@ export const App: React.FC = () => {
     });
 
   return (
-    <section>
+    <>
       <ScopedCssBaseline />
-      <div className="container">
-        <h1 className="title" style={{ paddingTop: '16px' }}>
-          Partymoji
-        </h1>
-        <div>
-          <div className="box">
-            <h3 className="title">Source Image</h3>
-            <ImagePicker
-              name="Choose a source image"
-              currentImageUrl={state.baseImage}
-              onChange={(baseImage) => {
-                setState({
-                  ...state,
-                  baseImage,
-                  dirty: true,
-                });
-              }}
-            />
-          </div>
-          <ImageTransformList
-            currentTransforms={state.transforms}
-            possibleTransforms={POSSIBLE_TRANSFORMS}
-            onTransformsChange={(transforms) =>
-              setState({
-                ...state,
-                dirty: true,
-                transforms,
-              })
-            }
-          />
-          <ComputeBox
-            isDirty={state.dirty}
-            baseImageUrl={state.baseImage}
-            computeDisabled={computeBtnDisbled}
-            transforms={state.transforms}
-            onComputed={() =>
-              setState({
-                ...state,
-                dirty: false,
-              })
-            }
-          />
-          {DEBUG && (
-            <div>
-              <code>{JSON.stringify(state, null, 2)}</code>
-            </div>
-          )}
-          <a
-            href="https://github.com/MikeyBurkman/partymoji"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <img
-              src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-              width={64}
-              height={64}
-              alt="Github Link"
-            ></img>
-          </a>
-        </div>
-      </div>
-    </section>
+      <Container>
+        <Stack spacing={4} justifyContent="space-evenly" divider={<Divider />}>
+          <Typography variant="h2" pt={4}>
+            Partymoji
+          </Typography>
+          <Stack spacing={4} divider={<Divider />}>
+            <Paper style={{ padding: 16 }}>
+              <Stack spacing={1}>
+                <Typography variant="h5">Source Image</Typography>
+                <ImagePicker
+                  name="Choose a source image"
+                  currentImageUrl={state.baseImage}
+                  onChange={(baseImage) => {
+                    setState({
+                      ...state,
+                      baseImage,
+                      dirty: true,
+                    });
+                  }}
+                />
+              </Stack>
+            </Paper>
+            <Paper style={{ padding: 16 }}>
+              <ImageTransformList
+                currentTransforms={state.transforms}
+                possibleTransforms={POSSIBLE_TRANSFORMS}
+                onTransformsChange={(transforms) =>
+                  setState({
+                    ...state,
+                    dirty: true,
+                    transforms,
+                  })
+                }
+              />
+            </Paper>
+            <Paper style={{ padding: 16 }}>
+              <ComputeBox
+                isDirty={state.dirty}
+                baseImageUrl={state.baseImage}
+                computeDisabled={computeBtnDisbled}
+                transforms={state.transforms}
+                onComputed={() =>
+                  setState({
+                    ...state,
+                    dirty: false,
+                  })
+                }
+              />
+            </Paper>
+            {DEBUG && (
+              <div>
+                <code>{JSON.stringify(state, null, 2)}</code>
+              </div>
+            )}
+            <a
+              href="https://github.com/MikeyBurkman/partymoji"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <img
+                src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+                width={64}
+                height={64}
+                alt="Github Link"
+              ></img>
+            </a>
+          </Stack>
+        </Stack>
+      </Container>
+    </>
   );
 };

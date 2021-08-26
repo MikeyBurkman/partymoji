@@ -1,4 +1,4 @@
-import { Button } from '@material-ui/core';
+import { Button, Grid, Stack, Typography } from '@material-ui/core';
 import React from 'react';
 import { ParamFunction, Transform, TransformWithParams } from '../domain/types';
 import { ImageTransform } from './ImageTransform';
@@ -14,32 +14,28 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
   possibleTransforms,
   onTransformsChange,
 }) => (
-  <div className="box">
-    <h3 className="title">Image Transforms</h3>
-    <div className="block">
-      <Button
-        variant="contained"
-        onClick={() =>
-          onTransformsChange([
-            ...currentTransforms,
-            {
-              transform: possibleTransforms[0],
-              paramsValues: possibleTransforms[0].params.map(
-                (p: ParamFunction<any>) => p.defaultValue
-              ),
-            },
-          ])
-        }
-      >
-        New Transform
-      </Button>
-    </div>
-    <div
-      className="columns"
-      style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)' }}
+  <Stack spacing={1}>
+    <Typography variant="h5">Image Transforms</Typography>
+    <Button
+      fullWidth={false}
+      variant="contained"
+      onClick={() =>
+        onTransformsChange([
+          ...currentTransforms,
+          {
+            transform: possibleTransforms[0],
+            paramsValues: possibleTransforms[0].params.map(
+              (p: ParamFunction<any>) => p.defaultValue
+            ),
+          },
+        ])
+      }
     >
+      New Transform
+    </Button>
+    <Grid container spacing={2} padding={1}>
       {currentTransforms.map((t, tIdx) => (
-        <div className="column">
+        <Grid item xs={4}>
           <ImageTransform
             index={tIdx}
             possibleTransforms={possibleTransforms}
@@ -109,11 +105,8 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
               )
             }
           />
-        </div>
+        </Grid>
       ))}
-      <div className="box" style={{ display: 'none' }}>
-        {/* Placeholder, because the last box has no bottom padding */}
-      </div>
-    </div>
-  </div>
+    </Grid>
+  </Stack>
 );

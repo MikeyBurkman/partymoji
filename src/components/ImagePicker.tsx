@@ -1,4 +1,4 @@
-import { Button, Icon } from '@material-ui/core';
+import { Button, Icon, Stack } from '@material-ui/core';
 import React from 'react';
 
 interface ImagePickerProps {
@@ -16,39 +16,35 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
   height,
   onChange,
 }) => (
-  <>
-    <div>
-      <Button
-        startIcon={<Icon>image</Icon>}
-        variant="contained"
-        component="label"
-      >
-        {name}
-        <input
-          type="file"
-          hidden
-          accept="image/png,image/jpg"
-          name="source-png"
-          onChange={async (event) => {
-            const files = Array.from(event.target.files ?? []);
-            const file = files[0];
-            const baseImage = await readFile(file);
-            onChange(baseImage);
-          }}
-        />
-      </Button>
-    </div>
-    <div>
-      {currentImageUrl && (
-        <img
-          width={width}
-          height={height}
-          src={currentImageUrl}
-          alt="Source"
-        ></img>
-      )}
-    </div>
-  </>
+  <Stack maxWidth={300}>
+    <Button
+      startIcon={<Icon>image</Icon>}
+      variant="contained"
+      component="label"
+    >
+      {name}
+      <input
+        type="file"
+        hidden
+        accept="image/png,image/jpg"
+        name="source-png"
+        onChange={async (event) => {
+          const files = Array.from(event.target.files ?? []);
+          const file = files[0];
+          const baseImage = await readFile(file);
+          onChange(baseImage);
+        }}
+      />
+    </Button>
+    {currentImageUrl && (
+      <img
+        width={width}
+        height={height}
+        src={currentImageUrl}
+        alt="Source"
+      ></img>
+    )}
+  </Stack>
 );
 
 const readFile = (file: File) =>

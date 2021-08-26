@@ -4,6 +4,9 @@ import {
   FormControl,
   Select,
   MenuItem,
+  Stack,
+  FormHelperText,
+  Typography,
 } from '@material-ui/core';
 import React from 'react';
 import { ParamValue, ParamFunction } from '../domain/types';
@@ -16,33 +19,31 @@ const DropdownParam: React.FC<{
   onChange: (v: ParamValue<any>) => void;
 }> = ({ name, options, value, description, onChange }) => {
   return (
-    <div className="field" style={{ maxWidth: '12em' }}>
-      <label className="label">
-        {name}
+    <Stack spacing={1}>
+      <Stack direction="row" spacing={1}>
+        <Typography variant="body2">{name}</Typography>
         {description && (
           <Tooltip title={description}>
-            <Icon>help</Icon>
+            <Icon fontSize="small">help</Icon>
           </Tooltip>
         )}
-      </label>
-      <div className="control">
-        <FormControl fullWidth>
-          <Select
-            autoWidth
-            value={value}
-            onChange={(event) =>
-              onChange({ valid: true, value: event.target.value })
-            }
-          >
-            {options.map((t) => (
-              <MenuItem key={t.value} value={t.value}>
-                {t.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </div>
-    </div>
+      </Stack>
+      <FormControl>
+        <Select
+          autoWidth
+          value={value}
+          onChange={(event) =>
+            onChange({ valid: true, value: event.target.value })
+          }
+        >
+          {options.map((t) => (
+            <MenuItem key={t.value} value={t.value}>
+              {t.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    </Stack>
   );
 };
 
