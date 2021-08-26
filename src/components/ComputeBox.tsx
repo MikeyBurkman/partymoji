@@ -101,7 +101,10 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
         {state.loading ? <CircularProgress color="inherit" /> : 'Compute'}
       </Button>
       <Divider />
-      <Stack direction="row" spacing={4}>
+      <Stack
+        direction={{ xs: 'column', sm: 'row', md: 'row' }}
+        spacing={{ xs: 1, sm: 2, md: 4 }}
+      >
         {!state.loading &&
           state.results.map((gif, idx) => (
             <div>
