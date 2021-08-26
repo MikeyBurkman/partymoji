@@ -1,5 +1,12 @@
 import { buildTransform } from '../domain/types';
-import { mapImage, isTransparent, repeat, fromHexColor } from '../domain/utils';
+import {
+  isTransparent,
+  repeat,
+  fromHexColor,
+  mapFrames,
+  mapCoords,
+  getPixelFromSource,
+} from '../domain/utils';
 import { colorPickerParam } from '../params/colorPickerParam';
 import { intParam } from '../params/intParam';
 import { variableLengthParam } from '../params/variableLengthParam';
@@ -34,49 +41,44 @@ export const radiance = buildTransform({
         }),
     }),
   ] as const,
-  fn: mapImage(
-    ({
-      coord,
-      dimensions,
-      frameCount,
-      frameIndex,
-      getSrcPixel,
-      parameters,
-    }) => {
-      const srcPixel = getSrcPixel(coord);
+  fn: ({ image, parameters }) => {
+    const [groupCount, colors] = parameters;
+    const colorList = repeat(groupCount).flatMap(() => colors);
+    const [width, height] = image.dimensions;
+    const centerX = width / 2;
+    const centerY = height / 2;
 
-      const [groupCount, colors] = parameters;
-      const colorList = repeat(groupCount).flatMap(() => colors);
+    return mapFrames(image, (imageData, frameIndex, frameCount) =>
+      mapCoords(image.dimensions, (coord) => {
+        const srcPixel = getPixelFromSource(image.dimensions, imageData, coord);
 
-      // Make the transparent parts colorful
-      if (isTransparent(srcPixel)) {
-        const [width, height] = dimensions;
-        const centerX = width / 2;
-        const centerY = height / 2;
-        const [x, y] = coord;
-        const xRelCenter = x - centerX;
-        const yRelCenter = y - centerY;
+        // Make the transparent parts colorful
+        if (isTransparent(srcPixel)) {
+          const [x, y] = coord;
+          const xRelCenter = x - centerX;
+          const yRelCenter = y - centerY;
 
-        const maxDist = Math.sqrt(
-          (width / 2) * (width / 2) + (height / 2) * (height / 2)
-        );
-        const distFromCenter = Math.sqrt(
-          yRelCenter * yRelCenter + xRelCenter * xRelCenter
-        );
+          const maxDist = Math.sqrt(
+            (width / 2) * (width / 2) + (height / 2) * (height / 2)
+          );
+          const distFromCenter = Math.sqrt(
+            yRelCenter * yRelCenter + xRelCenter * xRelCenter
+          );
 
-        const colorIdx =
-          Math.floor((1 - distFromCenter / maxDist) * colorList.length) %
-          colorList.length;
+          const colorIdx =
+            Math.floor((1 - distFromCenter / maxDist) * colorList.length) %
+            colorList.length;
 
-        // Increment colorIdx based on current frame progress
-        const frameProgress = frameIndex / frameCount;
-        const idx =
-          (Math.floor(frameProgress * colorList.length) + colorIdx) %
-          colorList.length;
-        return colorList[idx];
-      }
+          // Increment colorIdx based on current frame progress
+          const frameProgress = frameIndex / frameCount;
+          const idx =
+            (Math.floor(frameProgress * colorList.length) + colorIdx) %
+            colorList.length;
+          return colorList[idx];
+        }
 
-      return srcPixel;
-    }
-  ),
+        return srcPixel;
+      })
+    );
+  },
 });

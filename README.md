@@ -14,10 +14,9 @@ https://mikeyburkman.github.io/partymoji/
 
 ##### TODO
 
-- Make app state serializable by looking up transforms by name
+- Add FPS to global state so it can imported/exported
 - MUI all the things
 - Componentize common things in parameters
 - Make button widths smaller
 - Variable length params -- what to do if the default value is not valid?
   - Means that our array has holes in it...
-- Serialize/deserialize the state so we can share transforms

@@ -70,7 +70,11 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
       })}
       <Button
         variant="contained"
-        endIcon={isDirty || fpsChanged ? <Icon>priority_high</Icon> : undefined}
+        endIcon={
+          !state.loading && (isDirty || fpsChanged) ? (
+            <Icon>priority_high</Icon>
+          ) : undefined
+        }
         disabled={buttonDisabled}
         onClick={async () => {
           const transformInputs = transforms.map(
