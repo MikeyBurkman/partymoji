@@ -16,7 +16,7 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
   height,
   onChange,
 }) => (
-  <Stack maxWidth={300}>
+  <Stack maxWidth={300} spacing={4}>
     <Button
       startIcon={<Icon>image</Icon>}
       variant="contained"
