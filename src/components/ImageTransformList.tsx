@@ -33,9 +33,9 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
     >
       New Transform
     </Button>
-    <Grid container spacing={2} padding={1}>
+    <Grid container spacing={2} padding={1} columns={{ xs: 4, sm: 8, md: 12 }}>
       {currentTransforms.map((t, tIdx) => (
-        <Grid item xs={4}>
+        <Grid item xs={4} sm={4} md={4}>
           <ImageTransform
             index={tIdx}
             possibleTransforms={possibleTransforms}
