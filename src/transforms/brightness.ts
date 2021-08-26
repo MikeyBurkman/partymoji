@@ -7,7 +7,7 @@ export const brightness = buildTransform({
   description: 'Increase or decrease the brightness of the image',
   params: [
     intParam({
-      name: 'Amount',
+      name: 'Percent (-100 to 100)',
       defaultValue: 0,
       min: -100,
       max: 100,

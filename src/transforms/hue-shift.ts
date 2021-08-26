@@ -1,26 +1,23 @@
 import { buildTransform } from '../domain/types';
-import { mapImage } from '../domain/utils';
-import { intParam } from '../params/intParam';
+import { fromHexColor, mapImage } from '../domain/utils';
 import * as convert from 'color-convert';
+import { colorPickerParam } from '../params/colorPickerParam';
 
 export const hueShift = buildTransform({
   name: 'Hue Shift',
-  description: 'Shift the hue by some amount',
+  description: 'Shift the hue to some other color',
   params: [
-    intParam({
-      name: 'Amount',
-      defaultValue: 0,
-      min: 0,
-      max: 100,
+    colorPickerParam({
+      name: 'Hue',
+      defaultValue: fromHexColor('#000000'),
     }),
   ],
   fn: mapImage(({ coord, getSrcPixel, parameters }) => {
-    const [amount] = parameters;
-    const rawAmount = (amount / 100) * 255;
+    const [newColor] = parameters;
+    const [newHue] = convert.rgb.hsl([newColor[0], newColor[1], newColor[2]]);
     const [r, g, b, a] = getSrcPixel(coord);
-    const [h, s, l] = convert.rgb.hsl(r, g, b);
-    const newH = (h + rawAmount) % 255;
-    const [newR, newG, newB] = convert.hsl.rgb([newH, s, l]);
+    const [, s, l] = convert.rgb.hsl(r, g, b);
+    const [newR, newG, newB] = convert.hsl.rgb([newHue, s, l]);
     return [newR, newG, newB, a];
   }),
 });

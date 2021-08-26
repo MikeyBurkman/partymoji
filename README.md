@@ -20,3 +20,4 @@ https://mikeyburkman.github.io/partymoji/
 - Make button widths smaller
 - Variable length params -- what to do if the default value is not valid?
   - Means that our array has holes in it...
+- Make hue shift better

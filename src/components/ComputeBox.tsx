@@ -120,28 +120,27 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
         {state.loading ? <CircularProgress color="inherit" /> : 'Compute'}
       </Button>
       <Divider />
-      <Grid
-        container
-        spacing={2}
-        padding={1}
-        columns={{ xs: 4, sm: 8, md: 12 }}
-      >
-        {!state.loading && (
-          <>
-            {state.computeTime && (
-              <Typography variant="caption">
-                Compute Time: {state.computeTime} seconds
-              </Typography>
-            )}
-            {state.results.map(({ gif, transformName }, idx) => (
-              <Grid item xs={4} sm={4} md={4}>
-                <Typography variant="subtitle2">{transformName}</Typography>
-                <img src={gif} alt={`gif-${transformName}-${idx}`}></img>
-              </Grid>
-            ))}
-          </>
-        )}
-      </Grid>
+      {!state.loading && state.computeTime && (
+        <Typography variant="caption">
+          Compute Time: {state.computeTime} second(s)
+        </Typography>
+      )}
+      <Divider />
+      {!state.loading && (
+        <Grid
+          container
+          spacing={2}
+          padding={1}
+          columns={{ xs: 4, sm: 8, md: 12 }}
+        >
+          {state.results.map(({ gif, transformName }, idx) => (
+            <Grid item xs={4} sm={4} md={4}>
+              <Typography variant="subtitle2">{transformName}</Typography>
+              <img src={gif} alt={`gif-${transformName}-${idx}`}></img>
+            </Grid>
+          ))}
+        </Grid>
+      )}
     </Stack>
   );
 };

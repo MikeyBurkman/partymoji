@@ -10,6 +10,7 @@ import { grayscale } from './grayscale';
 import { hueParty } from './hue-party';
 import { hueShift } from './hue-shift';
 import { lightning } from './lightning';
+import { nuke } from './nuke';
 import { party } from './party';
 import { pinwheel } from './pinwheel';
 import { radiance } from './radiance';
@@ -39,6 +40,7 @@ export const POSSIBLE_TRANSFORMS = [
   hueParty,
   hueShift,
   lightning,
+  nuke,
   party,
   pinwheel,
   radiance,
