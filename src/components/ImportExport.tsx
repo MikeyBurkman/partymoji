@@ -7,6 +7,7 @@ import {
   Alert,
 } from '@material-ui/core';
 import React from 'react';
+import * as lz from 'lz-string';
 
 interface ImportExportProps {
   state: any;
@@ -17,9 +18,11 @@ export const ImportExport: React.FC<ImportExportProps> = ({
   state,
   onImport,
 }) => {
+  const [info, setInfo] = React.useState<string | undefined>();
   const [isInvalid, setInvalid] = React.useState(false);
   return (
     <Stack spacing={1}>
+      {info && <Alert severity="info">{info}</Alert>}
       <Typography variant="subtitle1">
         Export the current image and all of its transitions to the clipboard
       </Typography>
@@ -27,7 +30,10 @@ export const ImportExport: React.FC<ImportExportProps> = ({
         endIcon={<Icon>file_upload</Icon>}
         variant="contained"
         onClick={() => {
-          navigator.clipboard.writeText(JSON.stringify(state));
+          const output = lz.compressToBase64(JSON.stringify(state));
+          navigator.clipboard.writeText(output);
+          setInfo('Copied to clipboard');
+          setTimeout(() => setInfo(undefined), 2000);
         }}
       >
         Export to clipboard
@@ -51,7 +57,9 @@ export const ImportExport: React.FC<ImportExportProps> = ({
               setInvalid(true);
               return;
             }
-            const data = JSON.parse(clipboardContents);
+            const data = JSON.parse(
+              lz.decompressFromBase64(clipboardContents)!
+            );
             onImport(data);
             setInvalid(false);
           } catch (e) {
