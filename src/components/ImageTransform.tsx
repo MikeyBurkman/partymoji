@@ -119,7 +119,13 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
                   });
                 },
               });
-              return <React.Fragment key={param.name}>{ele}</React.Fragment>;
+              return (
+                <React.Fragment
+                  key={`${selectedTransform.transform.name}-${param.name}`}
+                >
+                  {ele}
+                </React.Fragment>
+              );
             }
           )}
         </Stack>

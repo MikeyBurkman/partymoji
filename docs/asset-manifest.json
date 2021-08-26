@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.js": "/partymoji/static/js/main.1cef55c1.chunk.js",
-    "main.js.map": "/partymoji/static/js/main.1cef55c1.chunk.js.map",
+    "main.js": "/partymoji/static/js/main.58abdf5e.chunk.js",
+    "main.js.map": "/partymoji/static/js/main.58abdf5e.chunk.js.map",
     "runtime-main.js": "/partymoji/static/js/runtime-main.39af959e.js",
     "runtime-main.js.map": "/partymoji/static/js/runtime-main.39af959e.js.map",
     "static/js/2.084abaa3.chunk.js": "/partymoji/static/js/2.084abaa3.chunk.js",
@@ -12,6 +12,6 @@
   "entrypoints": [
     "static/js/runtime-main.39af959e.js",
     "static/js/2.084abaa3.chunk.js",
-    "static/js/main.1cef55c1.chunk.js"
+    "static/js/main.58abdf5e.chunk.js"
   ]
 }
