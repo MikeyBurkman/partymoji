@@ -1,4 +1,4 @@
-import { Icon, Stack, Tooltip } from '@material-ui/core';
+import { Icon, Stack, Tooltip, Typography } from '@material-ui/core';
 import React from 'react';
 import { SketchPicker } from 'react-color';
 import { Expandable } from '../components/Expandable';
@@ -26,7 +26,7 @@ const ColorPickerParam: React.FC<{
     <Expandable
       mainEle={
         <Stack direction="row" spacing={4}>
-          <div>{name}</div>
+          <Typography variant="body2">{name}</Typography>
           {description && (
             <Tooltip title={description}>
               <Icon>help</Icon>

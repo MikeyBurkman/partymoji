@@ -36,11 +36,9 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
   );
   return (
     <Paper>
-      <Stack>
-        <Stack direction="row" spacing={4}>
-          <Typography variant="h5" component="div">
-            {name}
-          </Typography>
+      <Stack spacing={1}>
+        <Stack direction="row" spacing={1}>
+          <Typography variant="body2">{name}</Typography>
           {description && (
             <Tooltip title={description}>
               <Icon>help</Icon>
