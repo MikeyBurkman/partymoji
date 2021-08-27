@@ -1,4 +1,4 @@
-import { Button, Grid, Stack, Typography } from '@material-ui/core';
+import { Button, Grid, Icon, Stack, Typography } from '@material-ui/core';
 import React from 'react';
 import { ParamFunction, Transform, TransformWithParams } from '../domain/types';
 import { transformByName } from '../transforms';
@@ -17,24 +17,6 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
 }) => (
   <Stack spacing={1}>
     <Typography variant="h5">Image Transforms</Typography>
-    <Button
-      fullWidth={false}
-      sx={{ maxWidth: 300 }}
-      variant="contained"
-      onClick={() =>
-        onTransformsChange([
-          ...currentTransforms,
-          {
-            transformName: possibleTransforms[0].name,
-            paramsValues: possibleTransforms[0].params.map(
-              (p: ParamFunction<any>) => p.defaultValue
-            ),
-          },
-        ])
-      }
-    >
-      New Transform
-    </Button>
     <Grid container spacing={2} padding={1} columns={{ xs: 4, sm: 8, md: 12 }}>
       {currentTransforms.map((t, tIdx) => (
         <Grid item xs={4} sm={4} md={4}>
@@ -109,6 +91,28 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
           />
         </Grid>
       ))}
+      <Grid item xs={4} sm={4} md={4}>
+        <Stack spacing={4}>
+          <Button
+            fullWidth={false}
+            variant="contained"
+            startIcon={<Icon>add</Icon>}
+            onClick={() =>
+              onTransformsChange([
+                ...currentTransforms,
+                {
+                  transformName: possibleTransforms[0].name,
+                  paramsValues: possibleTransforms[0].params.map(
+                    (p: ParamFunction<any>) => p.defaultValue
+                  ),
+                },
+              ])
+            }
+          >
+            New Transform
+          </Button>
+        </Stack>
+      </Grid>
     </Grid>
   </Stack>
 );

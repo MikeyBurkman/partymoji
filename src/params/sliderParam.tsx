@@ -23,7 +23,6 @@ const SliderParam: React.FC<{
         )}
       </Stack>
       <Stack direction="row" spacing={2}>
-        <Typography variant="body2">{value}</Typography>
         <Slider
           aria-label={name}
           defaultValue={value}
@@ -36,6 +35,7 @@ const SliderParam: React.FC<{
             onChange({ valid: true, value: value as number })
           }
         />
+        <Typography variant="body2">{value}</Typography>
       </Stack>
     </Stack>
   );
@@ -51,9 +51,10 @@ export function sliderParam(args: {
 }): ParamFunction<number> {
   return {
     name: args.name,
-    defaultValue: args.defaultValue
-      ? { valid: true, value: args.defaultValue }
-      : { valid: false },
+    defaultValue:
+      args.defaultValue !== undefined
+        ? { valid: true, value: args.defaultValue }
+        : { valid: false },
     fn: (params) => {
       return (
         <SliderParam

@@ -15,9 +15,6 @@ https://mikeyburkman.github.io/partymoji/
 ##### TODO
 
 - Add FPS to global state so it can imported/exported
-- MUI all the things
 - Componentize common things in parameters
-- Make button widths smaller
 - Variable length params -- what to do if the default value is not valid?
   - Means that our array has holes in it...
-- Make resize-background crop the image if smaller than original
