@@ -12,8 +12,8 @@ import {
 import { assert } from '../domain/utils';
 import { runTransforms } from '../domain/run';
 import { TransformInput, TransformWithParams } from '../domain/types';
-import { intParam } from '../params/intParam';
 import { transformByName } from '../transforms';
+import { sliderParam } from '../params/sliderParam';
 
 interface ComputeBoxProps {
   isDirty: boolean;
@@ -32,10 +32,11 @@ type ComputeState =
   | { loading: true };
 
 const DEFAULT_FPS = 20;
-const fpsParam = intParam({
+const fpsParam = sliderParam({
   name: 'Frames per Second',
   defaultValue: DEFAULT_FPS,
-  min: 0,
+  min: 1,
+  max: 60,
 });
 
 export const ComputeBox: React.FC<ComputeBoxProps> = ({
@@ -59,17 +60,20 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
     <Stack spacing={1}>
       <Typography variant="h5">Create Gif</Typography>
 
-      {fpsParam.fn({
-        value: { valid: true, value: fps },
-        onChange: (x) => {
-          if (x.valid) {
-            setFps(x.value);
-            setFpsChanged(true);
-          }
-        },
-      })}
+      <div style={{ maxWidth: '300px' }}>
+        {fpsParam.fn({
+          value: { valid: true, value: fps },
+          onChange: (x) => {
+            if (x.valid) {
+              setFps(x.value);
+              setFpsChanged(true);
+            }
+          },
+        })}
+      </div>
       <Button
         variant="contained"
+        sx={{ maxWidth: '300px' }}
         endIcon={
           !state.loading && (isDirty || fpsChanged) ? (
             <Icon>priority_high</Icon>
@@ -119,27 +123,32 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
       >
         {state.loading ? <CircularProgress color="inherit" /> : 'Compute'}
       </Button>
-      <Divider />
       {!state.loading && state.computeTime && (
-        <Typography variant="caption">
-          Compute Time: {state.computeTime} second(s)
-        </Typography>
+        <>
+          <Divider />
+          <Typography variant="caption">
+            Compute Time: {state.computeTime} second(s)
+          </Typography>
+        </>
       )}
-      <Divider />
-      {!state.loading && (
-        <Grid
-          container
-          spacing={2}
-          padding={1}
-          columns={{ xs: 4, sm: 8, md: 12 }}
-        >
-          {state.results.map(({ gif, transformName }, idx) => (
-            <Grid item xs={4} sm={4} md={4}>
-              <Typography variant="subtitle2">{transformName}</Typography>
-              <img src={gif} alt={`gif-${transformName}-${idx}`}></img>
-            </Grid>
-          ))}
-        </Grid>
+
+      {!state.loading && state.results.length > 0 && (
+        <>
+          <Divider />
+          <Grid
+            container
+            spacing={2}
+            padding={1}
+            columns={{ xs: 4, sm: 8, md: 12 }}
+          >
+            {state.results.map(({ gif, transformName }, idx) => (
+              <Grid item xs={4} sm={4} md={4}>
+                <Typography variant="subtitle2">{transformName}</Typography>
+                <img src={gif} alt={`gif-${transformName}-${idx}`}></img>
+              </Grid>
+            ))}
+          </Grid>
+        </>
       )}
     </Stack>
   );

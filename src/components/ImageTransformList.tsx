@@ -19,6 +19,7 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
     <Typography variant="h5">Image Transforms</Typography>
     <Button
       fullWidth={false}
+      sx={{ maxWidth: 300 }}
       variant="contained"
       onClick={() =>
         onTransformsChange([
