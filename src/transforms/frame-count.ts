@@ -1,17 +1,17 @@
 import { Frame, buildTransform } from '../domain/types';
 import { repeat } from '../domain/utils';
-import { intParam } from '../params/intParam';
+import { sliderParam } from '../params/sliderParam';
 
 export const frameCount = buildTransform({
   name: 'Frame Count',
   description:
     'Set how many frames of animation there will be. This is required for all animation transforms',
   params: [
-    intParam({
+    sliderParam({
       name: 'Number of Frames',
-      description: 'Positive integer',
       defaultValue: 10,
       min: 1,
+      max: 60,
     }),
   ],
   fn: ({ image, parameters }) => {

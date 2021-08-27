@@ -14,15 +14,16 @@ import { nuke } from './nuke';
 import { party } from './party';
 import { pinwheel } from './pinwheel';
 import { radiance } from './radiance';
-import { resize } from './resize';
-import { resizeBackground } from './resize-background';
+import { resizeImage } from './resize-image';
 import { ripple } from './ripple';
 import { rotate } from './rotate';
 import { roxbury } from './roxbury';
+import { scaleImage } from './scale-image';
 import { shake } from './shake';
 import { solidBackground } from './solid-background';
 import { staticc } from './static';
-import { transparency } from './transparency';
+import { staticBackground } from './static-background';
+import { transparentColor } from './transparent-color';
 import { transpose } from './transpose';
 
 import { assert } from '../domain/utils';
@@ -44,17 +45,18 @@ export const POSSIBLE_TRANSFORMS = [
   party,
   pinwheel,
   radiance,
-  resize,
-  resizeBackground,
+  resizeImage,
   ripple,
   rotate,
   roxbury,
+  scaleImage,
   shake,
   solidBackground,
   staticc,
-  transparency,
+  staticBackground,
+  transparentColor,
   transpose,
-];
+].sort((x, y) => (x.name > y.name ? 1 : -1));
 
 export const transformByName = (name: string) => {
   const t = POSSIBLE_TRANSFORMS.find((t) => t.name === name);

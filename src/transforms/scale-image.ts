@@ -2,9 +2,9 @@ import { buildTransform } from '../domain/types';
 import { resizeImage } from '../domain/utils';
 import { intParam } from '../params/intParam';
 
-export const resize = buildTransform({
-  name: 'Resize',
-  description: 'Resize the image. Will grow/shrink the image.',
+export const scaleImage = buildTransform({
+  name: 'Scale Image',
+  description: 'Scales the image to the selected width and height',
   params: [
     intParam({
       name: 'Width',

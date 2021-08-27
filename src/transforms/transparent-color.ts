@@ -1,9 +1,9 @@
 import { buildTransform } from '../domain/types';
 import { fromHexColor, mapImage } from '../domain/utils';
 import { colorPickerParam } from '../params/colorPickerParam';
-import { intParam } from '../params/intParam';
+import { sliderParam } from '../params/sliderParam';
 
-export const transparency = buildTransform({
+export const transparentColor = buildTransform({
   name: 'Transparent Color',
   description:
     'All pixels similar in color to the chosen one will be made transparent',
@@ -12,13 +12,14 @@ export const transparency = buildTransform({
       name: 'Transparent Color',
       defaultValue: fromHexColor('#000000'),
     }),
-    intParam({
+    sliderParam({
       name: 'Tolerance',
       description:
         'A higher number will mean colors that are "close" to the chosen color will be transparent. (0 - 100)',
       defaultValue: 10,
       min: 0,
       max: 100,
+      step: 5,
     }),
   ] as const,
   fn: mapImage(({ coord, getSrcPixel, parameters }) => {

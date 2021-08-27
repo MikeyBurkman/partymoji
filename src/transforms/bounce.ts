@@ -1,12 +1,12 @@
 import { buildTransform } from '../domain/types';
 import { mapImage } from '../domain/utils';
-import { floatParam } from '../params/floatParam';
+import { intParam } from '../params/intParam';
 
 export const bounce = buildTransform({
   name: 'Bounce',
   description: 'Make the image bounce up and down',
   params: [
-    floatParam({
+    intParam({
       name: 'Bounce Speed',
       description: 'Positive number',
       defaultValue: 5,

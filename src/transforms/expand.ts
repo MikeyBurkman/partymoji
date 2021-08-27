@@ -1,12 +1,12 @@
 import { buildTransform } from '../domain/types';
 import { mapImage } from '../domain/utils';
-import { floatParam } from '../params/floatParam';
+import { intParam } from '../params/intParam';
 
 export const expand = buildTransform({
   name: 'Expand',
   description: 'Make the image grow and shrink',
   params: [
-    floatParam({
+    intParam({
       name: 'Radius',
       description: 'Positive number',
       defaultValue: 10,

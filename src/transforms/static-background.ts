@@ -2,9 +2,9 @@ import { buildTransform } from '../domain/types';
 import { mapImage, isTransparent } from '../domain/utils';
 import { sliderParam } from '../params/sliderParam';
 
-export const staticc = buildTransform({
-  name: 'Static',
-  description: 'Adds random static to the image',
+export const staticBackground = buildTransform({
+  name: 'Static Background',
+  description: 'Adds random static to the background',
   params: [
     sliderParam({
       name: 'Strength',
@@ -20,12 +20,12 @@ export const staticc = buildTransform({
     const src = getSrcPixel(coord);
 
     if (isTransparent(src)) {
-      return [0, 0, 0, 0];
+      const inverse = Math.ceil(random() * 100) < strength;
+      const grey = Math.ceil(random() * 255);
+
+      return inverse ? [grey, grey, grey, 255] : src;
     }
 
-    const isStatic = Math.ceil(random() * 100) < strength;
-    const grey = Math.ceil(random() * 255);
-
-    return isStatic ? [grey, grey, grey, src[3]] : src;
+    return src;
   }),
 });

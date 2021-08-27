@@ -64,6 +64,7 @@ export function colorPickerParam(args: {
           name={args.name}
           value={params.value.valid ? params.value.value : undefined}
           onChange={params.onChange}
+          description={args.description}
         />
       );
     },

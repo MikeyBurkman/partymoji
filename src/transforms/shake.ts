@@ -7,13 +7,11 @@ export const shake = buildTransform({
   description: 'Make the image shake back and forth',
   params: [floatParam({ name: 'Amplitude', defaultValue: 10, min: 0 })],
   fn: mapImage(({ coord, frameCount, frameIndex, getSrcPixel, parameters }) => {
-    const [shakeSpeed] = parameters;
+    const [amplitude] = parameters;
     const [x, y] = coord;
     const xOffset =
       x +
-      Math.round(
-        shakeSpeed * Math.cos((frameIndex / frameCount) * 2 * Math.PI)
-      );
+      Math.round(amplitude * Math.cos((frameIndex / frameCount) * 2 * Math.PI));
 
     return getSrcPixel([xOffset, y]);
   }),

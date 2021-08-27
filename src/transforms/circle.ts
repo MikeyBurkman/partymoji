@@ -1,12 +1,12 @@
 import { buildTransform } from '../domain/types';
 import { mapImage } from '../domain/utils';
-import { floatParam } from '../params/floatParam';
+import { intParam } from '../params/intParam';
 
 export const circle = buildTransform({
   name: 'Circle',
   description: 'Make the image move in a circular pattern',
   params: [
-    floatParam({
+    intParam({
       name: 'Radius',
       description: 'Positive number',
       defaultValue: 10,

@@ -1,11 +1,13 @@
 import { buildTransform, Color, Dimensions } from '../domain/types';
-import { assert, getPixelFromSource, writePixel } from '../domain/utils';
+import { getPixelFromSource, writePixel } from '../domain/utils';
 import { intParam } from '../params/intParam';
 
-export const resizeBackground = buildTransform({
-  name: 'Resize Background',
+export const resizeImage = buildTransform({
+  name: 'Resize Image',
   description:
-    'Resize only the background. Will not change the size of the image itself. Extra pixels will be made transparent',
+    'Change the dimensions of the image. ' +
+    'If bigger than original, the extra space will be transparent. ' +
+    'If smaller, the image will be cropped. ',
   params: [
     intParam({ name: 'Width', defaultValue: 128, min: 0 }),
     intParam({ name: 'Height', defaultValue: 128, min: 0 }),
@@ -13,14 +15,6 @@ export const resizeBackground = buildTransform({
   fn: ({ image, parameters }) => {
     const [width, height] = image.dimensions;
     const [newWidth, newHeight] = parameters;
-    assert(
-      newWidth >= width,
-      'New width for resize-background needs to be greater than or equal to the original'
-    );
-    assert(
-      newHeight >= height,
-      'New height for resize-background needs to be greater than or equal to the original'
-    );
 
     const newDimensions: Dimensions = [newWidth, newHeight];
 

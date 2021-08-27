@@ -1,6 +1,7 @@
 import { buildTransform } from '../domain/types';
 import { mapFrames, mapCoords, getPixelFromSource } from '../domain/utils';
 import { floatParam } from '../params/floatParam';
+import { intParam } from '../params/intParam';
 
 export const ripple = buildTransform({
   name: 'Ripple',
@@ -11,7 +12,7 @@ export const ripple = buildTransform({
       defaultValue: 10,
       description: 'How strong the ripple effect should be',
     }),
-    floatParam({
+    intParam({
       name: 'Period',
       defaultValue: 2,
       min: 0,

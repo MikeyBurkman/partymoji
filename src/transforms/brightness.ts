@@ -1,14 +1,13 @@
 import { buildTransform } from '../domain/types';
 import { mapImage, clampColor } from '../domain/utils';
-import { intParam } from '../params/intParam';
+import { sliderParam } from '../params/sliderParam';
 
 export const brightness = buildTransform({
   name: 'Brightness',
   description: 'Increase or decrease the brightness of the image',
   params: [
-    intParam({
+    sliderParam({
       name: 'Amount',
-      description: '-100 to 100',
       defaultValue: 0,
       min: -100,
       max: 100,

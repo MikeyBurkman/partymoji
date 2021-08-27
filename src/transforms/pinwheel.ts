@@ -2,6 +2,7 @@ import { buildTransform } from '../domain/types';
 import { mapImage, isTransparent, fromHexColor } from '../domain/utils';
 import { colorPickerParam } from '../params/colorPickerParam';
 import { intParam } from '../params/intParam';
+import { sliderParam } from '../params/sliderParam';
 import { variableLengthParam } from '../params/variableLengthParam';
 
 const DEFAULT_COLORS = [
@@ -29,11 +30,12 @@ export const pinwheel = buildTransform({
       description: 'Change the vertical center of the pinwheel',
       defaultValue: 40,
     }),
-    intParam({
+    sliderParam({
       name: 'Group Count',
       description: 'How many times each color is repeated. Positive integer',
       defaultValue: 1,
       min: 1,
+      max: 80,
     }),
     variableLengthParam({
       name: 'Colors',
