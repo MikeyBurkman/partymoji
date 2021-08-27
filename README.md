@@ -6,6 +6,11 @@
 
 https://mikeyburkman.github.io/partymoji/
 
+### Example
+
+- Copy the contents of this file to the clipboard, and then click the `Import from Clipboard` button at the bottom of the page.
+- https://raw.githubusercontent.com/MikeyBurkman/partymoji/main/example-export
+
 ### Develop it locally
 
 1. `yarn` to install dependencies
