@@ -115,3 +115,13 @@ export const buildTransform = <T extends readonly ParamFunction<any>[]>(args: {
   description: args.description,
   fn: args.fn,
 });
+
+export interface AppState {
+  baseImage?: string;
+  transforms: {
+    transformName: string;
+    paramsValues: ParamValue<any>[];
+    computedImage?: string;
+  }[];
+  dirty: boolean;
+}

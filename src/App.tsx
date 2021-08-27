@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 
 import { POSSIBLE_TRANSFORMS, transformByName } from './transforms';
-import { ParamFunction, ParamValue } from './domain/types';
+import { ParamFunction, AppState } from './domain/types';
 import { ComputeBox } from './components/ComputeBox';
 import { ImagePicker } from './components/ImagePicker';
 import { ImageTransformList } from './components/ImageTransformList';
@@ -17,16 +17,6 @@ import { ImportExport } from './components/ImportExport';
 
 // Set to true to print out the current state at the bottom of the page
 const DEBUG = false;
-
-type AppState = {
-  baseImage?: string;
-  transforms: {
-    transformName: string;
-    paramsValues: ParamValue<any>[];
-    computedImage?: string;
-  }[];
-  dirty: boolean;
-};
 
 export const App: React.FC = () => {
   const [state, setState] = React.useState<AppState>({
