@@ -29,7 +29,7 @@ export const ImportExport: React.FC<ImportExportProps> = ({
     <Stack spacing={3}>
       <Typography variant="h5">Import/Export</Typography>
       <Button
-        endIcon={<Icon>file_upload</Icon>}
+        startIcon={<Icon>file_upload</Icon>}
         sx={{ maxWidth: '300px' }}
         variant="contained"
         onClick={() => {
