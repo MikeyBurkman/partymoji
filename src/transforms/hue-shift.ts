@@ -1,5 +1,5 @@
 import { buildTransform } from '../domain/types';
-import { fromHexColor, mapImage } from '../domain/utils';
+import { mapImage } from '../domain/utils';
 import * as convert from 'color-convert';
 import { huePickerParam } from '../params/huePickerParam';
 

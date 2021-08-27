@@ -84,7 +84,7 @@ export const ImportExport: React.FC<ImportExportProps> = ({
                 const data = JSON.parse(
                   lz.decompressFromBase64(clipboardContents)!
                 );
-                if (!!Array.isArray(data.transforms)) {
+                if (!Array.isArray(data.transforms)) {
                   showError();
                   return;
                 }
