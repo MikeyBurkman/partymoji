@@ -50,7 +50,7 @@ export const ImportExport: React.FC<ImportExportProps> = ({
         Export to clipboard <br /> (NO Source Image)
       </Button>
       <Button
-        endIcon={<Icon>file_upload</Icon>}
+        startIcon={<Icon>file_upload</Icon>}
         sx={{ maxWidth: '300px' }}
         variant="contained"
         onClick={() => {
@@ -63,7 +63,7 @@ export const ImportExport: React.FC<ImportExportProps> = ({
         (With Source Image)
       </Button>
       <Button
-        endIcon={<Icon>file_download</Icon>}
+        startIcon={<Icon>file_download</Icon>}
         sx={{ maxWidth: '300px' }}
         variant="contained"
         onClick={async () => {
