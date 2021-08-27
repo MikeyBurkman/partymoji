@@ -1,11 +1,4 @@
-import {
-  Stack,
-  Button,
-  Icon,
-  Typography,
-  Alert,
-  Grid,
-} from '@material-ui/core';
+import { Stack, Button, Icon, Typography, Alert } from '@material-ui/core';
 import React from 'react';
 import * as lz from 'lz-string';
 import { AppState } from '../domain/types';
