@@ -16,6 +16,7 @@ const PARTY_COLORS: Color[] = [
 
 export const party = buildTransform({
   name: 'Party',
+  description: 'Make the image flash different colors',
   params: [],
   fn: mapImage(({ coord, frameCount, frameIndex, getSrcPixel }) => {
     const srcPixel = getSrcPixel(coord);

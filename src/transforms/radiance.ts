@@ -24,16 +24,18 @@ const DEFAULT_COLORS = [
 
 export const radiance = buildTransform({
   name: 'Radiance',
+  description: 'Radiate colors out in rings',
   params: [
     intParam({
       name: 'Group Count',
+      description: 'How many times each color is repeated. Positive integer',
       defaultValue: 1,
       min: 1,
     }),
     variableLengthParam({
       name: 'Colors',
       newParamText: 'New Color',
-      description: 'Colors radiating outwards',
+      description: 'The colors that make up each ring',
       defaultValue: DEFAULT_COLORS,
       createNewParam: () =>
         colorPickerParam({

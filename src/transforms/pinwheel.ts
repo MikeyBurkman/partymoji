@@ -21,14 +21,17 @@ export const pinwheel = buildTransform({
   params: [
     intParam({
       name: 'Offset X',
+      description: 'Change the horizontal center of the pinwheel',
       defaultValue: 0,
     }),
     intParam({
       name: 'Offset Y',
+      description: 'Change the vertical center of the pinwheel',
       defaultValue: 40,
     }),
     intParam({
       name: 'Group Count',
+      description: 'How many times each color is repeated. Positive integer',
       defaultValue: 1,
       min: 1,
     }),

@@ -3,6 +3,7 @@ import { buildTransform, Coord } from '../domain/types';
 
 export const roxbury = buildTransform({
   name: 'Roxbury',
+  description: "Baby, don't hurt me",
   params: [],
   fn: ({ image }) =>
     mapFrames(image, (data, frameIndex, frameCount) => {

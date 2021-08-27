@@ -3,6 +3,7 @@ import { mapImage, isTransparent, getAveragePixelValue } from '../domain/utils';
 
 export const grayscale = buildTransform({
   name: 'Grayscale',
+  description: 'Make the image black and white',
   params: [],
   fn: mapImage(({ coord, getSrcPixel }) => {
     const srcPixel = getSrcPixel(coord);

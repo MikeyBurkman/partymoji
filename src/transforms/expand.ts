@@ -4,9 +4,11 @@ import { floatParam } from '../params/floatParam';
 
 export const expand = buildTransform({
   name: 'Expand',
+  description: 'Make the image grow and shrink',
   params: [
     floatParam({
       name: 'Radius',
+      description: 'Positive number',
       defaultValue: 10,
       min: 0,
     }),

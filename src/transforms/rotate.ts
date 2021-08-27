@@ -4,6 +4,7 @@ import { dropdownParam } from '../params/dropdownParam';
 
 export const rotate = buildTransform({
   name: 'Rotate',
+  description: 'Make the image rotate about the center point',
   params: [
     dropdownParam({
       name: 'Direction',

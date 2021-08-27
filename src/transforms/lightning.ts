@@ -19,9 +19,12 @@ const lightningIntensities: Color[] = [
 
 export const lightning = buildTransform({
   name: 'Lightning',
+  description: 'Make the background look like a thunderstorm',
   params: [
     textParam({
       name: 'Random Seed',
+      description:
+        'Can be anything. Will determine the randomness of the lightning.',
       defaultValue: 'lightning',
     }),
   ],

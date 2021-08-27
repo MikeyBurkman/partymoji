@@ -4,6 +4,8 @@ import { intParam } from '../params/intParam';
 
 export const resizeBackground = buildTransform({
   name: 'Resize Background',
+  description:
+    'Resize only the background. Will not change the size of the image itself. Extra pixels will be made transparent',
   params: [
     intParam({ name: 'Width', defaultValue: 128, min: 0 }),
     intParam({ name: 'Height', defaultValue: 128, min: 0 }),

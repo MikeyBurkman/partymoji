@@ -4,7 +4,15 @@ import { floatParam } from '../params/floatParam';
 
 export const staticc = buildTransform({
   name: 'Static',
-  params: [floatParam({ name: 'Strength', defaultValue: 10, min: 0 })],
+  description: 'Adds random static to the image',
+  params: [
+    floatParam({
+      name: 'Strength',
+      description: 'Positive nunber',
+      defaultValue: 1.2,
+      min: 0,
+    }),
+  ],
   fn: mapImage(({ coord, getSrcPixel, parameters, random }) => {
     const [strength] = parameters;
     const src = getSrcPixel(coord);

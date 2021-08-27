@@ -4,6 +4,7 @@ import { colorPickerParam } from '../params/colorPickerParam';
 
 export const solidBackground = buildTransform({
   name: 'Solid Background',
+  description: 'Change all transparent pixles to the given color',
   params: [
     colorPickerParam({
       name: 'Background Color',

@@ -8,6 +8,7 @@ export const bounce = buildTransform({
   params: [
     floatParam({
       name: 'Bounce Speed',
+      description: 'Positive number',
       defaultValue: 5,
       min: 0,
     }),

@@ -4,6 +4,7 @@ import { floatParam } from '../params/floatParam';
 
 export const ripple = buildTransform({
   name: 'Ripple',
+  description: 'Create a ripple effect, like water',
   params: [
     floatParam({
       name: 'Amplitude',
@@ -14,7 +15,7 @@ export const ripple = buildTransform({
       name: 'Period',
       defaultValue: 2,
       min: 0,
-      description: 'How many ripples you want',
+      description: 'How many ripples you want. Positive number.',
     }),
   ],
   fn: ({ image, parameters }) =>

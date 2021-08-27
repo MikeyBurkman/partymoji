@@ -5,7 +5,15 @@ import { floatParam } from '../params/floatParam';
 // Probably still needs work -- the inner pixels get all funky still
 export const fisheye = buildTransform({
   name: 'Fisheye',
-  params: [floatParam({ name: 'radius', defaultValue: 10, min: 0 })],
+  description: 'Make the image grow and shrink in a distorted fashion',
+  params: [
+    floatParam({
+      name: 'Radius',
+      description: 'Positive Number',
+      defaultValue: 10,
+      min: 0,
+    }),
+  ],
   fn: mapImage(
     ({
       dimensions,

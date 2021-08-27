@@ -9,6 +9,7 @@ export const frameCount = buildTransform({
   params: [
     intParam({
       name: 'Number of Frames',
+      description: 'Positive integer',
       defaultValue: 10,
       min: 1,
     }),

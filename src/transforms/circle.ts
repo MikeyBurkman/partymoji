@@ -4,9 +4,11 @@ import { floatParam } from '../params/floatParam';
 
 export const circle = buildTransform({
   name: 'Circle',
+  description: 'Make the image move in a circular pattern',
   params: [
     floatParam({
       name: 'Radius',
+      description: 'Positive number',
       defaultValue: 10,
       min: 0,
     }),

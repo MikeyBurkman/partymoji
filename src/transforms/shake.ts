@@ -4,7 +4,8 @@ import { floatParam } from '../params/floatParam';
 
 export const shake = buildTransform({
   name: 'Shake',
-  params: [floatParam({ name: 'Shake Speed', defaultValue: 10, min: 0 })],
+  description: 'Make the image shake back and forth',
+  params: [floatParam({ name: 'Amplitude', defaultValue: 10, min: 0 })],
   fn: mapImage(({ coord, frameCount, frameIndex, getSrcPixel, parameters }) => {
     const [shakeSpeed] = parameters;
     const [x, y] = coord;

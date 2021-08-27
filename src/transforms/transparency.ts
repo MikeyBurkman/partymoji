@@ -5,6 +5,8 @@ import { intParam } from '../params/intParam';
 
 export const transparency = buildTransform({
   name: 'Transparent Color',
+  description:
+    'All pixels similar in color to the chosen one will be made transparent',
   params: [
     colorPickerParam({
       name: 'Transparent Color',
@@ -12,6 +14,8 @@ export const transparency = buildTransform({
     }),
     intParam({
       name: 'Tolerance',
+      description:
+        'A higher number will mean colors that are "close" to the chosen color will be transparent. (0 - 100)',
       defaultValue: 10,
       min: 0,
       max: 100,

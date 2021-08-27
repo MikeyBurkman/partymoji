@@ -4,6 +4,7 @@ import { intParam } from '../params/intParam';
 
 export const resize = buildTransform({
   name: 'Resize',
+  description: 'Resize the image. Will grow/shrink the image.',
   params: [
     intParam({
       name: 'Width',
