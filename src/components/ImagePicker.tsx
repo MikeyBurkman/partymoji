@@ -12,8 +12,6 @@ interface ImagePickerProps {
 export const ImagePicker: React.FC<ImagePickerProps> = ({
   currentImageUrl,
   name,
-  width,
-  height,
   onChange,
 }) => (
   <Stack spacing={4}>
@@ -39,8 +37,7 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
     </Button>
     {currentImageUrl && (
       <img
-        width={width}
-        height={height}
+        style={{ maxWidth: '300px', maxHeight: 'auto' }}
         src={currentImageUrl}
         alt="Source"
       ></img>

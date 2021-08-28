@@ -3,6 +3,7 @@ import { backgroundImage } from './background-image';
 import { bounce } from './bounce';
 import { brightness } from './brightness';
 import { circle } from './circle';
+import { contrast } from './contrast';
 import { expand } from './expand';
 import { fisheye } from './fisheye';
 import { frameCount } from './frame-count';
@@ -34,6 +35,7 @@ export const POSSIBLE_TRANSFORMS = [
   bounce,
   brightness,
   circle,
+  contrast,
   expand,
   fisheye,
   frameCount,

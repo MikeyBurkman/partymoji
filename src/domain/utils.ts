@@ -45,11 +45,15 @@ export const randomColor = (random: seedrandom.prng): Color => [
 export const getAveragePixelValue = ([r, g, b]: Color) =>
   Math.round((r + g + b) / 3);
 
-export const clampColor = ([r, g, b, a]: Color): Color => {
-  const clamp = (n: number) => Math.max(Math.min(n, 255), 0);
+export const clamp = (n: number, min: number, max: number) =>
+  Math.max(Math.min(n, max), min);
 
-  return [clamp(r), clamp(g), clamp(b), clamp(a)];
-};
+export const clampColor = ([r, g, b, a]: Color): Color => [
+  clamp(r, 0, 255),
+  clamp(g, 0, 255),
+  clamp(b, 0, 255),
+  clamp(a, 0, 255),
+];
 
 export const getPixelFromSource = (
   dimensions: Dimensions,

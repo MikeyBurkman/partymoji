@@ -156,7 +156,11 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
             {state.results.map(({ gif, transformName }, idx) => (
               <Grid item xs={4} sm={4} md={4}>
                 <Typography variant="subtitle2">{transformName}</Typography>
-                <img src={gif} alt={`gif-${transformName}-${idx}`}></img>
+                <img
+                  src={gif}
+                  alt={`gif-${transformName}-${idx}`}
+                  style={{ maxWidth: '300px', maxHeight: 'auto' }}
+                ></img>
               </Grid>
             ))}
           </Grid>
