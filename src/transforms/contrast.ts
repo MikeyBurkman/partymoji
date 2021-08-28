@@ -27,10 +27,8 @@ export const contrast = buildTransform({
     const amountPercent = amount / 100;
 
     // Find average value of all pixels
-
-    const frameAverageValues: number[] = [];
+    let totalLight = 0;
     for (let f = 0; f < image.frames.length; f += 1) {
-      const values = new Uint8Array(width * height);
       for (let x = 0; x < width; x += 1) {
         for (let y = 0; y < height; y += 1) {
           const [r, g, b] = getPixelFromSource(
@@ -39,17 +37,11 @@ export const contrast = buildTransform({
             [x, y]
           );
           const [, , l] = convert.rgb.hsv(r, g, b);
-          const idx = getImageIndex(image.dimensions, x, y);
-          values[idx] = l;
+          totalLight += l;
         }
       }
-      const avg = values.reduce((acc, cur) => acc + cur, 0) / values.length;
-      frameAverageValues.push(avg);
     }
-
-    const avgValue =
-      frameAverageValues.reduce((acc, cur) => acc + cur, 0) /
-      frameAverageValues.length;
+    const avgValue = totalLight / (image.frames.length * width * height);
 
     return mapFrames(image, (imageData) =>
       mapCoords(image.dimensions, (coord) => {
