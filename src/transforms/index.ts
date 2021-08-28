@@ -1,12 +1,10 @@
+import { adjustImage } from './adjust-image';
 import { backgroundParty } from './background-party';
 import { backgroundImage } from './background-image';
 import { bounce } from './bounce';
-import { brightness } from './brightness';
 import { circle } from './circle';
-import { contrast } from './contrast';
 import { expand } from './expand';
 import { fisheye } from './fisheye';
-import { frameCount } from './frame-count';
 import { grayscale } from './grayscale';
 import { hueParty } from './hue-party';
 import { hueShift } from './hue-shift';
@@ -19,7 +17,6 @@ import { resizeImage } from './resize-image';
 import { ripple } from './ripple';
 import { rotate } from './rotate';
 import { roxbury } from './roxbury';
-import { scaleImage } from './scale-image';
 import { shake } from './shake';
 import { solidBackground } from './solid-background';
 import { staticc } from './static';
@@ -30,15 +27,13 @@ import { transpose } from './transpose';
 import { assert } from '../domain/utils';
 
 export const POSSIBLE_TRANSFORMS = [
+  adjustImage,
   backgroundImage,
   backgroundParty,
   bounce,
-  brightness,
   circle,
-  contrast,
   expand,
   fisheye,
-  frameCount,
   grayscale,
   hueParty,
   hueShift,
@@ -51,7 +46,6 @@ export const POSSIBLE_TRANSFORMS = [
   ripple,
   rotate,
   roxbury,
-  scaleImage,
   shake,
   solidBackground,
   staticc,

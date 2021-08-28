@@ -22,7 +22,11 @@ const SliderParam: React.FC<{
           </Tooltip>
         )}
       </Stack>
-      <Stack direction="row" spacing={2}>
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{ paddingLeft: '8px', paddingRight: '8px' }}
+      >
         <Slider
           aria-label={name}
           defaultValue={value}
