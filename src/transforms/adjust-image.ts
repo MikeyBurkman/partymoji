@@ -53,11 +53,24 @@ export const adjustImage = buildTransform({
   fn: ({ image, parameters }) => {
     const [frameCount, newWidth, newHeight, brightness, contrast] = parameters;
 
+    const hasFrameCount = frameCount !== 0;
+
+    const hasResize = newWidth > 0 && newHeight > 0;
+    // Use this to figure out when we should optimally resize the image
+    const isBiggerImage =
+      newWidth * newHeight > image.dimensions[0] * image.dimensions[1];
+
     const averageValue = contrast !== 0 ? calculateAverageValue(image) : 0;
 
     let currImage = image;
 
-    if (newWidth !== 0 && newHeight !== 0) {
+    if (hasFrameCount && frameCount < image.frames.length) {
+      // Reducing the number of frames, so do that first so we have fewer pixels to change
+      currImage = setFrameCount(currImage, frameCount);
+    }
+
+    // If making a smaller image, might as well do the brightness/contrast after making it smaller
+    if (hasResize && !isBiggerImage) {
       currImage = resizeImage({ image: currImage, newWidth, newHeight });
     }
 
@@ -81,7 +94,13 @@ export const adjustImage = buildTransform({
       })
     );
 
-    if (frameCount) {
+    // If the image will be made bigger, we'll run that after adjusting the brightness/contrast
+    if (hasResize && isBiggerImage) {
+      currImage = resizeImage({ image: currImage, newWidth, newHeight });
+    }
+
+    // Finally change the number of frames if we're adding frames
+    if (hasFrameCount && frameCount > image.frames.length) {
       currImage = setFrameCount(currImage, frameCount);
     }
 
