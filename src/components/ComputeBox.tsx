@@ -5,6 +5,7 @@ import {
   Divider,
   Grid,
   Icon,
+  LinearProgress,
   Stack,
   Typography,
 } from '@material-ui/core';
@@ -53,6 +54,7 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
   });
   const [fpsChanged, setFpsChanged] = React.useState(false);
   const [fps, setFps] = React.useState(DEFAULT_FPS);
+  const [progress, setProgress] = React.useState<number | undefined>();
 
   const buttonDisabled = computeDisabled && !fpsChanged;
 
@@ -98,21 +100,28 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
                 'No source image, this button should be disabled!'
               );
               const start = Date.now();
-              const gifs = await runTransforms(
-                baseImageUrl,
-                transformInputs,
-                fps
-              );
+              let currIdx = 0;
+              setProgress(0);
+              const results = await runTransforms({
+                inputDataUrl: baseImageUrl,
+                transformList: transformInputs,
+                fps,
+                onImageFinished: () => {
+                  currIdx += 1;
+                  setProgress((currIdx / transformInputs.length) * 100);
+                },
+              });
               const computeTime = Math.ceil((Date.now() - start) / 1000);
               setState({
                 loading: false,
                 computeTime,
-                results: gifs.map((gif, idx) => ({
+                results: results.map((result, idx) => ({
                   transformName: transforms[idx].transformName,
-                  gif,
+                  gif: result.gif,
                 })),
               });
               setFpsChanged(false);
+              setProgress(undefined);
               onComputed();
             } catch (err) {
               console.error(err);
@@ -123,6 +132,9 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
       >
         {state.loading ? <CircularProgress color="inherit" /> : 'Compute'}
       </Button>
+      {progress !== undefined && (
+        <LinearProgress variant="determinate" value={progress} />
+      )}
       {!state.loading && state.computeTime && (
         <>
           <Divider />

@@ -13,40 +13,66 @@ import {
   isTransparent,
 } from './utils';
 
+interface RunArgs {
+  inputDataUrl: string;
+  transformList: TransformInput<any>[];
+  fps: number;
+  onImageFinished: () => void;
+}
+
+interface ImageResult {
+  gif: string;
+  width: number;
+  height: number;
+}
+
 // Returns a list of gif data URLs, for each transform
-export const runTransforms = async (
-  inputDataUrl: string,
-  transformList: TransformInput<any>[],
-  fps: number
-): Promise<string[]> => {
+export const runTransforms = async ({
+  transformList,
+  inputDataUrl,
+  fps,
+  onImageFinished,
+}: RunArgs): Promise<ImageResult[]> => {
   const random = seedrandom(inputDataUrl);
 
   const originalImage = await readImage(inputDataUrl);
 
-  const images: Image[] = [];
-  transformList.reduce((image, transformInput) => {
+  const results: ImageResult[] = [];
+  let currentImage = originalImage;
+
+  for (const transformInput of transformList) {
     const result = transformInput.transform.fn({
-      image,
+      image: currentImage,
       parameters: transformInput.params,
       random,
     });
-    images.push(result);
-    return result;
-  }, originalImage);
 
-  return await Promise.all(
-    images.map(async (newImage) => {
-      const transparentColor = getTransparentColor(newImage, random);
+    const transparentColor = getTransparentColor(result, random);
 
-      // Transform any of our transparent pixels to what our gif understands to be transparent
-      const image = encodeTransparency(
-        newImage.frames.map((f) => f.data),
-        transparentColor
-      );
+    // Transform any of our transparent pixels to what our gif understands to be transparent
+    const image = encodeTransparency(
+      result.frames.map((f) => f.data),
+      transparentColor
+    );
 
-      return await createGif(newImage.dimensions, image, transparentColor, fps);
-    })
-  );
+    const gif = await createGif(
+      result.dimensions,
+      image,
+      transparentColor,
+      fps
+    );
+
+    onImageFinished();
+
+    currentImage = result;
+    results.push({
+      gif,
+      width: result.dimensions[0],
+      height: result.dimensions[1],
+    });
+  }
+
+  return results;
 };
 
 /**
