@@ -4,14 +4,14 @@
     "main.js.map": "/partymoji/static/js/main.8dcaa87a.chunk.js.map",
     "runtime-main.js": "/partymoji/static/js/runtime-main.39af959e.js",
     "runtime-main.js.map": "/partymoji/static/js/runtime-main.39af959e.js.map",
-    "static/js/2.5736b360.chunk.js": "/partymoji/static/js/2.5736b360.chunk.js",
-    "static/js/2.5736b360.chunk.js.map": "/partymoji/static/js/2.5736b360.chunk.js.map",
+    "static/js/2.e2381984.chunk.js": "/partymoji/static/js/2.e2381984.chunk.js",
+    "static/js/2.e2381984.chunk.js.map": "/partymoji/static/js/2.e2381984.chunk.js.map",
     "index.html": "/partymoji/index.html",
-    "static/js/2.5736b360.chunk.js.LICENSE.txt": "/partymoji/static/js/2.5736b360.chunk.js.LICENSE.txt"
+    "static/js/2.e2381984.chunk.js.LICENSE.txt": "/partymoji/static/js/2.e2381984.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.39af959e.js",
-    "static/js/2.5736b360.chunk.js",
+    "static/js/2.e2381984.chunk.js",
     "static/js/main.8dcaa87a.chunk.js"
   ]
 }

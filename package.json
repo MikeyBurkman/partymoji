@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": false,
   "homepage": "https://mikeyburkman.github.io/partymoji/",
+  "repository": {
+    "url": "https://github.com/MikeyBurkman/partymoji"
+  },
   "engines": {
     "node": "14.x"
   },
@@ -35,8 +38,8 @@
   },
   "scripts": {
     "tsc": "tsc",
-    "start": "react-scripts start",
-    "build": "react-scripts build && del ./docs && mkdir ./docs && mv ./build/* ./docs",
+    "start": "REACT_APP_BUILD_TIME=$(date '+%m/%d/%y %H:%M:%S') react-scripts start",
+    "build": "REACT_APP_BUILD_TIME=$(date '+%m/%d/%y %H:%M:%S') react-scripts build && del ./docs && mkdir ./docs && mv ./build/* ./docs",
     "eject": "react-scripts eject",
     "pretty": "prettier --write \"**/*.{js,md,ts,html,tsx,json}\""
   },
