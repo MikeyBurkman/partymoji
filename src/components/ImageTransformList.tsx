@@ -17,7 +17,13 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
 }) => (
   <Stack spacing={1}>
     <Typography variant="h5">Image Transforms</Typography>
-    <Grid container spacing={2} padding={1} columns={{ xs: 4, sm: 8, md: 12 }}>
+    <Grid
+      container
+      spacing={2}
+      padding={1}
+      columns={{ xs: 4, sm: 8, md: 12 }}
+      rowSpacing={4}
+    >
       {currentTransforms.map((t, tIdx) => (
         <Grid item xs={4} sm={4} md={4}>
           <ImageTransform
