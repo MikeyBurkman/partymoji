@@ -148,19 +148,36 @@ export const readImage = (dataUrl: string): Promise<Image> =>
   new Promise<Image>((res, rej) =>
     getPixels(
       dataUrl,
-      (err: Error, getPixelResults: { shape: Dimensions; data: ImageData }) => {
+      (err: Error, results: { shape: number[]; data: ImageData }) => {
         if (err) {
           return rej(err);
-        } else {
+        }
+
+        if (results.shape.length === 3) {
+          // Single frame
           return res({
             frames: [
               {
-                data: Uint8Array.from(getPixelResults.data),
+                data: Uint8Array.from(results.data),
               },
             ],
-            dimensions: [getPixelResults.shape[0], getPixelResults.shape[1]],
+            dimensions: [results.shape[0], results.shape[1]],
           });
         }
+
+        // Multiple frames, need to slice up the image data into numFrames slices
+        const [numFrames, width, height] = results.shape;
+        const sliceSize = width * height * 4;
+        const frames: Uint8Array[] = [];
+        for (let i = 0; i < numFrames; i += 1) {
+          frames.push(
+            results.data.subarray(i * sliceSize, (i + 1) * sliceSize)
+          );
+        }
+        return res({
+          frames: frames.map((f) => ({ data: f })),
+          dimensions: [width, height],
+        });
       }
     )
   );

@@ -25,13 +25,16 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
       <input
         type="file"
         hidden
-        accept="image/png,image/jpg"
+        accept="image/png,image/jpg,image/gif"
         name="source-png"
         onChange={async (event) => {
           const files = Array.from(event.target.files ?? []);
           const file = files[0];
-          const baseImage = await readFile(file);
-          onChange(baseImage);
+          if (file) {
+            // Will be undefined if user clicked the cancel button
+            const baseImage = await readFile(file);
+            onChange(baseImage);
+          }
         }}
       />
     </Button>
