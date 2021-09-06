@@ -41,7 +41,8 @@
     "start": "REACT_APP_BUILD_TIME=$(date '+%m/%d/%y %H:%M:%S') react-scripts start",
     "build": "REACT_APP_BUILD_TIME=$(date '+%m/%d/%y %H:%M:%S') react-scripts build && del ./docs && mkdir ./docs && mv ./build/* ./docs",
     "eject": "react-scripts eject",
-    "pretty": "prettier --write \"**/*.{js,md,ts,html,tsx,json}\""
+    "pretty": "prettier --write \"**/*.{js,md,ts,html,tsx,json}\"",
+    "prepare": "husky install"
   },
   "eslintConfig": {
     "extends": [
@@ -61,6 +62,7 @@
     ]
   },
   "devDependencies": {
+    "husky": "^7.0.2",
     "prettier": "^2.3.2"
   }
 }
