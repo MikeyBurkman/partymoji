@@ -52,7 +52,7 @@ const FloatParam: React.FC<{
       <FormControl>
         <TextField
           error={!!invalidText}
-          value={value}
+          value={val}
           onBlur={onBlur}
           onChange={(e) => {
             setVal(e.target.value);
@@ -80,7 +80,7 @@ export const floatParam = (args: {
     const { min, max } = args;
     const parse = (s: string): ParsedParam<number> => {
       const n = parseFloat(s);
-      if (isNaN(n)) {
+      if (isNaN(n) || n.toString() !== s) {
         return { valid: false, reason: 'Must be a number' };
       }
       if (min !== undefined && n < min) {

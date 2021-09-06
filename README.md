@@ -21,7 +21,6 @@ https://mikeyburkman.github.io/partymoji/
 
 ##### TODO
 
-- Add FPS to global state so it can imported/exported
 - Componentize common things in parameters
 - Variable length params -- what to do if the default value is not valid?
   - Means that our array has holes in it...

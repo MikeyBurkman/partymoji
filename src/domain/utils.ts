@@ -185,7 +185,10 @@ export const writePixel = (args: {
   args.image[idx + 3] = args.color[3];
 };
 
-export const resizeImage = (args: {
+/**
+ * Change the dimensions of the image, scaling it to make it fit the new dimensions
+ */
+export const scaleImage = (args: {
   image: Image;
   newWidth: number;
   newHeight: number;
@@ -227,5 +230,58 @@ export const resizeImage = (args: {
   return {
     frames: newFrames,
     dimensions: [newWidth, newHeight],
+  };
+};
+
+/**
+ * Will change the image dimensions without altering the scale.
+ * If the new dimensions are larger, the image will be centered.
+ * If the new dimensions are smaller, it'll be cropped
+ */
+export const resizeImage = ({
+  image,
+  newWidth,
+  newHeight,
+}: {
+  image: Image;
+  newWidth: number;
+  newHeight: number;
+}): Image => {
+  const [sourceWidth, sourceHeight] = image.dimensions;
+  const newDimensions: Dimensions = [newWidth, newHeight];
+
+  const xPadding = (newWidth - sourceWidth) / 2;
+  const yPadding = (newHeight - sourceHeight) / 2;
+
+  const newFrames = image.frames.map((frame) => {
+    const transformedImageData = new Uint8Array(newWidth * newHeight * 4);
+    for (let y = 0; y < newHeight; y += 1) {
+      for (let x = 0; x < newWidth; x += 1) {
+        const pixel: Color =
+          x > xPadding &&
+          x < newWidth - xPadding &&
+          y > yPadding &&
+          y < newHeight - yPadding
+            ? getPixelFromSource(image.dimensions, frame.data, [
+                x - xPadding,
+                y - yPadding,
+              ])
+            : [0, 0, 0, 0];
+        writePixel({
+          color: pixel,
+          coord: [x, y],
+          dimensions: newDimensions,
+          image: transformedImageData,
+        });
+      }
+    }
+    return {
+      data: transformedImageData,
+    };
+  });
+
+  return {
+    frames: newFrames,
+    dimensions: newDimensions,
   };
 };

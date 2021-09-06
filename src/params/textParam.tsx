@@ -19,7 +19,7 @@ const TextParam: React.FC<{
       </Stack>
       <FormControl>
         <TextField
-          value={value}
+          value={val}
           onChange={(e) => setVal(e.target.value)}
           onBlur={() =>
             onChange(val ? { valid: true, value: val } : { valid: false })

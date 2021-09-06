@@ -5,7 +5,7 @@ import {
   mapCoords,
   mapFrames,
   repeat,
-  resizeImage,
+  scaleImage,
 } from '../domain/utils';
 import * as convert from 'color-convert';
 import { sliderParam } from '../params/sliderParam';
@@ -55,7 +55,7 @@ export const adjustImage = buildTransform({
 
     const hasFrameCount = frameCount !== 0;
 
-    const hasResize = newWidth > 0 && newHeight > 0;
+    const hasScaleChange = newWidth > 0 && newHeight > 0;
     // Use this to figure out when we should optimally resize the image
     const isBiggerImage =
       newWidth * newHeight > image.dimensions[0] * image.dimensions[1];
@@ -70,8 +70,8 @@ export const adjustImage = buildTransform({
     }
 
     // If making a smaller image, might as well do the brightness/contrast after making it smaller
-    if (hasResize && !isBiggerImage) {
-      currImage = resizeImage({ image: currImage, newWidth, newHeight });
+    if (hasScaleChange && !isBiggerImage) {
+      currImage = scaleImage({ image: currImage, newWidth, newHeight });
     }
 
     currImage = mapFrames(currImage, (imageData) =>
@@ -95,8 +95,8 @@ export const adjustImage = buildTransform({
     );
 
     // If the image will be made bigger, we'll run that after adjusting the brightness/contrast
-    if (hasResize && isBiggerImage) {
-      currImage = resizeImage({ image: currImage, newWidth, newHeight });
+    if (hasScaleChange && isBiggerImage) {
+      currImage = scaleImage({ image: currImage, newWidth, newHeight });
     }
 
     // Finally change the number of frames if we're adding frames
