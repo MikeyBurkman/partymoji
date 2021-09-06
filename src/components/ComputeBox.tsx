@@ -125,7 +125,7 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
               onComputed();
             } catch (err) {
               console.error(err);
-              console.error(err.stack);
+              console.error((err as any).stack);
             }
           });
         }}
