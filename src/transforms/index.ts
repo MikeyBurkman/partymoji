@@ -3,6 +3,7 @@ import { backgroundParty } from './background-party';
 import { backgroundImage } from './background-image';
 import { bounce } from './bounce';
 import { circle } from './circle';
+import { doubleVision } from './double-vision';
 import { expand } from './expand';
 import { fisheye } from './fisheye';
 import { grayscale } from './grayscale';
@@ -32,6 +33,7 @@ export const POSSIBLE_TRANSFORMS = [
   backgroundParty,
   bounce,
   circle,
+  doubleVision,
   expand,
   fisheye,
   grayscale,

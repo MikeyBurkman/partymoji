@@ -110,7 +110,7 @@ export const App: React.FC = () => {
               rel="noreferrer"
             >
               <img
-                src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+                src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg"
                 width={64}
                 height={64}
                 alt="Github Link"

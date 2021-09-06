@@ -25,3 +25,4 @@ https://mikeyburkman.github.io/partymoji/
 - Componentize common things in parameters
 - Variable length params -- what to do if the default value is not valid?
   - Means that our array has holes in it...
+- Background Image should center/crop instead of resize

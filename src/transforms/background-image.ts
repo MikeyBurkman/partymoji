@@ -42,7 +42,10 @@ export const backgroundImage = buildTransform({
     return mapFrames(image, (data, frameIndex) => {
       return mapCoords(image.dimensions, (coord) => {
         const src = getPixelFromSource(image.dimensions, data, coord);
-        const otherImageFrame = frameIndex % otherImage.frames.length;
+        const frameProgress = frameIndex / image.frames.length;
+        const otherImageFrame = Math.floor(
+          frameProgress * otherImage.frames.length
+        );
         const otherImageSrc = getPixelFromSource(
           otherImage.dimensions,
           otherImage.frames[otherImageFrame].data,
