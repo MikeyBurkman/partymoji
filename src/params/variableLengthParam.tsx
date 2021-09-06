@@ -1,5 +1,4 @@
 import {
-  Tooltip,
   Icon,
   IconButton,
   Button,
@@ -8,6 +7,7 @@ import {
   Stack,
 } from '@material-ui/core';
 import React from 'react';
+import { HelpTooltip } from '../components/HelpTooltip';
 import { ParamValue, ParamFunction } from '../domain/types';
 
 interface VariableLengthProps<T> {
@@ -39,11 +39,7 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
       <Stack spacing={1}>
         <Stack direction="row" spacing={1}>
           <Typography variant="body2">{name}</Typography>
-          {description && (
-            <Tooltip title={description}>
-              <Icon>help</Icon>
-            </Tooltip>
-          )}
+          <HelpTooltip description={description} />
         </Stack>
         {params.map(({ param, pValue }, idx) => {
           const ele = param.fn({

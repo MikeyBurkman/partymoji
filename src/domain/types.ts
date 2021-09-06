@@ -123,5 +123,6 @@ export interface AppState {
     paramsValues: ParamValue<any>[];
     computedImage?: string;
   }[];
+  fps: number;
   dirty: boolean;
 }

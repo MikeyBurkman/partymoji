@@ -1,10 +1,11 @@
-import { Icon, Stack, Tooltip, Typography } from '@material-ui/core';
+import { Stack, Typography } from '@material-ui/core';
 import React from 'react';
 import { HuePicker } from 'react-color';
 import * as convert from 'color-convert';
 
 import { ParamValue, ParamFunction } from '../domain/types';
 import { toHexColor } from '../domain/utils';
+import { HelpTooltip } from '../components/HelpTooltip';
 
 const HuePickerParam: React.FC<{
   name: string;
@@ -20,11 +21,7 @@ const HuePickerParam: React.FC<{
     <Stack spacing={1}>
       <Stack direction="row" spacing={1}>
         <Typography variant="body2">{name}</Typography>
-        {description && (
-          <Tooltip title={description}>
-            <Icon fontSize="small">help</Icon>
-          </Tooltip>
-        )}
+        <HelpTooltip description={description} />
       </Stack>
       <HuePicker
         color={hexColor}

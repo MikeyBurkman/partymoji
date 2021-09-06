@@ -1,5 +1,6 @@
-import { Icon, Slider, Stack, Tooltip, Typography } from '@material-ui/core';
+import { Slider, Stack, Typography } from '@material-ui/core';
 import React from 'react';
+import { HelpTooltip } from '../components/HelpTooltip';
 
 import { ParamValue, ParamFunction } from '../domain/types';
 
@@ -16,11 +17,7 @@ const SliderParam: React.FC<{
     <Stack spacing={1}>
       <Stack direction="row" spacing={1}>
         <Typography variant="body2">{name}</Typography>
-        {description && (
-          <Tooltip title={description}>
-            <Icon fontSize="small">help</Icon>
-          </Tooltip>
-        )}
+        <HelpTooltip description={description} />
       </Stack>
       <Stack
         direction="row"
@@ -29,7 +26,7 @@ const SliderParam: React.FC<{
       >
         <Slider
           aria-label={name}
-          defaultValue={value}
+          value={value}
           step={step}
           valueLabelDisplay="off"
           getAriaValueText={(x) => x.toString()}

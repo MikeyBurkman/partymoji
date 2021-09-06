@@ -12,15 +12,14 @@ import {
 
 import { assert } from '../domain/utils';
 import { runTransforms } from '../domain/run';
-import { TransformInput, TransformWithParams } from '../domain/types';
+import { AppState, TransformInput } from '../domain/types';
 import { transformByName } from '../transforms';
 import { sliderParam } from '../params/sliderParam';
 
 interface ComputeBoxProps {
-  isDirty: boolean;
   computeDisabled: boolean;
-  baseImageUrl?: string;
-  transforms: TransformWithParams<any>[];
+  appState: AppState;
+  onFpsChange: (fps: number) => void;
   onComputed: () => void;
 }
 
@@ -41,22 +40,17 @@ const fpsParam = sliderParam({
 });
 
 export const ComputeBox: React.FC<ComputeBoxProps> = ({
-  isDirty,
   computeDisabled,
-  baseImageUrl,
-  transforms,
+  appState,
+  onFpsChange,
   onComputed,
 }) => {
-  const [state, setState] = React.useState<ComputeState>({
+  const [computeState, setComputeState] = React.useState<ComputeState>({
     loading: false,
     results: [],
     computeTime: undefined,
   });
-  const [fpsChanged, setFpsChanged] = React.useState(false);
-  const [fps, setFps] = React.useState(DEFAULT_FPS);
   const [progress, setProgress] = React.useState<number | undefined>();
-
-  const buttonDisabled = computeDisabled && !fpsChanged;
 
   return (
     <Stack spacing={1}>
@@ -64,11 +58,10 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
 
       <div style={{ maxWidth: '300px' }}>
         {fpsParam.fn({
-          value: { valid: true, value: fps },
+          value: { valid: true, value: appState.fps },
           onChange: (x) => {
             if (x.valid) {
-              setFps(x.value);
-              setFpsChanged(true);
+              onFpsChange(x.value);
             }
           },
         })}
@@ -77,13 +70,13 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
         variant="contained"
         sx={{ maxWidth: '300px' }}
         endIcon={
-          !state.loading && (isDirty || fpsChanged) ? (
+          !computeState.loading && appState.dirty ? (
             <Icon>priority_high</Icon>
           ) : undefined
         }
-        disabled={buttonDisabled}
+        disabled={computeDisabled}
         onClick={async () => {
-          const transformInputs = transforms.map(
+          const transformInputs = appState.transforms.map(
             (t): TransformInput<any> => ({
               transform: transformByName(t.transformName),
               params: t.paramsValues.map((p) => {
@@ -92,35 +85,34 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
               }),
             })
           );
-          setState({ loading: true });
+          setComputeState({ loading: true });
           setTimeout(async () => {
             try {
               assert(
-                baseImageUrl,
+                appState.baseImage,
                 'No source image, this button should be disabled!'
               );
               const start = Date.now();
               let currIdx = 0;
               setProgress(0);
               const results = await runTransforms({
-                inputDataUrl: baseImageUrl,
+                inputDataUrl: appState.baseImage,
                 transformList: transformInputs,
-                fps,
+                fps: appState.fps,
                 onImageFinished: () => {
                   currIdx += 1;
                   setProgress((currIdx / transformInputs.length) * 100);
                 },
               });
               const computeTime = Math.ceil((Date.now() - start) / 1000);
-              setState({
+              setComputeState({
                 loading: false,
                 computeTime,
                 results: results.map((result, idx) => ({
-                  transformName: transforms[idx].transformName,
+                  transformName: appState.transforms[idx].transformName,
                   gif: result.gif,
                 })),
               });
-              setFpsChanged(false);
               setProgress(undefined);
               onComputed();
             } catch (err) {
@@ -130,21 +122,25 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
           });
         }}
       >
-        {state.loading ? <CircularProgress color="inherit" /> : 'Compute'}
+        {computeState.loading ? (
+          <CircularProgress color="inherit" />
+        ) : (
+          'Compute'
+        )}
       </Button>
       {progress !== undefined && (
         <LinearProgress variant="determinate" value={progress} />
       )}
-      {!state.loading && state.computeTime && (
+      {!computeState.loading && computeState.computeTime !== undefined && (
         <>
           <Divider />
           <Typography variant="caption">
-            Compute Time: {state.computeTime} second(s)
+            Compute Time: {computeState.computeTime} second(s)
           </Typography>
         </>
       )}
 
-      {!state.loading && state.results.length > 0 && (
+      {!computeState.loading && computeState.results.length > 0 && (
         <>
           <Divider />
           <Grid
@@ -153,7 +149,7 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
             padding={1}
             columns={{ xs: 4, sm: 8, md: 12 }}
           >
-            {state.results.map(({ gif, transformName }, idx) => (
+            {computeState.results.map(({ gif, transformName }, idx) => (
               <Grid item xs={4} sm={4} md={4}>
                 <Typography variant="subtitle2">{transformName}</Typography>
                 <img

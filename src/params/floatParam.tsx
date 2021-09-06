@@ -1,13 +1,12 @@
 import {
   FormControl,
   FormHelperText,
-  Icon,
   Stack,
   TextField,
-  Tooltip,
   Typography,
 } from '@material-ui/core';
 import React from 'react';
+import { HelpTooltip } from '../components/HelpTooltip';
 import { ParamValue, ParamFunction } from '../domain/types';
 
 type ParsedParam<T> =
@@ -48,16 +47,12 @@ const FloatParam: React.FC<{
     <Stack spacing={1}>
       <Stack direction="row" spacing={1}>
         <Typography variant="body2">{name}</Typography>
-        {description && (
-          <Tooltip title={description}>
-            <Icon fontSize="small">help</Icon>
-          </Tooltip>
-        )}
+        <HelpTooltip description={description} />
       </Stack>
       <FormControl>
         <TextField
           error={!!invalidText}
-          defaultValue={value}
+          value={value}
           onBlur={onBlur}
           onChange={(e) => {
             setVal(e.target.value);

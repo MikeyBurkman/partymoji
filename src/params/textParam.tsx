@@ -1,12 +1,6 @@
-import {
-  FormControl,
-  Icon,
-  Stack,
-  TextField,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
+import { FormControl, Stack, TextField, Typography } from '@material-ui/core';
 import React from 'react';
+import { HelpTooltip } from '../components/HelpTooltip';
 import { ParamFunction, ParamValue } from '../domain/types';
 
 const TextParam: React.FC<{
@@ -21,15 +15,11 @@ const TextParam: React.FC<{
     <Stack spacing={1}>
       <Stack direction="row" spacing={1}>
         <Typography variant="body2">{name}</Typography>
-        {description && (
-          <Tooltip title={description}>
-            <Icon fontSize="small">help</Icon>
-          </Tooltip>
-        )}
+        <HelpTooltip description={description} />
       </Stack>
       <FormControl>
         <TextField
-          defaultValue={value}
+          value={value}
           onChange={(e) => setVal(e.target.value)}
           onBlur={() =>
             onChange(val ? { valid: true, value: val } : { valid: false })

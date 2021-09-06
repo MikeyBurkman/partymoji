@@ -23,6 +23,7 @@ export const App: React.FC = () => {
     dirty: false,
     transforms: [],
     baseImage: undefined,
+    fps: 20,
   });
 
   if (DEBUG) {
@@ -81,10 +82,15 @@ export const App: React.FC = () => {
             </Paper>
             <Paper style={{ padding: 16 }}>
               <ComputeBox
-                isDirty={state.dirty}
-                baseImageUrl={state.baseImage}
                 computeDisabled={computeBtnDisbled}
-                transforms={state.transforms}
+                appState={state}
+                onFpsChange={(fps) =>
+                  setState({
+                    ...state,
+                    fps,
+                    dirty: true,
+                  })
+                }
                 onComputed={() =>
                   setState({
                     ...state,

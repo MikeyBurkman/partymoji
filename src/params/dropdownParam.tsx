@@ -1,6 +1,4 @@
 import {
-  Tooltip,
-  Icon,
   FormControl,
   Select,
   MenuItem,
@@ -8,6 +6,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
+import { HelpTooltip } from '../components/HelpTooltip';
 import { ParamValue, ParamFunction } from '../domain/types';
 
 const DropdownParam: React.FC<{
@@ -21,11 +20,7 @@ const DropdownParam: React.FC<{
     <Stack spacing={1}>
       <Stack direction="row" spacing={1}>
         <Typography variant="body2">{name}</Typography>
-        {description && (
-          <Tooltip title={description}>
-            <Icon fontSize="small">help</Icon>
-          </Tooltip>
-        )}
+        <HelpTooltip description={description} />
       </Stack>
       <FormControl>
         <Select

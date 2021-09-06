@@ -1,7 +1,8 @@
-import { Icon, Stack, Tooltip, Typography } from '@material-ui/core';
+import { Stack, Typography } from '@material-ui/core';
 import React from 'react';
 import { SketchPicker } from 'react-color';
 import { Expandable } from '../components/Expandable';
+import { HelpTooltip } from '../components/HelpTooltip';
 
 import { ParamValue, ParamFunction, Color } from '../domain/types';
 import { fromHexColor, toHexColor } from '../domain/utils';
@@ -27,11 +28,7 @@ const ColorPickerParam: React.FC<{
       mainEle={
         <Stack direction="row" spacing={4}>
           <Typography variant="body2">{name}</Typography>
-          {description && (
-            <Tooltip title={description}>
-              <Icon>help</Icon>
-            </Tooltip>
-          )}
+          <HelpTooltip description={description} />
           {value && <ColorBox color={value} />}
         </Stack>
       }

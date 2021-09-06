@@ -25,7 +25,7 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
       rowSpacing={4}
     >
       {currentTransforms.map((t, tIdx) => (
-        <Grid item xs={4} sm={4} md={4}>
+        <Grid item xs={4} sm={4} md={4} key={`${t.transformName}-${tIdx}`}>
           <ImageTransform
             index={tIdx}
             possibleTransforms={possibleTransforms}
