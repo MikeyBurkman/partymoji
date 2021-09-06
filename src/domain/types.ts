@@ -33,16 +33,12 @@ export type Dimensions = [number, number];
  */
 export type ImageData = Uint8Array;
 
-export type Frame = {
-  data: ImageData;
-};
-
 /**
  * The results of get-pixels processImage()
  */
 export interface Image {
   dimensions: Dimensions;
-  frames: Frame[];
+  frames: ImageData[];
 }
 
 export type Random = seedrandom.prng;

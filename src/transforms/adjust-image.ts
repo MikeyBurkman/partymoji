@@ -1,10 +1,11 @@
-import { buildTransform, Color, Frame, Image } from '../domain/types';
+import { range } from 'remeda';
+
+import { buildTransform, Color, Image } from '../domain/types';
 import {
   clampColor,
   getPixelFromSource,
   mapCoords,
   mapFrames,
-  repeat,
   scaleImage,
 } from '../domain/utils';
 import * as convert from 'color-convert';
@@ -114,17 +115,13 @@ const setFrameCount = (image: Image, frameCount: number): Image => {
   // Resulting image will contain frameCount frames.
   // If the original image had less than that, then we'll copy the last frame until we have enough.
   // If the original has more frames, then we'll discard the last ones.
-  const frames = repeat(frameCount).map(
-    (i): Frame => ({
-      data: currentFrames[i]
-        ? currentFrames[i].data
-        : currentFrames[currentFrames.length - 1].data,
-    })
-  );
-
   return {
     dimensions: image.dimensions,
-    frames,
+    frames: range(0, frameCount).map((i) =>
+      currentFrames[i]
+        ? currentFrames[i]
+        : currentFrames[currentFrames.length - 1]
+    ),
   };
 };
 
@@ -138,7 +135,7 @@ const calculateAverageValue = (image: Image): number => {
       for (let y = 0; y < height; y += 1) {
         const [r, g, b] = getPixelFromSource(
           image.dimensions,
-          image.frames[f].data,
+          image.frames[f],
           [x, y]
         );
         const [, , l] = convert.rgb.hsv(r, g, b);

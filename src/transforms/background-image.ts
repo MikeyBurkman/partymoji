@@ -3,10 +3,10 @@ import { imagePickerParam } from '../params/imagePickerParam';
 import { buildTransform } from '../domain/types';
 import {
   isTransparent,
-  getPixelFromSource,
   mapFrames,
   mapCoords,
   resizeImage,
+  getPixel,
 } from '../domain/utils';
 
 export const backgroundImage = buildTransform({
@@ -41,16 +41,21 @@ export const backgroundImage = buildTransform({
 
     return mapFrames(image, (data, frameIndex) => {
       return mapCoords(image.dimensions, (coord) => {
-        const src = getPixelFromSource(image.dimensions, data, coord);
         const frameProgress = frameIndex / image.frames.length;
         const otherImageFrame = Math.floor(
           frameProgress * otherImage.frames.length
         );
-        const otherImageSrc = getPixelFromSource(
-          otherImage.dimensions,
-          otherImage.frames[otherImageFrame].data,
-          coord
-        );
+        const otherImageSrc = getPixel({
+          image: otherImage,
+          frameIndex: otherImageFrame,
+          coord,
+        });
+
+        const src = getPixel({
+          image,
+          frameIndex,
+          coord,
+        });
 
         if (type === 'background') {
           // Only print the other image if the src image is transparent here

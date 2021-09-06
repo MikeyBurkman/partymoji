@@ -50,10 +50,7 @@ export const runTransforms = async ({
     const transparentColor = getTransparentColor(result, random);
 
     // Transform any of our transparent pixels to what our gif understands to be transparent
-    const image = encodeTransparency(
-      result.frames.map((f) => f.data),
-      transparentColor
-    );
+    const image = encodeTransparency(result.frames, transparentColor);
 
     const gif = await createGif(
       result.dimensions,
@@ -156,11 +153,7 @@ export const readImage = (dataUrl: string): Promise<Image> =>
         if (results.shape.length === 3) {
           // Single frame
           return res({
-            frames: [
-              {
-                data: Uint8Array.from(results.data),
-              },
-            ],
+            frames: [Uint8Array.from(results.data)],
             dimensions: [results.shape[0], results.shape[1]],
           });
         }
@@ -175,7 +168,7 @@ export const readImage = (dataUrl: string): Promise<Image> =>
           );
         }
         return res({
-          frames: frames.map((f) => ({ data: f })),
+          frames,
           dimensions: [width, height],
         });
       }
@@ -193,7 +186,7 @@ const getTransparentColor = (
   image.frames.forEach((frame) => {
     for (let y = 0; y < height; y += 1) {
       for (let x = 0; x < width; x += 1) {
-        const px = getPixelFromSource(image.dimensions, frame.data, [x, y]);
+        const px = getPixelFromSource(image.dimensions, frame, [x, y]);
         if (isTransparent(px)) {
           hasTransparent = true;
         } else {

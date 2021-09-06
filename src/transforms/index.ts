@@ -1,5 +1,5 @@
 import { adjustImage } from './adjust-image';
-import { backgroundParty } from './background-party';
+import { backgroundColor } from './background-color';
 import { backgroundImage } from './background-image';
 import { bounce } from './bounce';
 import { circle } from './circle';
@@ -12,6 +12,7 @@ import { hueShift } from './hue-shift';
 import { lightning } from './lightning';
 import { nuke } from './nuke';
 import { party } from './party';
+import { partyBackground } from './party-background';
 import { pinwheel } from './pinwheel';
 import { radiance } from './radiance';
 import { resizeImage } from './resize-image';
@@ -19,7 +20,6 @@ import { ripple } from './ripple';
 import { rotate } from './rotate';
 import { roxbury } from './roxbury';
 import { shake } from './shake';
-import { solidBackground } from './solid-background';
 import { staticc } from './static';
 import { staticBackground } from './static-background';
 import { transparentColor } from './transparent-color';
@@ -29,8 +29,8 @@ import { assert } from '../domain/utils';
 
 export const POSSIBLE_TRANSFORMS = [
   adjustImage,
+  backgroundColor,
   backgroundImage,
-  backgroundParty,
   bounce,
   circle,
   doubleVision,
@@ -42,6 +42,7 @@ export const POSSIBLE_TRANSFORMS = [
   lightning,
   nuke,
   party,
+  partyBackground,
   pinwheel,
   radiance,
   resizeImage,
@@ -49,7 +50,6 @@ export const POSSIBLE_TRANSFORMS = [
   rotate,
   roxbury,
   shake,
-  solidBackground,
   staticc,
   staticBackground,
   transparentColor,

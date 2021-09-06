@@ -1,7 +1,8 @@
+import { range } from 'remeda';
+
 import { buildTransform } from '../domain/types';
 import {
   isTransparent,
-  repeat,
   fromHexColor,
   mapFrames,
   mapCoords,
@@ -46,7 +47,7 @@ export const radiance = buildTransform({
   ] as const,
   fn: ({ image, parameters }) => {
     const [groupCount, colors] = parameters;
-    const colorList = repeat(groupCount).flatMap(() => colors);
+    const colorList = range(0, groupCount).flatMap(() => colors);
     const [width, height] = image.dimensions;
     const centerX = width / 2;
     const centerY = height / 2;

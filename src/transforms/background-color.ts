@@ -2,12 +2,12 @@ import { buildTransform } from '../domain/types';
 import { mapImage, isTransparent, fromHexColor } from '../domain/utils';
 import { colorPickerParam } from '../params/colorPickerParam';
 
-export const solidBackground = buildTransform({
-  name: 'Solid Background',
+export const backgroundColor = buildTransform({
+  name: 'Background Color',
   description: 'Change all transparent pixles to the given color',
   params: [
     colorPickerParam({
-      name: 'Background Color',
+      name: 'Color',
       defaultValue: fromHexColor('#000000'),
     }),
   ],

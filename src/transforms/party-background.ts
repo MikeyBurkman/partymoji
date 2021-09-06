@@ -14,8 +14,8 @@ const PARTY_COLORS: Color[] = [
   [255, 105, 104, 255],
 ];
 
-export const backgroundParty = buildTransform({
-  name: 'Background Party',
+export const partyBackground = buildTransform({
+  name: 'Party Background',
   description: 'Transparent pixels will flash bright party colors',
   params: [],
   fn: mapImage(({ coord, frameCount, frameIndex, getSrcPixel }) => {

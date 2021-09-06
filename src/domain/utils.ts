@@ -1,5 +1,6 @@
 import seedrandom from 'seedrandom';
 import { AssertionError } from 'assert';
+import { range } from 'remeda';
 
 import {
   Color,
@@ -55,6 +56,8 @@ export const clampColor = ([r, g, b, a]: Color): Color => [
   clamp(a, 0, 255),
 ];
 
+export const TRANSPARENT_COLOR: Color = [0, 0, 0, 0];
+
 export const getPixelFromSource = (
   dimensions: Dimensions,
   image: ImageData,
@@ -63,7 +66,7 @@ export const getPixelFromSource = (
   const [width, height] = dimensions;
   const [x, y] = coord;
   if (x < 0 || x >= width || y < 0 || y >= height) {
-    return [0, 0, 0, 0]; // Default to transparent if an invalid coordinate
+    return TRANSPARENT_COLOR; // Default to transparent if an invalid coordinate
   }
 
   const idx = getImageIndex(dimensions, x, y);
@@ -99,15 +102,10 @@ export const mapFrames = (
     frameIndex: number,
     frameCount: number
   ) => ImageData
-): Image => {
-  const frames = image.frames.map((frame, idx) => ({
-    data: cb(frame.data, idx, image.frames.length),
-  }));
-  return {
-    dimensions: image.dimensions,
-    frames,
-  };
-};
+): Image => ({
+  dimensions: image.dimensions,
+  frames: image.frames.map((frame, idx) => cb(frame, idx, image.frames.length)),
+});
 
 /**
  * Maps the coordinates in a given shape into an image
@@ -165,25 +163,8 @@ export const mapImage = <T>(
     );
 };
 
-/** Create a new array [0, 1, 2, ...N-1] */
-export const repeat = (times: number): number[] =>
-  [...new Array(times)].map((_, i) => i);
-
 export const getImageIndex = ([width]: Dimensions, x: number, y: number) =>
   (x + y * width) * 4;
-
-export const writePixel = (args: {
-  image: ImageData;
-  dimensions: Dimensions;
-  coord: Coord;
-  color: Color;
-}): void => {
-  const idx = getImageIndex(args.dimensions, args.coord[0], args.coord[1]);
-  args.image[idx] = args.color[0];
-  args.image[idx + 1] = args.color[1];
-  args.image[idx + 2] = args.color[2];
-  args.image[idx + 3] = args.color[3];
-};
 
 /**
  * Change the dimensions of the image, scaling it to make it fit the new dimensions
@@ -198,10 +179,16 @@ export const scaleImage = (args: {
   const xRatio = width / newWidth;
   const yRatio = height / newHeight;
 
-  const newDimensions: Dimensions = [newWidth, newHeight];
+  const newImage = createNewImage({
+    dimensions: [newWidth, newHeight],
+    frameCount: image.frames.length,
+  });
 
-  const newFrames = image.frames.map((frame) => {
-    const transformedImageData = new Uint8Array(newWidth * newHeight * 4);
+  for (
+    let frameIndex = 0;
+    frameIndex < newImage.frames.length;
+    frameIndex += 1
+  ) {
     for (let y = 0; y < newHeight; y += 1) {
       for (let x = 0; x < newWidth; x += 1) {
         // Simple nearest-neighbor image scaling.
@@ -210,27 +197,22 @@ export const scaleImage = (args: {
         const srcX = Math.floor(x * xRatio);
         const srcY = Math.floor(y * yRatio);
 
-        const pixel = getPixelFromSource(image.dimensions, frame.data, [
-          srcX,
-          srcY,
-        ]);
-        writePixel({
-          color: pixel,
+        const color = getPixel({
+          image,
+          frameIndex,
+          coord: [srcX, srcY],
+        });
+        setPixel({
+          image: newImage,
+          frameIndex,
+          color,
           coord: [x, y],
-          dimensions: newDimensions,
-          image: transformedImageData,
         });
       }
     }
-    return {
-      data: transformedImageData,
-    };
-  });
+  }
 
-  return {
-    frames: newFrames,
-    dimensions: [newWidth, newHeight],
-  };
+  return newImage;
 };
 
 /**
@@ -248,40 +230,82 @@ export const resizeImage = ({
   newHeight: number;
 }): Image => {
   const [sourceWidth, sourceHeight] = image.dimensions;
-  const newDimensions: Dimensions = [newWidth, newHeight];
 
-  const xPadding = (newWidth - sourceWidth) / 2;
-  const yPadding = (newHeight - sourceHeight) / 2;
+  const xPadding = Math.round((newWidth - sourceWidth) / 2);
+  const yPadding = Math.round((newHeight - sourceHeight) / 2);
 
-  const newFrames = image.frames.map((frame) => {
-    const transformedImageData = new Uint8Array(newWidth * newHeight * 4);
+  const newImage = createNewImage({
+    dimensions: [newWidth, newHeight],
+    frameCount: image.frames.length,
+  });
+
+  for (
+    let frameIndex = 0;
+    frameIndex < newImage.frames.length;
+    frameIndex += 1
+  ) {
     for (let y = 0; y < newHeight; y += 1) {
       for (let x = 0; x < newWidth; x += 1) {
-        const pixel: Color =
+        const color: Color =
           x > xPadding &&
           x < newWidth - xPadding &&
           y > yPadding &&
           y < newHeight - yPadding
-            ? getPixelFromSource(image.dimensions, frame.data, [
-                x - xPadding,
-                y - yPadding,
-              ])
-            : [0, 0, 0, 0];
-        writePixel({
-          color: pixel,
+            ? getPixel({
+                image,
+                frameIndex,
+                coord: [x - xPadding, y - yPadding],
+              })
+            : TRANSPARENT_COLOR;
+        setPixel({
+          image: newImage,
+          frameIndex,
           coord: [x, y],
-          dimensions: newDimensions,
-          image: transformedImageData,
+          color,
         });
       }
     }
-    return {
-      data: transformedImageData,
-    };
-  });
+  }
 
-  return {
-    frames: newFrames,
-    dimensions: newDimensions,
-  };
+  return newImage;
+};
+
+export const createNewImage = (args: {
+  frameCount: number;
+  dimensions: Dimensions;
+}): Image => ({
+  dimensions: args.dimensions,
+  frames: range(0, args.frameCount).map(
+    // 4 == bytes used per color (RGBA)
+    () => new Uint8Array(args.dimensions[0] * args.dimensions[1] * 4)
+  ),
+});
+
+export const getPixel = (args: {
+  image: Image;
+  frameIndex: number;
+  coord: Coord;
+}) =>
+  getPixelFromSource(
+    args.image.dimensions,
+    args.image.frames[args.frameIndex],
+    args.coord
+  );
+
+export const setPixel = (args: {
+  image: Image;
+  frameIndex: number;
+  coord: Coord;
+  color: Color;
+}) => {
+  const idx = getImageIndex(
+    args.image.dimensions,
+    args.coord[0],
+    args.coord[1]
+  );
+  const frame = args.image.frames[args.frameIndex];
+  frame[idx] = args.color[0];
+  frame[idx + 1] = args.color[1];
+  frame[idx + 2] = args.color[2];
+  frame[idx + 3] = args.color[3];
 };

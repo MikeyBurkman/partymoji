@@ -150,7 +150,7 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
             columns={{ xs: 4, sm: 8, md: 12 }}
           >
             {computeState.results.map(({ gif, transformName }, idx) => (
-              <Grid item xs={4} sm={4} md={4}>
+              <Grid item xs={4} sm={4} md={4} key={`${transformName}-${idx}`}>
                 <Typography variant="subtitle2">{transformName}</Typography>
                 <img
                   src={gif}
