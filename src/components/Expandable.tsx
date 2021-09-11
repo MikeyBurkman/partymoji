@@ -23,7 +23,7 @@ export const Expandable: React.FC<ExpandableProps> = ({
       <Box>
         <Button
           onClick={() => setCollapsed(!collapsed)}
-          style={{ textTransform: 'none' }}
+          style={{ textTransform: 'none', color: 'black' }}
         >
           <Stack direction="row" spacing={4}>
             <div>{mainEle}</div>
