@@ -3,11 +3,12 @@ import { backgroundColor } from './background-color';
 import { backgroundImage } from './background-image';
 import { bounce } from './bounce';
 import { circle } from './circle';
+import { colors } from './colors';
+import { colorsBackground } from './colors-background';
 import { doubleVision } from './double-vision';
 import { expand } from './expand';
 import { fisheye } from './fisheye';
 import { grayscale } from './grayscale';
-import { hueParty } from './hue-party';
 import { hueShift } from './hue-shift';
 import { lightning } from './lightning';
 import { nuke } from './nuke';
@@ -33,11 +34,12 @@ export const POSSIBLE_TRANSFORMS = [
   backgroundImage,
   bounce,
   circle,
+  colors,
+  colorsBackground,
   doubleVision,
   expand,
   fisheye,
   grayscale,
-  hueParty,
   hueShift,
   lightning,
   nuke,

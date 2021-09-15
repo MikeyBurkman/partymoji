@@ -9,7 +9,7 @@ export const hueShift = buildTransform({
   params: [
     huePickerParam({
       name: 'Hue',
-      defaultValue: 128,
+      defaultValue: 180,
     }),
   ],
   fn: mapImage(({ coord, getSrcPixel, parameters }) => {

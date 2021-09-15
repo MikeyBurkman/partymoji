@@ -17,6 +17,7 @@ import { ImagePicker } from './components/ImagePicker';
 import { ImageTransformList } from './components/ImageTransformList';
 import { ImportExport } from './components/ImportExport';
 import { Help } from './components/Help';
+import { TopLevelErrorBoundary } from './components/TopLevelErrorBoundary';
 
 // Set to true to print out the current state at the bottom of the page
 const DEBUG = false;
@@ -79,7 +80,12 @@ export const App: React.FC = () => {
     });
 
   return (
-    <>
+    <TopLevelErrorBoundary
+      onClearLocalStorage={() => {
+        window.localStorage.removeItem(LOCAL_STORAGE_KEY);
+        window.location.reload();
+      }}
+    >
       <ScopedCssBaseline />
       <Container>
         <Stack spacing={4} justifyContent="space-evenly" divider={<Divider />}>
@@ -186,6 +192,6 @@ export const App: React.FC = () => {
           </Stack>
         </Stack>
       </Container>
-    </>
+    </TopLevelErrorBoundary>
   );
 };

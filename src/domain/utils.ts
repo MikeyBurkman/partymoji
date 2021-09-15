@@ -34,6 +34,11 @@ export const fromHexColor = (hex: string): Color => [
 
 export const isHexColor = (s: string) => /^#[0-9A-F]{6}$/.test(s);
 
+/**
+ * Our transformation functions allow for an alpha channel, but gifs do not.
+ * All pixels are either fully solid or fully transparent.
+ * This function returns true if the color's alpha is below a certain threshold.
+ */
 export const isTransparent = (pixel: Color) => pixel[3] < 64;
 
 export const randomColor = (random: seedrandom.prng): Color => [
