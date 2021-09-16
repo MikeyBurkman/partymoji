@@ -33,7 +33,7 @@ export const radiance = buildTransform({
       description: 'How many times each color is repeated',
       defaultValue: 1,
       min: 1,
-      max: 12,
+      max: 24,
     }),
     variableLengthParam({
       name: 'Colors',
