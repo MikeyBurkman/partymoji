@@ -45,7 +45,7 @@ export const App: React.FC = () => {
           return;
         }
 
-        setStateRaw(savedState);
+        setStateRaw({ ...savedState, dirty: true });
       }
     } catch (err) {
       // @ts-ignore
