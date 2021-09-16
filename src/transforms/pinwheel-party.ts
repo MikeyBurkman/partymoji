@@ -14,16 +14,6 @@ export const pinwheelParty = buildTransform({
   name: 'Pinwheel Party',
   description: 'Create a pinwheel of party colors',
   params: [
-    intParam({
-      name: 'Offset X',
-      description: 'Change the horizontal center of the pinwheel',
-      defaultValue: 0,
-    }),
-    intParam({
-      name: 'Offset Y',
-      description: 'Change the vertical center of the pinwheel',
-      defaultValue: 0,
-    }),
     sliderParam({
       name: 'Group Count',
       description: 'How many times each rainbow is repeated',
@@ -55,6 +45,16 @@ export const pinwheelParty = buildTransform({
       step: 5,
       defaultValue: 75,
     }),
+    intParam({
+      name: 'Offset X',
+      description: 'Change the horizontal center of the pinwheel',
+      defaultValue: 0,
+    }),
+    intParam({
+      name: 'Offset Y',
+      description: 'Change the vertical center of the pinwheel',
+      defaultValue: 0,
+    }),
   ] as const,
   fn: mapImage(
     ({
@@ -63,7 +63,7 @@ export const pinwheelParty = buildTransform({
       frameCount,
       frameIndex,
       getSrcPixel,
-      parameters: [offsetX, offsetY, groupCount, type, amount],
+      parameters: [groupCount, type, amount, offsetX, offsetY],
     }) => {
       const srcPixel = getSrcPixel(coord);
 

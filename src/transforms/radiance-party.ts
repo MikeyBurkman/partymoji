@@ -8,6 +8,7 @@ import {
   colorFromeHue,
 } from '../domain/utils';
 import { dropdownParam } from '../params/dropdownParam';
+import { intParam } from '../params/intParam';
 import { sliderParam } from '../params/sliderParam';
 
 export const radianceParty = buildTransform({
@@ -45,8 +46,18 @@ export const radianceParty = buildTransform({
       step: 5,
       defaultValue: 75,
     }),
+    intParam({
+      name: 'Offset X',
+      description: 'Change the horizontal center of the radiance',
+      defaultValue: 0,
+    }),
+    intParam({
+      name: 'Offset Y',
+      description: 'Change the vertical center of the radiance',
+      defaultValue: 0,
+    }),
   ] as const,
-  fn: ({ image, parameters: [groupCount, type, amount] }) => {
+  fn: ({ image, parameters: [groupCount, type, amount, offsetX, offsetY] }) => {
     const [width, height] = image.dimensions;
     const centerX = width / 2;
     const centerY = height / 2;
@@ -66,8 +77,8 @@ export const radianceParty = buildTransform({
           return src;
         }
 
-        const xRelCenter = x - centerX;
-        const yRelCenter = y - centerY;
+        const xRelCenter = x - centerX - offsetX;
+        const yRelCenter = y - centerY + offsetY;
 
         const distFromCenter = Math.sqrt(
           yRelCenter * yRelCenter + xRelCenter * xRelCenter
@@ -75,8 +86,9 @@ export const radianceParty = buildTransform({
 
         const frameProgress = frameIndex / frameCount;
         const newH =
-          (((1 - distFromCenter / maxDist) * 360 * groupCount) % 360) +
-          360 * frameProgress;
+          ((1 - distFromCenter / maxDist) * 360 * groupCount +
+            360 * frameProgress) %
+          360;
 
         return isBackground ? colorFromeHue(newH) : shiftHue(src, newH, amount);
       })
