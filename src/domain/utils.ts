@@ -1,6 +1,7 @@
 import seedrandom from 'seedrandom';
 import { AssertionError } from 'assert';
 import { range } from 'remeda';
+import * as convert from 'color-convert';
 
 import {
   Color,
@@ -314,3 +315,43 @@ export const setPixel = (args: {
   frame[idx + 2] = args.color[2];
   frame[idx + 3] = args.color[3];
 };
+
+const adjustColorValue = (percent: number, v1: number, v2: number) =>
+  (1 - percent / 100) * v1 + (percent / 100) * v2;
+
+/**
+ * Shifts the hue of the pixel towards a certain color, by a certain amount percentage
+ * @param hue [0, 360)
+ * @param amount [0, 100]
+ */
+export const shiftHue = (
+  [r, g, b, a]: Color,
+  hue: number,
+  amount: number
+): Color => {
+  const [, s, l] = convert.rgb.hsl([r, g, b]);
+  const [newR, newG, newB] = convert.hsl.rgb([hue, s, l]);
+  return [
+    adjustColorValue(amount, r, newR),
+    adjustColorValue(amount, g, newG),
+    adjustColorValue(amount, b, newB),
+    a,
+  ];
+};
+
+/**
+ * Returns the angle in degrees (0 to 360) betwee the two coordinates
+ */
+export const calculateAngle = (c1: Coord, c2: Coord): number => {
+  const xRelCenter = c2[0] - c1[0];
+  const yRelCenter = c2[1] - c1[1];
+  return (360 + (Math.atan2(yRelCenter, xRelCenter) * 180) / Math.PI) % 360;
+};
+
+/**
+ * Turn a hue value (0 - 360) into a Color
+ */
+export const colorFromeHue = (hue: number): Color => [
+  ...convert.hsl.rgb([hue, 100, 50]),
+  255,
+];

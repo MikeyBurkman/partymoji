@@ -1,5 +1,10 @@
-import { buildTransform } from '../domain/types';
-import { mapImage, isTransparent, fromHexColor } from '../domain/utils';
+import { buildTransform, Coord } from '../domain/types';
+import {
+  mapImage,
+  isTransparent,
+  fromHexColor,
+  calculateAngle,
+} from '../domain/utils';
 import { colorPickerParam } from '../params/colorPickerParam';
 import { intParam } from '../params/intParam';
 import { sliderParam } from '../params/sliderParam';
@@ -28,14 +33,14 @@ export const pinwheel = buildTransform({
     intParam({
       name: 'Offset Y',
       description: 'Change the vertical center of the pinwheel',
-      defaultValue: 40,
+      defaultValue: -40,
     }),
     sliderParam({
       name: 'Group Count',
       description: 'How many times each color is repeated. Positive integer',
       defaultValue: 1,
       min: 1,
-      max: 80,
+      max: 30,
     }),
     variableLengthParam({
       name: 'Colors',
@@ -73,14 +78,11 @@ export const pinwheel = buildTransform({
 
       // Make the transparent parts colorful
       if (isTransparent(srcPixel)) {
-        const centerX = dimensions[0] / 2 + offsetX;
-        const centerY = dimensions[1] / 2 + offsetY;
-        const [x, y] = coord;
-        const xRelCenter = x - centerX;
-        const yRelCenter = y - centerY;
-
-        const pointAngle =
-          (360 + (Math.atan2(yRelCenter, xRelCenter) * 180) / Math.PI) % 360;
+        const center: Coord = [
+          dimensions[0] / 2 + offsetX,
+          dimensions[1] / 2 - offsetY,
+        ];
+        const pointAngle = calculateAngle(coord, center);
 
         const colorIdx =
           Math.floor(pointAngle / ribbonArcDegrees) % colorsLength;

@@ -8,6 +8,14 @@ export const party = buildTransform({
   description: 'Party time!',
   params: [
     sliderParam({
+      name: 'Amount',
+      description: 'How strong the effect is',
+      min: 0,
+      max: 100,
+      step: 5,
+      defaultValue: 50,
+    }),
+    sliderParam({
       name: 'Shift Speed',
       description: 'Controls how quickly it shifts through the various colors',
       min: 1,
@@ -15,15 +23,21 @@ export const party = buildTransform({
       defaultValue: 1,
     }),
   ],
-  fn: mapImage(({ coord, getSrcPixel, frameCount, frameIndex, parameters }) => {
-    const [shiftSpeed] = parameters;
-    const [r, g, b, a] = getSrcPixel(coord);
-    const [, s, l] = convert.rgb.hsl([r, g, b]);
-    const [newR, newG, newB] = convert.hsl.rgb([
-      ((frameIndex / frameCount) * shiftSpeed * 360) % 360,
-      s,
-      l,
-    ]);
-    return [newR, newG, newB, a];
-  }),
+  fn: mapImage(
+    ({
+      coord,
+      getSrcPixel,
+      frameCount,
+      frameIndex,
+      parameters: [amount, shiftSpeed],
+    }) => {
+      const adjust = (c1: number, c2: number) =>
+        (1 - amount / 100) * c1 + (amount / 100) * c2;
+      const [r, g, b, a] = getSrcPixel(coord);
+      const [, s, l] = convert.rgb.hsl([r, g, b]);
+      const newH = ((frameIndex / frameCount) * shiftSpeed * 360) % 360;
+      const [newR, newG, newB] = convert.hsl.rgb([newH, s, l]);
+      return [adjust(r, newR), adjust(g, newG), adjust(b, newB), a];
+    }
+  ),
 });

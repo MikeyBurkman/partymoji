@@ -15,7 +15,9 @@ import { nuke } from './nuke';
 import { party } from './party';
 import { partyBackground } from './party-background';
 import { pinwheel } from './pinwheel';
+import { pinwheelParty } from './pinwheel-party';
 import { radiance } from './radiance';
+import { radianceParty } from './radiance-party';
 import { resizeImage } from './resize-image';
 import { ripple } from './ripple';
 import { rotate } from './rotate';
@@ -46,7 +48,9 @@ export const POSSIBLE_TRANSFORMS = [
   party,
   partyBackground,
   pinwheel,
+  pinwheelParty,
   radiance,
+  radianceParty,
   resizeImage,
   ripple,
   rotate,
