@@ -33,6 +33,19 @@ export const ImportExport: React.FC<ImportExportProps> = ({
         sx={{ maxWidth: '300px' }}
         variant="contained"
         onClick={() => {
+          const output = lz.compressToBase64(JSON.stringify(state));
+          navigator.clipboard.writeText(output);
+          showInfo('Copied to clipboard');
+        }}
+      >
+        Export to clipboard <br />
+        (With Source Image)
+      </Button>
+      <Button
+        startIcon={<Icon>file_upload</Icon>}
+        sx={{ maxWidth: '300px' }}
+        variant="contained"
+        onClick={() => {
           const output = lz.compressToBase64(
             JSON.stringify({ ...state, baseImage: undefined })
           );
@@ -41,19 +54,6 @@ export const ImportExport: React.FC<ImportExportProps> = ({
         }}
       >
         Export to clipboard <br /> (NO Source Image)
-      </Button>
-      <Button
-        startIcon={<Icon>file_upload</Icon>}
-        sx={{ maxWidth: '300px' }}
-        variant="contained"
-        onClick={() => {
-          const output = lz.compressToBase64(JSON.stringify(state));
-          navigator.clipboard.writeText(output);
-          showInfo('Copied to clipboard');
-        }}
-      >
-        Export to clipboard <br />
-        (With Source Image)
       </Button>
       <Button
         startIcon={<Icon>file_download</Icon>}
