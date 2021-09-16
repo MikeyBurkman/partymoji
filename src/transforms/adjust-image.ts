@@ -4,6 +4,7 @@ import { buildTransform, Color, Image } from '../domain/types';
 import {
   clampColor,
   getPixelFromSource,
+  isTransparent,
   mapCoords,
   mapFrames,
   scaleImage,
@@ -143,20 +144,24 @@ const calculateAverageValue = (image: Image): number => {
 
   // Find average value of all pixels
   let totalLight = 0;
+  let totalSamples = 0;
   for (let f = 0; f < image.frames.length; f += 1) {
     for (let x = 0; x < width; x += 1) {
       for (let y = 0; y < height; y += 1) {
-        const [r, g, b] = getPixelFromSource(
-          image.dimensions,
-          image.frames[f],
-          [x, y]
-        );
-        const [, , l] = convert.rgb.hsv(r, g, b);
-        totalLight += l;
+        const src = getPixelFromSource(image.dimensions, image.frames[f], [
+          x,
+          y,
+        ]);
+        if (!isTransparent(src)) {
+          const [r, g, b] = src;
+          const [, , l] = convert.rgb.hsl(r, g, b);
+          totalLight += l;
+          totalSamples += 1;
+        }
       }
     }
   }
-  return totalLight / (image.frames.length * width * height);
+  return totalLight / totalSamples;
 };
 
 // Amount = -100 to 100
