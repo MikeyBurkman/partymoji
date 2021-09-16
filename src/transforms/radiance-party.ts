@@ -20,7 +20,7 @@ export const radianceParty = buildTransform({
       description: 'How many times each rainbow is repeated',
       defaultValue: 1,
       min: 1,
-      max: 10,
+      max: 12,
     }),
     dropdownParam({
       name: 'Type',

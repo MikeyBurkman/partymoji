@@ -9,6 +9,7 @@ import {
   getPixelFromSource,
 } from '../domain/utils';
 import { colorPickerParam } from '../params/colorPickerParam';
+import { intParam } from '../params/intParam';
 import { sliderParam } from '../params/sliderParam';
 import { variableLengthParam } from '../params/variableLengthParam';
 
@@ -29,10 +30,10 @@ export const radiance = buildTransform({
   params: [
     sliderParam({
       name: 'Group Count',
-      description: 'How many times each color is repeated. Positive integer',
+      description: 'How many times each color is repeated',
       defaultValue: 1,
       min: 1,
-      max: 30,
+      max: 12,
     }),
     variableLengthParam({
       name: 'Colors',
@@ -44,9 +45,18 @@ export const radiance = buildTransform({
           name: 'Color',
         }),
     }),
+    intParam({
+      name: 'Offset X',
+      description: 'Change the horizontal center of the radiance',
+      defaultValue: 0,
+    }),
+    intParam({
+      name: 'Offset Y',
+      description: 'Change the vertical center of the radiance',
+      defaultValue: 0,
+    }),
   ] as const,
-  fn: ({ image, parameters }) => {
-    const [groupCount, colors] = parameters;
+  fn: ({ image, parameters: [groupCount, colors, offsetX, offsetY] }) => {
     const colorList = range(0, groupCount).flatMap(() => colors);
     const [width, height] = image.dimensions;
     const centerX = width / 2;
@@ -59,8 +69,8 @@ export const radiance = buildTransform({
         // Make the transparent parts colorful
         if (isTransparent(srcPixel)) {
           const [x, y] = coord;
-          const xRelCenter = x - centerX;
-          const yRelCenter = y - centerY;
+          const xRelCenter = x - centerX - offsetX;
+          const yRelCenter = y - centerY + offsetY;
 
           const maxDist = Math.sqrt(
             (width / 2) * (width / 2) + (height / 2) * (height / 2)

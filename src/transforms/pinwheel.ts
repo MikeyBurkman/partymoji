@@ -25,22 +25,12 @@ export const pinwheel = buildTransform({
   name: 'Pinwheel',
   description: 'Create a pinwheel of colors',
   params: [
-    intParam({
-      name: 'Offset X',
-      description: 'Change the horizontal center of the pinwheel',
-      defaultValue: 0,
-    }),
-    intParam({
-      name: 'Offset Y',
-      description: 'Change the vertical center of the pinwheel',
-      defaultValue: -40,
-    }),
     sliderParam({
       name: 'Group Count',
-      description: 'How many times each color is repeated. Positive integer',
+      description: 'How many times each color is repeated',
       defaultValue: 1,
       min: 1,
-      max: 30,
+      max: 12,
     }),
     variableLengthParam({
       name: 'Colors',
@@ -52,6 +42,16 @@ export const pinwheel = buildTransform({
           name: 'Color',
         }),
     }),
+    intParam({
+      name: 'Offset X',
+      description: 'Change the horizontal center of the pinwheel',
+      defaultValue: 0,
+    }),
+    intParam({
+      name: 'Offset Y',
+      description: 'Change the vertical center of the pinwheel',
+      defaultValue: 0,
+    }),
   ] as const,
   fn: mapImage(
     ({
@@ -60,11 +60,9 @@ export const pinwheel = buildTransform({
       frameCount,
       frameIndex,
       getSrcPixel,
-      parameters,
+      parameters: [groupCount, colors, offsetX, offsetY],
     }) => {
       const srcPixel = getSrcPixel(coord);
-
-      const [offsetX, offsetY, groupCount, colors] = parameters;
 
       const ribbonCount = colors.length * groupCount;
       const ribbonArcDegrees = Math.round(360 / ribbonCount);

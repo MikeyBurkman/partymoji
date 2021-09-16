@@ -19,7 +19,7 @@ export const party = buildTransform({
       name: 'Shift Speed',
       description: 'Controls how quickly it shifts through the various colors',
       min: 1,
-      max: 8,
+      max: 12,
       defaultValue: 1,
     }),
   ],
