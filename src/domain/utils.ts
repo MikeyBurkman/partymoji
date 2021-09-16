@@ -316,7 +316,11 @@ export const setPixel = (args: {
   frame[idx + 3] = args.color[3];
 };
 
-const adjustColorValue = (percent: number, v1: number, v2: number) =>
+/**
+ * Calculate a value between v1 and v2, determined by percent.
+ * @param percent Between 0 and 100. 0 is all v1, and 100 is all v2.
+ */
+export const weightedValue = (percent: number, v1: number, v2: number) =>
   (1 - percent / 100) * v1 + (percent / 100) * v2;
 
 /**
@@ -330,11 +334,15 @@ export const shiftHue = (
   amount: number
 ): Color => {
   const [, s, l] = convert.rgb.hsl([r, g, b]);
-  const [newR, newG, newB] = convert.hsl.rgb([hue, s, l]);
+  const [newR, newG, newB] = convert.hsl.rgb([
+    hue,
+    weightedValue(amount, s, 100),
+    l,
+  ]);
   return [
-    adjustColorValue(amount, r, newR),
-    adjustColorValue(amount, g, newG),
-    adjustColorValue(amount, b, newB),
+    weightedValue(amount, r, newR),
+    weightedValue(amount, g, newG),
+    weightedValue(amount, b, newB),
     a,
   ];
 };

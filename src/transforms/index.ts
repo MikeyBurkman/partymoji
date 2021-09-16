@@ -8,7 +8,6 @@ import { colorsBackground } from './colors-background';
 import { doubleVision } from './double-vision';
 import { expand } from './expand';
 import { fisheye } from './fisheye';
-import { grayscale } from './grayscale';
 import { hueShift } from './hue-shift';
 import { lightning } from './lightning';
 import { nuke } from './nuke';
@@ -41,7 +40,6 @@ export const POSSIBLE_TRANSFORMS = [
   doubleVision,
   expand,
   fisheye,
-  grayscale,
   hueShift,
   lightning,
   nuke,

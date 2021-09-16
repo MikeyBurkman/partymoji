@@ -7,6 +7,7 @@ import {
   mapCoords,
   mapFrames,
   scaleImage,
+  weightedValue,
 } from '../domain/utils';
 import * as convert from 'color-convert';
 import { sliderParam } from '../params/sliderParam';
@@ -50,9 +51,17 @@ export const adjustImage = buildTransform({
       step: 5,
       defaultValue: 0,
     }),
+    sliderParam({
+      name: 'Saturation',
+      min: -100,
+      max: 100,
+      step: 5,
+      defaultValue: 0,
+    }),
   ],
   fn: ({ image, parameters }) => {
-    const [frameCount, newWidth, newHeight, brightness, contrast] = parameters;
+    const [frameCount, newWidth, newHeight, brightness, contrast, saturation] =
+      parameters;
 
     const hasFrameCount = frameCount !== 0;
 
@@ -89,6 +98,10 @@ export const adjustImage = buildTransform({
 
         if (contrast !== 0) {
           currColor = adjustContrast(currColor, averageValue, contrast);
+        }
+
+        if (saturation !== 0) {
+          currColor = adjustSaturation(currColor, saturation);
         }
 
         return currColor;
@@ -153,10 +166,10 @@ const adjustContrast = (
   amount: number
 ): Color => {
   const [r, g, b, a] = color;
-  const [h, s, l] = convert.rgb.hsv(r, g, b);
+  const [h, s, l] = convert.rgb.hsl(r, g, b);
   const diff = l - averageValue;
   const newLight = l + diff * (amount / 100);
-  const [newR, newG, newB] = convert.hsv.rgb([h, s, newLight]);
+  const [newR, newG, newB] = convert.hsl.rgb([h, s, newLight]);
   return [newR, newG, newB, a];
 };
 
@@ -169,4 +182,13 @@ const adjustBrightness = (color: Color, amount: number): Color => {
     color[2] + rawAmount,
     color[3],
   ]);
+};
+
+// Amount = -100 to 100
+const adjustSaturation = (color: Color, amount: number): Color => {
+  const [r, g, b, a] = color;
+  const [h, s, l] = convert.rgb.hsl(r, g, b);
+  const newSat = weightedValue(Math.abs(amount), s, amount >= 0 ? 100 : 0);
+  const [newR, newG, newB] = convert.hsl.rgb([h, newSat, l]);
+  return [newR, newG, newB, a];
 };

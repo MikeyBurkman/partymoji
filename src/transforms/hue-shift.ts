@@ -1,7 +1,7 @@
 import { buildTransform } from '../domain/types';
-import { mapImage } from '../domain/utils';
-import * as convert from 'color-convert';
+import { mapImage, shiftHue } from '../domain/utils';
 import { huePickerParam } from '../params/huePickerParam';
+import { sliderParam } from '../params/sliderParam';
 
 export const hueShift = buildTransform({
   name: 'Hue Shift',
@@ -11,12 +11,16 @@ export const hueShift = buildTransform({
       name: 'Hue',
       defaultValue: 180,
     }),
+    sliderParam({
+      name: 'Amount',
+      description: 'How strong the effect is.',
+      min: 0,
+      max: 100,
+      step: 5,
+      defaultValue: 75,
+    }),
   ],
-  fn: mapImage(({ coord, getSrcPixel, parameters }) => {
-    const [newHue] = parameters;
-    const [r, g, b, a] = getSrcPixel(coord);
-    const [, s, l] = convert.rgb.hsl(r, g, b);
-    const [newR, newG, newB] = convert.hsl.rgb([newHue, s, l]);
-    return [newR, newG, newB, a];
-  }),
+  fn: mapImage(({ coord, getSrcPixel, parameters: [newHue, amount] }) =>
+    shiftHue(getSrcPixel(coord), newHue, amount)
+  ),
 });
