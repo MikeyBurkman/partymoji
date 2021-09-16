@@ -28,13 +28,15 @@ export const adjustImage = buildTransform({
     }),
     intParam({
       name: 'Width',
-      description: 'Leave at 0 to not change the image',
+      description:
+        'Leave at 0 to not change the width. If height is changed, the image will keep the same aspect ratio.',
       defaultValue: 0,
       min: 0,
     }),
     intParam({
       name: 'Height',
-      description: 'Leave at 0 to not change the image',
+      description:
+        'Leave at 0 to not change the height. If width is changed, the image will keep the same aspect ratio.',
       defaultValue: 0,
       min: 0,
     }),
@@ -60,16 +62,37 @@ export const adjustImage = buildTransform({
       defaultValue: 0,
     }),
   ],
-  fn: ({ image, parameters }) => {
-    const [frameCount, newWidth, newHeight, brightness, contrast, saturation] =
-      parameters;
-
+  fn: ({
+    image,
+    parameters: [
+      frameCount,
+      resizeToWidth,
+      resizeToHeight,
+      brightness,
+      contrast,
+      saturation,
+    ],
+  }) => {
     const hasFrameCount = frameCount !== 0;
 
-    const hasScaleChange = newWidth > 0 && newHeight > 0;
+    const [oldWidth, oldHeight] = image.dimensions;
+
+    const hasScaleChange = resizeToWidth > 0 || resizeToHeight > 0;
+
+    // If we're changing one of width/height, then we'll scale the other one to match the same aspect ratio.
+    const newWidth =
+      hasScaleChange && resizeToWidth === 0
+        ? Math.ceil((oldWidth / oldHeight) * resizeToHeight)
+        : resizeToWidth;
+    const newHeight =
+      hasScaleChange && resizeToHeight === 0
+        ? Math.ceil((oldHeight / oldWidth) * resizeToWidth)
+        : resizeToHeight;
+
+    console.log({ oldWidth, oldHeight, newWidth, newHeight });
+
     // Use this to figure out when we should optimally resize the image
-    const isBiggerImage =
-      newWidth * newHeight > image.dimensions[0] * image.dimensions[1];
+    const isBiggerImage = newWidth * newHeight > oldWidth * oldHeight;
 
     const averageValue = contrast !== 0 ? calculateAverageValue(image) : 0;
 
@@ -82,7 +105,11 @@ export const adjustImage = buildTransform({
 
     // If making a smaller image, might as well do the brightness/contrast after making it smaller
     if (hasScaleChange && !isBiggerImage) {
-      currImage = scaleImage({ image: currImage, newWidth, newHeight });
+      currImage = scaleImage({
+        image: currImage,
+        newWidth,
+        newHeight,
+      });
     }
 
     currImage = mapFrames(currImage, (imageData) =>
