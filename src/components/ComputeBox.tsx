@@ -80,7 +80,7 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
             (t): TransformInput<any> => ({
               transform: transformByName(t.transformName),
               params: t.paramsValues.map((p) => {
-                assert(p.valid);
+                assert(p.valid, 'Got non-valid when compute box was clicked');
                 return p.value;
               }),
             })

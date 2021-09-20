@@ -359,7 +359,7 @@ export const calculateAngle = (c1: Coord, c2: Coord): number => {
 /**
  * Turn a hue value (0 - 360) into a Color
  */
-export const colorFromeHue = (hue: number): Color => [
+export const colorFromHue = (hue: number): Color => [
   ...convert.hsl.rgb([hue, 100, 50]),
   255,
 ];

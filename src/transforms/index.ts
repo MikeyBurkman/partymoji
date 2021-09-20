@@ -12,7 +12,6 @@ import { hueShift } from './hue-shift';
 import { lightning } from './lightning';
 import { nuke } from './nuke';
 import { party } from './party';
-import { partyBackground } from './party-background';
 import { pinwheel } from './pinwheel';
 import { pinwheelParty } from './pinwheel-party';
 import { radiance } from './radiance';
@@ -24,7 +23,7 @@ import { roxbury } from './roxbury';
 import { shake } from './shake';
 import { staticc } from './static';
 import { staticBackground } from './static-background';
-import { transparentColor } from './transparent-color';
+import { transparency } from './transparency';
 import { transpose } from './transpose';
 
 import { assert } from '../domain/utils';
@@ -44,7 +43,6 @@ export const POSSIBLE_TRANSFORMS = [
   lightning,
   nuke,
   party,
-  partyBackground,
   pinwheel,
   pinwheelParty,
   radiance,
@@ -56,12 +54,12 @@ export const POSSIBLE_TRANSFORMS = [
   shake,
   staticc,
   staticBackground,
-  transparentColor,
+  transparency,
   transpose,
 ].sort((x, y) => (x.name > y.name ? 1 : -1));
 
 export const transformByName = (name: string) => {
   const t = POSSIBLE_TRANSFORMS.find((t) => t.name === name);
-  assert(t);
+  assert(t, `Could not find matching transform: ${name}`);
   return t;
 };

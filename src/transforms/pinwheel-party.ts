@@ -4,7 +4,7 @@ import {
   isTransparent,
   shiftHue,
   calculateAngle,
-  colorFromeHue,
+  colorFromHue,
 } from '../domain/utils';
 import { dropdownParam } from '../params/dropdownParam';
 import { intParam } from '../params/intParam';
@@ -82,7 +82,7 @@ export const pinwheelParty = buildTransform({
       const newH = (pointAngle * groupCount + frameProgress * 360) % 360;
 
       return isBackground
-        ? colorFromeHue(newH)
+        ? colorFromHue(newH)
         : shiftHue(srcPixel, newH, amount);
     }
   ),

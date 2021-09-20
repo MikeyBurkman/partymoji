@@ -1,12 +1,34 @@
 import { buildTransform } from '../domain/types';
-import { mapImage, weightedValue } from '../domain/utils';
+import {
+  colorFromHue,
+  isTransparent,
+  mapImage,
+  shiftHue,
+  weightedValue,
+} from '../domain/utils';
 import * as convert from 'color-convert';
 import { sliderParam } from '../params/sliderParam';
+import { dropdownParam } from '../params/dropdownParam';
 
 export const party = buildTransform({
   name: 'Party',
   description: 'Party time!',
   params: [
+    dropdownParam({
+      name: 'Type',
+      description: 'Whether to apply the party to the foreground or background',
+      defaultValue: 'background',
+      options: [
+        {
+          name: 'Background',
+          value: 'background',
+        },
+        {
+          name: 'Foreground',
+          value: 'foreground',
+        },
+      ],
+    }),
     sliderParam({
       name: 'Amount',
       description: 'How strong the effect is',
@@ -22,27 +44,29 @@ export const party = buildTransform({
       max: 12,
       defaultValue: 1,
     }),
-  ],
+  ] as const,
   fn: mapImage(
     ({
       coord,
       getSrcPixel,
       frameCount,
       frameIndex,
-      parameters: [amount, shiftSpeed],
+      parameters: [type, amount, shiftSpeed],
     }) => {
-      const [r, g, b, a] = getSrcPixel(coord);
-      const [, s, l] = convert.rgb.hsl([r, g, b]);
+      const srcPixel = getSrcPixel(coord);
+      const isBackground = isTransparent(srcPixel);
 
       const newH = ((frameIndex / frameCount) * shiftSpeed * 360) % 360;
-      const [newR, newG, newB] = convert.hsl.rgb([newH, s, l]);
 
-      return [
-        weightedValue(amount, r, newR),
-        weightedValue(amount, g, newG),
-        weightedValue(amount, b, newB),
-        a,
-      ];
+      if (isBackground && type === 'background') {
+        return colorFromHue(newH);
+      }
+
+      if (!isBackground && type === 'foreground') {
+        return shiftHue(srcPixel, newH, amount);
+      }
+
+      return srcPixel;
     }
   ),
 });

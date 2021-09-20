@@ -12,17 +12,15 @@ import {
 
 import { POSSIBLE_TRANSFORMS, transformByName } from './transforms';
 import { ParamFunction, AppState } from './domain/types';
+import * as localStorage from './localStorage';
 import { ComputeBox } from './components/ComputeBox';
 import { ImagePicker } from './components/ImagePicker';
 import { ImageTransformList } from './components/ImageTransformList';
 import { ImportExport } from './components/ImportExport';
 import { Help } from './components/Help';
-import { TopLevelErrorBoundary } from './components/TopLevelErrorBoundary';
 
 // Set to true to print out the current state at the bottom of the page
 const DEBUG = false;
-
-const LOCAL_STORAGE_KEY = 'partymoji-state';
 
 const DEFAULT_STATE: AppState = {
   dirty: false,
@@ -36,30 +34,14 @@ export const App: React.FC = () => {
 
   React.useEffect(() => {
     // If we have local storage state on startup, then reload that
-    try {
-      const stored = window.localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (stored) {
-        const savedState = JSON.parse(stored);
-        if (!Array.isArray(savedState.transforms)) {
-          // Dunno what we just loaded, not the right thing
-          return;
-        }
-
-        setStateRaw({ ...savedState, dirty: true });
-      }
-    } catch (err) {
-      // @ts-ignore
-      console.error('Error loading state from local storage', err.stack || err);
+    const stored = localStorage.getStoredAppState();
+    if (stored) {
+      setStateRaw({ ...stored, dirty: true });
     }
   }, []);
 
   const setState = (newState: AppState) => {
-    try {
-      window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newState));
-    } catch (err) {
-      // @ts-ignore
-      console.error('Error saving state to local storage', err.stack || err);
-    }
+    localStorage.saveAppState(newState);
     setStateRaw(newState);
   };
 
@@ -80,12 +62,7 @@ export const App: React.FC = () => {
     });
 
   return (
-    <TopLevelErrorBoundary
-      onClearLocalStorage={() => {
-        window.localStorage.removeItem(LOCAL_STORAGE_KEY);
-        window.location.reload();
-      }}
-    >
+    <>
       <ScopedCssBaseline />
       <Container>
         <Stack spacing={4} justifyContent="space-evenly" divider={<Divider />}>
@@ -164,7 +141,7 @@ export const App: React.FC = () => {
                   sx={{ maxWidth: '300px' }}
                   variant="contained"
                   onClick={() => {
-                    window.localStorage.removeItem(LOCAL_STORAGE_KEY);
+                    localStorage.clearAppState();
                     setStateRaw(DEFAULT_STATE);
                   }}
                 >
@@ -192,6 +169,6 @@ export const App: React.FC = () => {
           </Stack>
         </Stack>
       </Container>
-    </TopLevelErrorBoundary>
+    </>
   );
 };

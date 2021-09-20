@@ -5,7 +5,7 @@ import {
   getPixelFromSource,
   isTransparent,
   shiftHue,
-  colorFromeHue,
+  colorFromHue,
 } from '../domain/utils';
 import { dropdownParam } from '../params/dropdownParam';
 import { intParam } from '../params/intParam';
@@ -90,7 +90,7 @@ export const radianceParty = buildTransform({
             360 * frameProgress) %
           360;
 
-        return isBackground ? colorFromeHue(newH) : shiftHue(src, newH, amount);
+        return isBackground ? colorFromHue(newH) : shiftHue(src, newH, amount);
       })
     );
   },
