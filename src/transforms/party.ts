@@ -4,9 +4,7 @@ import {
   isTransparent,
   mapImage,
   shiftHue,
-  weightedValue,
 } from '../domain/utils';
-import * as convert from 'color-convert';
 import { sliderParam } from '../params/sliderParam';
 import { dropdownParam } from '../params/dropdownParam';
 

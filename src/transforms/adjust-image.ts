@@ -2,13 +2,13 @@ import { range } from 'remeda';
 
 import { buildTransform, Color, Image } from '../domain/types';
 import {
-  clampColor,
+  adjustBrightness,
+  adjustSaturation,
   getPixelFromSource,
   isTransparent,
   mapCoords,
   mapFrames,
   scaleImage,
-  weightedValue,
 } from '../domain/utils';
 import * as convert from 'color-convert';
 import { sliderParam } from '../params/sliderParam';
@@ -202,25 +202,5 @@ const adjustContrast = (
   const diff = l - averageValue;
   const newLight = l + diff * (amount / 100);
   const [newR, newG, newB] = convert.hsl.rgb([h, s, newLight]);
-  return [newR, newG, newB, a];
-};
-
-// Amount: -100 to 100
-const adjustBrightness = (color: Color, amount: number): Color => {
-  const rawAmount = (amount / 100) * 255;
-  return clampColor([
-    color[0] + rawAmount,
-    color[1] + rawAmount,
-    color[2] + rawAmount,
-    color[3],
-  ]);
-};
-
-// Amount = -100 to 100
-const adjustSaturation = (color: Color, amount: number): Color => {
-  const [r, g, b, a] = color;
-  const [h, s, l] = convert.rgb.hsl(r, g, b);
-  const newSat = weightedValue(Math.abs(amount), s, amount >= 0 ? 100 : 0);
-  const [newR, newG, newB] = convert.hsl.rgb([h, newSat, l]);
   return [newR, newG, newB, a];
 };
