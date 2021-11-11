@@ -19,6 +19,7 @@ import { pinwheel } from './pinwheel';
 import { pinwheelParty } from './pinwheel-party';
 import { radiance } from './radiance';
 import { radianceParty } from './radiance-party';
+import { repeatAnimation } from './repeat-animation';
 import { resizeImage } from './resize-image';
 import { ripple } from './ripple';
 import { rotate } from './rotate';
@@ -48,6 +49,7 @@ export const POSSIBLE_TRANSFORMS = [
   pinwheelParty,
   radiance,
   radianceParty,
+  repeatAnimation,
   resizeImage,
   ripple,
   rotate,
