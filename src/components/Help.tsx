@@ -1,5 +1,5 @@
-import React from 'react';
 import { Divider, Stack, Typography } from '@material-ui/core';
+import React from 'react';
 import { Expandable } from './Expandable';
 
 const HELP = [

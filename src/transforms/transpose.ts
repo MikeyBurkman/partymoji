@@ -8,7 +8,7 @@ export const transpose = buildTransform({
   params: [
     intParam({ name: 'X', defaultValue: 0 }),
     intParam({ name: 'Y', defaultValue: 0 }),
-  ],
+  ] as const,
   fn: mapImage(({ coord, getSrcPixel, parameters }) => {
     const [transX, transY] = parameters;
     const [x, y] = coord;

@@ -1,14 +1,14 @@
 import { buildTransform } from '../domain/types';
 import {
-  mapFrames,
-  mapCoords,
+  colorFromHue,
   getPixelFromSource,
   isTransparent,
+  mapCoords,
+  mapFrames,
   shiftHue,
-  colorFromHue,
 } from '../domain/utils';
-import { dropdownParam } from '../params/dropdownParam';
 import { intParam } from '../params/intParam';
+import { radioParam } from '../params/radioParam';
 import { sliderParam } from '../params/sliderParam';
 
 export const radianceParty = buildTransform({
@@ -22,7 +22,7 @@ export const radianceParty = buildTransform({
       min: 1,
       max: 24,
     }),
-    dropdownParam({
+    radioParam({
       name: 'Type',
       description: 'Whether to apply the party to the foreground or background',
       defaultValue: 'background',

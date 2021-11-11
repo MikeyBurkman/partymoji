@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
 import { App } from './App';
 import { TopLevelErrorBoundary } from './components/TopLevelErrorBoundary';
 import * as localStorage from './localStorage';

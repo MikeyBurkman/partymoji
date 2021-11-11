@@ -23,7 +23,7 @@ export const resizeImage = buildTransform({
       defaultValue: 128,
       min: 0,
     }),
-  ],
+  ] as const,
   fn: ({ image, parameters: [resizeToWidth, resizeToHeight] }) => {
     const [oldWidth, oldHeight] = image.dimensions;
     const newWidth =

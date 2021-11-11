@@ -1,12 +1,12 @@
-import React from 'react';
 import {
-  Collapse,
-  Icon,
   Box,
   Button,
   ClickAwayListener,
+  Collapse,
+  Icon,
   Stack,
 } from '@material-ui/core';
+import React from 'react';
 
 interface ExpandableProps {
   mainEle: JSX.Element;

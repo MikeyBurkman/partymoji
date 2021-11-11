@@ -1,14 +1,13 @@
-import seedrandom from 'seedrandom';
 import { AssertionError } from 'assert';
-import { range } from 'remeda';
 import * as convert from 'color-convert';
-
+import { range } from 'remeda';
+import seedrandom from 'seedrandom';
 import {
   Color,
   Coord,
   Dimensions,
-  ImageData,
   Image,
+  ImageData,
   Random,
   TransformFn,
   TransformFnOpts,
@@ -287,6 +286,11 @@ export const createNewImage = (args: {
   ),
 });
 
+export const duplicateImage = (image: Image): Image => ({
+  dimensions: image.dimensions,
+  frames: image.frames.map((f) => new Uint8Array(f)),
+});
+
 export const getPixel = (args: {
   image: Image;
   frameIndex: number;
@@ -364,7 +368,6 @@ export const colorFromHue = (hue: number): Color => [
   255,
 ];
 
-// Amount = -100 to 100
 export const adjustSaturation = (color: Color, amount: number): Color => {
   const [r, g, b, a] = color;
   const [h, s, l] = convert.rgb.hsl(r, g, b);
@@ -375,11 +378,37 @@ export const adjustSaturation = (color: Color, amount: number): Color => {
 
 // Amount: -100 to 100
 export const adjustBrightness = (color: Color, amount: number): Color => {
-  const rawAmount = (amount / 100) * 255;
+  const d = (amount / 100) * 128;
+  const [r, g, b, a] = color;
+  return clampColor([r + d, g + d, b + d, a]);
+};
+
+// Amount: -100 to 100
+export const adjustContrast = (color: Color, amount: number): Color => {
+  const d = amount / 100 + 1;
+  const [r, g, b, a] = color;
   return clampColor([
-    color[0] + rawAmount,
-    color[1] + rawAmount,
-    color[2] + rawAmount,
-    color[3],
+    d * (r - 128) + 128,
+    d * (g - 128) + 128,
+    d * (b - 128) + 128,
+    a,
   ]);
+};
+
+/**
+ * Returns number between 0 and 1, where 1 is the largest difference and 0 is no difference
+ */
+export const colorDiff = (c1: Color, c2: Color): number => {
+  // Red-mean color diff algorithm
+  // https://en.wikipedia.org/wiki/Color_difference
+  const deltaRed = c1[0] - c2[0];
+  const deltaBlue = c1[1] - c2[1];
+  const deltaGreen = c1[2] - c2[2];
+  const rSomething = (c1[0] + c2[0]) / 2;
+
+  const rComponent = (2 + rSomething / 256) * deltaRed * deltaRed;
+  const bComponent = (2 + (255 - rSomething) / 256) * deltaBlue * deltaBlue;
+  const gComponent = 4 * deltaGreen * deltaGreen;
+  // 765 = ~ difference between black and white pixels
+  return Math.sqrt(rComponent + bComponent + gComponent) / 765;
 };

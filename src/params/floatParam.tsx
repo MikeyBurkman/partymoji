@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { HelpTooltip } from '../components/HelpTooltip';
-import { ParamValue, ParamFunction } from '../domain/types';
+import { ParamFunction, ParamValue } from '../domain/types';
 
 type ParsedParam<T> =
   | { valid: true; value: T }

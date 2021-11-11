@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Button,
   CircularProgress,
@@ -9,12 +8,12 @@ import {
   Stack,
   Typography,
 } from '@material-ui/core';
-
-import { assert } from '../domain/utils';
+import React from 'react';
 import { runTransforms } from '../domain/run';
 import { AppState, TransformInput } from '../domain/types';
-import { transformByName } from '../transforms';
+import { assert } from '../domain/utils';
 import { sliderParam } from '../params/sliderParam';
+import { transformByName } from '../transforms';
 
 interface ComputeBoxProps {
   computeDisabled: boolean;

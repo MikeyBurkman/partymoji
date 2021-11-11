@@ -1,8 +1,7 @@
 import React from 'react';
-
-import { readImage } from '../domain/run';
-import { ParamFunction, Image } from '../domain/types';
 import { ImagePicker } from '../components/ImagePicker';
+import { readImage } from '../domain/run';
+import { Image, ParamFunction } from '../domain/types';
 
 interface ImagePickerParamsProps {
   name: string;

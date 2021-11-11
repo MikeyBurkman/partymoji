@@ -1,14 +1,14 @@
 import {
+  Button,
   Icon,
   IconButton,
-  Button,
   Paper,
-  Typography,
   Stack,
+  Typography,
 } from '@material-ui/core';
 import React from 'react';
 import { HelpTooltip } from '../components/HelpTooltip';
-import { ParamValue, ParamFunction } from '../domain/types';
+import { ParamFunction, ParamValue } from '../domain/types';
 
 interface VariableLengthProps<T> {
   name: string;

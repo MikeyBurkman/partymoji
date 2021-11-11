@@ -3,14 +3,13 @@ import getPixels from 'get-pixels';
 // @ts-ignore
 import gifEncoder from 'gif-encoder';
 import seedrandom from 'seedrandom';
-
-import { Color, TransformInput, Image, Dimensions, ImageData } from './types';
+import { Color, Dimensions, Image, ImageData, TransformInput } from './types';
 import {
-  toHexColor,
-  getPixelFromSource,
-  randomColor,
   fromHexColor,
+  getPixelFromSource,
   isTransparent,
+  randomColor,
+  toHexColor,
 } from './utils';
 
 interface RunArgs {

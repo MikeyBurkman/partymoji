@@ -1,11 +1,10 @@
 import { Stack, Typography } from '@material-ui/core';
+import * as convert from 'color-convert';
 import React from 'react';
 import { HuePicker } from 'react-color';
-import * as convert from 'color-convert';
-
-import { ParamValue, ParamFunction } from '../domain/types';
-import { toHexColor } from '../domain/utils';
 import { HelpTooltip } from '../components/HelpTooltip';
+import { ParamFunction, ParamValue } from '../domain/types';
+import { toHexColor } from '../domain/utils';
 
 const HuePickerParam: React.FC<{
   name: string;

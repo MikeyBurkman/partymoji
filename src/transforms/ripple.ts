@@ -18,7 +18,7 @@ export const ripple = buildTransform({
       min: 0,
       description: 'How many ripples you want. Positive number.',
     }),
-  ],
+  ] as const,
   fn: ({ image, parameters }) =>
     mapFrames(image, (data, frameIndex, frameCount) => {
       const [amplitude, period] = parameters;

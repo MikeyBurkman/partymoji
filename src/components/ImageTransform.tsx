@@ -1,17 +1,16 @@
 import {
-  FormControl,
-  IconButton,
-  Icon,
-  Tooltip,
-  Stack,
-  Typography,
-  Paper,
   Autocomplete,
-  TextField,
   Divider,
+  FormControl,
+  Icon,
+  IconButton,
+  Paper,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
 } from '@material-ui/core';
 import React from 'react';
-
 import { ParamFunction, ParamValue, Transform } from '../domain/types';
 
 interface SelectedTransform {

@@ -1,12 +1,12 @@
-import { mapImage } from '../domain/utils';
 import { buildTransform, Coord } from '../domain/types';
-import { dropdownParam } from '../params/dropdownParam';
+import { mapImage } from '../domain/utils';
+import { radioParam } from '../params/radioParam';
 
 export const rotate = buildTransform({
   name: 'Rotate',
   description: 'Make the image rotate about the center point',
   params: [
-    dropdownParam({
+    radioParam({
       name: 'Direction',
       defaultValue: -1,
       options: [
@@ -14,7 +14,7 @@ export const rotate = buildTransform({
         { name: 'Counter-Clockwise', value: 1 },
       ],
     }),
-  ],
+  ] as const,
   fn: mapImage(
     ({
       dimensions,

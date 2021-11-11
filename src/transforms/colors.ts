@@ -1,9 +1,9 @@
 import { buildTransform } from '../domain/types';
 import {
-  isTransparent,
-  getAveragePixelValue,
-  mapImage,
   fromHexColor,
+  getAveragePixelValue,
+  isTransparent,
+  mapImage,
 } from '../domain/utils';
 import { colorPickerParam } from '../params/colorPickerParam';
 import { variableLengthParam } from '../params/variableLengthParam';
@@ -34,7 +34,7 @@ export const colors = buildTransform({
           name: 'Color',
         }),
     }),
-  ],
+  ] as const,
   fn: mapImage(({ coord, frameCount, frameIndex, getSrcPixel, parameters }) => {
     const srcPixel = getSrcPixel(coord);
 

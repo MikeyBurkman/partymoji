@@ -5,7 +5,9 @@ import { floatParam } from '../params/floatParam';
 export const doubleVision = buildTransform({
   name: 'Double Vision',
   description: 'See the image in double',
-  params: [floatParam({ name: 'Amplitude', defaultValue: 10, min: 0 })],
+  params: [
+    floatParam({ name: 'Amplitude', defaultValue: 10, min: 0 }),
+  ] as const,
   fn: mapImage(({ coord, frameCount, frameIndex, getSrcPixel, parameters }) => {
     const [amplitude] = parameters;
     const [x, y] = coord;

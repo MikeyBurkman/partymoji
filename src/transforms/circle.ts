@@ -12,7 +12,7 @@ export const circle = buildTransform({
       defaultValue: 10,
       min: 0,
     }),
-  ],
+  ] as const,
   fn: mapImage(({ coord, frameCount, frameIndex, getSrcPixel, parameters }) => {
     const [radius] = parameters;
     const [x, y] = coord;

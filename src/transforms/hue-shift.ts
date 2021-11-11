@@ -19,7 +19,7 @@ export const hueShift = buildTransform({
       step: 5,
       defaultValue: 75,
     }),
-  ],
+  ] as const,
   fn: mapImage(({ coord, getSrcPixel, parameters: [newHue, amount] }) =>
     shiftHue(getSrcPixel(coord), newHue, amount)
   ),

@@ -1,5 +1,5 @@
+import { Icon, Tooltip } from '@material-ui/core';
 import React from 'react';
-import { Tooltip, Icon } from '@material-ui/core';
 
 interface TooltipProps {
   description?: string;

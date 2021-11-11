@@ -1,13 +1,13 @@
-import { dropdownParam } from '../params/dropdownParam';
-import { imagePickerParam } from '../params/imagePickerParam';
 import { buildTransform } from '../domain/types';
 import {
-  isTransparent,
-  mapFrames,
-  mapCoords,
-  resizeImage,
   getPixel,
+  isTransparent,
+  mapCoords,
+  mapFrames,
+  resizeImage,
 } from '../domain/utils';
+import { imagePickerParam } from '../params/imagePickerParam';
+import { radioParam } from '../params/radioParam';
 
 export const backgroundImage = buildTransform({
   name: 'Background Image',
@@ -16,7 +16,7 @@ export const backgroundImage = buildTransform({
     imagePickerParam({
       name: 'Image',
     }),
-    dropdownParam({
+    radioParam({
       name: 'Type',
       defaultValue: 'background',
       options: [
@@ -28,7 +28,7 @@ export const backgroundImage = buildTransform({
           name: 'Foreground',
           value: 'foreground',
         },
-      ] as const,
+      ],
     }),
   ] as const,
   fn: ({ image, parameters }) => {

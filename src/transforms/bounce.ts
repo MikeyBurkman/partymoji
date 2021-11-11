@@ -12,7 +12,7 @@ export const bounce = buildTransform({
       defaultValue: 5,
       min: 0,
     }),
-  ],
+  ] as const,
   fn: mapImage(({ coord, frameCount, frameIndex, getSrcPixel, parameters }) => {
     const [x, y] = coord;
     const yOffset =

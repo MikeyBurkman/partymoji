@@ -5,14 +5,14 @@ import {
   mapImage,
   shiftHue,
 } from '../domain/utils';
+import { radioParam } from '../params/radioParam';
 import { sliderParam } from '../params/sliderParam';
-import { dropdownParam } from '../params/dropdownParam';
 
 export const party = buildTransform({
   name: 'Party',
   description: 'Party time!',
   params: [
-    dropdownParam({
+    radioParam({
       name: 'Type',
       description: 'Whether to apply the party to the foreground or background',
       defaultValue: 'background',

@@ -1,18 +1,16 @@
 import { range } from 'remeda';
-
-import { buildTransform, Color, Image } from '../domain/types';
+import { buildTransform, Image } from '../domain/types';
 import {
   adjustBrightness,
+  adjustContrast,
   adjustSaturation,
   getPixelFromSource,
-  isTransparent,
   mapCoords,
   mapFrames,
   scaleImage,
 } from '../domain/utils';
-import * as convert from 'color-convert';
-import { sliderParam } from '../params/sliderParam';
 import { intParam } from '../params/intParam';
+import { sliderParam } from '../params/sliderParam';
 
 export const adjustImage = buildTransform({
   name: 'Adjust Image',
@@ -61,7 +59,7 @@ export const adjustImage = buildTransform({
       step: 5,
       defaultValue: 0,
     }),
-  ],
+  ] as const,
   fn: ({
     image,
     parameters: [
@@ -94,8 +92,6 @@ export const adjustImage = buildTransform({
     // Use this to figure out when we should optimally resize the image
     const isBiggerImage = newWidth * newHeight > oldWidth * oldHeight;
 
-    const averageValue = contrast !== 0 ? calculateAverageValue(image) : 0;
-
     let currImage = image;
 
     if (hasFrameCount && frameCount < image.frames.length) {
@@ -125,7 +121,7 @@ export const adjustImage = buildTransform({
         }
 
         if (contrast !== 0) {
-          currColor = adjustContrast(currColor, averageValue, contrast);
+          currColor = adjustContrast(currColor, contrast);
         }
 
         if (saturation !== 0) {
@@ -164,43 +160,4 @@ const setFrameCount = (image: Image, frameCount: number): Image => {
         : currentFrames[currentFrames.length - 1]
     ),
   };
-};
-
-const calculateAverageValue = (image: Image): number => {
-  const [width, height] = image.dimensions;
-
-  // Find average value of all pixels
-  let totalLight = 0;
-  let totalSamples = 0;
-  for (let f = 0; f < image.frames.length; f += 1) {
-    for (let x = 0; x < width; x += 1) {
-      for (let y = 0; y < height; y += 1) {
-        const src = getPixelFromSource(image.dimensions, image.frames[f], [
-          x,
-          y,
-        ]);
-        if (!isTransparent(src)) {
-          const [r, g, b] = src;
-          const [, , l] = convert.rgb.hsl(r, g, b);
-          totalLight += l;
-          totalSamples += 1;
-        }
-      }
-    }
-  }
-  return totalLight / totalSamples;
-};
-
-// Amount = -100 to 100
-const adjustContrast = (
-  color: Color,
-  averageValue: number,
-  amount: number
-): Color => {
-  const [r, g, b, a] = color;
-  const [h, s, l] = convert.rgb.hsl(r, g, b);
-  const diff = l - averageValue;
-  const newLight = l + diff * (amount / 100);
-  const [newR, newG, newB] = convert.hsl.rgb([h, s, newLight]);
-  return [newR, newG, newB, a];
 };

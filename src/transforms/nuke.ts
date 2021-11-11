@@ -1,6 +1,6 @@
+import * as convert from 'color-convert';
 import { buildTransform } from '../domain/types';
 import { mapImage } from '../domain/utils';
-import * as convert from 'color-convert';
 
 export const nuke = buildTransform({
   name: 'Nuke',

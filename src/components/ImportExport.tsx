@@ -1,6 +1,6 @@
-import { Stack, Button, Icon, Typography, Alert } from '@material-ui/core';
-import React from 'react';
+import { Alert, Button, Icon, Stack, Typography } from '@material-ui/core';
 import * as lz from 'lz-string';
+import React from 'react';
 import { AppState } from '../domain/types';
 
 interface ImportExportProps {
@@ -41,20 +41,7 @@ export const ImportExport: React.FC<ImportExportProps> = ({
         Export to clipboard <br />
         (With Source Image)
       </Button>
-      <Button
-        startIcon={<Icon>file_upload</Icon>}
-        sx={{ maxWidth: '300px' }}
-        variant="contained"
-        onClick={() => {
-          const output = lz.compressToBase64(
-            JSON.stringify({ ...state, baseImage: undefined })
-          );
-          navigator.clipboard.writeText(output);
-          showInfo('Copied to clipboard');
-        }}
-      >
-        Export to clipboard <br /> (NO Source Image)
-      </Button>
+
       <Button
         startIcon={<Icon>file_download</Icon>}
         sx={{ maxWidth: '300px' }}

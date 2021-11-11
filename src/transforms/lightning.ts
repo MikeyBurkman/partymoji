@@ -27,7 +27,7 @@ export const lightning = buildTransform({
         'Can be anything. Will determine the randomness of the lightning.',
       defaultValue: 'lightning',
     }),
-  ],
+  ] as const,
   fn: ({ image, parameters }) => {
     const random = seedrandom(parameters[0]);
     return mapFrames(image, (data) => {

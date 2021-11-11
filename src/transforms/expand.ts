@@ -12,7 +12,7 @@ export const expand = buildTransform({
       defaultValue: 10,
       min: 0,
     }),
-  ],
+  ] as const,
   fn: mapImage(
     ({
       dimensions,

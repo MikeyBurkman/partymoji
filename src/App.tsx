@@ -1,23 +1,23 @@
-import React from 'react';
-import ScopedCssBaseline from '@material-ui/core/ScopedCssBaseline';
 import {
-  Container,
-  Stack,
-  Divider,
-  Paper,
-  Typography,
   Button,
+  Container,
+  Divider,
   Icon,
+  Paper,
+  Stack,
+  Typography,
 } from '@material-ui/core';
+import ScopedCssBaseline from '@material-ui/core/ScopedCssBaseline';
+import React from 'react';
 
-import { POSSIBLE_TRANSFORMS, transformByName } from './transforms';
-import { ParamFunction, AppState } from './domain/types';
-import * as localStorage from './localStorage';
 import { ComputeBox } from './components/ComputeBox';
+import { Help } from './components/Help';
 import { ImagePicker } from './components/ImagePicker';
 import { ImageTransformList } from './components/ImageTransformList';
 import { ImportExport } from './components/ImportExport';
-import { Help } from './components/Help';
+import { AppState } from './domain/types';
+import * as localStorage from './localStorage';
+import { POSSIBLE_TRANSFORMS, transformByName } from './transforms';
 
 // Set to true to print out the current state at the bottom of the page
 const DEBUG = false;
@@ -54,10 +54,9 @@ export const App: React.FC = () => {
     state.transforms.length === 0 ||
     !state.dirty ||
     state.transforms.some((t) => {
-      const params = transformByName(t.transformName)
-        .params as ParamFunction<any>[];
+      const params = transformByName(t.transformName).params;
       return (
-        params.length > 0 && t.paramsValues.every((p, i) => p.valid === false)
+        params.length > 0 && t.paramsValues.every((p) => p.valid === false)
       );
     });
 

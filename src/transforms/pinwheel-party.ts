@@ -1,13 +1,13 @@
 import { buildTransform, Coord } from '../domain/types';
 import {
-  mapImage,
-  isTransparent,
-  shiftHue,
   calculateAngle,
   colorFromHue,
+  isTransparent,
+  mapImage,
+  shiftHue,
 } from '../domain/utils';
-import { dropdownParam } from '../params/dropdownParam';
 import { intParam } from '../params/intParam';
+import { radioParam } from '../params/radioParam';
 import { sliderParam } from '../params/sliderParam';
 
 export const pinwheelParty = buildTransform({
@@ -21,7 +21,7 @@ export const pinwheelParty = buildTransform({
       min: 1,
       max: 24,
     }),
-    dropdownParam({
+    radioParam({
       name: 'Type',
       description: 'Whether to apply the party to the foreground or background',
       defaultValue: 'background',

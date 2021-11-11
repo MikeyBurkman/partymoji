@@ -3,8 +3,7 @@ import React from 'react';
 import { SketchPicker } from 'react-color';
 import { Expandable } from '../components/Expandable';
 import { HelpTooltip } from '../components/HelpTooltip';
-
-import { ParamValue, ParamFunction, Color } from '../domain/types';
+import { Color, ParamFunction, ParamValue } from '../domain/types';
 import { fromHexColor, toHexColor } from '../domain/utils';
 
 const ColorBox: React.FC<{ color: Color }> = ({ color }) => (

@@ -1,7 +1,8 @@
 import {
   FormControl,
-  MenuItem,
-  Select,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
   Stack,
   Typography,
 } from '@material-ui/core';
@@ -9,7 +10,7 @@ import React from 'react';
 import { HelpTooltip } from '../components/HelpTooltip';
 import { ParamFunction, ParamValue } from '../domain/types';
 
-const DropdownParam: React.FC<{
+const RadioParam: React.FC<{
   name: string;
   options: readonly { name: string; value: any }[];
   value?: any;
@@ -22,26 +23,28 @@ const DropdownParam: React.FC<{
         <Typography variant="body2">{name}</Typography>
         <HelpTooltip description={description} />
       </Stack>
-      <FormControl>
-        <Select
-          autoWidth
-          value={value}
+      <FormControl component="fieldset">
+        <RadioGroup
+          aria-label={name}
+          defaultValue={value}
           onChange={(event) =>
             onChange({ valid: true, value: event.target.value })
           }
         >
           {options.map((t) => (
-            <MenuItem key={t.value} value={t.value}>
-              {t.name}
-            </MenuItem>
+            <FormControlLabel
+              value={t.value}
+              control={<Radio />}
+              label={t.name}
+            />
           ))}
-        </Select>
+        </RadioGroup>
       </FormControl>
     </Stack>
   );
 };
 
-export function dropdownParam<T>(args: {
+export function radioParam<T>(args: {
   name: string;
   options: readonly { name: string; value: T }[];
   description?: string;
@@ -54,7 +57,7 @@ export function dropdownParam<T>(args: {
       : { valid: false },
     fn: (params) => {
       return (
-        <DropdownParam
+        <RadioParam
           name={args.name}
           value={params.value.valid ? params.value.value : undefined}
           options={args.options}
