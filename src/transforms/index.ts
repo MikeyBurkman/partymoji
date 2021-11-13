@@ -25,6 +25,7 @@ import { ripple } from './ripple';
 import { rotate } from './rotate';
 import { roxbury } from './roxbury';
 import { shake } from './shake';
+import { slowAnimation } from './slow-animation';
 import { staticc } from './static';
 import { transparency } from './transparency';
 import { transpose } from './transpose';
@@ -55,6 +56,7 @@ export const POSSIBLE_TRANSFORMS = [
   rotate,
   roxbury,
   shake,
+  slowAnimation,
   staticc,
   transparency,
   transpose,
