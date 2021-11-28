@@ -1,3 +1,4 @@
+import { pipe, reject, sortBy } from 'remeda';
 import { ParamFunction, Transform } from '../domain/types';
 import { assert } from '../domain/utils';
 import { adjustImage } from './adjust-image';
@@ -10,6 +11,7 @@ import { colors } from './colors';
 import { colorsBackground } from './colors-background';
 import { doubleVision } from './double-vision';
 import { expand } from './expand';
+import { fill } from './fill';
 import { fisheye } from './fisheye';
 import { grid } from './grid';
 import { hueShift } from './hue-shift';
@@ -28,44 +30,50 @@ import { rotate } from './rotate';
 import { roxbury } from './roxbury';
 import { shake } from './shake';
 import { slowAnimation } from './slow-animation';
+import { spin } from './spin';
 import { staticc } from './static';
 import { transparency } from './transparency';
 import { transpose } from './transpose';
 
-export const POSSIBLE_TRANSFORMS = [
-  adjustImage,
-  backgroundColor,
-  backgroundImage,
-  bounce,
-  bounceAnimation,
-  circle,
-  colors,
-  colorsBackground,
-  doubleVision,
-  expand,
-  fisheye,
-  grid,
-  hueShift,
-  lightning,
-  nuke,
-  party,
-  pinwheel,
-  pinwheelParty,
-  radiance,
-  radianceParty,
-  repeatAnimation,
-  resizeImage,
-  reverseAnimation,
-  ripple,
-  rotate,
-  roxbury,
-  shake,
-  slowAnimation,
-  //spin,
-  staticc,
-  transparency,
-  transpose,
-].sort((x, y) => (x.name > y.name ? 1 : -1));
+export const POSSIBLE_TRANSFORMS = pipe(
+  [
+    adjustImage,
+    backgroundColor,
+    backgroundImage,
+    bounce,
+    bounceAnimation,
+    circle,
+    colors,
+    colorsBackground,
+    doubleVision,
+    expand,
+    fill,
+    fisheye,
+    grid,
+    hueShift,
+    lightning,
+    nuke,
+    party,
+    pinwheel,
+    pinwheelParty,
+    radiance,
+    radianceParty,
+    repeatAnimation,
+    resizeImage,
+    reverseAnimation,
+    ripple,
+    rotate,
+    roxbury,
+    shake,
+    slowAnimation,
+    spin,
+    staticc,
+    transparency,
+    transpose,
+  ],
+  sortBy((x) => x.name),
+  reject((x) => x.disabled)
+);
 
 export const transformByName = (
   name: string

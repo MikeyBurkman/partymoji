@@ -2,6 +2,7 @@ import { buildTransform } from '../domain/types';
 import { mapImage } from '../domain/utils';
 
 export const spin = buildTransform({
+  disabled: true,
   name: 'Spin',
   description: 'Make the image spin in a 3D-like way',
   params: [],

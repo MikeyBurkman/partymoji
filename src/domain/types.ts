@@ -88,6 +88,7 @@ export interface Transform<T extends readonly ParamFunction<any>[]> {
   params: T;
   description?: string;
   fn: TransformFn<{ [P in keyof T]: ParamType<T[P]> }>;
+  disabled: boolean;
 }
 
 export interface TransformWithParams<T extends readonly ParamFunction<any>[]> {
@@ -105,11 +106,13 @@ export const buildTransform = <T extends readonly ParamFunction<any>[]>(args: {
   params: T;
   description?: string;
   fn: TransformFn<{ [P in keyof T]: ParamType<T[P]> }>;
+  disabled?: boolean;
 }): Transform<T> => ({
   name: args.name,
   params: args.params,
   description: args.description,
   fn: args.fn,
+  disabled: args.disabled ?? false,
 });
 
 export interface AppState {

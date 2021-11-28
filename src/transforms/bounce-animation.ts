@@ -1,4 +1,4 @@
-import { concat, reverse } from 'remeda';
+import { concat, drop, pipe, reverse } from 'remeda';
 import { buildTransform } from '../domain/types';
 
 export const bounceAnimation = buildTransform({
@@ -7,6 +7,9 @@ export const bounceAnimation = buildTransform({
   params: [],
   fn: ({ image }) => ({
     dimensions: image.dimensions,
-    frames: concat(image.frames, reverse(image.frames)),
+    frames: concat(
+      image.frames,
+      pipe(image.frames, drop(1), reverse(), drop(1))
+    ),
   }),
 });

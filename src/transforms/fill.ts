@@ -3,6 +3,7 @@ import { mapImage, setPixel, TRANSPARENT_COLOR } from '../domain/utils';
 import { sliderParam } from '../params/sliderParam';
 
 export const fill = buildTransform({
+  disabled: true,
   name: 'Fill Transparent',
   description:
     'Makes transparent all pixels of similar color surrounding a point',
