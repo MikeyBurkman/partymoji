@@ -11,8 +11,7 @@ export const backgroundColor = buildTransform({
       defaultValue: fromHexColor('#000000'),
     }),
   ] as const,
-  fn: mapImage(({ coord, getSrcPixel, parameters }) => {
-    const [color] = parameters;
+  fn: mapImage(({ coord, getSrcPixel, parameters: [color] }) => {
     const p = getSrcPixel(coord);
     return isTransparent(p) ? color : p;
   }),

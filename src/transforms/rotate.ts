@@ -17,17 +17,15 @@ export const rotate = buildTransform({
   ] as const,
   fn: mapImage(
     ({
-      dimensions,
-      coord,
+      dimensions: [width, height],
+      coord: [x, y],
       frameCount,
       frameIndex,
       getSrcPixel,
-      parameters,
+      parameters: [sign],
     }) => {
-      const [sign] = parameters;
-      const centerX = dimensions[0] / 2;
-      const centerY = dimensions[1] / 2;
-      const [x, y] = coord;
+      const centerX = width / 2;
+      const centerY = height / 2;
       const xRelCenter = x - centerX;
       const yRelCenter = y - centerY;
 

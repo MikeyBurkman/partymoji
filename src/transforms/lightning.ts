@@ -1,12 +1,10 @@
-import { buildTransform } from '../domain/types';
 import seedrandom from 'seedrandom';
-
-import { Color } from '../domain/types';
+import { buildTransform, Color } from '../domain/types';
 import {
-  mapFrames,
-  mapCoords,
   getPixelFromSource,
   isTransparent,
+  mapCoords,
+  mapFrames,
 } from '../domain/utils';
 import { textParam } from '../params/textParam';
 
@@ -28,8 +26,8 @@ export const lightning = buildTransform({
       defaultValue: 'lightning',
     }),
   ] as const,
-  fn: ({ image, parameters }) => {
-    const random = seedrandom(parameters[0]);
+  fn: ({ image, parameters: [seed] }) => {
+    const random = seedrandom(seed);
     return mapFrames(image, (data) => {
       const i = random();
       const flashIntensity = i < 0.9 ? 0 : i < 0.95 ? 1 : i < 0.98 ? 2 : 3;

@@ -13,14 +13,19 @@ export const bounce = buildTransform({
       min: 0,
     }),
   ] as const,
-  fn: mapImage(({ coord, frameCount, frameIndex, getSrcPixel, parameters }) => {
-    const [x, y] = coord;
-    const yOffset =
-      y +
-      Math.round(
-        parameters[0] * Math.sin((frameIndex / frameCount) * 2 * Math.PI)
-      );
+  fn: mapImage(
+    ({
+      coord: [x, y],
+      frameCount,
+      frameIndex,
+      getSrcPixel,
+      parameters: [speed],
+    }) => {
+      const yOffset =
+        y +
+        Math.round(speed * Math.sin((frameIndex / frameCount) * 2 * Math.PI));
 
-    return getSrcPixel([x, yOffset]);
-  }),
+      return getSrcPixel([x, yOffset]);
+    }
+  ),
 });

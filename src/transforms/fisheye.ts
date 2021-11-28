@@ -17,20 +17,19 @@ export const fisheye = buildTransform({
   fn: mapImage(
     ({
       dimensions,
-      coord,
+      coord: [x, y],
       frameCount,
       frameIndex,
       getSrcPixel,
-      parameters,
+      parameters: [radius],
     }) => {
       const idx = frameIndex / frameCount;
       const expanding = idx < 0.5;
       const [width, height] = dimensions;
-      const dist = (expanding ? idx : 1 - idx) * parameters[0];
+      const dist = (expanding ? idx : 1 - idx) * radius;
       const centerX = width / 2;
       const centerY = height / 2;
 
-      const [x, y] = coord;
       const angle = Math.atan2(centerY - y, centerX - x);
 
       const xOffset = Math.round(dist * Math.cos(angle));

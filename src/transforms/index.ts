@@ -57,6 +57,7 @@ export const POSSIBLE_TRANSFORMS = [
   roxbury,
   shake,
   slowAnimation,
+  //spin,
   staticc,
   transparency,
   transpose,

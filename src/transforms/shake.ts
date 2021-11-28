@@ -8,13 +8,21 @@ export const shake = buildTransform({
   params: [
     floatParam({ name: 'Amplitude', defaultValue: 10, min: 0 }),
   ] as const,
-  fn: mapImage(({ coord, frameCount, frameIndex, getSrcPixel, parameters }) => {
-    const [amplitude] = parameters;
-    const [x, y] = coord;
-    const xOffset =
-      x +
-      Math.round(amplitude * Math.cos((frameIndex / frameCount) * 2 * Math.PI));
+  fn: mapImage(
+    ({
+      coord: [x, y],
+      frameCount,
+      frameIndex,
+      getSrcPixel,
+      parameters: [amplitude],
+    }) => {
+      const xOffset =
+        x +
+        Math.round(
+          amplitude * Math.cos((frameIndex / frameCount) * 2 * Math.PI)
+        );
 
-    return getSrcPixel([xOffset, y]);
-  }),
+      return getSrcPixel([xOffset, y]);
+    }
+  ),
 });

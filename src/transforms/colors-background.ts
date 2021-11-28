@@ -30,17 +30,17 @@ export const colorsBackground = buildTransform({
         }),
     }),
   ] as const,
-  fn: mapImage(({ coord, frameCount, frameIndex, getSrcPixel, parameters }) => {
-    const srcPixel = getSrcPixel(coord);
+  fn: mapImage(
+    ({ coord, frameCount, frameIndex, getSrcPixel, parameters: [colors] }) => {
+      const srcPixel = getSrcPixel(coord);
 
-    const [colors] = parameters;
+      // Make the transparent parts colorful
+      if (isTransparent(srcPixel)) {
+        const colorIdx = Math.floor((frameIndex / frameCount) * colors.length);
+        return colors[colorIdx];
+      }
 
-    // Make the transparent parts colorful
-    if (isTransparent(srcPixel)) {
-      const colorIdx = Math.floor((frameIndex / frameCount) * colors.length);
-      return colors[colorIdx];
+      return srcPixel;
     }
-
-    return srcPixel;
-  }),
+  ),
 });

@@ -93,12 +93,14 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
               );
               const start = Date.now();
               let currIdx = 0;
+              const timings: number[] = [];
               setProgress(0);
               const results = await runTransforms({
                 inputDataUrl: appState.baseImage,
                 transformList: transformInputs,
                 fps: appState.fps,
                 onImageFinished: () => {
+                  timings[currIdx] = Date.now() - start;
                   currIdx += 1;
                   setProgress((currIdx / transformInputs.length) * 100);
                 },
@@ -112,6 +114,23 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
                   gif: result.gif,
                 })),
               });
+
+              // Google analytics
+              timings.forEach((timingValue, idx) => {
+                ga('send', {
+                  hitType: 'timing',
+                  timingCategory: 'computeStep',
+                  timingVar: appState.transforms[idx].transformName,
+                  timingValue,
+                });
+              });
+              ga('send', {
+                hitType: 'timing',
+                timingCategory: 'computeTotal',
+                timingVar: appState.transforms.length,
+                timingValue: computeTime,
+              });
+
               setProgress(undefined);
               onComputed();
             } catch (err) {

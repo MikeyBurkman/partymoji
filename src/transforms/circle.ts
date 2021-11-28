@@ -13,15 +13,21 @@ export const circle = buildTransform({
       min: 0,
     }),
   ] as const,
-  fn: mapImage(({ coord, frameCount, frameIndex, getSrcPixel, parameters }) => {
-    const [radius] = parameters;
-    const [x, y] = coord;
-    const xOffset = Math.round(
-      radius * Math.sin(-2 * Math.PI * (frameIndex / frameCount))
-    );
-    const yOffset = Math.round(
-      radius * Math.cos(-2 * Math.PI * (frameIndex / frameCount))
-    );
-    return getSrcPixel([x + xOffset, y + yOffset]);
-  }),
+  fn: mapImage(
+    ({
+      coord: [x, y],
+      frameCount,
+      frameIndex,
+      getSrcPixel,
+      parameters: [radius],
+    }) => {
+      const xOffset = Math.round(
+        radius * Math.sin(-2 * Math.PI * (frameIndex / frameCount))
+      );
+      const yOffset = Math.round(
+        radius * Math.cos(-2 * Math.PI * (frameIndex / frameCount))
+      );
+      return getSrcPixel([x + xOffset, y + yOffset]);
+    }
+  ),
 });

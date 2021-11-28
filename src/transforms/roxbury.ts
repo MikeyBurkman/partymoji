@@ -1,5 +1,5 @@
-import { mapFrames, mapCoords, getPixelFromSource } from '../domain/utils';
 import { buildTransform, Coord } from '../domain/types';
+import { getPixelFromSource, mapCoords, mapFrames } from '../domain/utils';
 
 export const roxbury = buildTransform({
   name: 'Roxbury',
@@ -33,8 +33,7 @@ export const roxbury = buildTransform({
       const rotatePointX = image.dimensions[0] * 0.25;
       const rotatePointY = image.dimensions[1] * 0.7;
 
-      return mapCoords(image.dimensions, (coord) => {
-        const [x, y] = coord;
+      return mapCoords(image.dimensions, ([x, y]) => {
         const xRelCenter = Math.floor(x - rotatePointX + 8 * Math.sin(angle));
         const yRelCenter = Math.floor(y - rotatePointY + 8 * Math.cos(angle));
 

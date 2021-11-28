@@ -35,25 +35,25 @@ export const colors = buildTransform({
         }),
     }),
   ] as const,
-  fn: mapImage(({ coord, frameCount, frameIndex, getSrcPixel, parameters }) => {
-    const srcPixel = getSrcPixel(coord);
+  fn: mapImage(
+    ({ coord, frameCount, frameIndex, getSrcPixel, parameters: [colors] }) => {
+      const srcPixel = getSrcPixel(coord);
 
-    const [colors] = parameters;
+      if (isTransparent(srcPixel)) {
+        return [0, 0, 0, 0];
+      }
 
-    if (isTransparent(srcPixel)) {
-      return [0, 0, 0, 0];
+      const colorIdx = Math.floor((frameIndex / frameCount) * colors.length);
+      const chosenColor = colors[colorIdx];
+
+      const gray = getAveragePixelValue(srcPixel);
+
+      return [
+        (gray * chosenColor[0]) / 255,
+        (gray * chosenColor[1]) / 255,
+        (gray * chosenColor[2]) / 255,
+        255,
+      ];
     }
-
-    const colorIdx = Math.floor((frameIndex / frameCount) * colors.length);
-    const chosenColor = colors[colorIdx];
-
-    const gray = getAveragePixelValue(srcPixel);
-
-    return [
-      (gray * chosenColor[0]) / 255,
-      (gray * chosenColor[1]) / 255,
-      (gray * chosenColor[2]) / 255,
-      255,
-    ];
-  }),
+  ),
 });

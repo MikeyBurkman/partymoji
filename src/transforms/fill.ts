@@ -1,11 +1,5 @@
 import { buildTransform, Coord, Image } from '../domain/types';
-import {
-  mapImage,
-  adjustSaturation,
-  duplicateImage,
-  setPixel,
-  TRANSPARENT_COLOR,
-} from '../domain/utils';
+import { mapImage, setPixel, TRANSPARENT_COLOR } from '../domain/utils';
 import { sliderParam } from '../params/sliderParam';
 
 export const fill = buildTransform({
