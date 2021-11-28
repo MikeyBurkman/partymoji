@@ -4,6 +4,7 @@ import { adjustImage } from './adjust-image';
 import { backgroundColor } from './background-color';
 import { backgroundImage } from './background-image';
 import { bounce } from './bounce';
+import { bounceAnimation } from './bounce-animation';
 import { circle } from './circle';
 import { colors } from './colors';
 import { colorsBackground } from './colors-background';
@@ -21,6 +22,7 @@ import { radiance } from './radiance';
 import { radianceParty } from './radiance-party';
 import { repeatAnimation } from './repeat-animation';
 import { resizeImage } from './resize-image';
+import { reverseAnimation } from './reverse-animation';
 import { ripple } from './ripple';
 import { rotate } from './rotate';
 import { roxbury } from './roxbury';
@@ -35,6 +37,7 @@ export const POSSIBLE_TRANSFORMS = [
   backgroundColor,
   backgroundImage,
   bounce,
+  bounceAnimation,
   circle,
   colors,
   colorsBackground,
@@ -52,6 +55,7 @@ export const POSSIBLE_TRANSFORMS = [
   radianceParty,
   repeatAnimation,
   resizeImage,
+  reverseAnimation,
   ripple,
   rotate,
   roxbury,
