@@ -25,7 +25,7 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
       <input
         type="file"
         hidden
-        accept="image/png,image/jpg,image/gif"
+        accept="image/png,image/jpg,image/jpeg,image/gif"
         name="source-png"
         onChange={async (event) => {
           const files = Array.from(event.target.files ?? []);
