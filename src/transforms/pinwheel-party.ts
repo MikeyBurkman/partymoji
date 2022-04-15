@@ -4,7 +4,7 @@ import {
   colorFromHue,
   isTransparent,
   mapImage,
-  shiftHue,
+  shiftTowardsHue,
 } from '../domain/utils';
 import { intParam } from '../params/intParam';
 import { radioParam } from '../params/radioParam';
@@ -83,7 +83,7 @@ export const pinwheelParty = buildTransform({
 
       return isBackground
         ? colorFromHue(newH)
-        : shiftHue(srcPixel, newH, amount);
+        : shiftTowardsHue(srcPixel, newH, amount);
     }
   ),
 });

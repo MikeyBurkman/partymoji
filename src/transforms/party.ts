@@ -3,14 +3,14 @@ import {
   colorFromHue,
   isTransparent,
   mapImage,
-  shiftHue,
+  shiftTowardsHue,
 } from '../domain/utils';
 import { radioParam } from '../params/radioParam';
 import { sliderParam } from '../params/sliderParam';
 
 export const party = buildTransform({
   name: 'Party',
-  description: 'Party time!',
+  description: 'Shift the hue of the image over the course of the animation',
   params: [
     radioParam({
       name: 'Type',
@@ -61,7 +61,7 @@ export const party = buildTransform({
       }
 
       if (!isBackground && type === 'foreground') {
-        return shiftHue(srcPixel, newH, amount);
+        return shiftTowardsHue(srcPixel, newH, amount);
       }
 
       return srcPixel;

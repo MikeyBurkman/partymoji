@@ -14,10 +14,12 @@ import { expand } from './expand';
 import { fill } from './fill';
 import { fisheye } from './fisheye';
 import { grid } from './grid';
+import { hueChange } from './hue-change';
 import { hueShift } from './hue-shift';
 import { lightning } from './lightning';
 import { nuke } from './nuke';
 import { party } from './party';
+import { partyTwo } from './party-two';
 import { pinwheel } from './pinwheel';
 import { pinwheelParty } from './pinwheel-party';
 import { radiance } from './radiance';
@@ -50,10 +52,12 @@ export const POSSIBLE_TRANSFORMS = pipe(
     fill,
     fisheye,
     grid,
+    hueChange,
     hueShift,
     lightning,
     nuke,
     party,
+    partyTwo,
     pinwheel,
     pinwheelParty,
     radiance,

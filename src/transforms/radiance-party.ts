@@ -5,7 +5,7 @@ import {
   isTransparent,
   mapCoords,
   mapFrames,
-  shiftHue,
+  shiftTowardsHue,
 } from '../domain/utils';
 import { intParam } from '../params/intParam';
 import { radioParam } from '../params/radioParam';
@@ -90,7 +90,9 @@ export const radianceParty = buildTransform({
             360 * frameProgress) %
           360;
 
-        return isBackground ? colorFromHue(newH) : shiftHue(src, newH, amount);
+        return isBackground
+          ? colorFromHue(newH)
+          : shiftTowardsHue(src, newH, amount);
       })
     );
   },

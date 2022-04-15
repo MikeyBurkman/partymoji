@@ -1,5 +1,5 @@
 import { buildTransform } from '../domain/types';
-import { mapImage, isTransparent, shiftHue } from '../domain/utils';
+import { isTransparent, mapImage, shiftTowardsHue } from '../domain/utils';
 import { intParam } from '../params/intParam';
 import { sliderParam } from '../params/sliderParam';
 
@@ -68,7 +68,7 @@ export const pinwheelParty = buildTransform({
         (pointAngle * ribbonArcDegrees + frameProgress * ribbonArcDegrees) %
         ribbonArcDegrees;
 
-      return shiftHue(srcPixel, newH, amount);
+      return shiftTowardsHue(srcPixel, newH, amount);
     }
   ),
 });

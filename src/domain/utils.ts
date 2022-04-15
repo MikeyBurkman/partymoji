@@ -328,11 +328,11 @@ export const weightedValue = (percent: number, v1: number, v2: number) =>
   (1 - percent / 100) * v1 + (percent / 100) * v2;
 
 /**
- * Shifts the hue of the pixel towards a certain color, by a certain amount percentage
+ * Shift the hue of the pixel towards a certain color, by a certain amount percentage
  * @param hue [0, 360)
  * @param amount [0, 100]
  */
-export const shiftHue = (
+export const shiftTowardsHue = (
   [r, g, b, a]: Color,
   hue: number,
   amount: number
@@ -349,6 +349,16 @@ export const shiftHue = (
     weightedValue(amount, b, newB),
     a,
   ];
+};
+
+/**
+ * Adds the given amount to the hue of the color.
+ * Amount should be between 0 and 360
+ */
+export const shiftHue = ([r, g, b, a]: Color, amount: number): Color => {
+  const [h, s, l] = convert.rgb.hsl([r, g, b]);
+  const [newR, newG, newB] = convert.hsl.rgb([(h + amount) % 360, s, l]);
+  return [newR, newG, newB, a];
 };
 
 /**
