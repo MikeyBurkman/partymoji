@@ -1,5 +1,5 @@
 import { buildTransform } from '../domain/types';
-import { mapImage } from '../domain/utils';
+import { mapImageWithPrecompute } from '../domain/utils';
 import { intParam } from '../params/intParam';
 
 export const bounce = buildTransform({
@@ -13,19 +13,11 @@ export const bounce = buildTransform({
       min: 0,
     }),
   ] as const,
-  fn: mapImage(
-    ({
-      coord: [x, y],
-      frameCount,
-      frameIndex,
-      getSrcPixel,
-      parameters: [speed],
-    }) => {
-      const yOffset =
-        y +
-        Math.round(speed * Math.sin((frameIndex / frameCount) * 2 * Math.PI));
-
-      return getSrcPixel([x, yOffset]);
-    }
+  fn: mapImageWithPrecompute(
+    ({ animationProgress, parameters: [speed] }) => ({
+      yOffset: Math.round(speed * Math.sin(animationProgress * 2 * Math.PI)),
+    }),
+    ({ computed: { yOffset }, coord: [x, y], getSrcPixel }) =>
+      getSrcPixel([x, y + yOffset])
   ),
 });

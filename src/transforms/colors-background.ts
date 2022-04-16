@@ -1,5 +1,9 @@
 import { buildTransform } from '../domain/types';
-import { fromHexColor, isTransparent, mapImage } from '../domain/utils';
+import {
+  fromHexColor,
+  isTransparent,
+  mapImageWithPrecompute,
+} from '../domain/utils';
 import { colorPickerParam } from '../params/colorPickerParam';
 import { variableLengthParam } from '../params/variableLengthParam';
 
@@ -30,14 +34,16 @@ export const colorsBackground = buildTransform({
         }),
     }),
   ] as const,
-  fn: mapImage(
-    ({ coord, frameCount, frameIndex, getSrcPixel, parameters: [colors] }) => {
+  fn: mapImageWithPrecompute(
+    ({ animationProgress, parameters: [colors] }) => ({
+      bgColor: colors[Math.floor(animationProgress * colors.length)],
+    }),
+    ({ computed: { bgColor }, coord, getSrcPixel }) => {
       const srcPixel = getSrcPixel(coord);
 
       // Make the transparent parts colorful
       if (isTransparent(srcPixel)) {
-        const colorIdx = Math.floor((frameIndex / frameCount) * colors.length);
-        return colors[colorIdx];
+        return bgColor;
       }
 
       return srcPixel;

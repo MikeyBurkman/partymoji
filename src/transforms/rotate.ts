@@ -1,5 +1,5 @@
 import { buildTransform, Coord } from '../domain/types';
-import { mapImage } from '../domain/utils';
+import { mapImageWithPrecompute } from '../domain/utils';
 import { radioParam } from '../params/radioParam';
 
 export const rotate = buildTransform({
@@ -15,23 +15,24 @@ export const rotate = buildTransform({
       ],
     }),
   ] as const,
-  fn: mapImage(
+  fn: mapImageWithPrecompute(
+    ({ animationProgress, parameters: [sign] }) => {
+      const amount = animationProgress * (sign || 1);
+      return {
+        cos: Math.cos(2 * Math.PI * amount),
+        sin: Math.sin(2 * Math.PI * amount),
+      };
+    },
     ({
       dimensions: [width, height],
       coord: [x, y],
-      frameCount,
-      frameIndex,
+      computed: { cos, sin },
       getSrcPixel,
-      parameters: [sign],
     }) => {
       const centerX = width / 2;
       const centerY = height / 2;
       const xRelCenter = x - centerX;
       const yRelCenter = y - centerY;
-
-      const amount = (frameIndex / frameCount) * (sign || 1);
-      const cos = Math.cos(2 * Math.PI * amount);
-      const sin = Math.sin(2 * Math.PI * amount);
 
       const newCoord: Coord = [
         Math.round(centerX + xRelCenter * cos - yRelCenter * sin),

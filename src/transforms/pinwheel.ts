@@ -1,9 +1,9 @@
 import { buildTransform, Coord } from '../domain/types';
 import {
-  mapImage,
-  isTransparent,
-  fromHexColor,
   calculateAngle,
+  fromHexColor,
+  isTransparent,
+  mapImageWithPrecompute,
 } from '../domain/utils';
 import { colorPickerParam } from '../params/colorPickerParam';
 import { intParam } from '../params/intParam';
@@ -53,17 +53,8 @@ export const pinwheel = buildTransform({
       defaultValue: 0,
     }),
   ] as const,
-  fn: mapImage(
-    ({
-      coord,
-      dimensions,
-      frameCount,
-      frameIndex,
-      getSrcPixel,
-      parameters: [groupCount, colors, offsetX, offsetY],
-    }) => {
-      const srcPixel = getSrcPixel(coord);
-
+  fn: mapImageWithPrecompute(
+    ({ parameters: [groupCount, colors, offsetX, offsetY] }) => {
       const ribbonCount = colors.length * groupCount;
       const ribbonArcDegrees = Math.round(360 / ribbonCount);
       // Need to make sure ribbonCount is always a multiple of the number of images, otherwise we
@@ -74,25 +65,39 @@ export const pinwheel = buildTransform({
         colorsLength -= 1;
       }
 
-      // Make the transparent parts colorful
-      if (isTransparent(srcPixel)) {
-        const center: Coord = [
-          dimensions[0] / 2 + offsetX,
-          dimensions[1] / 2 - offsetY,
-        ];
-        const pointAngle = calculateAngle(coord, center);
+      return {
+        colorsLength,
+        ribbonArcDegrees,
+      };
+    },
+    ({
+      computed: { ribbonArcDegrees, colorsLength },
+      coord,
+      dimensions,
+      animationProgress,
+      getSrcPixel,
+      parameters: [groupCount, colors, offsetX, offsetY],
+    }) => {
+      const srcPixel = getSrcPixel(coord);
 
-        const colorIdx =
-          Math.floor(pointAngle / ribbonArcDegrees) % colorsLength;
-
-        // Increment colorIdx based on current frame progress
-        const frameProgress = frameIndex / frameCount;
-        const idx =
-          (Math.floor(frameProgress * colorsLength) + colorIdx) % colorsLength;
-        return colors[idx];
+      if (!isTransparent(srcPixel)) {
+        return srcPixel;
       }
 
-      return srcPixel;
+      // Make the transparent parts colorful
+      const center: Coord = [
+        dimensions[0] / 2 + offsetX,
+        dimensions[1] / 2 - offsetY,
+      ];
+      const pointAngle = calculateAngle(coord, center);
+
+      const colorIdx = Math.floor(pointAngle / ribbonArcDegrees) % colorsLength;
+
+      // Increment colorIdx based on current frame progress
+      const idx =
+        (Math.floor(animationProgress * colorsLength) + colorIdx) %
+        colorsLength;
+      return colors[idx];
     }
   ),
 });

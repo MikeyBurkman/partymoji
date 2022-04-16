@@ -47,14 +47,13 @@ export const party = buildTransform({
     ({
       coord,
       getSrcPixel,
-      frameCount,
-      frameIndex,
+      animationProgress,
       parameters: [type, amount, shiftSpeed],
     }) => {
       const srcPixel = getSrcPixel(coord);
       const isBackground = isTransparent(srcPixel);
 
-      const newH = ((frameIndex / frameCount) * shiftSpeed * 360) % 360;
+      const newH = (animationProgress * shiftSpeed * 360) % 360;
 
       if (isBackground && type === 'background') {
         return colorFromHue(newH);

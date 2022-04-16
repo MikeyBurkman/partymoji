@@ -1,5 +1,5 @@
 import { buildTransform } from '../domain/types';
-import { mapImage } from '../domain/utils';
+import { mapImageWithPrecompute } from '../domain/utils';
 import { intParam } from '../params/intParam';
 
 // Probably still needs work -- the inner pixels get all funky still
@@ -14,22 +14,20 @@ export const fisheye = buildTransform({
       min: 0,
     }),
   ] as const,
-  fn: mapImage(
+  fn: mapImageWithPrecompute(
     ({
-      dimensions,
-      coord: [x, y],
-      frameCount,
-      frameIndex,
-      getSrcPixel,
+      animationProgress,
+      dimensions: [width, height],
       parameters: [radius],
     }) => {
-      const idx = frameIndex / frameCount;
-      const expanding = idx < 0.5;
-      const [width, height] = dimensions;
-      const dist = (expanding ? idx : 1 - idx) * radius;
-      const centerX = width / 2;
-      const centerY = height / 2;
-
+      const expanding = animationProgress < 0.5;
+      return {
+        dist: (expanding ? animationProgress : 1 - animationProgress) * radius,
+        centerX: width / 2,
+        centerY: height / 2,
+      };
+    },
+    ({ computed: { dist, centerX, centerY }, coord: [x, y], getSrcPixel }) => {
       const angle = Math.atan2(centerY - y, centerX - x);
 
       const xOffset = Math.round(dist * Math.cos(angle));

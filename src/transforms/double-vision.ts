@@ -1,5 +1,5 @@
 import { buildTransform } from '../domain/types';
-import { mapImage } from '../domain/utils';
+import { mapImageWithPrecompute } from '../domain/utils';
 import { floatParam } from '../params/floatParam';
 
 export const doubleVision = buildTransform({
@@ -8,19 +8,13 @@ export const doubleVision = buildTransform({
   params: [
     floatParam({ name: 'Amplitude', defaultValue: 10, min: 0 }),
   ] as const,
-  fn: mapImage(
-    ({
-      coord: [x, y],
-      frameCount,
-      frameIndex,
-      getSrcPixel,
-      parameters: [amplitude],
-    }) => {
+  fn: mapImageWithPrecompute(
+    ({ animationProgress, parameters: [amplitude] }) => ({
+      xOffset: amplitude * Math.sin(-2 * Math.PI * animationProgress),
+    }),
+    ({ computed: { xOffset }, coord: [x, y], getSrcPixel }) => {
       const dir = x % 2 === 0 ? -1 : 1;
-      const xOffset = Math.round(
-        dir * amplitude * Math.sin(-2 * Math.PI * (frameIndex / frameCount))
-      );
-      return getSrcPixel([x + xOffset, y]);
+      return getSrcPixel([x + Math.round(dir * xOffset), y]);
     }
   ),
 });

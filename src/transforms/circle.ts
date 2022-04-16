@@ -1,5 +1,5 @@
 import { buildTransform } from '../domain/types';
-import { mapImage } from '../domain/utils';
+import { mapImageWithPrecompute } from '../domain/utils';
 import { intParam } from '../params/intParam';
 
 export const circle = buildTransform({
@@ -13,21 +13,12 @@ export const circle = buildTransform({
       min: 0,
     }),
   ] as const,
-  fn: mapImage(
-    ({
-      coord: [x, y],
-      frameCount,
-      frameIndex,
-      getSrcPixel,
-      parameters: [radius],
-    }) => {
-      const xOffset = Math.round(
-        radius * Math.sin(-2 * Math.PI * (frameIndex / frameCount))
-      );
-      const yOffset = Math.round(
-        radius * Math.cos(-2 * Math.PI * (frameIndex / frameCount))
-      );
-      return getSrcPixel([x + xOffset, y + yOffset]);
-    }
+  fn: mapImageWithPrecompute(
+    ({ animationProgress, parameters: [radius] }) => ({
+      xOffset: Math.round(radius * Math.sin(-2 * Math.PI * animationProgress)),
+      yOffset: Math.round(radius * Math.cos(-2 * Math.PI * animationProgress)),
+    }),
+    ({ computed: { xOffset, yOffset }, coord: [x, y], getSrcPixel }) =>
+      getSrcPixel([x + xOffset, y + yOffset])
   ),
 });

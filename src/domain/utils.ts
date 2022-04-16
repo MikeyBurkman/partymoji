@@ -147,6 +147,8 @@ export const mapImage = <T>(
     coord: Coord;
     frameCount: number;
     frameIndex: number;
+    /** Between 0 and 1 */
+    animationProgress: number;
     getSrcPixel: (coord: Coord) => Color;
   }) => Color
 ): TransformFn<T> => {
@@ -161,11 +163,74 @@ export const mapImage = <T>(
           coord,
           frameCount,
           frameIndex,
+          animationProgress: frameIndex / frameCount,
           getSrcPixel: (c: Coord) =>
             getPixelFromSource(image.dimensions, imageData, c),
         })
       )
     );
+};
+
+/**
+ * Similar to mapImage, but the first argument pre-computes some things for
+ *  each frame, which is then passed to the second callback function.
+ * This is useful for performance (only compute things every frame rather than every pixel),
+ *  and also allows you to generate some random value that will be the same for every frame.
+ */
+export const mapImageWithPrecompute = <T, R>(
+  compute: (args: {
+    image: Image;
+    dimensions: Dimensions;
+    random: Random;
+    parameters: T;
+    frameCount: number;
+    frameIndex: number;
+    /** Between 0 and 1 */
+    animationProgress: number;
+  }) => R,
+  cb: (args: {
+    computed: R;
+    image: Image;
+    dimensions: Dimensions;
+    random: Random;
+    parameters: T;
+    coord: Coord;
+    frameCount: number;
+    frameIndex: number;
+    /** Between 0 and 1 */
+    animationProgress: number;
+    getSrcPixel: (coord: Coord) => Color;
+  }) => Color
+): TransformFn<T> => {
+  return ({ image, random, parameters }: TransformFnOpts<T>) =>
+    mapFrames(image, (imageData, frameIndex, frameCount) => {
+      const animationProgress = frameIndex / frameCount;
+      const computed = compute({
+        image,
+        dimensions: image.dimensions,
+        random,
+        parameters,
+        frameCount,
+        frameIndex,
+        animationProgress,
+      });
+
+      return mapCoords(image.dimensions, (coord) =>
+        cb({
+          computed,
+          image,
+          dimensions: image.dimensions,
+          random,
+          parameters,
+          coord,
+          frameCount,
+          frameIndex,
+          animationProgress,
+          getSrcPixel: (c: Coord) =>
+            getPixelFromSource(image.dimensions, imageData, c),
+        })
+      );
+    });
 };
 
 export const getImageIndex = ([width]: Dimensions, x: number, y: number) =>

@@ -3,7 +3,7 @@ import {
   calculateAngle,
   colorFromHue,
   isTransparent,
-  mapImage,
+  mapImageWithPrecompute,
   shiftTowardsHue,
 } from '../domain/utils';
 import { intParam } from '../params/intParam';
@@ -56,14 +56,20 @@ export const pinwheelParty = buildTransform({
       defaultValue: 0,
     }),
   ] as const,
-  fn: mapImage(
+  fn: mapImageWithPrecompute(
     ({
-      coord,
-      dimensions,
-      frameCount,
-      frameIndex,
-      getSrcPixel,
+      dimensions: [width, height],
       parameters: [groupCount, type, amount, offsetX, offsetY],
+    }) => {
+      const center: Coord = [width / 2 + offsetX, height / 2 - offsetY];
+      return { center };
+    },
+    ({
+      computed: { center },
+      coord,
+      animationProgress,
+      getSrcPixel,
+      parameters: [groupCount, type, amount],
     }) => {
       const srcPixel = getSrcPixel(coord);
 
@@ -73,13 +79,8 @@ export const pinwheelParty = buildTransform({
         return srcPixel;
       }
 
-      const center: Coord = [
-        dimensions[0] / 2 + offsetX,
-        dimensions[1] / 2 - offsetY,
-      ];
       const pointAngle = calculateAngle(coord, center);
-      const frameProgress = frameIndex / frameCount;
-      const newH = (pointAngle * groupCount + frameProgress * 360) % 360;
+      const newH = (pointAngle * groupCount + animationProgress * 360) % 360;
 
       return isBackground
         ? colorFromHue(newH)

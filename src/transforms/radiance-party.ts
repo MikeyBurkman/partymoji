@@ -1,10 +1,8 @@
 import { buildTransform } from '../domain/types';
 import {
   colorFromHue,
-  getPixelFromSource,
   isTransparent,
-  mapCoords,
-  mapFrames,
+  mapImageWithPrecompute,
   shiftTowardsHue,
 } from '../domain/utils';
 import { intParam } from '../params/intParam';
@@ -57,43 +55,45 @@ export const radianceParty = buildTransform({
       defaultValue: 0,
     }),
   ] as const,
-  fn: ({ image, parameters: [groupCount, type, amount, offsetX, offsetY] }) => {
-    const [width, height] = image.dimensions;
-    const centerX = width / 2;
-    const centerY = height / 2;
+  fn: mapImageWithPrecompute(
+    ({ dimensions: [width, height] }) => ({
+      centerX: width / 2,
+      centerY: height / 2,
+      maxDist: Math.sqrt(
+        (width / 2) * (width / 2) + (height / 2) * (height / 2)
+      ),
+    }),
+    ({
+      computed: { centerX, centerY, maxDist },
+      coord,
+      animationProgress,
+      parameters: [groupCount, type, amount, offsetX, offsetY],
+      getSrcPixel,
+    }) => {
+      const src = getSrcPixel(coord);
 
-    const maxDist = Math.sqrt(
-      (width / 2) * (width / 2) + (height / 2) * (height / 2)
-    );
+      const isBackground = isTransparent(src);
 
-    return mapFrames(image, (imageData, frameIndex, frameCount) =>
-      mapCoords(image.dimensions, (coord) => {
-        const [x, y] = coord;
-        const src = getPixelFromSource(image.dimensions, imageData, coord);
+      if (type === 'foreground' ? isBackground : !isBackground) {
+        return src;
+      }
 
-        const isBackground = isTransparent(src);
+      const [x, y] = coord;
+      const xRelCenter = x - centerX - offsetX;
+      const yRelCenter = y - centerY + offsetY;
 
-        if (type === 'foreground' ? isBackground : !isBackground) {
-          return src;
-        }
+      const distFromCenter = Math.sqrt(
+        yRelCenter * yRelCenter + xRelCenter * xRelCenter
+      );
 
-        const xRelCenter = x - centerX - offsetX;
-        const yRelCenter = y - centerY + offsetY;
+      const newH =
+        ((1 - distFromCenter / maxDist) * 360 * groupCount +
+          360 * animationProgress) %
+        360;
 
-        const distFromCenter = Math.sqrt(
-          yRelCenter * yRelCenter + xRelCenter * xRelCenter
-        );
-
-        const frameProgress = frameIndex / frameCount;
-        const newH =
-          ((1 - distFromCenter / maxDist) * 360 * groupCount +
-            360 * frameProgress) %
-          360;
-
-        return isBackground
-          ? colorFromHue(newH)
-          : shiftTowardsHue(src, newH, amount);
-      })
-    );
-  },
+      return isBackground
+        ? colorFromHue(newH)
+        : shiftTowardsHue(src, newH, amount);
+    }
+  ),
 });

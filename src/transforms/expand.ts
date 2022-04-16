@@ -1,5 +1,5 @@
 import { buildTransform } from '../domain/types';
-import { mapImage } from '../domain/utils';
+import { mapImageWithPrecompute } from '../domain/utils';
 import { intParam } from '../params/intParam';
 
 export const expand = buildTransform({
@@ -13,23 +13,23 @@ export const expand = buildTransform({
       min: 0,
     }),
   ] as const,
-  fn: mapImage(
+  fn: mapImageWithPrecompute(
     ({
-      dimensions,
-      coord: [x, y],
-      frameCount,
-      frameIndex,
-      getSrcPixel,
+      dimensions: [width, height],
+      animationProgress,
       parameters: [radius],
+    }) => ({
+      dist: Math.cos(animationProgress * 2 * Math.PI) * radius,
+      centerX: width / 2,
+      centerY: height / 2,
+    }),
+    ({
+      computed: { centerX, centerY, dist },
+      dimensions: [width, height],
+      coord: [x, y],
+      getSrcPixel,
     }) => {
-      const idx = frameIndex / frameCount;
-      const dist = Math.cos(idx * 2 * Math.PI) * radius;
-
       // Kind of follows the same algorithm as resize, except the amount is dynamic
-      const [width, height] = dimensions;
-      const centerX = width / 2;
-      const centerY = height / 2;
-
       const xRatio = (x - centerX) / width;
       const yRatio = (y - centerY) / height;
 

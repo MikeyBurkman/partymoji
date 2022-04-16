@@ -1,5 +1,5 @@
 import { buildTransform } from '../domain/types';
-import { getPixelFromSource, mapCoords, mapFrames } from '../domain/utils';
+import { mapImageWithPrecompute } from '../domain/utils';
 import { floatParam } from '../params/floatParam';
 import { intParam } from '../params/intParam';
 
@@ -19,16 +19,22 @@ export const ripple = buildTransform({
       description: 'How many ripples you want. Positive number.',
     }),
   ] as const,
-  fn: ({ image, parameters: [amplitude, period] }) =>
-    mapFrames(image, (data, frameIndex, frameCount) => {
-      const height = image.dimensions[1];
-      const shift = (frameIndex / frameCount) * 2 * Math.PI;
-      return mapCoords(image.dimensions, ([x, y]) => {
-        const offset = Math.round(
-          amplitude * Math.sin((y / height) * period * Math.PI + shift)
-        );
-
-        return getPixelFromSource(image.dimensions, data, [x + offset, y]);
-      });
+  fn: mapImageWithPrecompute(
+    ({ animationProgress }) => ({
+      shift: animationProgress * 2 * Math.PI,
     }),
+    ({
+      computed: { shift },
+      coord: [x, y],
+      dimensions: [, height],
+      parameters: [amplitude, period],
+      getSrcPixel,
+    }) => {
+      const offset = Math.round(
+        amplitude * Math.sin((y / height) * period * Math.PI + shift)
+      );
+
+      return getSrcPixel([x + offset, y]);
+    }
+  ),
 });

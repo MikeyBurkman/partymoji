@@ -16,6 +16,7 @@ import { fisheye } from './fisheye';
 import { grid } from './grid';
 import { hueChange } from './hue-change';
 import { hueShift } from './hue-shift';
+import { hueShiftPulse } from './hue-shift-pulse';
 import { lightning } from './lightning';
 import { nuke } from './nuke';
 import { party } from './party';
@@ -54,6 +55,7 @@ export const POSSIBLE_TRANSFORMS = pipe(
     grid,
     hueChange,
     hueShift,
+    hueShiftPulse,
     lightning,
     nuke,
     party,

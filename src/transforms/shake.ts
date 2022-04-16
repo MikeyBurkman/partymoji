@@ -1,5 +1,5 @@
 import { buildTransform } from '../domain/types';
-import { mapImage } from '../domain/utils';
+import { mapImageWithPrecompute } from '../domain/utils';
 import { floatParam } from '../params/floatParam';
 
 export const shake = buildTransform({
@@ -8,21 +8,13 @@ export const shake = buildTransform({
   params: [
     floatParam({ name: 'Amplitude', defaultValue: 10, min: 0 }),
   ] as const,
-  fn: mapImage(
-    ({
-      coord: [x, y],
-      frameCount,
-      frameIndex,
-      getSrcPixel,
-      parameters: [amplitude],
-    }) => {
-      const xOffset =
-        x +
-        Math.round(
-          amplitude * Math.cos((frameIndex / frameCount) * 2 * Math.PI)
-        );
-
-      return getSrcPixel([xOffset, y]);
-    }
+  fn: mapImageWithPrecompute(
+    ({ animationProgress, parameters: [amplitude] }) => ({
+      xOffset: Math.round(
+        amplitude * Math.cos(animationProgress * 2 * Math.PI)
+      ),
+    }),
+    ({ computed: { xOffset }, coord: [x, y], getSrcPixel }) =>
+      getSrcPixel([x + xOffset, y])
   ),
 });

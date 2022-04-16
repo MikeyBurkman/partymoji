@@ -3,7 +3,7 @@ import {
   fromHexColor,
   getAveragePixelValue,
   isTransparent,
-  mapImage,
+  mapImageWithPrecompute,
 } from '../domain/utils';
 import { colorPickerParam } from '../params/colorPickerParam';
 import { variableLengthParam } from '../params/variableLengthParam';
@@ -35,16 +35,16 @@ export const colors = buildTransform({
         }),
     }),
   ] as const,
-  fn: mapImage(
-    ({ coord, frameCount, frameIndex, getSrcPixel, parameters: [colors] }) => {
+  fn: mapImageWithPrecompute(
+    ({ animationProgress, parameters: [colors] }) => ({
+      chosenColor: colors[Math.floor(animationProgress * colors.length)],
+    }),
+    ({ computed: { chosenColor }, coord, getSrcPixel }) => {
       const srcPixel = getSrcPixel(coord);
 
       if (isTransparent(srcPixel)) {
         return [0, 0, 0, 0];
       }
-
-      const colorIdx = Math.floor((frameIndex / frameCount) * colors.length);
-      const chosenColor = colors[colorIdx];
 
       const gray = getAveragePixelValue(srcPixel);
 
