@@ -17,6 +17,7 @@ import { grid } from './grid';
 import { hueChange } from './hue-change';
 import { hueShift } from './hue-shift';
 import { hueShiftPulse } from './hue-shift-pulse';
+import { hueWave } from './hue-wave';
 import { lightning } from './lightning';
 import { nuke } from './nuke';
 import { party } from './party';
@@ -56,6 +57,7 @@ export const POSSIBLE_TRANSFORMS = pipe(
     hueChange,
     hueShift,
     hueShiftPulse,
+    hueWave,
     lightning,
     nuke,
     party,
