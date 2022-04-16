@@ -1,17 +1,20 @@
 {
   "files": {
-    "main.js": "/partymoji/static/js/main.16832011.chunk.js",
-    "main.js.map": "/partymoji/static/js/main.16832011.chunk.js.map",
+    "main.js": "/partymoji/static/js/main.80f39fe0.chunk.js",
+    "main.js.map": "/partymoji/static/js/main.80f39fe0.chunk.js.map",
     "runtime-main.js": "/partymoji/static/js/runtime-main.39af959e.js",
     "runtime-main.js.map": "/partymoji/static/js/runtime-main.39af959e.js.map",
-    "static/js/2.95c4639b.chunk.js": "/partymoji/static/js/2.95c4639b.chunk.js",
-    "static/js/2.95c4639b.chunk.js.map": "/partymoji/static/js/2.95c4639b.chunk.js.map",
+    "static/js/2.7183a62e.chunk.js": "/partymoji/static/js/2.7183a62e.chunk.js",
+    "static/js/2.7183a62e.chunk.js.map": "/partymoji/static/js/2.7183a62e.chunk.js.map",
     "index.html": "/partymoji/index.html",
-    "static/js/2.95c4639b.chunk.js.LICENSE.txt": "/partymoji/static/js/2.95c4639b.chunk.js.LICENSE.txt"
+    "static/js/2.7183a62e.chunk.js.LICENSE.txt": "/partymoji/static/js/2.7183a62e.chunk.js.LICENSE.txt",
+    "static/js/transform.worker.f2d87c41.worker.js": "/partymoji/static/js/transform.worker.f2d87c41.worker.js",
+    "static/js/transform.worker.f2d87c41.worker.js.LICENSE.txt": "/partymoji/static/js/transform.worker.f2d87c41.worker.js.LICENSE.txt",
+    "static/js/transform.worker.f2d87c41.worker.js.map": "/partymoji/static/js/transform.worker.f2d87c41.worker.js.map"
   },
   "entrypoints": [
     "static/js/runtime-main.39af959e.js",
-    "static/js/2.95c4639b.chunk.js",
-    "static/js/main.16832011.chunk.js"
+    "static/js/2.7183a62e.chunk.js",
+    "static/js/main.80f39fe0.chunk.js"
   ]
 }

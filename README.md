@@ -28,3 +28,8 @@ https://mikeyburkman.github.io/partymoji/
   - checkbox for smoothing animation when frame count is changed
   - If frame count is lower than current, then drop some frames
   - If frame count is higher, then duplicate some frames
+
+# WEB WORKERS TBD
+
+- Does not recognize the webworker except on the prod build
+- get-pixels requires `Image` but it not available in browsers

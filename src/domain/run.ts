@@ -3,6 +3,7 @@ import getPixels from 'get-pixels';
 // @ts-ignore
 import gifEncoder from 'gif-encoder';
 import seedrandom from 'seedrandom';
+import { transformByName } from '../transforms';
 import { Color, Dimensions, Image, ImageData, TransformInput } from './types';
 import {
   fromHexColor,
@@ -14,9 +15,8 @@ import {
 
 interface RunArgs {
   inputDataUrl: string;
-  transformList: TransformInput<any>[];
+  transformList: TransformInput[];
   fps: number;
-  onImageFinished: () => void;
 }
 
 interface ImageResult {
@@ -26,12 +26,9 @@ interface ImageResult {
 }
 
 // Returns a list of gif data URLs, for each transform
-export const runTransforms = async ({
-  transformList,
-  inputDataUrl,
-  fps,
-  onImageFinished,
-}: RunArgs): Promise<ImageResult[]> => {
+export const runTransforms = async (args: RunArgs): Promise<ImageResult[]> => {
+  const { transformList, inputDataUrl, fps } = args;
+  console.log('Transforms', args);
   const random = seedrandom(inputDataUrl);
 
   const originalImage = await readImage(inputDataUrl);
@@ -40,7 +37,8 @@ export const runTransforms = async ({
   let currentImage = originalImage;
 
   for (const transformInput of transformList) {
-    const result = transformInput.transform.fn({
+    const transform = transformByName(transformInput.transformName);
+    const result = transform.fn({
       image: currentImage,
       parameters: transformInput.params,
       random,
@@ -57,8 +55,6 @@ export const runTransforms = async ({
       transparentColor,
       fps
     );
-
-    onImageFinished();
 
     currentImage = result;
     results.push({

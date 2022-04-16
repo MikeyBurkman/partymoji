@@ -9,11 +9,14 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import { runTransforms } from '../domain/run';
+// eslint-disable-next-line import/no-webpack-loader-syntax
+// @ts-ignore
+import RunTransformWorker from '../domain/transform.worker';
 import { AppState, TransformInput } from '../domain/types';
 import { assert } from '../domain/utils';
 import { sliderParam } from '../params/sliderParam';
-import { transformByName } from '../transforms';
+
+console.log('RunTransformWorker', RunTransformWorker);
 
 interface ComputeBoxProps {
   computeDisabled: boolean;
@@ -76,8 +79,8 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
         disabled={computeDisabled}
         onClick={async () => {
           const transformInputs = appState.transforms.map(
-            (t): TransformInput<any> => ({
-              transform: transformByName(t.transformName),
+            (t): TransformInput => ({
+              transformName: t.transformName,
               params: t.paramsValues.map((p) => {
                 assert(p.valid, 'Got non-valid when compute box was clicked');
                 return p.value;
@@ -92,47 +95,63 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
                 'No source image, this button should be disabled!'
               );
               const start = Date.now();
-              let currIdx = 0;
               const timings: number[] = [];
               setProgress(0);
-              const results = await runTransforms({
+
+              const worker = new RunTransformWorker();
+              console.log('WORKER', worker);
+
+              (window as any)._worker = worker;
+
+              worker.addEventListener('message', (a: any) => {
+                console.log('Received message', a);
+              });
+
+              worker.addEventListener('error', (e: any) => {
+                console.log('worker error', e);
+              });
+
+              worker.addEventListener('messageerror', (e: any) => {
+                console.log('messageerror', e);
+              });
+
+              worker.onmessage = (event: any) => {
+                const results = event.data;
+                const computeTime = Math.ceil((Date.now() - start) / 1000);
+                setComputeState({
+                  loading: false,
+                  computeTime,
+                  results: results.map((result: any, idx: number) => ({
+                    transformName: appState.transforms[idx].transformName,
+                    gif: result.gif,
+                  })),
+                });
+
+                // Google analytics
+                timings.forEach((timingValue, idx) => {
+                  ga('send', {
+                    hitType: 'timing',
+                    timingCategory: 'computeStep',
+                    timingVar: appState.transforms[idx].transformName,
+                    timingValue,
+                  });
+                });
+                ga('send', {
+                  hitType: 'timing',
+                  timingCategory: 'computeTotal',
+                  timingVar: appState.transforms.length,
+                  timingValue: computeTime,
+                });
+
+                setProgress(undefined);
+                onComputed();
+              };
+
+              worker.postMessage({
                 inputDataUrl: appState.baseImage,
                 transformList: transformInputs,
                 fps: appState.fps,
-                onImageFinished: () => {
-                  timings[currIdx] = Date.now() - start;
-                  currIdx += 1;
-                  setProgress((currIdx / transformInputs.length) * 100);
-                },
               });
-              const computeTime = Math.ceil((Date.now() - start) / 1000);
-              setComputeState({
-                loading: false,
-                computeTime,
-                results: results.map((result, idx) => ({
-                  transformName: appState.transforms[idx].transformName,
-                  gif: result.gif,
-                })),
-              });
-
-              // Google analytics
-              timings.forEach((timingValue, idx) => {
-                ga('send', {
-                  hitType: 'timing',
-                  timingCategory: 'computeStep',
-                  timingVar: appState.transforms[idx].transformName,
-                  timingValue,
-                });
-              });
-              ga('send', {
-                hitType: 'timing',
-                timingCategory: 'computeTotal',
-                timingVar: appState.transforms.length,
-                timingValue: computeTime,
-              });
-
-              setProgress(undefined);
-              onComputed();
             } catch (err) {
               console.error(err);
               console.error((err as any).stack);
