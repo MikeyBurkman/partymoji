@@ -9,11 +9,13 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import { runTransforms } from '../domain/run';
+import { ImageResult, readImage, runTransforms } from '../domain/run';
+import { runTransformsAsync } from '../domain/runAsync';
 import { AppState, TransformInput } from '../domain/types';
 import { assert } from '../domain/utils';
 import { sliderParam } from '../params/sliderParam';
-import { transformByName } from '../transforms';
+
+const ENV = (window as any).ENV as 'DEV' | 'PROD';
 
 interface ComputeBoxProps {
   computeDisabled: boolean;
@@ -76,8 +78,8 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
         disabled={computeDisabled}
         onClick={async () => {
           const transformInputs = appState.transforms.map(
-            (t): TransformInput<any> => ({
-              transform: transformByName(t.transformName),
+            (t): TransformInput => ({
+              transformName: t.transformName,
               params: t.paramsValues.map((p) => {
                 assert(p.valid, 'Got non-valid when compute box was clicked');
                 return p.value;
@@ -85,59 +87,74 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
             })
           );
           setComputeState({ loading: true });
-          setTimeout(async () => {
-            try {
-              assert(
-                appState.baseImage,
-                'No source image, this button should be disabled!'
-              );
-              const start = Date.now();
-              let currIdx = 0;
-              const timings: number[] = [];
-              setProgress(0);
-              const results = await runTransforms({
+          try {
+            assert(
+              appState.baseImage,
+              'No source image, this button should be disabled!'
+            );
+            const start = Date.now();
+            const timings: number[] = [];
+            setProgress(0);
+
+            const originalImage = await readImage(appState.baseImage);
+
+            const results: ImageResult[] = [];
+
+            // Can't get web workers working with the dev build, so just use the synchrounous version
+            //  if not a prod build.
+            await (ENV === 'DEV' ? runTransforms : runTransformsAsync)(
+              {
                 inputDataUrl: appState.baseImage,
+                originalImage,
                 transformList: transformInputs,
                 fps: appState.fps,
-                onImageFinished: () => {
-                  timings[currIdx] = Date.now() - start;
-                  currIdx += 1;
-                  setProgress((currIdx / transformInputs.length) * 100);
-                },
-              });
-              const computeTime = Math.ceil((Date.now() - start) / 1000);
-              setComputeState({
-                loading: false,
-                computeTime,
-                results: results.map((result, idx) => ({
-                  transformName: appState.transforms[idx].transformName,
-                  gif: result.gif,
-                })),
-              });
-
-              // Google analytics
-              timings.forEach((timingValue, idx) => {
-                ga('send', {
-                  hitType: 'timing',
-                  timingCategory: 'computeStep',
-                  timingVar: appState.transforms[idx].transformName,
-                  timingValue,
+              },
+              ({ idx, image }) => {
+                results.push(image);
+                setProgress(((idx + 1) / transformInputs.length) * 100);
+                setComputeState({
+                  loading: false,
+                  computeTime: undefined,
+                  results: results.map((result, idx) => ({
+                    transformName: appState.transforms[idx].transformName,
+                    gif: result.gif,
+                  })),
                 });
-              });
+              }
+            );
+
+            const computeTime = Math.ceil((Date.now() - start) / 1000);
+            setComputeState({
+              loading: false,
+              computeTime,
+              results: results.map((result: any, idx: number) => ({
+                transformName: appState.transforms[idx].transformName,
+                gif: result.gif,
+              })),
+            });
+
+            // Google analytics
+            timings.forEach((timingValue, idx) => {
               ga('send', {
                 hitType: 'timing',
-                timingCategory: 'computeTotal',
-                timingVar: appState.transforms.length,
-                timingValue: computeTime,
+                timingCategory: 'computeStep',
+                timingVar: appState.transforms[idx].transformName,
+                timingValue,
               });
+            });
+            ga('send', {
+              hitType: 'timing',
+              timingCategory: 'computeTotal',
+              timingVar: appState.transforms.length,
+              timingValue: computeTime,
+            });
 
-              setProgress(undefined);
-              onComputed();
-            } catch (err) {
-              console.error(err);
-              console.error((err as any).stack);
-            }
-          });
+            setProgress(undefined);
+            onComputed();
+          } catch (err) {
+            console.error(err);
+            console.error((err as any).stack);
+          }
         }}
       >
         {computeState.loading ? (

@@ -96,9 +96,9 @@ export interface TransformWithParams<T extends readonly ParamFunction<any>[]> {
   paramsValues: ParamValue<T>[];
 }
 
-export interface TransformInput<T extends ParamFunction<any>[]> {
-  transform: Transform<T>;
-  params: T;
+export interface TransformInput {
+  transformName: string;
+  params: any;
 }
 
 export const buildTransform = <T extends readonly ParamFunction<any>[]>(args: {
