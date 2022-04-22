@@ -1,10 +1,10 @@
 import { buildTransform } from '../domain/types';
-import { mapImageWithPrecompute } from '../domain/utils';
+import { mapImageWithPrecompute, shiftHue } from '../domain/utils';
 import { sliderParam } from '../params/sliderParam';
 
-export const ripple = buildTransform({
-  name: 'Ripple',
-  description: 'Create a ripple effect, like water',
+export const hueWave = buildTransform({
+  name: 'Hue Wave',
+  description: 'Shifts the hue of pixels in the image in a wave motion',
   params: [
     sliderParam({
       name: 'Amplitude',
@@ -12,32 +12,33 @@ export const ripple = buildTransform({
       min: 0,
       max: 100,
       step: 5,
-      description: 'How strong the ripple effect should be',
+      description: 'How strong the hue shift effect should be',
     }),
     sliderParam({
       name: 'Period',
       defaultValue: 1,
       min: 1,
       max: 20,
-      description: 'How many ripples you want',
+      description: 'How many waves you want',
     }),
   ] as const,
   fn: mapImageWithPrecompute(
     ({ animationProgress }) => ({
-      shift: animationProgress * 2 * Math.PI,
+      shift: -1 * animationProgress * 2 * Math.PI,
     }),
     ({
       computed: { shift },
-      coord: [x, y],
+      coord,
       dimensions: [, height],
       parameters: [amplitude, period],
       getSrcPixel,
     }) => {
-      const offset = Math.round(
+      const [x, y] = coord;
+      const amount = Math.round(
         amplitude * Math.sin((y / height) * period * Math.PI + shift)
       );
 
-      return getSrcPixel([x + offset, y]);
+      return shiftHue(getSrcPixel(coord), (amount / 100) * 360);
     }
   ),
 });
