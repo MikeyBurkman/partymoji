@@ -9,14 +9,13 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-// eslint-disable-next-line import/no-webpack-loader-syntax
-// @ts-ignore
-import RunTransformWorker from '../domain/transform.worker';
+import { ImageResult, readImage, runTransforms } from '../domain/run';
+import { runTransformsAsync } from '../domain/runAsync';
 import { AppState, TransformInput } from '../domain/types';
 import { assert } from '../domain/utils';
 import { sliderParam } from '../params/sliderParam';
 
-console.log('RunTransformWorker', RunTransformWorker);
+const ENV = (window as any).ENV as 'DEV' | 'PROD';
 
 interface ComputeBoxProps {
   computeDisabled: boolean;
@@ -88,75 +87,74 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
             })
           );
           setComputeState({ loading: true });
-          setTimeout(async () => {
-            try {
-              assert(
-                appState.baseImage,
-                'No source image, this button should be disabled!'
-              );
-              const start = Date.now();
-              const timings: number[] = [];
-              setProgress(0);
+          try {
+            assert(
+              appState.baseImage,
+              'No source image, this button should be disabled!'
+            );
+            const start = Date.now();
+            const timings: number[] = [];
+            setProgress(0);
 
-              const worker = new RunTransformWorker();
-              console.log('WORKER', worker);
+            const originalImage = await readImage(appState.baseImage);
 
-              (window as any)._worker = worker;
+            const results: ImageResult[] = [];
 
-              worker.addEventListener('message', (a: any) => {
-                console.log('Received message', a);
-              });
-
-              worker.addEventListener('error', (e: any) => {
-                console.log('worker error', e);
-              });
-
-              worker.addEventListener('messageerror', (e: any) => {
-                console.log('messageerror', e);
-              });
-
-              worker.onmessage = (event: any) => {
-                const results = event.data;
-                const computeTime = Math.ceil((Date.now() - start) / 1000);
+            // Can't get web workers working with the dev build, so just use the synchrounous version
+            //  if not a prod build.
+            await (ENV === 'DEV' ? runTransforms : runTransformsAsync)(
+              {
+                inputDataUrl: appState.baseImage,
+                originalImage,
+                transformList: transformInputs,
+                fps: appState.fps,
+              },
+              ({ idx, image }) => {
+                results.push(image);
+                setProgress(((idx + 1) / transformInputs.length) * 100);
                 setComputeState({
                   loading: false,
-                  computeTime,
-                  results: results.map((result: any, idx: number) => ({
+                  computeTime: undefined,
+                  results: results.map((result, idx) => ({
                     transformName: appState.transforms[idx].transformName,
                     gif: result.gif,
                   })),
                 });
+              }
+            );
 
-                // Google analytics
-                timings.forEach((timingValue, idx) => {
-                  ga('send', {
-                    hitType: 'timing',
-                    timingCategory: 'computeStep',
-                    timingVar: appState.transforms[idx].transformName,
-                    timingValue,
-                  });
-                });
-                ga('send', {
-                  hitType: 'timing',
-                  timingCategory: 'computeTotal',
-                  timingVar: appState.transforms.length,
-                  timingValue: computeTime,
-                });
+            const computeTime = Math.ceil((Date.now() - start) / 1000);
+            setComputeState({
+              loading: false,
+              computeTime,
+              results: results.map((result: any, idx: number) => ({
+                transformName: appState.transforms[idx].transformName,
+                gif: result.gif,
+              })),
+            });
 
-                setProgress(undefined);
-                onComputed();
-              };
-
-              worker.postMessage({
-                inputDataUrl: appState.baseImage,
-                transformList: transformInputs,
-                fps: appState.fps,
+            // Google analytics
+            timings.forEach((timingValue, idx) => {
+              ga('send', {
+                hitType: 'timing',
+                timingCategory: 'computeStep',
+                timingVar: appState.transforms[idx].transformName,
+                timingValue,
               });
-            } catch (err) {
-              console.error(err);
-              console.error((err as any).stack);
-            }
-          });
+            });
+            ga('send', {
+              hitType: 'timing',
+              timingCategory: 'computeTotal',
+              timingVar: appState.transforms.length,
+              timingValue: computeTime,
+            });
+
+            setProgress(undefined);
+            onComputed();
+          } catch (err) {
+            console.error(err);
+            console.error((err as any).stack);
+          }
         }}
       >
         {computeState.loading ? (

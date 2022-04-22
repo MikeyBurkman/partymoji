@@ -96,8 +96,8 @@
   },
   "scripts": {
     "tsc": "tsc",
-    "start": "REACT_APP_BUILD_TIME=$(date '+%m/%d/%y %H:%M:%S') node scripts/start.js",
-    "build": "REACT_APP_BUILD_TIME=$(date '+%m/%d/%y %H:%M:%S') node scripts/build.js && del ./docs && mkdir ./docs && mv ./build/* ./docs",
+    "start": "REACT_APP_ENV=DEV REACT_APP_BUILD_TIME=$(date '+%m/%d/%y %H:%M:%S') node scripts/start.js",
+    "build": "REACT_APP_ENV=PROD REACT_APP_BUILD_TIME=$(date '+%m/%d/%y %H:%M:%S') node scripts/build.js && del ./docs && mkdir ./docs && mv ./build/* ./docs",
     "pretty": "prettier --write \"**/*.{js,md,ts,html,tsx,json}\"",
     "prepare": "husky install"
   },

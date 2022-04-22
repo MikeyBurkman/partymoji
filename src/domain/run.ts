@@ -13,30 +13,37 @@ import {
   toHexColor,
 } from './utils';
 
-interface RunArgs {
+export interface RunArgs {
   inputDataUrl: string;
+  originalImage: Image;
   transformList: TransformInput[];
   fps: number;
 }
 
-interface ImageResult {
+export interface ImageResult {
   gif: string;
   width: number;
   height: number;
 }
 
+export interface Result {
+  idx: number;
+  image: ImageResult;
+}
+
 // Returns a list of gif data URLs, for each transform
-export const runTransforms = async (args: RunArgs): Promise<ImageResult[]> => {
-  const { transformList, inputDataUrl, fps } = args;
-  console.log('Transforms', args);
+export const runTransforms = async (
+  args: RunArgs,
+  cb: (result: Result) => void
+): Promise<void> => {
+  const { originalImage, transformList, inputDataUrl, fps } = args;
   const random = seedrandom(inputDataUrl);
 
-  const originalImage = await readImage(inputDataUrl);
-
-  const results: ImageResult[] = [];
+  // const results: ImageResult[] = [];
   let currentImage = originalImage;
 
-  for (const transformInput of transformList) {
+  for (let idx = 0; idx < transformList.length; idx += 1) {
+    const transformInput = transformList[idx];
     const transform = transformByName(transformInput.transformName);
     const result = transform.fn({
       image: currentImage,
@@ -57,14 +64,15 @@ export const runTransforms = async (args: RunArgs): Promise<ImageResult[]> => {
     );
 
     currentImage = result;
-    results.push({
-      gif,
-      width: result.dimensions[0],
-      height: result.dimensions[1],
+    cb({
+      idx,
+      image: {
+        gif,
+        width: result.dimensions[0],
+        height: result.dimensions[1],
+      },
     });
   }
-
-  return results;
 };
 
 /**

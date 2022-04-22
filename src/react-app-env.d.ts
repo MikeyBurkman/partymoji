@@ -10,7 +10,7 @@ declare namespace NodeJS {
 }
 
 // declare module 'worker-loader!*' {
-declare module '*.worker.ts' {
+declare module './transform.worker.ts' {
   // You need to change `Worker`, if you specified a different value for the `workerType` option
   class WebpackWorker extends Worker {
     constructor();
