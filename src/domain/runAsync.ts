@@ -1,10 +1,11 @@
-import { Result, RunArgs } from './run';
+import { RunArgs } from './run';
 // @ts-ignore
 import RunTransformWorker from './transform.worker';
+import { AsyncRunMessage, ImageTransformResult } from './types';
 
 export const runTransformsAsync = (
   args: RunArgs,
-  cb: (result: Result) => void
+  cb: (result: ImageTransformResult) => void
 ) =>
   new Promise<void>((resolve, reject) => {
     const worker = new RunTransformWorker();
@@ -17,9 +18,9 @@ export const runTransformsAsync = (
 
     worker.addEventListener('messageerror', reject);
 
-    worker.onmessage = (event: any) => {
+    worker.onmessage = (message: { data: AsyncRunMessage }) => {
       // See transform.worker.ts for what messages look like
-      const data = event.data;
+      const data = message.data;
       if (data.status === 'in-progress') {
         cb(data.result);
       } else {

@@ -9,9 +9,13 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import { ImageResult, readImage, runTransforms } from '../domain/run';
+import { readImage, runTransforms } from '../domain/run';
 import { runTransformsAsync } from '../domain/runAsync';
-import { AppState, TransformInput } from '../domain/types';
+import {
+  AppState,
+  ImageTransformResult,
+  TransformInput,
+} from '../domain/types';
 import { assert } from '../domain/utils';
 import { sliderParam } from '../params/sliderParam';
 
@@ -98,7 +102,7 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
 
             const originalImage = await readImage(appState.baseImage);
 
-            const results: ImageResult[] = [];
+            const results: ImageTransformResult[] = [];
 
             // Can't get web workers working with the dev build, so just use the synchrounous version
             //  if not a prod build.
@@ -109,9 +113,9 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
                 transformList: transformInputs,
                 fps: appState.fps,
               },
-              ({ idx, image }) => {
+              (image) => {
                 results.push(image);
-                setProgress(((idx + 1) / transformInputs.length) * 100);
+                setProgress((results.length / transformInputs.length) * 100);
                 setComputeState({
                   loading: false,
                   computeTime: undefined,

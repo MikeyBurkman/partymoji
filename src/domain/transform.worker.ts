@@ -1,18 +1,21 @@
 /* eslint-disable no-restricted-globals */
 
 import { runTransforms } from './run';
+import { AsyncRunMessage } from './types';
 
 const ctx: Worker = self as any;
 
 ctx.addEventListener('message', async (event) => {
-  console.log('EVENT:', event);
   await runTransforms(event.data, (result) => {
-    ctx.postMessage({
+    const message: AsyncRunMessage = {
       status: 'in-progress',
       result,
-    });
+    };
+    ctx.postMessage(message);
   });
-  ctx.postMessage({
+
+  const message: AsyncRunMessage = {
     status: 'complete',
-  });
+  };
+  ctx.postMessage(message);
 });

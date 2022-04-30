@@ -4,7 +4,14 @@ import getPixels from 'get-pixels';
 import gifEncoder from 'gif-encoder';
 import seedrandom from 'seedrandom';
 import { transformByName } from '../transforms';
-import { Color, Dimensions, Image, ImageData, TransformInput } from './types';
+import {
+  Color,
+  Dimensions,
+  Image,
+  ImageData,
+  ImageTransformResult,
+  TransformInput,
+} from './types';
 import {
   fromHexColor,
   getPixelFromSource,
@@ -20,21 +27,10 @@ export interface RunArgs {
   fps: number;
 }
 
-export interface ImageResult {
-  gif: string;
-  width: number;
-  height: number;
-}
-
-export interface Result {
-  idx: number;
-  image: ImageResult;
-}
-
 // Returns a list of gif data URLs, for each transform
 export const runTransforms = async (
   args: RunArgs,
-  cb: (result: Result) => void
+  cb: (result: ImageTransformResult) => void
 ): Promise<void> => {
   const { originalImage, transformList, inputDataUrl, fps } = args;
   const random = seedrandom(inputDataUrl);
@@ -65,12 +61,9 @@ export const runTransforms = async (
 
     currentImage = result;
     cb({
-      idx,
-      image: {
-        gif,
-        width: result.dimensions[0],
-        height: result.dimensions[1],
-      },
+      gif,
+      width: result.dimensions[0],
+      height: result.dimensions[1],
     });
   }
 };

@@ -125,3 +125,18 @@ export interface AppState {
   fps: number;
   dirty: boolean;
 }
+
+export interface ImageTransformResult {
+  gif: string;
+  width: number;
+  height: number;
+}
+
+export type AsyncRunMessage =
+  | {
+      status: 'complete';
+    }
+  | {
+      status: 'in-progress';
+      result: ImageTransformResult;
+    };
