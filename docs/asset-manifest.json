@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.js": "/partymoji/static/js/main.af1c67ec.chunk.js",
-    "main.js.map": "/partymoji/static/js/main.af1c67ec.chunk.js.map",
+    "main.js": "/partymoji/static/js/main.871be4f8.chunk.js",
+    "main.js.map": "/partymoji/static/js/main.871be4f8.chunk.js.map",
     "runtime-main.js": "/partymoji/static/js/runtime-main.39af959e.js",
     "runtime-main.js.map": "/partymoji/static/js/runtime-main.39af959e.js.map",
-    "static/js/2.e10db898.chunk.js": "/partymoji/static/js/2.e10db898.chunk.js",
-    "static/js/2.e10db898.chunk.js.map": "/partymoji/static/js/2.e10db898.chunk.js.map",
+    "static/js/2.dd570bd7.chunk.js": "/partymoji/static/js/2.dd570bd7.chunk.js",
+    "static/js/2.dd570bd7.chunk.js.map": "/partymoji/static/js/2.dd570bd7.chunk.js.map",
     "index.html": "/partymoji/index.html",
-    "static/js/2.e10db898.chunk.js.LICENSE.txt": "/partymoji/static/js/2.e10db898.chunk.js.LICENSE.txt",
-    "static/js/transform.worker.3efb070d.worker.js": "/partymoji/static/js/transform.worker.3efb070d.worker.js",
-    "static/js/transform.worker.3efb070d.worker.js.LICENSE.txt": "/partymoji/static/js/transform.worker.3efb070d.worker.js.LICENSE.txt",
-    "static/js/transform.worker.3efb070d.worker.js.map": "/partymoji/static/js/transform.worker.3efb070d.worker.js.map"
+    "static/js/2.dd570bd7.chunk.js.LICENSE.txt": "/partymoji/static/js/2.dd570bd7.chunk.js.LICENSE.txt",
+    "static/js/transform.worker.895349cc.worker.js": "/partymoji/static/js/transform.worker.895349cc.worker.js",
+    "static/js/transform.worker.895349cc.worker.js.LICENSE.txt": "/partymoji/static/js/transform.worker.895349cc.worker.js.LICENSE.txt",
+    "static/js/transform.worker.895349cc.worker.js.map": "/partymoji/static/js/transform.worker.895349cc.worker.js.map"
   },
   "entrypoints": [
     "static/js/runtime-main.39af959e.js",
-    "static/js/2.e10db898.chunk.js",
-    "static/js/main.af1c67ec.chunk.js"
+    "static/js/2.dd570bd7.chunk.js",
+    "static/js/main.871be4f8.chunk.js"
   ]
 }

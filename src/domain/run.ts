@@ -36,11 +36,6 @@ export const runTransforms = async (
 
   let currentImage = originalImage;
 
-  localStorage.setItem(
-    'frame1',
-    JSON.stringify(Array.from(currentImage.frames[1]))
-  );
-
   for (let idx = 0; idx < transformList.length; idx += 1) {
     const transformInput = transformList[idx];
     const transform = transformByName(transformInput.transformName);
