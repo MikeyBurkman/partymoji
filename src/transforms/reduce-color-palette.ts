@@ -20,15 +20,17 @@ export const reduceColorPalette = buildTransform({
     'This can be a slow operation depending on the number of final colors',
   params: [
     sliderParam({
-      name: 'Number of Colors',
-      description: 'Number of unique colors that will be in the result',
-      defaultValue: 20,
-      min: 1,
+      name: 'Percent Reduction',
+      description:
+        '0% will have no effect, 100% will result in just one unique color in the result',
+      defaultValue: 70,
+      min: 0,
       max: 100,
+      step: 5,
     }),
   ] as const,
   fn: mapImageWithPrecompute(
-    ({ image, parameters: [numColors] }) => {
+    ({ image, parameters: [percentReduction] }) => {
       // Buid up a set of all unique colors.
       // These will be our data points that we're going to group into to N clusters
       const allColorsSet = new Set<string>();
@@ -43,6 +45,10 @@ export const reduceColorPalette = buildTransform({
       );
 
       const allColors = Array.from(allColorsSet).map(fromHexColor);
+      const numColors = Math.max(
+        Math.floor((allColors.length * (100 - percentReduction)) / 100),
+        1
+      );
 
       // Create a mapping of each unique color to the list of colors are the closest to it.
       // We'll then pick the top N colors.
