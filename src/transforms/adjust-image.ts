@@ -87,8 +87,6 @@ export const adjustImage = buildTransform({
         ? Math.ceil((oldHeight / oldWidth) * resizeToWidth)
         : resizeToHeight;
 
-    console.log({ oldWidth, oldHeight, newWidth, newHeight });
-
     // Use this to figure out when we should optimally resize the image
     const isBiggerImage = newWidth * newHeight > oldWidth * oldHeight;
 

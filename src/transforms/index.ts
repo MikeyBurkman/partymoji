@@ -26,6 +26,7 @@ import { pinwheel } from './pinwheel';
 import { pinwheelParty } from './pinwheel-party';
 import { radiance } from './radiance';
 import { radianceParty } from './radiance-party';
+import { reduceColorPalette } from './reduce-color-palette';
 import { repeatAnimation } from './repeat-animation';
 import { resizeImage } from './resize-image';
 import { reverseAnimation } from './reverse-animation';
@@ -66,6 +67,7 @@ export const POSSIBLE_TRANSFORMS = pipe(
     pinwheelParty,
     radiance,
     radianceParty,
+    reduceColorPalette,
     repeatAnimation,
     resizeImage,
     reverseAnimation,

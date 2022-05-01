@@ -6,7 +6,6 @@ import seedrandom from 'seedrandom';
 import { transformByName } from '../transforms';
 import {
   Color,
-  Dimensions,
   Image,
   ImageData,
   ImageTransformResult,
@@ -35,8 +34,12 @@ export const runTransforms = async (
   const { originalImage, transformList, inputDataUrl, fps } = args;
   const random = seedrandom(inputDataUrl);
 
-  // const results: ImageResult[] = [];
   let currentImage = originalImage;
+
+  localStorage.setItem(
+    'frame1',
+    JSON.stringify(Array.from(currentImage.frames[1]))
+  );
 
   for (let idx = 0; idx < transformList.length; idx += 1) {
     const transformInput = transformList[idx];
@@ -50,14 +53,13 @@ export const runTransforms = async (
     const transparentColor = getTransparentColor(result, random);
 
     // Transform any of our transparent pixels to what our gif understands to be transparent
-    const image = encodeTransparency(result.frames, transparentColor);
+    const image = encodeTransparency(result, transparentColor);
 
-    const gif = await createGif(
-      result.dimensions,
+    const gif = await createGif({
       image,
       transparentColor,
-      fps
-    );
+      fps,
+    });
 
     currentImage = result;
     cb({
@@ -73,10 +75,10 @@ export const runTransforms = async (
  * We transform each pixel that appears transparent to be a designated transparent color.
  */
 const encodeTransparency = (
-  frames: ImageData[],
+  image: Image,
   transparentColor: Color | undefined
-): ImageData[] => {
-  const image = frames.map((frame) => {
+): Image => {
+  const newFrames = image.frames.map((frame) => {
     const img = new Uint8Array(frame.length);
     for (let i = 0; i < frame.length; i += 4) {
       if (transparentColor && frame[i + 3] < 128) {
@@ -84,40 +86,47 @@ const encodeTransparency = (
         img[i] = transparentColor[0];
         img[i + 1] = transparentColor[1];
         img[i + 2] = transparentColor[2];
-        img[i + 3] = transparentColor[3];
+        img[i + 3] = 0;
       } else {
         img[i] = frame[i];
         img[i + 1] = frame[i + 1];
         img[i + 2] = frame[i + 2];
-        img[i + 3] = 255; // Gifs don't do transparency, I dunno why they take in an alpha value...
+        img[i + 3] = 0; // Gifs don't do transparency, I dunno why they take in an alpha value...
       }
     }
     return img;
   });
 
-  return image;
+  return {
+    dimensions: image.dimensions,
+    frames: newFrames,
+  };
 };
 
-const createGif = async (
-  dimensions: Dimensions,
-  frames: ImageData[],
-  transparentColor: Color | undefined,
-  fps: number
-): Promise<string> =>
+const createGif = async ({
+  image,
+  transparentColor,
+  fps,
+}: {
+  image: Image;
+  transparentColor: Color | undefined;
+  fps: number;
+}): Promise<string> =>
   new Promise<string>((resolve) => {
-    const [width, height] = dimensions;
+    const [width, height] = image.dimensions;
     const gif = new gifEncoder(width, height);
 
     gif.setFrameRate(fps);
     gif.setRepeat(0); // Loop indefinitely
+
+    // gif.setQuality(10);
+    gif.writeHeader();
+
     if (transparentColor) {
       // Need to convert '#RRGGBB' to '0xRRGGBB'
       const hexColor = toHexColor(transparentColor).slice(1);
       gif.setTransparent(`0x${hexColor}`);
     }
-
-    // gif.setQuality(10);
-    gif.writeHeader();
 
     let data: any[] = [];
     gif.on('data', (chunk: any) => {
@@ -130,7 +139,7 @@ const createGif = async (
       resolve(dataUrl);
     });
 
-    frames.forEach((f) => {
+    image.frames.forEach((f) => {
       gif.addFrame(f);
     });
 
@@ -147,10 +156,11 @@ export const readImage = (dataUrl: string): Promise<Image> =>
         }
 
         if (results.shape.length === 3) {
+          const [width, height] = results.shape;
           // Single frame
           return res({
             frames: [Uint8Array.from(results.data)],
-            dimensions: [results.shape[0], results.shape[1]],
+            dimensions: [width, height],
           });
         }
 
