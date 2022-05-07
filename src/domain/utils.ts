@@ -361,11 +361,17 @@ export const getPixel = (args: {
   frameIndex: number;
   coord: Coord;
 }) =>
-  getPixelFromSource(
-    args.image.dimensions,
-    args.image.frames[args.frameIndex],
-    args.coord
-  );
+  getPixelFromFrame({
+    dimensions: args.image.dimensions,
+    frame: args.image.frames[args.frameIndex],
+    coord: args.coord,
+  });
+
+export const getPixelFromFrame = (args: {
+  frame: Uint8Array;
+  dimensions: Dimensions;
+  coord: Coord;
+}) => getPixelFromSource(args.dimensions, args.frame, args.coord);
 
 export const setPixel = (args: {
   image: Image;
