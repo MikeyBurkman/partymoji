@@ -12,10 +12,10 @@ import { ParamFunction, ParamValue } from '../domain/types';
 
 const RadioParam: React.FC<{
   name: string;
-  options: readonly { name: string; value: any }[];
-  value?: any;
+  options: readonly { name: string; value: string }[];
+  value?: string;
   description?: string;
-  onChange: (v: ParamValue<any>) => void;
+  onChange: (string: ParamValue<any>) => void;
 }> = ({ name, options, value, description, onChange }) => {
   return (
     <Stack spacing={1}>
@@ -44,7 +44,7 @@ const RadioParam: React.FC<{
   );
 };
 
-export function radioParam<T>(args: {
+export function radioParam<T extends string>(args: {
   name: string;
   options: readonly { name: string; value: T }[];
   description?: string;

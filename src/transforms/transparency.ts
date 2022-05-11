@@ -25,7 +25,7 @@ export const transparency = buildTransform({
       defaultValue: 10,
       min: 0,
       max: 100,
-      step: 5,
+      step: 2,
     }),
   ] as const,
   fn: mapImage(

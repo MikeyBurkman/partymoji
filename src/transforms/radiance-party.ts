@@ -20,7 +20,7 @@ export const radianceParty = buildTransform({
       min: 1,
       max: 24,
     }),
-    radioParam({
+    radioParam<'background' | 'foreground'>({
       name: 'Type',
       description: 'Whether to apply the party to the foreground or background',
       defaultValue: 'background',

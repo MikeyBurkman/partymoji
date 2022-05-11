@@ -7,7 +7,7 @@ export const staticc = buildTransform({
   name: 'Static',
   description: 'Adds random static to the image',
   params: [
-    radioParam({
+    radioParam<'background' | 'foreground'>({
       name: 'Type',
       description: 'Whether to apply the party to the foreground or background',
       defaultValue: 'background',

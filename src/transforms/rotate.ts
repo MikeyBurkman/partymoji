@@ -6,18 +6,18 @@ export const rotate = buildTransform({
   name: 'Rotate',
   description: 'Make the image rotate about the center point',
   params: [
-    radioParam({
+    radioParam<'clockwise' | 'counter'>({
       name: 'Direction',
-      defaultValue: -1,
+      defaultValue: 'clockwise',
       options: [
-        { name: 'Clockwise', value: -1 },
-        { name: 'Counter-Clockwise', value: 1 },
+        { name: 'Clockwise', value: 'clockwise' },
+        { name: 'Counter-Clockwise', value: 'counter' },
       ],
     }),
   ] as const,
   fn: mapImageWithPrecompute(
-    ({ animationProgress, parameters: [sign] }) => {
-      const amount = animationProgress * (sign || 1);
+    ({ animationProgress, parameters: [direction] }) => {
+      const amount = animationProgress * (direction === 'counter' ? 1 : -1);
       return {
         cos: Math.cos(2 * Math.PI * amount),
         sin: Math.sin(2 * Math.PI * amount),

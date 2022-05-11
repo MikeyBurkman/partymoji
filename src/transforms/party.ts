@@ -12,7 +12,7 @@ export const party = buildTransform({
   name: 'Party',
   description: 'Shift the hue of the image over the course of the animation',
   params: [
-    radioParam({
+    radioParam<'background' | 'foreground'>({
       name: 'Type',
       description: 'Whether to apply the party to the foreground or background',
       defaultValue: 'background',

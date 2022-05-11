@@ -7,7 +7,7 @@ export const slowAnimation = buildTransform({
   name: 'Slow Animation',
   description: 'Attempts to slow the animation by adding intermediate frames',
   params: [
-    radioParam({
+    radioParam<'basic' | 'smooth'>({
       name: 'Interpolation Type',
       options: [
         { name: 'Basic', value: 'basic' },
