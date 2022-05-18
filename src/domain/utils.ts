@@ -487,3 +487,19 @@ export const colorDiff = (c1: Color, c2: Color): number => {
   // 765 = ~ difference between black and white pixels
   return Math.sqrt(rComponent + bComponent + gComponent) / 765;
 };
+
+export const changeFrameCount = (image: Image, frameCount: number): Image => {
+  const currentFrames = image.frames;
+
+  // Resulting image will contain frameCount frames.
+  // If the original image had fewer than that, then we'll
+  //  duplicate some frames to approximately slow the animation.
+  // If the original has more frames, then we'll discard some frames.
+  return {
+    dimensions: image.dimensions,
+    frames: range(0, frameCount).map((i) => {
+      const frameToCopy = Math.floor((i / frameCount) * currentFrames.length);
+      return currentFrames[frameToCopy];
+    }),
+  };
+};

@@ -75,6 +75,12 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
                     value: newParams.map((n) => n.pValue),
                   });
                 }}
+                style={{
+                  visibility:
+                    idx === 0 /* Hide delete on first item */
+                      ? 'hidden'
+                      : undefined,
+                }}
               >
                 <Icon>delete</Icon>
               </IconButton>

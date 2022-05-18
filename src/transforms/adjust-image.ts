@@ -1,9 +1,9 @@
-import { range } from 'remeda';
-import { buildTransform, Image } from '../domain/types';
+import { buildTransform } from '../domain/types';
 import {
   adjustBrightness,
   adjustContrast,
   adjustSaturation,
+  changeFrameCount,
   getPixelFromSource,
   mapCoords,
   mapFrames,
@@ -94,7 +94,7 @@ export const adjustImage = buildTransform({
 
     if (hasFrameCount && frameCount < image.frames.length) {
       // Reducing the number of frames, so do that first so we have fewer pixels to change
-      currImage = setFrameCount(currImage, frameCount);
+      currImage = changeFrameCount(currImage, frameCount);
     }
 
     // If making a smaller image, might as well do the brightness/contrast after making it smaller
@@ -137,25 +137,9 @@ export const adjustImage = buildTransform({
 
     // Finally change the number of frames if we're adding frames
     if (hasFrameCount && frameCount > image.frames.length) {
-      currImage = setFrameCount(currImage, frameCount);
+      currImage = changeFrameCount(currImage, frameCount);
     }
 
     return currImage;
   },
 });
-
-const setFrameCount = (image: Image, frameCount: number): Image => {
-  const currentFrames = image.frames;
-
-  // Resulting image will contain frameCount frames.
-  // If the original image had less than that, then we'll copy the last frame until we have enough.
-  // If the original has more frames, then we'll discard the last ones.
-  return {
-    dimensions: image.dimensions,
-    frames: range(0, frameCount).map((i) =>
-      currentFrames[i]
-        ? currentFrames[i]
-        : currentFrames[currentFrames.length - 1]
-    ),
-  };
-};

@@ -31,6 +31,7 @@ export const colorsBackground = buildTransform({
       createNewParam: () =>
         colorPickerParam({
           name: 'Color',
+          defaultValue: DEFAULT_COLORS[0],
         }),
     }),
   ] as const,
