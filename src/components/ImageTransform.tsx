@@ -1,5 +1,9 @@
 import {
   Autocomplete,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   Divider,
   FormControl,
   Icon,
@@ -37,6 +41,7 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
   onMoveLeft,
   onMoveRight,
 }) => {
+  const [paramsOpen, setParamsOpen] = React.useState(false);
   return (
     <Paper style={{ padding: 8 }} elevation={3}>
       <Stack spacing={1}>
@@ -90,44 +95,68 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
             />
           </FormControl>
         </Stack>
-        {selectedTransform.transform.description && (
-          <Typography variant="caption">
-            {selectedTransform.transform.description}
-          </Typography>
+        {selectedTransform.transform.params.length > 0 ? (
+          <Button
+            variant="contained"
+            startIcon={<Icon>edit</Icon>}
+            onClick={() => setParamsOpen(!paramsOpen)}
+          >
+            Edit Parameters
+          </Button>
+        ) : (
+          <Button variant="contained" disabled>
+            (No Parameters Available)
+          </Button>
         )}
-        {selectedTransform.transform.params.length > 0 && (
-          <Typography variant="subtitle1">Parameters</Typography>
-        )}
-        <Stack divider={<Divider />} spacing={2}>
-          {selectedTransform.transform.params.map(
-            // Create elements for each of the parameters for the selectect transform.
-            // Each of these would get an onChange event so we know when the user has
-            //  selected a value.
-            (param: ParamFunction<any>, idx: number) => {
-              const ele = param.fn({
-                value: selectedTransform.paramValues[idx],
-                onChange: (v) => {
-                  onSelect({
-                    ...selectedTransform,
-                    paramValues: selectedTransform.paramValues.map((x, i) => {
-                      if (i === idx) {
-                        return v;
-                      }
-                      return x;
-                    }),
+        <Dialog
+          fullWidth
+          maxWidth="sm"
+          open={paramsOpen}
+          onClose={() => setParamsOpen(false)}
+        >
+          <DialogTitle>
+            {selectedTransform.transform.name} Parameters
+          </DialogTitle>
+          <DialogContent>
+            <Stack divider={<Divider />} spacing={2}>
+              {selectedTransform.transform.description && (
+                <Typography variant="caption">
+                  {selectedTransform.transform.description}
+                </Typography>
+              )}
+              {selectedTransform.transform.params.map(
+                // Create elements for each of the parameters for the selectect transform.
+                // Each of these would get an onChange event so we know when the user has
+                //  selected a value.
+                (param: ParamFunction<any>, idx: number) => {
+                  const ele = param.fn({
+                    value: selectedTransform.paramValues[idx],
+                    onChange: (v) => {
+                      onSelect({
+                        ...selectedTransform,
+                        paramValues: selectedTransform.paramValues.map(
+                          (x, i) => {
+                            if (i === idx) {
+                              return v;
+                            }
+                            return x;
+                          }
+                        ),
+                      });
+                    },
                   });
-                },
-              });
-              return (
-                <React.Fragment
-                  key={`${selectedTransform.transform.name}-${param.name}`}
-                >
-                  {ele}
-                </React.Fragment>
-              );
-            }
-          )}
-        </Stack>
+                  return (
+                    <React.Fragment
+                      key={`${selectedTransform.transform.name}-${param.name}`}
+                    >
+                      {ele}
+                    </React.Fragment>
+                  );
+                }
+              )}
+            </Stack>
+          </DialogContent>
+        </Dialog>
       </Stack>
     </Paper>
   );

@@ -15,13 +15,13 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
   possibleTransforms,
   onTransformsChange,
 }) => (
-  <Stack spacing={1}>
+  <Stack spacing={4}>
     <Typography variant="h5">Image Transforms</Typography>
     <Grid
       container
-      spacing={2}
-      padding={1}
-      columns={{ xs: 4, sm: 8, md: 12 }}
+      spacing={9}
+      padding={0}
+      columns={{ xs: 3, sm: 6, md: 10 }}
       rowSpacing={4}
     >
       {currentTransforms.map((t, tIdx) => (
@@ -97,28 +97,25 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
           />
         </Grid>
       ))}
-      <Grid item xs={4} sm={4} md={4}>
-        <Stack spacing={4}>
-          <Button
-            fullWidth={false}
-            variant="contained"
-            startIcon={<Icon>add</Icon>}
-            onClick={() =>
-              onTransformsChange([
-                ...currentTransforms,
-                {
-                  transformName: possibleTransforms[0].name,
-                  paramsValues: possibleTransforms[0].params.map(
-                    (p: ParamFunction<any>) => p.defaultValue
-                  ),
-                },
-              ])
-            }
-          >
-            New Transform
-          </Button>
-        </Stack>
-      </Grid>
     </Grid>
+    <Button
+      fullWidth={false}
+      variant="contained"
+      startIcon={<Icon>add</Icon>}
+      size="large"
+      onClick={() =>
+        onTransformsChange([
+          ...currentTransforms,
+          {
+            transformName: possibleTransforms[0].name,
+            paramsValues: possibleTransforms[0].params.map(
+              (p: ParamFunction<any>) => p.defaultValue
+            ),
+          },
+        ])
+      }
+    >
+      New Transform
+    </Button>
   </Stack>
 );

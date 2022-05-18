@@ -24,6 +24,3 @@ https://mikeyburkman.github.io/partymoji/
 - Componentize common things in parameters
 - Variable length params -- what to do if the default value is not valid?
   - Means that our array has holes in it...
-- Adjust image frame count (while trying to keep approximately the animation)
-  - If frame count is lower than current, then drop some frames
-  - If frame count is higher, then duplicate some frames
