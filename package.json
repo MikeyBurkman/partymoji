@@ -98,6 +98,7 @@
     "tsc": "tsc",
     "start": "REACT_APP_ENV=DEV REACT_APP_BUILD_TIME=$(date '+%m/%d/%y %r %Z') node scripts/start.js",
     "build": "REACT_APP_ENV=PROD REACT_APP_BUILD_TIME=$(date '+%m/%d/%y %r %Z') node scripts/build.js && del ./docs && mkdir ./docs && mv ./build/* ./docs",
+    "test-prod": "yarn build && sed -i '' 's/\\/partymoji//g' ./docs/index.html && cd docs && npx http-serve",
     "pretty": "prettier --write \"**/*.{js,md,ts,html,tsx,json}\"",
     "prepare": "husky install"
   },

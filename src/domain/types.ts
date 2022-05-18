@@ -128,15 +128,10 @@ export interface AppState {
 
 export interface ImageTransformResult {
   gif: string;
-  width: number;
-  height: number;
+  image: Image;
 }
 
-export type AsyncRunMessage =
-  | {
-      status: 'complete';
-    }
-  | {
-      status: 'in-progress';
-      result: ImageTransformResult;
-    };
+export type AsyncRunMessage = {
+  status: 'complete';
+  result: ImageTransformResult;
+};

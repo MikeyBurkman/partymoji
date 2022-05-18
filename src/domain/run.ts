@@ -20,49 +20,46 @@ import {
 } from './utils';
 
 export interface RunArgs {
-  inputDataUrl: string;
+  randomSeed: string;
   originalImage: Image;
-  transformList: TransformInput[];
+  transformInput: TransformInput;
   fps: number;
 }
 
 // Returns a list of gif data URLs, for each transform
-export const runTransforms = async (
-  args: RunArgs,
-  cb: (result: ImageTransformResult) => void
-): Promise<void> => {
-  const { originalImage, transformList, inputDataUrl, fps } = args;
-  const random = seedrandom(inputDataUrl);
+export const runTransforms = async ({
+  originalImage,
+  transformInput,
+  randomSeed,
+  fps,
+}: RunArgs): Promise<ImageTransformResult> => {
+  const random = seedrandom(randomSeed);
 
   let currentImage = originalImage;
 
-  for (let idx = 0; idx < transformList.length; idx += 1) {
-    const transformInput = transformList[idx];
-    const transform = transformByName(transformInput.transformName);
-    const result = transform.fn({
-      image: currentImage,
-      parameters: transformInput.params,
-      random,
-    });
+  const transform = transformByName(transformInput.transformName);
+  const result = transform.fn({
+    image: currentImage,
+    parameters: transformInput.params,
+    random,
+  });
 
-    const transparentColor = getTransparentColor(result, random);
+  const transparentColor = getTransparentColor(result, random);
 
-    // Transform any of our transparent pixels to what our gif understands to be transparent
-    const image = encodeTransparency(result, transparentColor);
+  // Transform any of our transparent pixels to what our gif understands to be transparent
+  const image = encodeTransparency(result, transparentColor);
 
-    const gif = await createGif({
-      image,
-      transparentColor,
-      fps,
-    });
+  const gif = await createGif({
+    image,
+    transparentColor,
+    fps,
+  });
 
-    currentImage = result;
-    cb({
-      gif,
-      width: result.dimensions[0],
-      height: result.dimensions[1],
-    });
-  }
+  currentImage = result;
+  return {
+    gif,
+    image: result,
+  };
 };
 
 /**

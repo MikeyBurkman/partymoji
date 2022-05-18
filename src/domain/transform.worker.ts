@@ -6,16 +6,11 @@ import { AsyncRunMessage } from './types';
 const ctx: Worker = self as any;
 
 ctx.addEventListener('message', async (event) => {
-  await runTransforms(event.data, (result) => {
-    const message: AsyncRunMessage = {
-      status: 'in-progress',
-      result,
-    };
-    ctx.postMessage(message);
-  });
+  const result = await runTransforms(event.data);
 
   const message: AsyncRunMessage = {
     status: 'complete',
+    result,
   };
   ctx.postMessage(message);
 });

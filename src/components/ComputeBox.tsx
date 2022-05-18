@@ -106,26 +106,27 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
 
             // Can't get web workers working with the dev build, so just use the synchrounous version
             //  if not a prod build.
-            await (ENV === 'DEV' ? runTransforms : runTransformsAsync)(
-              {
-                inputDataUrl: appState.baseImage,
+            const run = ENV === 'DEV' ? runTransforms : runTransformsAsync;
+            for (let i = 0; i < transformInputs.length; i += 1) {
+              const transformInput = transformInputs[i];
+              const result = await run({
+                randomSeed: appState.baseImage,
                 originalImage,
-                transformList: transformInputs,
+                transformInput,
                 fps: appState.fps,
-              },
-              (image) => {
-                results.push(image);
-                setProgress((results.length / transformInputs.length) * 100);
-                setComputeState({
-                  loading: false,
-                  computeTime: undefined,
-                  results: results.map((result, idx) => ({
-                    transformName: appState.transforms[idx].transformName,
-                    gif: result.gif,
-                  })),
-                });
-              }
-            );
+              });
+
+              results.push(result);
+              setProgress((results.length / transformInputs.length) * 100);
+              setComputeState({
+                loading: false,
+                computeTime: undefined,
+                results: results.map((result, idx) => ({
+                  transformName: appState.transforms[idx].transformName,
+                  gif: result.gif,
+                })),
+              });
+            }
 
             const computeTime = Math.ceil((Date.now() - start) / 1000);
             setComputeState({
