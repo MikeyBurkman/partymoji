@@ -28,8 +28,8 @@ interface ImageTransformProps {
   index: number;
   onSelect: (selected: SelectedTransform) => void;
   onRemove: () => void;
-  onMoveLeft?: () => void;
-  onMoveRight?: () => void;
+  onMoveBefore?: () => void;
+  onMoveAfter?: () => void;
 }
 
 export const ImageTransform: React.FC<ImageTransformProps> = ({
@@ -38,12 +38,12 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
   index,
   onSelect,
   onRemove,
-  onMoveLeft,
-  onMoveRight,
+  onMoveBefore,
+  onMoveAfter,
 }) => {
   const [paramsOpen, setParamsOpen] = React.useState(false);
   return (
-    <Paper style={{ padding: 8 }} elevation={3}>
+    <Paper style={{ padding: 8 }} elevation={3} sx={{ width: 300 }}>
       <Stack spacing={1}>
         <Stack direction="row" spacing={2}>
           <Typography variant="subtitle1">{index + 1}</Typography>
@@ -52,22 +52,22 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
               <Icon>delete</Icon>
             </IconButton>
           </Tooltip>
-          <Tooltip title="Move transform left">
+          <Tooltip title="Move transform earlier">
             <IconButton
-              aria-label="delete"
-              onClick={onMoveLeft}
-              disabled={!onMoveLeft}
+              aria-label="move-before"
+              onClick={onMoveBefore}
+              disabled={!onMoveBefore}
             >
-              <Icon>chevron_left</Icon>
+              <Icon>arrow_upward</Icon>
             </IconButton>
           </Tooltip>
-          <Tooltip title="Move transform right">
+          <Tooltip title="Move transform later">
             <IconButton
-              aria-label="delete"
-              onClick={onMoveRight}
-              disabled={!onMoveRight}
+              aria-label="move-after"
+              onClick={onMoveAfter}
+              disabled={!onMoveAfter}
             >
-              <Icon>chevron_right</Icon>
+              <Icon>arrow_downward</Icon>
             </IconButton>
           </Tooltip>
         </Stack>

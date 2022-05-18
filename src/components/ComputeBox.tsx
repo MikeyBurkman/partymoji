@@ -25,13 +25,12 @@ interface ComputeBoxProps {
   computeDisabled: boolean;
   appState: AppState;
   onFpsChange: (fps: number) => void;
-  onComputed: () => void;
+  onComputed: (results: ImageTransformResult[]) => void;
 }
 
 type ComputeState =
   | {
       loading: false;
-      results: { transformName: string; gif: string }[];
       computeTime: number | undefined;
     }
   | { loading: true };
@@ -52,7 +51,6 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
 }) => {
   const [computeState, setComputeState] = React.useState<ComputeState>({
     loading: false,
-    results: [],
     computeTime: undefined,
   });
   const [progress, setProgress] = React.useState<number | undefined>();
@@ -100,42 +98,30 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
             const timings: number[] = [];
             setProgress(0);
 
-            const originalImage = await readImage(appState.baseImage);
-
+            let image = await readImage(appState.baseImage);
             const results: ImageTransformResult[] = [];
 
             // Can't get web workers working with the dev build, so just use the synchrounous version
             //  if not a prod build.
             const run = ENV === 'DEV' ? runTransforms : runTransformsAsync;
             for (let i = 0; i < transformInputs.length; i += 1) {
-              const transformInput = transformInputs[i];
               const result = await run({
                 randomSeed: appState.baseImage,
-                originalImage,
-                transformInput,
+                image,
+                transformInput: transformInputs[i],
                 fps: appState.fps,
               });
 
+              image = result.image;
+
               results.push(result);
               setProgress((results.length / transformInputs.length) * 100);
-              setComputeState({
-                loading: false,
-                computeTime: undefined,
-                results: results.map((result, idx) => ({
-                  transformName: appState.transforms[idx].transformName,
-                  gif: result.gif,
-                })),
-              });
             }
 
             const computeTime = Math.ceil((Date.now() - start) / 1000);
             setComputeState({
               loading: false,
               computeTime,
-              results: results.map((result: any, idx: number) => ({
-                transformName: appState.transforms[idx].transformName,
-                gif: result.gif,
-              })),
             });
 
             // Google analytics
@@ -155,7 +141,7 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
             });
 
             setProgress(undefined);
-            onComputed();
+            onComputed(results);
           } catch (err) {
             console.error(err);
             console.error((err as any).stack);
@@ -177,29 +163,6 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
           <Typography variant="caption">
             Compute Time: {computeState.computeTime} second(s)
           </Typography>
-        </>
-      )}
-
-      {!computeState.loading && computeState.results.length > 0 && (
-        <>
-          <Divider />
-          <Grid
-            container
-            spacing={2}
-            padding={1}
-            columns={{ xs: 4, sm: 8, md: 12 }}
-          >
-            {computeState.results.map(({ gif, transformName }, idx) => (
-              <Grid item xs={4} sm={4} md={4} key={`${transformName}-${idx}`}>
-                <Typography variant="subtitle2">{transformName}</Typography>
-                <img
-                  src={gif}
-                  alt={`gif-${transformName}-${idx}`}
-                  style={{ maxWidth: '300px', maxHeight: 'auto' }}
-                ></img>
-              </Grid>
-            ))}
-          </Grid>
         </>
       )}
     </Stack>

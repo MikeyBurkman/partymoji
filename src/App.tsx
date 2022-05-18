@@ -63,7 +63,7 @@ export const App: React.FC = () => {
   return (
     <>
       <ScopedCssBaseline />
-      <Container>
+      <Container maxWidth="md">
         <Stack spacing={4} justifyContent="space-evenly" divider={<Divider />}>
           <Typography variant="h2" pt={4}>
             Partymoji
@@ -114,10 +114,14 @@ export const App: React.FC = () => {
                     dirty: true,
                   })
                 }
-                onComputed={() =>
+                onComputed={(results) =>
                   setState({
                     ...state,
                     dirty: false,
+                    transforms: state.transforms.map((t, idx) => ({
+                      ...t,
+                      computedImage: results[idx],
+                    })),
                   })
                 }
               />
