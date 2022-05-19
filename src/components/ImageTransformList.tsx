@@ -1,4 +1,4 @@
-import { Button, Grid, Icon, Stack, Typography } from '@material-ui/core';
+import { Button, Icon, Stack, Typography } from '@material-ui/core';
 import React from 'react';
 import { ParamFunction, Transform, AppStateTransforms } from '../domain/types';
 import { transformByName } from '../transforms';

@@ -2,6 +2,7 @@ import {
   Autocomplete,
   Button,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
@@ -156,6 +157,15 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
               )}
             </Stack>
           </DialogContent>
+          <DialogActions>
+            <Button
+              variant="contained"
+              autoFocus
+              onClick={() => setParamsOpen(false)}
+            >
+              Close
+            </Button>
+          </DialogActions>
         </Dialog>
       </Stack>
     </Paper>
