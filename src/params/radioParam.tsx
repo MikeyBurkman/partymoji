@@ -34,6 +34,7 @@ const RadioParam: React.FC<{
               value={t.value}
               control={<Radio />}
               label={t.name}
+              key={t.value}
             />
           ))}
         </RadioGroup>
