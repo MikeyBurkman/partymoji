@@ -21,7 +21,7 @@ export const getStoredAppState = (): AppState | undefined => {
 
 export const saveAppState = (state: AppState) => {
   try {
-    window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+    window.localStorage.setItem(LOCAL_STORAGE_KEY, serializeAppState(state));
   } catch (err) {
     // @ts-ignore
     console.error('Error saving state to local storage', err.stack || err);
@@ -35,4 +35,17 @@ export const clearAppState = () => {
     // @ts-ignore
     console.error('Error clearing state from local storage', err.stack || err);
   }
+};
+
+const serializeAppState = (state: AppState): string => {
+  const toStore: AppState = {
+    ...state,
+    transforms: state.transforms.map((t) => ({
+      ...t,
+      // Remove the computed image for the state before storing.
+      // This just bloats the storage and doesn't keep anything that isn't reproduceable.
+      computedImage: undefined,
+    })),
+  };
+  return JSON.stringify(toStore);
 };
