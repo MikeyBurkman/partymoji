@@ -1,13 +1,13 @@
 import { Checkbox, Stack, Typography } from '@material-ui/core';
 import React from 'react';
 import { HelpTooltip } from '../components/HelpTooltip';
-import { ParamFunction, ParamValue } from '../domain/types';
+import { ParamFunction } from '../domain/types';
 
 const CheckboxParam: React.FC<{
   name: string;
   value?: boolean;
   description?: string;
-  onChange: (v: ParamValue<boolean>) => void;
+  onChange: (v: boolean) => void;
 }> = ({ name, value, description, onChange }) => {
   return (
     <Stack spacing={1}>
@@ -21,7 +21,7 @@ const CheckboxParam: React.FC<{
         <Checkbox
           aria-label={name}
           checked={value}
-          onChange={(e, value) => onChange({ valid: true, value })}
+          onChange={(e, value) => onChange(value)}
         />
       </Stack>
     </Stack>
@@ -30,20 +30,17 @@ const CheckboxParam: React.FC<{
 
 export function checkboxParam(args: {
   name: string;
-  defaultValue?: boolean;
+  defaultValue: boolean;
   description?: string;
 }): ParamFunction<boolean> {
   return {
     name: args.name,
-    defaultValue:
-      args.defaultValue !== undefined
-        ? { valid: true, value: args.defaultValue }
-        : { valid: false },
+    defaultValue: args.defaultValue,
     fn: (params) => {
       return (
         <CheckboxParam
           name={args.name}
-          value={params.value.valid ? params.value.value : undefined}
+          value={params.value}
           onChange={params.onChange}
           description={args.description}
         />

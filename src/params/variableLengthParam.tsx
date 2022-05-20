@@ -8,15 +8,15 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { HelpTooltip } from '../components/HelpTooltip';
-import { ParamFunction, ParamValue } from '../domain/types';
+import { ParamFunction } from '../domain/types';
 
 interface VariableLengthProps<T> {
   name: string;
   newParamText: string;
   createNewParam: () => ParamFunction<T>;
-  value?: T[];
+  value: T[];
   description?: string;
-  onChange: (v: ParamValue<T>) => void;
+  onChange: (v: T) => void;
 }
 
 const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
@@ -29,11 +29,7 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
 }) => {
   const [params, setParams] = React.useState<
     { param: ParamFunction<any>; pValue: any }[]
-  >(
-    value === undefined
-      ? []
-      : value.map((v, idx) => ({ param: createNewParam(), pValue: v }))
-  );
+  >(value.map((v) => ({ param: createNewParam(), pValue: v })));
   return (
     <Paper>
       <Stack spacing={1}>
@@ -56,10 +52,7 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
                   return oldP;
                 });
                 setParams(p);
-                onChange({
-                  valid: true,
-                  value: p.map((n) => n.pValue),
-                });
+                onChange(p.map((n) => n.pValue));
               }
             },
           });
@@ -70,10 +63,7 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
                 onClick={() => {
                   const newParams = params.filter((x, i) => i !== idx);
                   setParams(newParams);
-                  onChange({
-                    valid: true,
-                    value: newParams.map((n) => n.pValue),
-                  });
+                  onChange(newParams.map((n) => n.pValue));
                 }}
                 style={{
                   visibility:
@@ -96,16 +86,11 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
               ...params,
               {
                 param: p,
-                pValue: p.defaultValue.valid ? p.defaultValue.value : undefined,
+                pValue: p.defaultValue,
               },
             ];
             setParams(newParams);
-            if (p.defaultValue.valid) {
-              onChange({
-                valid: true,
-                value: newParams.map((n) => n.pValue),
-              });
-            }
+            onChange(newParams.map((n) => n.pValue));
           }}
         >
           {newParamText}
@@ -120,19 +105,17 @@ export function variableLengthParam<T>(args: {
   newParamText: string;
   createNewParam: () => ParamFunction<T>;
   description?: string;
-  defaultValue?: T[];
+  defaultValue: T[];
 }): ParamFunction<T[]> {
   return {
     name: args.name,
-    defaultValue: args.defaultValue
-      ? { valid: true, value: args.defaultValue }
-      : { valid: false },
+    defaultValue: args.defaultValue,
     fn: (params) => {
       return (
         <VariableLengthParam
           name={args.name}
           newParamText={args.newParamText}
-          value={params.value.valid ? params.value.value : undefined}
+          value={params.value}
           createNewParam={args.createNewParam}
           description={args.description}
           onChange={params.onChange}

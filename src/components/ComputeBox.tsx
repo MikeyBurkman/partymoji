@@ -60,12 +60,8 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
 
       <div style={{ maxWidth: '300px' }}>
         {fpsParam.fn({
-          value: { valid: true, value: appState.fps },
-          onChange: (x) => {
-            if (x.valid) {
-              onFpsChange(x.value);
-            }
-          },
+          value: appState.fps,
+          onChange: onFpsChange,
         })}
       </div>
       <Button
@@ -81,10 +77,7 @@ export const ComputeBox: React.FC<ComputeBoxProps> = ({
           const transformInputs = appState.transforms.map(
             (t): TransformInput => ({
               transformName: t.transformName,
-              params: t.paramsValues.map((p) => {
-                assert(p.valid, 'Got non-valid when compute box was clicked');
-                return p.value;
-              }),
+              params: t.paramsValues,
             })
           );
           setComputeState({ loading: true });

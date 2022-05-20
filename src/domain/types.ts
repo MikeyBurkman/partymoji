@@ -60,8 +60,6 @@ export interface TransformFnOpts<Params> {
   parameters: Params;
 }
 
-export type ParamValue<T> = { valid: true; value: T } | { valid: false };
-
 export interface Parameter<T> {
   name: string;
   defaultValue: T;
@@ -69,13 +67,13 @@ export interface Parameter<T> {
 }
 
 export interface Params<T> {
-  value: ParamValue<T>;
-  onChange: (v: ParamValue<T>) => void;
+  value: T;
+  onChange: (v: T) => void;
 }
 
 export type ParamFunction<T = any> = {
   name: string;
-  defaultValue: ParamValue<T>;
+  defaultValue: T;
   fn: (params: Params<T>) => JSX.Element;
 };
 
@@ -93,7 +91,7 @@ export interface Transform<T extends readonly ParamFunction<any>[]> {
 
 export interface TransformWithParams<T extends readonly ParamFunction<any>[]> {
   transformName: string;
-  paramsValues: ParamValue<T>[];
+  paramsValues: T[];
 }
 
 export interface TransformInput {
@@ -117,7 +115,7 @@ export const buildTransform = <T extends readonly ParamFunction<any>[]>(args: {
 
 export interface AppStateTransforms {
   transformName: string;
-  paramsValues: ParamValue<any>[];
+  paramsValues: any[];
   computedImage?: ImageTransformResult;
 }
 

@@ -1,16 +1,16 @@
 import { Slider, Stack, Typography } from '@material-ui/core';
 import React from 'react';
 import { HelpTooltip } from '../components/HelpTooltip';
-import { ParamFunction, ParamValue } from '../domain/types';
+import { ParamFunction } from '../domain/types';
 
 const SliderParam: React.FC<{
   name: string;
   min: number;
   max: number;
   step?: number;
-  value?: number;
+  value: number;
   description?: string;
-  onChange: (v: ParamValue<number>) => void;
+  onChange: (v: number) => void;
 }> = ({ name, value, min, max, step, description, onChange }) => {
   return (
     <Stack spacing={1}>
@@ -31,9 +31,7 @@ const SliderParam: React.FC<{
           getAriaValueText={(x) => x.toString()}
           min={min}
           max={max}
-          onChange={(e, value) =>
-            onChange({ valid: true, value: value as number })
-          }
+          onChange={(e, value) => onChange(value as number)}
         />
         <Typography variant="body2">{value}</Typography>
       </Stack>
@@ -46,20 +44,17 @@ export function sliderParam(args: {
   min: number;
   max: number;
   step?: number;
-  defaultValue?: number;
+  defaultValue: number;
   description?: string;
 }): ParamFunction<number> {
   return {
     name: args.name,
-    defaultValue:
-      args.defaultValue !== undefined
-        ? { valid: true, value: args.defaultValue }
-        : { valid: false },
+    defaultValue: args.defaultValue,
     fn: (params) => {
       return (
         <SliderParam
           name={args.name}
-          value={params.value.valid ? params.value.value : undefined}
+          value={params.value}
           onChange={params.onChange}
           min={args.min}
           max={args.max}

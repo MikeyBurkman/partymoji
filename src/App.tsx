@@ -17,7 +17,7 @@ import { ImageTransformList } from './components/ImageTransformList';
 import { ImportExport } from './components/ImportExport';
 import { AppState } from './domain/types';
 import * as localStorage from './localStorage';
-import { POSSIBLE_TRANSFORMS, transformByName } from './transforms';
+import { POSSIBLE_TRANSFORMS } from './transforms';
 
 // Set to true to print out the current state at the bottom of the page
 const DEBUG = false;
@@ -53,12 +53,7 @@ export const App: React.FC = () => {
     !state.baseImage ||
     state.transforms.length === 0 ||
     !state.dirty ||
-    state.transforms.some((t) => {
-      const params = transformByName(t.transformName).params;
-      return (
-        params.length > 0 && t.paramsValues.every((p) => p.valid === false)
-      );
-    });
+    state.transforms.length === 0;
 
   return (
     <>

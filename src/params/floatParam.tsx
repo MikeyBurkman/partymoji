@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { HelpTooltip } from '../components/HelpTooltip';
-import { ParamFunction, ParamValue } from '../domain/types';
+import { ParamFunction } from '../domain/types';
 
 type ParsedParam<T> =
   | { valid: true; value: T }
@@ -15,32 +15,26 @@ type ParsedParam<T> =
 
 const FloatParam: React.FC<{
   name: string;
-  value?: number;
+  value: number;
   description?: string;
   parse: (s: string) => ParsedParam<number>;
-  onChange: (v: ParamValue<number>) => void;
+  onChange: (v: number) => void;
 }> = ({ name, value, description, parse, onChange }) => {
-  const [val, setVal] = React.useState(
-    value === undefined ? undefined : value.toString()
-  );
+  const [val, setVal] = React.useState(value.toString());
   const [invalidText, setInvalidText] = React.useState('');
 
   const onBlur = () => {
-    if (val === undefined) {
-      // Only if no default value provided and no changes have happened
-      return;
-    }
-
-    if (value && val === value.toString()) {
+    if (val === value.toString()) {
       return; // Don't fire an onChange event if things haven't changed
     }
+
     const n = parse(val);
     if (n.valid) {
       setInvalidText('');
+      onChange(n.value);
     } else {
       setInvalidText(n.reason);
     }
-    onChange(n);
   };
 
   return (
@@ -66,16 +60,13 @@ const FloatParam: React.FC<{
 
 export const floatParam = (args: {
   name: string;
-  defaultValue?: number;
+  defaultValue: number;
   min?: number;
   max?: number;
   description?: string;
 }): ParamFunction<number> => ({
   name: args.name,
-  defaultValue:
-    args.defaultValue !== undefined
-      ? { valid: true, value: args.defaultValue }
-      : { valid: false },
+  defaultValue: args.defaultValue,
   fn: (params) => {
     const { min, max } = args;
     const parse = (s: string): ParsedParam<number> => {
@@ -101,7 +92,7 @@ export const floatParam = (args: {
         description={args.description}
         parse={parse}
         onChange={params.onChange}
-        value={params.value.valid ? params.value.value : undefined}
+        value={params.value}
       />
     );
   },

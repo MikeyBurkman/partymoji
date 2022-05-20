@@ -16,11 +16,11 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import { ParamFunction, ParamValue, Transform } from '../domain/types';
+import { ParamFunction, Transform } from '../domain/types';
 
 interface SelectedTransform {
   transform: Transform<any>;
-  paramValues: ParamValue<any>[];
+  paramValues: any[];
 }
 
 interface ImageTransformProps {

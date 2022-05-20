@@ -7,14 +7,14 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { HelpTooltip } from '../components/HelpTooltip';
-import { ParamFunction, ParamValue } from '../domain/types';
+import { ParamFunction } from '../domain/types';
 
 const DropdownParam: React.FC<{
   name: string;
-  options: readonly { name: string; value: any }[];
+  options: readonly { name: string; value: string }[];
   value?: any;
   description?: string;
-  onChange: (v: ParamValue<any>) => void;
+  onChange: (v: string) => void;
 }> = ({ name, options, value, description, onChange }) => {
   return (
     <Stack spacing={1}>
@@ -26,9 +26,7 @@ const DropdownParam: React.FC<{
         <Select
           autoWidth
           value={value}
-          onChange={(event) =>
-            onChange({ valid: true, value: event.target.value })
-          }
+          onChange={(event) => onChange(event.target.value as string)}
         >
           {options.map((t) => (
             <MenuItem key={t.value} value={t.value}>
@@ -41,22 +39,20 @@ const DropdownParam: React.FC<{
   );
 };
 
-export function dropdownParam<T>(args: {
+export function dropdownParam(args: {
   name: string;
-  options: readonly { name: string; value: T }[];
+  options: readonly { name: string; value: string }[];
   description?: string;
-  defaultValue?: T;
-}): ParamFunction<T> {
+  defaultValue: string;
+}): ParamFunction<string> {
   return {
     name: args.name,
-    defaultValue: args.defaultValue
-      ? { valid: true, value: args.defaultValue }
-      : { valid: false },
+    defaultValue: args.defaultValue,
     fn: (params) => {
       return (
         <DropdownParam
           name={args.name}
-          value={params.value.valid ? params.value.value : undefined}
+          value={params.value}
           options={args.options}
           description={args.description}
           onChange={params.onChange}

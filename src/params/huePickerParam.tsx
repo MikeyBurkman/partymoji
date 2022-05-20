@@ -3,14 +3,14 @@ import * as convert from 'color-convert';
 import React from 'react';
 import { HuePicker } from 'react-color';
 import { HelpTooltip } from '../components/HelpTooltip';
-import { ParamFunction, ParamValue } from '../domain/types';
+import { ParamFunction } from '../domain/types';
 import { toHexColor } from '../domain/utils';
 
 const HuePickerParam: React.FC<{
   name: string;
   value?: number;
   description?: string;
-  onChange: (v: ParamValue<number>) => void;
+  onChange: (v: number) => void;
 }> = ({ name, value, description, onChange }) => {
   const hexColor =
     value === undefined
@@ -24,7 +24,7 @@ const HuePickerParam: React.FC<{
       </Stack>
       <HuePicker
         color={hexColor}
-        onChangeComplete={({ hsl }) => onChange({ valid: true, value: hsl.h })}
+        onChangeComplete={({ hsl }) => onChange(hsl.h)}
       />
     </Stack>
   );
@@ -32,19 +32,17 @@ const HuePickerParam: React.FC<{
 
 export function huePickerParam(args: {
   name: string;
-  defaultValue?: number;
+  defaultValue: number;
   description?: string;
 }): ParamFunction<number> {
   return {
     name: args.name,
-    defaultValue: args.defaultValue
-      ? { valid: true, value: args.defaultValue }
-      : { valid: false },
+    defaultValue: args.defaultValue,
     fn: (params) => {
       return (
         <HuePickerParam
           name={args.name}
-          value={params.value.valid ? params.value.value : undefined}
+          value={params.value}
           onChange={params.onChange}
         />
       );
