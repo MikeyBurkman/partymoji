@@ -39,7 +39,7 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
         </Stack>
         {params.map(({ param, pValue }, idx) => {
           const ele = param.fn({
-            value: { valid: true, value: pValue },
+            value: pValue,
             onChange: (newValue) => {
               if (newValue.valid) {
                 const p = params.map((oldP, i) => {
