@@ -43,6 +43,23 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
   onMoveAfter,
 }) => {
   const [paramsOpen, setParamsOpen] = React.useState(false);
+  const [currParams, setCurrParams] = React.useState([
+    ...selectedTransform.paramValues,
+  ]);
+  const [dirty, setDirty] = React.useState(false);
+  const closeDialog = ({ save }: { save: boolean }) => {
+    setParamsOpen(false);
+    if (save && dirty) {
+      onSelect({
+        ...selectedTransform,
+        paramValues: currParams,
+      });
+    } else {
+      setCurrParams([...selectedTransform.paramValues]);
+    }
+    setDirty(false);
+  };
+
   return (
     <Paper style={{ padding: 8 }} elevation={3} sx={{ width: 300 }}>
       <Stack spacing={1}>
@@ -109,12 +126,7 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
             (No Parameters Available)
           </Button>
         )}
-        <Dialog
-          fullWidth
-          maxWidth="sm"
-          open={paramsOpen}
-          onClose={() => setParamsOpen(false)}
-        >
+        <Dialog fullWidth maxWidth="sm" open={paramsOpen}>
           <DialogTitle>
             {selectedTransform.transform.name} Parameters
           </DialogTitle>
@@ -131,19 +143,17 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
                 //  selected a value.
                 (param: ParamFunction<any>, idx: number) => {
                   const ele = param.fn({
-                    value: selectedTransform.paramValues[idx],
+                    value: currParams[idx],
                     onChange: (v) => {
-                      onSelect({
-                        ...selectedTransform,
-                        paramValues: selectedTransform.paramValues.map(
-                          (x, i) => {
-                            if (i === idx) {
-                              return v;
-                            }
-                            return x;
+                      setDirty(true);
+                      setCurrParams(
+                        currParams.map((x, i) => {
+                          if (i === idx) {
+                            return v;
                           }
-                        ),
-                      });
+                          return x;
+                        })
+                      );
                     },
                   });
                   return (
@@ -159,11 +169,23 @@ export const ImageTransform: React.FC<ImageTransformProps> = ({
           </DialogContent>
           <DialogActions>
             <Button
+              variant="outlined"
+              autoFocus
+              onClick={() => {
+                closeDialog({ save: false });
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
               variant="contained"
               autoFocus
-              onClick={() => setParamsOpen(false)}
+              disabled={!dirty}
+              onClick={() => {
+                closeDialog({ save: true });
+              }}
             >
-              Close
+              Save and Close
             </Button>
           </DialogActions>
         </Dialog>

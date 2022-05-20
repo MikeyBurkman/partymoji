@@ -41,19 +41,17 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
           const ele = param.fn({
             value: pValue,
             onChange: (newValue) => {
-              if (newValue.valid) {
-                const p = params.map((oldP, i) => {
-                  if (idx === i) {
-                    return {
-                      param,
-                      pValue: newValue.value,
-                    };
-                  }
-                  return oldP;
-                });
-                setParams(p);
-                onChange(p.map((n) => n.pValue));
-              }
+              const p = params.map((oldP, i) => {
+                if (idx === i) {
+                  return {
+                    param,
+                    pValue: newValue,
+                  };
+                }
+                return oldP;
+              });
+              setParams(p);
+              onChange(p.map((n) => n.pValue));
             },
           });
 

@@ -18,7 +18,7 @@ const ColorBox: React.FC<{ color: Color }> = ({ color }) => (
 
 const ColorPickerParam: React.FC<{
   name: string;
-  value?: Color;
+  value: Color;
   description?: string;
   onChange: (v: Color) => void;
 }> = ({ name, value, description, onChange }) => {
@@ -35,8 +35,10 @@ const ColorPickerParam: React.FC<{
       <SketchPicker
         disableAlpha={true}
         presetColors={[]}
-        color={value ? toHexColor(value) : undefined}
-        onChangeComplete={(c) => onChange(fromHexColor(c.hex))}
+        color={toHexColor(value)}
+        onChangeComplete={(c) => {
+          onChange(fromHexColor(c.hex));
+        }}
       />
     </Expandable>
   );

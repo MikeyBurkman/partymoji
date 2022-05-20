@@ -40,9 +40,13 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const setState = (newState: AppState) => {
-    localStorage.saveAppState(newState);
-    setStateRaw(newState);
+  const setState = (newState: AppState, dirty = true) => {
+    const withDirtySet: AppState = {
+      ...newState,
+      dirty,
+    };
+    localStorage.saveAppState(withDirtySet);
+    setStateRaw(withDirtySet);
   };
 
   if (DEBUG) {
@@ -79,7 +83,6 @@ export const App: React.FC = () => {
                     setState({
                       ...state,
                       baseImage,
-                      dirty: true,
                     });
                   }}
                 />
@@ -92,7 +95,6 @@ export const App: React.FC = () => {
                 onTransformsChange={(transforms) =>
                   setState({
                     ...state,
-                    dirty: true,
                     transforms,
                   })
                 }
@@ -106,26 +108,24 @@ export const App: React.FC = () => {
                   setState({
                     ...state,
                     fps,
-                    dirty: true,
                   })
                 }
                 onComputed={(results) =>
-                  setState({
-                    ...state,
-                    dirty: false,
-                    transforms: state.transforms.map((t, idx) => ({
-                      ...t,
-                      computedImage: results[idx],
-                    })),
-                  })
+                  setState(
+                    {
+                      ...state,
+                      transforms: state.transforms.map((t, idx) => ({
+                        ...t,
+                        computedImage: results[idx],
+                      })),
+                    },
+                    false
+                  )
                 }
               />
             </Paper>
             <Paper style={{ padding: 16 }}>
-              <ImportExport
-                state={state}
-                onImport={(newState) => setState({ ...newState, dirty: true })}
-              />
+              <ImportExport state={state} onImport={setState} />
             </Paper>
             <Paper style={{ padding: 16 }}>
               <Stack spacing={3}>
