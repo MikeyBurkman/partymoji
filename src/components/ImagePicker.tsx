@@ -40,7 +40,7 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
     </Button>
     {currentImageUrl && (
       <img
-        style={{ maxWidth: '300px', maxHeight: 'auto' }}
+        style={{ maxWidth: '200px', maxHeight: 'auto' }}
         src={currentImageUrl}
         alt="Source"
       ></img>
