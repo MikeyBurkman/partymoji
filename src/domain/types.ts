@@ -120,6 +120,7 @@ export interface AppStateTransforms {
 }
 
 export interface AppState {
+  version: number;
   baseImage?: string;
   transforms: AppStateTransforms[];
   fps: number;

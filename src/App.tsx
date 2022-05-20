@@ -19,10 +19,15 @@ import { AppState } from './domain/types';
 import * as localStorage from './localStorage';
 import { POSSIBLE_TRANSFORMS } from './transforms';
 
-// Set to true to print out the current state at the bottom of the page
+// Set to true to expose the current state as window.STATE.
 const DEBUG = false;
 
+// Increase this by 1 when there's a breaking change to the app state.
+// Don't change this unless we have to!
+const CURRENT_APP_STATE_VERSION = 1;
+
 const DEFAULT_STATE: AppState = {
+  version: CURRENT_APP_STATE_VERSION,
   dirty: false,
   transforms: [],
   baseImage: undefined,
@@ -36,7 +41,12 @@ export const App: React.FC = () => {
     // If we have local storage state on startup, then reload that
     const stored = localStorage.getStoredAppState();
     if (stored) {
-      setStateRaw({ ...stored, dirty: true });
+      if (stored.version === CURRENT_APP_STATE_VERSION) {
+        setStateRaw({ ...stored, dirty: true });
+      } else {
+        // TODO Might be nice to
+        localStorage.clearAppState();
+      }
     }
   }, []);
 
@@ -47,11 +57,11 @@ export const App: React.FC = () => {
     };
     localStorage.saveAppState(withDirtySet);
     setStateRaw(withDirtySet);
-  };
 
-  if (DEBUG) {
-    (window as any).STATE = state;
-  }
+    if (DEBUG) {
+      (window as any).STATE = withDirtySet;
+    }
+  };
 
   const computeBtnDisbled =
     !state.baseImage ||
@@ -147,11 +157,6 @@ export const App: React.FC = () => {
                 </Button>
               </Stack>
             </Paper>
-            {DEBUG && (
-              <div>
-                <code>{JSON.stringify(state, null, 2)}</code>
-              </div>
-            )}
             <a
               href="https://github.com/MikeyBurkman/partymoji"
               target="_blank"
