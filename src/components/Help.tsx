@@ -22,7 +22,7 @@ export const Help: React.FC = () => (
       </Expandable>
 
       <Expandable
-        mainEle={<Typography variant="h6">Adding effects</Typography>}
+        mainEle={<Typography variant="h6">Adding Effects</Typography>}
       >
         <Group>
           <Section>

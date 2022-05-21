@@ -20,7 +20,3 @@ https://mikeyburkman.github.io/partymoji/
 3. `yarn build` to create a new prod build ,and store in the `docs` folder, so it can be run through GH Pages.
 
 ##### TODO
-
-- Componentize common things in parameters
-- Variable length params -- what to do if the default value is not valid?
-  - Means that our array has holes in it...
