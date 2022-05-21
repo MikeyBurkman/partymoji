@@ -67,7 +67,9 @@ const HELP = [
 ];
 
 export const Help: React.FC = () => (
-  <Expandable mainEle={<Typography variant="h5">Help</Typography>}>
+  <Expandable
+    mainEle={<Typography variant="h5">Click here for Help</Typography>}
+  >
     <Stack spacing={1}>
       {HELP.map((section, sectionIdx) => (
         <>
