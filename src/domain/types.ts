@@ -116,7 +116,10 @@ export const buildTransform = <T extends readonly ParamFunction<any>[]>(args: {
 export interface AppStateTransforms {
   transformName: string;
   paramsValues: any[];
-  computedImage?: ImageTransformResult;
+  state:
+    | { status: 'init' }
+    | { status: 'computing' }
+    | { status: 'done'; image: ImageTransformResult };
 }
 
 export interface AppState {
@@ -124,7 +127,6 @@ export interface AppState {
   baseImage?: string;
   transforms: AppStateTransforms[];
   fps: number;
-  dirty: boolean;
 }
 
 export interface ImageTransformResult {

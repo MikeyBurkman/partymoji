@@ -503,3 +503,10 @@ export const changeFrameCount = (image: Image, frameCount: number): Image => {
     }),
   };
 };
+
+/** Returns a new array where the item at the given index is replaced by the given value */
+export const replaceIndex = <T>(
+  arr: T[],
+  index: number,
+  newValueFn: (oldValue: T) => T
+): T[] => arr.map((x, i) => (index === i ? newValueFn(x) : x));

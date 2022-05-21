@@ -1,4 +1,4 @@
-import { AppState } from './domain/types';
+import { AppState, AppStateTransforms } from './domain/types';
 
 const LOCAL_STORAGE_KEY = 'partymoji-state';
 
@@ -40,12 +40,14 @@ export const clearAppState = () => {
 const serializeAppState = (state: AppState): string => {
   const toStore: AppState = {
     ...state,
-    transforms: state.transforms.map((t) => ({
-      ...t,
-      // Remove the computed image for the state before storing.
-      // This just bloats the storage and doesn't keep anything that isn't reproduceable.
-      computedImage: undefined,
-    })),
+    transforms: state.transforms.map(
+      (t): AppStateTransforms => ({
+        ...t,
+        // Remove the computed image for the state before storing.
+        // This just bloats the storage and doesn't keep anything that isn't reproduceable.
+        state: { status: 'init' },
+      })
+    ),
   };
   return JSON.stringify(toStore);
 };

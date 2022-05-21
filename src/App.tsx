@@ -10,39 +10,56 @@ import {
 import ScopedCssBaseline from '@material-ui/core/ScopedCssBaseline';
 import React from 'react';
 
-import { ComputeBox } from './components/ComputeBox';
 import { Help } from './components/Help';
 import { ImagePicker } from './components/ImagePicker';
 import { ImageTransformList } from './components/ImageTransformList';
 import { ImportExport } from './components/ImportExport';
-import { AppState } from './domain/types';
+import { computeGifs } from './domain/computeGifs';
+import { AppState, AppStateTransforms } from './domain/types';
+import { replaceIndex } from './domain/utils';
 import * as localStorage from './localStorage';
+import { sliderParam } from './params/sliderParam';
 import { POSSIBLE_TRANSFORMS } from './transforms';
 
 // Set to true to expose the current state as window.STATE.
 const DEBUG = false;
 
+// Number of millis to wait after a change before recomputing the gif
+const COMPUTE_DEBOUNCE_MILLIS = 1000;
+
 // Increase this by 1 when there's a breaking change to the app state.
 // Don't change this unless we have to!
-const CURRENT_APP_STATE_VERSION = 1;
+const CURRENT_APP_STATE_VERSION = 2;
+
+const DEFAULT_FPS = 20;
+const fpsParam = sliderParam({
+  name: 'Final Gif Frames per Second',
+  defaultValue: DEFAULT_FPS,
+  min: 1,
+  max: 60,
+});
 
 const DEFAULT_STATE: AppState = {
   version: CURRENT_APP_STATE_VERSION,
-  dirty: false,
   transforms: [],
   baseImage: undefined,
-  fps: 20,
+  fps: DEFAULT_FPS,
 };
 
 export const App: React.FC = () => {
   const [state, setStateRaw] = React.useState(DEFAULT_STATE);
+  const [doCompute, setDoCompute] = React.useState(false);
+  const [computeTimer, setComputeTimer] = React.useState<null | NodeJS.Timeout>(
+    null
+  );
 
   React.useEffect(() => {
     // If we have local storage state on startup, then reload that
     const stored = localStorage.getStoredAppState();
     if (stored) {
       if (stored.version === CURRENT_APP_STATE_VERSION) {
-        setStateRaw({ ...stored, dirty: true });
+        setStateRaw(stored);
+        setDoCompute(true);
       } else {
         // TODO Might be nice to
         localStorage.clearAppState();
@@ -50,24 +67,86 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const setState = (newState: AppState, dirty = true) => {
-    const withDirtySet: AppState = {
-      ...newState,
-      dirty,
-    };
-    localStorage.saveAppState(withDirtySet);
-    setStateRaw(withDirtySet);
+  const setState = React.useCallback(
+    (
+      fn: (oldState: AppState) => AppState,
+      { compute }: { compute: 'no' | 'now' | 'later' }
+    ) => {
+      setStateRaw((oldState) => {
+        const newState = fn(oldState);
+        localStorage.saveAppState(newState);
 
-    if (DEBUG) {
-      (window as any).STATE = withDirtySet;
+        if (DEBUG) {
+          (window as any).STATE = newState;
+        }
+
+        if (compute !== 'no') {
+          // Compute the gif some time from now.
+          // Other changes within this time should push the compute time back
+          if (computeTimer) {
+            clearTimeout(computeTimer);
+            setComputeTimer(null);
+          }
+
+          if (compute === 'now') {
+            setDoCompute(true);
+          } else {
+            setDoCompute(false);
+            setComputeTimer(
+              setTimeout(() => {
+                setComputeTimer(null);
+                setDoCompute(true);
+              }, COMPUTE_DEBOUNCE_MILLIS)
+            );
+          }
+        }
+
+        return newState;
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  React.useEffect(() => {
+    if (!doCompute) {
+      return;
     }
-  };
 
-  const computeBtnDisbled =
-    !state.baseImage ||
-    state.transforms.length === 0 ||
-    !state.dirty ||
-    state.transforms.length === 0;
+    setDoCompute(false);
+    (async () => {
+      setState(
+        (prevState) => ({
+          ...prevState,
+          transforms: prevState.transforms.map(
+            (t): AppStateTransforms => ({
+              ...t,
+              state: { status: 'computing' },
+            })
+          ),
+        }),
+        { compute: 'no' }
+      );
+      // TODO error handling
+      await computeGifs(state, (image, computeIdx) => {
+        setState(
+          (prevState) => ({
+            ...prevState,
+            transforms: replaceIndex(
+              prevState.transforms,
+              computeIdx,
+              (t): AppStateTransforms => ({
+                ...t,
+                state: { status: 'done', image },
+              })
+            ),
+          }),
+          { compute: 'no' }
+        );
+      });
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [doCompute]);
 
   return (
     <>
@@ -90,12 +169,28 @@ export const App: React.FC = () => {
                   name="Choose a source image"
                   currentImageUrl={state.baseImage}
                   onChange={(baseImage) => {
-                    setState({
-                      ...state,
-                      baseImage,
-                    });
+                    setState(
+                      (prevState) => ({
+                        ...prevState,
+                        baseImage,
+                      }),
+                      { compute: 'now' }
+                    );
                   }}
                 />
+                <div style={{ maxWidth: '300px' }}>
+                  {fpsParam.fn({
+                    value: state.fps,
+                    onChange: (fps) =>
+                      setState(
+                        (prevState) => ({
+                          ...prevState,
+                          fps,
+                        }),
+                        { compute: 'later' }
+                      ),
+                  })}
+                </div>
               </Stack>
             </Paper>
             <Paper style={{ padding: 16 }}>
@@ -103,39 +198,21 @@ export const App: React.FC = () => {
                 currentTransforms={state.transforms}
                 possibleTransforms={POSSIBLE_TRANSFORMS}
                 onTransformsChange={(transforms) =>
-                  setState({
-                    ...state,
-                    transforms,
-                  })
-                }
-              />
-            </Paper>
-            <Paper style={{ padding: 16 }}>
-              <ComputeBox
-                computeDisabled={computeBtnDisbled}
-                appState={state}
-                onFpsChange={(fps) =>
-                  setState({
-                    ...state,
-                    fps,
-                  })
-                }
-                onComputed={(results) =>
                   setState(
-                    {
-                      ...state,
-                      transforms: state.transforms.map((t, idx) => ({
-                        ...t,
-                        computedImage: results[idx],
-                      })),
-                    },
-                    false
+                    (prevState) => ({
+                      ...prevState,
+                      transforms,
+                    }),
+                    { compute: 'now' }
                   )
                 }
               />
             </Paper>
             <Paper style={{ padding: 16 }}>
-              <ImportExport state={state} onImport={setState} />
+              <ImportExport
+                state={state}
+                onImport={(o) => setState(() => o, { compute: 'now' })}
+              />
             </Paper>
             <Paper style={{ padding: 16 }}>
               <Stack spacing={3}>

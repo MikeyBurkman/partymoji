@@ -1,6 +1,13 @@
-import { Button, Icon, Stack, Typography } from '@material-ui/core';
+import {
+  Button,
+  CircularProgress,
+  Icon,
+  Stack,
+  Typography,
+} from '@material-ui/core';
 import React from 'react';
 import { ParamFunction, Transform, AppStateTransforms } from '../domain/types';
+import { replaceIndex } from '../domain/utils';
 import { transformByName } from '../transforms';
 import { ImageTransform } from './ImageTransform';
 
@@ -12,7 +19,7 @@ interface TransformListProps {
 
 const transformKey = (t: AppStateTransforms, idx: number): string =>
   `${t.transformName}-${idx}-${
-    t.computedImage ? t.computedImage.gif.substring(0, 10) : 'computing'
+    t.state.status === 'done' ? t.state.image.gif.substring(0, 10) : 'pending'
   }`;
 
 export const ImageTransformList: React.FC<TransformListProps> = ({
@@ -74,34 +81,28 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
           }
           onSelect={(selected) =>
             onTransformsChange(
-              currentTransforms.map((nextT, nextTIdx) => {
-                if (tIdx === nextTIdx) {
-                  // This is the one we just changed
-                  return {
-                    transformName: selected.transform.name,
-                    paramsValues: selected.paramValues,
-                    computedImage: undefined,
-                  };
-                }
-                // Reset all the images if we changed anything
-                return {
-                  transformName: nextT.transformName,
-                  paramsValues: nextT.paramsValues,
-                  computedImage: undefined,
-                };
-              })
+              replaceIndex(
+                currentTransforms,
+                tIdx,
+                (t): AppStateTransforms => ({
+                  ...t,
+                  transformName: selected.transform.name,
+                  paramsValues: selected.paramValues,
+                })
+              )
             )
           }
         />
-        {t.computedImage && (
+        {t.state.status === 'done' && (
           <Stack sx={{ width: 200 }}>
             <img
-              src={t.computedImage.gif}
+              src={t.state.image.gif}
               alt={`gif-${t.transformName}-${tIdx}`}
               style={{ maxWidth: '300px', maxHeight: 'auto' }}
             ></img>
           </Stack>
         )}
+        {t.state.status === 'computing' && <CircularProgress size={100} />}
       </Stack>
     ))}
     <Button
@@ -117,7 +118,7 @@ export const ImageTransformList: React.FC<TransformListProps> = ({
             paramsValues: possibleTransforms[0].params.map(
               (p: ParamFunction<any>) => p.defaultValue
             ),
-            computedImage: undefined,
+            state: { status: 'init' },
           },
         ])
       }
