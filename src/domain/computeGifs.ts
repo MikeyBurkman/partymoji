@@ -1,46 +1,57 @@
+import { debugLog } from '../debug';
 import { readImage, runEffects } from './run';
 import { runEffectsAsync } from './runAsync';
-import { AppState, ImageEffectResult, EffectInput } from './types';
+import { AppState, Image, ImageEffectResult } from './types';
 import { assert } from './utils';
 
 const ENV = (window as any).ENV as 'DEV' | 'PROD';
 
-export const computeGifs = async (
-  appState: AppState,
-  onCompute: (image: ImageEffectResult, idx: number) => void
-): Promise<void> => {
-  const effectInputs = appState.effects.map(
-    (t): EffectInput => ({
-      effectName: t.effectName,
-      params: t.paramsValues,
-    })
-  );
+export const computeGifs = async ({
+  state,
+  startEffectIndex,
+  onCompute,
+}: {
+  state: AppState;
+  startEffectIndex: number;
+  onCompute: (image: ImageEffectResult, idx: number) => void;
+}): Promise<void> => {
+  assert(state.baseImage, 'No source image, this button should be disabled!');
 
-  assert(
-    appState.baseImage,
-    'No source image, this button should be disabled!'
-  );
-
-  let image = await readImage(appState.baseImage);
+  let image: Image;
+  if (startEffectIndex === 0) {
+    image = await readImage(state.baseImage);
+  } else {
+    const prevEffectState = state.effects[startEffectIndex - 1].state;
+    assert(
+      prevEffectState.status === 'done',
+      'We should not be starting with this effect if the previous is not done computing'
+    );
+    image = prevEffectState.image.image;
+  }
 
   // Can't get web workers working with the dev build, so just use the synchrounous version
   //  if not a prod build.
   const run = ENV === 'DEV' ? runEffects : runEffectsAsync;
-  for (let i = 0; i < effectInputs.length; i += 1) {
+  for (let i = startEffectIndex; i < state.effects.length; i += 1) {
     const start = Date.now();
 
+    const effect = state.effects[i];
+
     const result = await run({
-      randomSeed: appState.baseImage,
+      randomSeed: state.baseImage,
       image,
-      effectInput: effectInputs[i],
-      fps: appState.fps,
+      effectInput: {
+        effectName: effect.effectName,
+        params: effect.paramsValues,
+      },
+      fps: state.fps,
     });
 
     // Google analytics
     ga('send', {
       hitType: 'timing',
       timingCategory: 'computeStep',
-      timingVar: effectInputs[i].effectName,
+      timingVar: effect.effectName,
       timingValue: Math.ceil((Date.now() - start) / 1000),
     });
 
@@ -48,4 +59,55 @@ export const computeGifs = async (
 
     onCompute(result, i);
   }
+};
+
+export const getEffectsDiff = ({
+  currState,
+  prevState,
+}: {
+  currState: AppState;
+  prevState: AppState;
+}): { diff: true; index: number } | { diff: false } => {
+  if (
+    currState.fps !== prevState.fps ||
+    currState.baseImage !== prevState.baseImage
+  ) {
+    return { diff: true, index: 0 };
+  }
+
+  const currEffects = currState.effects;
+  const prevEffects = prevState.effects;
+
+  // Find the first newEffect that is different from prevEffects
+  for (let i = 0; i < currEffects.length; i += 1) {
+    const currE = currEffects[i];
+    const prevE = prevEffects[i];
+    if (!prevE) {
+      debugLog('No prevE, index ', i);
+      return { diff: true, index: i };
+    }
+
+    if (prevE.state.status !== 'done') {
+      debugLog('PrevE not done ', i);
+      return { diff: true, index: i };
+    }
+
+    if (currE.effectName !== prevE.effectName) {
+      debugLog('Different effect name ', i);
+      return { diff: true, index: i };
+    }
+
+    // Compare the param values
+    for (let ei = 0; ei < currE.paramsValues.length; ei += 1) {
+      const currEParam = currE.paramsValues[ei];
+      const prevEP = prevE.paramsValues[ei];
+      if (JSON.stringify(currEParam) !== JSON.stringify(prevEP)) {
+        debugLog('Param different', i, ei);
+        return { diff: true, index: i };
+      }
+    }
+  }
+
+  debugLog('No diff');
+  return { diff: false };
 };

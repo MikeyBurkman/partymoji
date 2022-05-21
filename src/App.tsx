@@ -14,15 +14,13 @@ import { Help } from './components/Help';
 import { ImagePicker } from './components/ImagePicker';
 import { ImageEffectList } from './components/ImageEffectList';
 import { ImportExport } from './components/ImportExport';
-import { computeGifs } from './domain/computeGifs';
+import { computeGifs, getEffectsDiff } from './domain/computeGifs';
 import { AppState, AppStateEffect } from './domain/types';
 import { replaceIndex } from './domain/utils';
 import * as localStorage from './localStorage';
 import { sliderParam } from './params/sliderParam';
 import { POSSIBLE_EFFECTS } from './effects';
-
-// Set to true to expose the current state as window.STATE.
-const DEBUG = false;
+import { debugLog, isDebug } from './debug';
 
 // Number of millis to wait after a change before recomputing the gif
 const COMPUTE_DEBOUNCE_MILLIS = 1000;
@@ -48,7 +46,9 @@ const DEFAULT_STATE: AppState = {
 
 export const App: React.FC = () => {
   const [state, setStateRaw] = React.useState(DEFAULT_STATE);
-  const [doCompute, setDoCompute] = React.useState(false);
+  const [doCompute, setDoCompute] = React.useState<
+    { compute: true; startIndex: number } | { compute: false }
+  >({ compute: false });
   const [computeTimer, setComputeTimer] = React.useState<null | NodeJS.Timeout>(
     null
   );
@@ -59,7 +59,7 @@ export const App: React.FC = () => {
     if (stored) {
       if (stored.version === CURRENT_APP_STATE_VERSION) {
         setStateRaw(stored);
-        setDoCompute(true);
+        setDoCompute({ compute: true, startIndex: 0 });
       } else {
         // TODO Might be nice to tell the user we erased their previous stuff
         localStorage.clearAppState();
@@ -76,7 +76,7 @@ export const App: React.FC = () => {
         const newState = fn(oldState);
         localStorage.saveAppState(newState);
 
-        if (DEBUG) {
+        if (isDebug()) {
           (window as any).STATE = newState;
         }
 
@@ -88,16 +88,26 @@ export const App: React.FC = () => {
             setComputeTimer(null);
           }
 
-          if (compute === 'now') {
-            setDoCompute(true);
-          } else {
-            setDoCompute(false);
-            setComputeTimer(
-              setTimeout(() => {
-                setComputeTimer(null);
-                setDoCompute(true);
-              }, COMPUTE_DEBOUNCE_MILLIS)
-            );
+          const effectsDiff = getEffectsDiff({
+            prevState: oldState,
+            currState: newState,
+          });
+
+          if (effectsDiff.diff) {
+            if (compute === 'now') {
+              setDoCompute({ compute: true, startIndex: effectsDiff.index });
+            } else {
+              setDoCompute({ compute: false });
+              setComputeTimer(
+                setTimeout(() => {
+                  setComputeTimer(null);
+                  setDoCompute({
+                    compute: true,
+                    startIndex: effectsDiff.index,
+                  });
+                }, COMPUTE_DEBOUNCE_MILLIS)
+              );
+            }
           }
         }
 
@@ -109,42 +119,51 @@ export const App: React.FC = () => {
   );
 
   React.useEffect(() => {
-    if (!doCompute) {
+    debugLog('UseEffect, doCompute', doCompute);
+    if (doCompute.compute === false) {
       return;
     }
 
     // TODO What happens if new changes come in while we're already computing?
     // Need to throw away previous results and calculate new ones.
-    setDoCompute(false);
+    setDoCompute({ compute: false });
     (async () => {
       setState(
         (prevState) => ({
           ...prevState,
-          effects: prevState.effects.map(
-            (t): AppStateEffect => ({
-              ...t,
-              state: { status: 'computing' },
-            })
-          ),
+          effects: prevState.effects.map((t, i): AppStateEffect => {
+            if (i < doCompute.startIndex) {
+              return t;
+            } else {
+              return {
+                ...t,
+                state: { status: 'computing' },
+              };
+            }
+          }),
         }),
         { compute: 'no' }
       );
       // TODO error handling
-      await computeGifs(state, (image, computeIdx) => {
-        setState(
-          (prevState) => ({
-            ...prevState,
-            effects: replaceIndex(
-              prevState.effects,
-              computeIdx,
-              (t): AppStateEffect => ({
-                ...t,
-                state: { status: 'done', image },
-              })
-            ),
-          }),
-          { compute: 'no' }
-        );
+      await computeGifs({
+        state,
+        onCompute: (image, computeIdx) => {
+          setState(
+            (prevState) => ({
+              ...prevState,
+              effects: replaceIndex(
+                prevState.effects,
+                computeIdx,
+                (t): AppStateEffect => ({
+                  ...t,
+                  state: { status: 'done', image },
+                })
+              ),
+            }),
+            { compute: 'no' }
+          );
+        },
+        startEffectIndex: doCompute.startIndex,
       });
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
