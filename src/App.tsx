@@ -80,7 +80,7 @@ export const App: React.FC = () => {
           (window as any).STATE = newState;
         }
 
-        if (compute !== 'no') {
+        if (compute !== 'no' && newState.baseImage != null) {
           // Compute the gif some time from now.
           // Other changes within this time should push the compute time back
           if (computeTimer) {
