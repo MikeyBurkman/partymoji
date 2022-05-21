@@ -17,12 +17,12 @@ export const ImportExport: React.FC<ImportExportProps> = ({
 
   const showInfo = (text: string) => {
     setInfo(text);
-    setTimeout(() => setInfo(undefined), 2000);
+    setTimeout(() => setInfo(undefined), 3000);
   };
 
   const showError = () => {
     setInvalid(true);
-    setTimeout(() => setInvalid(false), 2000);
+    setTimeout(() => setInvalid(false), 3000);
   };
 
   return (
@@ -38,8 +38,7 @@ export const ImportExport: React.FC<ImportExportProps> = ({
           showInfo('Copied to clipboard');
         }}
       >
-        Export to clipboard <br />
-        (With Source Image)
+        Export to clipboard
       </Button>
 
       <Button

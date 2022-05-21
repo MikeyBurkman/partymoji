@@ -159,11 +159,9 @@ export const App: React.FC = () => {
             Partymoji
           </Typography>
           <Stack spacing={4} divider={<Divider />}>
-            {DEBUG && (
-              <Paper style={{ padding: 16 }}>
-                <Help />
-              </Paper>
-            )}
+            <Paper style={{ padding: 16 }}>
+              <Help />
+            </Paper>
             <Paper style={{ padding: 16 }}>
               <Stack spacing={1}>
                 <Typography variant="h5">Source Image</Typography>
@@ -227,6 +225,7 @@ export const App: React.FC = () => {
                   startIcon={<Icon>clear</Icon>}
                   sx={{ maxWidth: '300px' }}
                   variant="contained"
+                  color="warning"
                   onClick={() => {
                     localStorage.clearAppState();
                     setStateRaw(DEFAULT_STATE);

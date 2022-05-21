@@ -8,7 +8,10 @@ const HELP = [
     data: [
       {
         header: 'Start by importing an image from your device',
-        data: ['You may choose a png, jpg, or gif'],
+        data: [
+          'You may choose a png, jpg, or gif',
+          'The frames per second controls how fast the final gif will animate',
+        ],
       },
     ],
   },
@@ -43,11 +46,21 @@ const HELP = [
     ],
   },
   {
-    header: 'Build the final gif(s)',
+    header: 'Creating Gifs',
     data: [
       {
-        header: 'Set the frames per second (FPS)',
-        data: ['The FPS determines how fast the animation will be'],
+        header: 'Gifs will compute automatically',
+        data: [
+          'Whenever you add or change an effect, it will compute a new gif next to that effect',
+          'The gif next to each effect shows what the results of that effect on the previous gif were',
+        ],
+      },
+      {
+        header: 'Exporting a GIF',
+        data: [
+          'To export a gif, just right click on the gif next to an effect, and click "Save Image As..."',
+          'Importing/exporting further down on the page is used if you want to share your Partymoji steps with someone else!',
+        ],
       },
     ],
   },
