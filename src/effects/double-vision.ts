@@ -4,7 +4,7 @@ import { floatParam } from '../params/floatParam';
 
 export const doubleVision = buildEffect({
   name: 'Double Vision',
-  description: 'See the image in double',
+  description: 'See double',
   params: [
     floatParam({ name: 'Amplitude', defaultValue: 10, min: 0 }),
   ] as const,

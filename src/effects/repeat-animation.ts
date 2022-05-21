@@ -5,6 +5,7 @@ import { sliderParam } from '../params/sliderParam';
 export const repeatAnimation = buildEffect({
   name: 'Repeat Animation',
   description: 'Repeats the current animation some number of times',
+  secondaryDescription: 'This can greatly increase the final file size!',
   params: [
     sliderParam({
       name: 'Number of Repeats',

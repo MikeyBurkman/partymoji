@@ -23,7 +23,7 @@ const DEFAULT_COLORS = [
 
 export const radiance = buildEffect({
   name: 'Radiance',
-  description: 'Radiate colors out in rings',
+  description: 'Radiate colors of your choosing out in rings',
   params: [
     sliderParam({
       name: 'Group Count',

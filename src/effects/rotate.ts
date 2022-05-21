@@ -4,7 +4,7 @@ import { radioParam } from '../params/radioParam';
 
 export const rotate = buildEffect({
   name: 'Rotate',
-  description: 'Make the image rotate about the center point',
+  description: 'Make the image rotate about the center point in an animation',
   params: [
     radioParam<'clockwise' | 'counter'>({
       name: 'Direction',

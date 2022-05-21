@@ -5,7 +5,7 @@ import { sliderParam } from '../params/sliderParam';
 
 export const staticc = buildEffect({
   name: 'Static',
-  description: 'Adds random static to the image',
+  description: 'Adds random static to each frame the image',
   params: [
     radioParam<'background' | 'foreground'>({
       name: 'Type',

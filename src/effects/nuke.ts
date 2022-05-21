@@ -7,7 +7,7 @@ export const nuke = buildEffect({
   description: 'Oh no...',
   params: [],
   fn: mapImage(({ coord, getSrcPixel, animationProgress }) => {
-    const threshold = animationProgress * 255;
+    const threshold = animationProgress * 200;
     const [r, g, b, a] = getSrcPixel(coord);
     const [h, s, l] = convert.rgb.hsl(r, g, b);
     const [newR, newG, newB] = convert.hsl.rgb([h, s, l > threshold ? l : 0]);

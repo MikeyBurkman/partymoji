@@ -22,7 +22,8 @@ const DEFAULT_COLORS = [
 
 export const colorsBackground = buildEffect({
   name: 'Colors Background',
-  description: 'Transparent pixels will flash different colors',
+  description:
+    'Transparent pixels will flash different colors of your choosing',
   params: [
     variableLengthParam({
       name: 'Colors',

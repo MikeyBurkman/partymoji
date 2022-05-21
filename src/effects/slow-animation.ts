@@ -6,6 +6,7 @@ import { radioParam } from '../params/radioParam';
 export const slowAnimation = buildEffect({
   name: 'Slow Animation',
   description: 'Attempts to slow the animation by adding intermediate frames',
+  secondaryDescription: 'This will make the final filze size larger',
   params: [
     radioParam<'basic' | 'smooth'>({
       name: 'Interpolation Type',

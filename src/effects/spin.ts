@@ -1,6 +1,7 @@
 import { buildEffect } from '../domain/types';
 import { mapImage } from '../domain/utils';
 
+// TODO
 export const spin = buildEffect({
   disabled: true,
   name: 'Spin',

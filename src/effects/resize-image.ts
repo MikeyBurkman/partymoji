@@ -4,8 +4,8 @@ import { intParam } from '../params/intParam';
 
 export const resizeImage = buildEffect({
   name: 'Resize Image',
-  description:
-    'Change the dimensions of the image. ' +
+  description: 'Change the dimensions of the image without scaling',
+  secondaryDescription:
     'If bigger than original, the extra space will be transparent. ' +
     'If smaller, the image will be cropped. ',
   params: [

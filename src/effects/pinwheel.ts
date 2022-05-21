@@ -23,7 +23,7 @@ const DEFAULT_COLORS = [
 
 export const pinwheel = buildEffect({
   name: 'Pinwheel',
-  description: 'Create a pinwheel of colors',
+  description: 'Create a pinwheel of colors of your choosing',
   params: [
     sliderParam({
       name: 'Group Count',

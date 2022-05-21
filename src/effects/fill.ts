@@ -2,6 +2,7 @@ import { buildEffect, Coord, Image } from '../domain/types';
 import { mapImage, setPixel, TRANSPARENT_COLOR } from '../domain/utils';
 import { sliderParam } from '../params/sliderParam';
 
+// TODO
 export const fill = buildEffect({
   disabled: true,
   name: 'Fill Transparent',

@@ -5,7 +5,7 @@ import { sliderParam } from '../params/sliderParam';
 
 export const hueChange = buildEffect({
   name: 'Hue Change',
-  description: 'Change the hue of the image to some other color',
+  description: 'Change the hue of each pixel towards some other color',
   params: [
     huePickerParam({
       name: 'Hue',

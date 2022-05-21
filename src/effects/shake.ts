@@ -4,7 +4,7 @@ import { floatParam } from '../params/floatParam';
 
 export const shake = buildEffect({
   name: 'Shake',
-  description: 'Make the image shake back and forth',
+  description: 'Make the image shake left and right',
   params: [
     floatParam({ name: 'Amplitude', defaultValue: 10, min: 0 }),
   ] as const,

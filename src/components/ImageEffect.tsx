@@ -25,7 +25,7 @@ interface SelectedEffect {
 
 interface ImageEffectProps {
   selectedEffect: SelectedEffect;
-  possibleEffect: Effect<any>[];
+  possibleEffects: Effect<any>[];
   index: number;
   onSelect: (selected: SelectedEffect) => void;
   onRemove: () => void;
@@ -35,13 +35,18 @@ interface ImageEffectProps {
 
 export const ImageEffect: React.FC<ImageEffectProps> = ({
   selectedEffect,
-  possibleEffect,
+  possibleEffects,
   index,
   onSelect,
   onRemove,
   onMoveBefore,
   onMoveAfter,
 }) => {
+  const effectsByName = React.useMemo(
+    () => new Map(possibleEffects.map((effect) => [effect.name, effect])),
+    [possibleEffects]
+  );
+
   const [paramsOpen, setParamsOpen] = React.useState(false);
   const [currParams, setCurrParams] = React.useState([
     ...selectedEffect.paramValues,
@@ -94,9 +99,9 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
             <Autocomplete
               disableClearable
               value={selectedEffect.effect.name}
-              options={possibleEffect.map((t) => t.name)}
+              options={possibleEffects.map((t) => t.name)}
               onChange={(event, newEffectName) => {
-                const t = possibleEffect.find((t) => t.name === newEffectName)!;
+                const t = effectsByName.get(newEffectName)!;
                 // Reset all the params when you select a new effect
                 onSelect({
                   effect: t,
@@ -105,6 +110,16 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
                   ),
                 });
               }}
+              renderOption={(props, option) => (
+                <li {...props}>
+                  <Stack marginLeft={2} marginRight={2}>
+                    <Typography variant="body1">{option}</Typography>
+                    <Typography variant="caption" marginLeft={2}>
+                      {effectsByName.get(option)?.description}
+                    </Typography>
+                  </Stack>
+                </li>
+              )}
               renderInput={(params) => <TextField {...params} label="Effect" />}
             />
           </FormControl>
@@ -126,11 +141,17 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
           <DialogTitle>{selectedEffect.effect.name} Parameters</DialogTitle>
           <DialogContent>
             <Stack divider={<Divider />} spacing={2}>
-              {selectedEffect.effect.description && (
-                <Typography variant="caption">
-                  {selectedEffect.effect.description}
-                </Typography>
-              )}
+              <Typography variant="body2">
+                {selectedEffect.effect.description}
+                <div>
+                  {selectedEffect.effect.secondaryDescription && (
+                    <Typography variant="caption" marginLeft={2}>
+                      {selectedEffect.effect.secondaryDescription}
+                    </Typography>
+                  )}
+                </div>
+              </Typography>
+
               {selectedEffect.effect.params.map(
                 // Create elements for each of the parameters for the selectect effect.
                 // Each of these would get an onChange event so we know when the user has

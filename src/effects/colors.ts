@@ -1,11 +1,13 @@
 import { buildEffect } from '../domain/types';
 import {
+  adjustBrightness,
   fromHexColor,
   getAveragePixelValue,
   isTransparent,
   mapImageWithPrecompute,
 } from '../domain/utils';
 import { colorPickerParam } from '../params/colorPickerParam';
+import { sliderParam } from '../params/sliderParam';
 import { variableLengthParam } from '../params/variableLengthParam';
 
 const DEFAULT_COLORS = [
@@ -23,8 +25,16 @@ const DEFAULT_COLORS = [
 
 export const colors = buildEffect({
   name: 'Colors',
-  description: 'Make the image flash different colors',
+  description: 'Make the image flash different colors of your choosing',
+  secondaryDescription: 'Increase the brightness to increase the effect',
   params: [
+    sliderParam({
+      name: 'Brightness Increase',
+      defaultValue: 0,
+      min: 0,
+      max: 100,
+      step: 5,
+    }),
     variableLengthParam({
       name: 'Colors',
       newParamText: 'New Color',
@@ -37,17 +47,22 @@ export const colors = buildEffect({
     }),
   ] as const,
   fn: mapImageWithPrecompute(
-    ({ animationProgress, parameters: [colors] }) => ({
+    ({ animationProgress, parameters: [brightnessIncrease, colors] }) => ({
+      brightnessIncrease,
       chosenColor: colors[Math.floor(animationProgress * colors.length)],
     }),
-    ({ computed: { chosenColor }, coord, getSrcPixel }) => {
+    ({ computed: { brightnessIncrease, chosenColor }, coord, getSrcPixel }) => {
       const srcPixel = getSrcPixel(coord);
 
       if (isTransparent(srcPixel)) {
         return [0, 0, 0, 0];
       }
 
-      const gray = getAveragePixelValue(srcPixel);
+      const brightnessAdjusted =
+        brightnessIncrease > 0
+          ? adjustBrightness(srcPixel, brightnessIncrease)
+          : srcPixel;
+      const gray = getAveragePixelValue(brightnessAdjusted);
 
       return [
         (gray * chosenColor[0]) / 255,

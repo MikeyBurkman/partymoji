@@ -14,7 +14,9 @@ import { sliderParam } from '../params/sliderParam';
 
 export const adjustImage = buildEffect({
   name: 'Adjust Image',
-  description: 'Leave a parameter at 0 if you want to not change it',
+  description:
+    'Change the length of the animation, the dimensions, brightness, etc.',
+  secondaryDescription: 'Leave a parameter at 0 if you want to not change it',
   params: [
     sliderParam({
       name: 'Number of Frames',

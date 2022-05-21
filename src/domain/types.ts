@@ -82,9 +82,13 @@ export type EffectFn<Params> = (opts: EffectFnOpts<Params>) => Image;
 type ParamType<Type> = Type extends ParamFunction<infer X> ? X : never;
 
 export interface Effect<T extends readonly ParamFunction<any>[]> {
+  /** Name of the effect. Must be globally unique */
   name: string;
   params: T;
-  description?: string;
+  /** Description of the effect, will show up in the dropdown */
+  description: string;
+  /** Extra description to be shown in the parameters dialog menu */
+  secondaryDescription?: string;
   fn: EffectFn<{ [P in keyof T]: ParamType<T[P]> }>;
   disabled: boolean;
 }
@@ -102,13 +106,15 @@ export interface EffectInput {
 export const buildEffect = <T extends readonly ParamFunction<any>[]>(args: {
   name: string;
   params: T;
-  description?: string;
+  description: string;
+  secondaryDescription?: string;
   fn: EffectFn<{ [P in keyof T]: ParamType<T[P]> }>;
   disabled?: boolean;
 }): Effect<T> => ({
   name: args.name,
   params: args.params,
   description: args.description,
+  secondaryDescription: args.secondaryDescription,
   fn: args.fn,
   disabled: args.disabled ?? false,
 });

@@ -33,7 +33,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
       <Stack direction={'row'} key={effectKey(t, tIdx)} spacing={4}>
         <ImageEffect
           index={tIdx}
-          possibleEffect={possibleEffects}
+          possibleEffects={possibleEffects}
           selectedEffect={{
             effect: effectByName(t.effectName),
             paramValues: t.paramsValues,

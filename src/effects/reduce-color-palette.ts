@@ -16,7 +16,8 @@ import { sliderParam } from '../params/sliderParam';
 export const reduceColorPalette = buildEffect({
   name: 'Reduce Color Palette',
   description:
-    'Reduce the number of unique colors in the gif, to reduce the file size.' +
+    'Reduce the number of unique colors in the gif, to reduce the file size.',
+  secondaryDescription:
     'This can be a slow operation depending on the number of final colors',
   params: [
     sliderParam({
