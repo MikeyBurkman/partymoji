@@ -13,3 +13,7 @@ https://mikeyburkman.github.io/partymoji/
 1. `yarn` to install dependencies
 2. `yarn start` to run a local debug version at `http://localhost:3000/partymoji`
 3. `yarn test-prod` to run a prod build at `http://localhost:3000`
+
+### TODO
+
+1. Changing things while stuff is being computed can lead to undefined behavior

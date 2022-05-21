@@ -61,6 +61,7 @@ export const computeGifs = async ({
   }
 };
 
+/** Get the index of the first effect that differs from curr to prev state */
 export const getEffectsDiff = ({
   currState,
   prevState,
@@ -72,6 +73,7 @@ export const getEffectsDiff = ({
     currState.fps !== prevState.fps ||
     currState.baseImage !== prevState.baseImage
   ) {
+    debugLog('FPS or base image is different');
     return { diff: true, index: 0 };
   }
 
