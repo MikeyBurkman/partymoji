@@ -11,5 +11,5 @@ https://mikeyburkman.github.io/partymoji/
 ### Develop it locally
 
 1. `yarn` to install dependencies
-2. `yarn start` to run a local debug version
-3. `yarn build` to create a new prod build ,and store in the `docs` folder, so it can be run through GH Pages.
+2. `yarn start` to run a local debug version at `http://localhost:3000/partymoji`
+3. `yarn test-prod` to run a prod build at `http://localhost:3000`
