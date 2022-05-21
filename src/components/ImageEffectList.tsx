@@ -106,7 +106,6 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
       </Stack>
     ))}
     <Button
-      fullWidth={false}
       variant="contained"
       startIcon={<Icon>add</Icon>}
       size="large"

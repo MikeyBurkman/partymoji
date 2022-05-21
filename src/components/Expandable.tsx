@@ -27,7 +27,7 @@ export const Expandable: React.FC<ExpandableProps> = ({
         >
           <Stack direction="row" spacing={4}>
             <div>{mainEle}</div>
-            <Icon>{collapsed ? 'expand_less' : 'expand_more'}</Icon>
+            <Icon>{collapsed ? 'add' : 'remove'}</Icon>
           </Stack>
         </Button>
         <Collapse in={!collapsed}>{children}</Collapse>

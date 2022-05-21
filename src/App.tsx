@@ -253,3 +253,5 @@ export const App: React.FC = () => {
     </>
   );
 };
+
+// Icons at https://fonts.google.com/icons?selected=Material+Icons
