@@ -12,14 +12,14 @@ import React from 'react';
 
 import { Help } from './components/Help';
 import { ImagePicker } from './components/ImagePicker';
-import { ImageTransformList } from './components/ImageTransformList';
+import { ImageEffectList } from './components/ImageEffectList';
 import { ImportExport } from './components/ImportExport';
 import { computeGifs } from './domain/computeGifs';
-import { AppState, AppStateTransforms } from './domain/types';
+import { AppState, AppStateEffect } from './domain/types';
 import { replaceIndex } from './domain/utils';
 import * as localStorage from './localStorage';
 import { sliderParam } from './params/sliderParam';
-import { POSSIBLE_TRANSFORMS } from './transforms';
+import { POSSIBLE_EFFECTS } from './effects';
 
 // Set to true to expose the current state as window.STATE.
 const DEBUG = false;
@@ -41,7 +41,7 @@ const fpsParam = sliderParam({
 
 const DEFAULT_STATE: AppState = {
   version: CURRENT_APP_STATE_VERSION,
-  transforms: [],
+  effects: [],
   baseImage: undefined,
   fps: DEFAULT_FPS,
 };
@@ -61,7 +61,7 @@ export const App: React.FC = () => {
         setStateRaw(stored);
         setDoCompute(true);
       } else {
-        // TODO Might be nice to
+        // TODO Might be nice to tell the user we erased their previous stuff
         localStorage.clearAppState();
       }
     }
@@ -113,13 +113,15 @@ export const App: React.FC = () => {
       return;
     }
 
+    // TODO What happens if new changes come in while we're already computing?
+    // Need to throw away previous results and calculate new ones.
     setDoCompute(false);
     (async () => {
       setState(
         (prevState) => ({
           ...prevState,
-          transforms: prevState.transforms.map(
-            (t): AppStateTransforms => ({
+          effects: prevState.effects.map(
+            (t): AppStateEffect => ({
               ...t,
               state: { status: 'computing' },
             })
@@ -132,10 +134,10 @@ export const App: React.FC = () => {
         setState(
           (prevState) => ({
             ...prevState,
-            transforms: replaceIndex(
-              prevState.transforms,
+            effects: replaceIndex(
+              prevState.effects,
               computeIdx,
-              (t): AppStateTransforms => ({
+              (t): AppStateEffect => ({
                 ...t,
                 state: { status: 'done', image },
               })
@@ -194,14 +196,14 @@ export const App: React.FC = () => {
               </Stack>
             </Paper>
             <Paper style={{ padding: 16 }}>
-              <ImageTransformList
-                currentTransforms={state.transforms}
-                possibleTransforms={POSSIBLE_TRANSFORMS}
-                onTransformsChange={(transforms) =>
+              <ImageEffectList
+                currentEffect={state.effects}
+                possibleEffects={POSSIBLE_EFFECTS}
+                onEffectsChange={(effects) =>
                   setState(
                     (prevState) => ({
                       ...prevState,
-                      transforms,
+                      effects,
                     }),
                     { compute: 'now' }
                   )
@@ -219,7 +221,7 @@ export const App: React.FC = () => {
                 <Typography variant="h5">Clear State</Typography>
                 <Typography variant="body1">
                   Clicking this button will clear the source image and all
-                  transforms
+                  effects
                 </Typography>
                 <Button
                   startIcon={<Icon>clear</Icon>}

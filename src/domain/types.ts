@@ -43,7 +43,7 @@ export interface Image {
 
 export type Random = seedrandom.prng;
 
-export interface TransformFnOpts<Params> {
+export interface EffectFnOpts<Params> {
   /**
    * The image we're trying to transform
    */
@@ -77,35 +77,35 @@ export type ParamFunction<T = any> = {
   fn: (params: Params<T>) => JSX.Element;
 };
 
-export type TransformFn<Params> = (opts: TransformFnOpts<Params>) => Image;
+export type EffectFn<Params> = (opts: EffectFnOpts<Params>) => Image;
 
 type ParamType<Type> = Type extends ParamFunction<infer X> ? X : never;
 
-export interface Transform<T extends readonly ParamFunction<any>[]> {
+export interface Effect<T extends readonly ParamFunction<any>[]> {
   name: string;
   params: T;
   description?: string;
-  fn: TransformFn<{ [P in keyof T]: ParamType<T[P]> }>;
+  fn: EffectFn<{ [P in keyof T]: ParamType<T[P]> }>;
   disabled: boolean;
 }
 
-export interface TransformWithParams<T extends readonly ParamFunction<any>[]> {
-  transformName: string;
+export interface EffectWithParams<T extends readonly ParamFunction<any>[]> {
+  effectName: string;
   paramsValues: T[];
 }
 
-export interface TransformInput {
-  transformName: string;
+export interface EffectInput {
+  effectName: string;
   params: any;
 }
 
-export const buildTransform = <T extends readonly ParamFunction<any>[]>(args: {
+export const buildEffect = <T extends readonly ParamFunction<any>[]>(args: {
   name: string;
   params: T;
   description?: string;
-  fn: TransformFn<{ [P in keyof T]: ParamType<T[P]> }>;
+  fn: EffectFn<{ [P in keyof T]: ParamType<T[P]> }>;
   disabled?: boolean;
-}): Transform<T> => ({
+}): Effect<T> => ({
   name: args.name,
   params: args.params,
   description: args.description,
@@ -113,28 +113,28 @@ export const buildTransform = <T extends readonly ParamFunction<any>[]>(args: {
   disabled: args.disabled ?? false,
 });
 
-export interface AppStateTransforms {
-  transformName: string;
+export interface AppStateEffect {
+  effectName: string;
   paramsValues: any[];
   state:
     | { status: 'init' }
     | { status: 'computing' }
-    | { status: 'done'; image: ImageTransformResult };
+    | { status: 'done'; image: ImageEffectResult };
 }
 
 export interface AppState {
   version: number;
   baseImage?: string;
-  transforms: AppStateTransforms[];
+  effects: AppStateEffect[];
   fps: number;
 }
 
-export interface ImageTransformResult {
+export interface ImageEffectResult {
   gif: string;
   image: Image;
 }
 
 export type AsyncRunMessage = {
   status: 'complete';
-  result: ImageTransformResult;
+  result: ImageEffectResult;
 };

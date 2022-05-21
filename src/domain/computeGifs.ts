@@ -1,17 +1,17 @@
-import { readImage, runTransforms } from './run';
-import { runTransformsAsync } from './runAsync';
-import { AppState, ImageTransformResult, TransformInput } from './types';
+import { readImage, runEffects } from './run';
+import { runEffectsAsync } from './runAsync';
+import { AppState, ImageEffectResult, EffectInput } from './types';
 import { assert } from './utils';
 
 const ENV = (window as any).ENV as 'DEV' | 'PROD';
 
 export const computeGifs = async (
   appState: AppState,
-  onCompute: (image: ImageTransformResult, idx: number) => void
+  onCompute: (image: ImageEffectResult, idx: number) => void
 ): Promise<void> => {
-  const transformInputs = appState.transforms.map(
-    (t): TransformInput => ({
-      transformName: t.transformName,
+  const effectInputs = appState.effects.map(
+    (t): EffectInput => ({
+      effectName: t.effectName,
       params: t.paramsValues,
     })
   );
@@ -25,14 +25,14 @@ export const computeGifs = async (
 
   // Can't get web workers working with the dev build, so just use the synchrounous version
   //  if not a prod build.
-  const run = ENV === 'DEV' ? runTransforms : runTransformsAsync;
-  for (let i = 0; i < transformInputs.length; i += 1) {
+  const run = ENV === 'DEV' ? runEffects : runEffectsAsync;
+  for (let i = 0; i < effectInputs.length; i += 1) {
     const start = Date.now();
 
     const result = await run({
       randomSeed: appState.baseImage,
       image,
-      transformInput: transformInputs[i],
+      effectInput: effectInputs[i],
       fps: appState.fps,
     });
 
@@ -40,7 +40,7 @@ export const computeGifs = async (
     ga('send', {
       hitType: 'timing',
       timingCategory: 'computeStep',
-      timingVar: transformInputs[i].transformName,
+      timingVar: effectInputs[i].effectName,
       timingValue: Math.ceil((Date.now() - start) / 1000),
     });
 

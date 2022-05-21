@@ -3,13 +3,13 @@ import getPixels from 'get-pixels';
 // @ts-ignore
 import gifEncoder from 'gif-encoder';
 import seedrandom from 'seedrandom';
-import { transformByName } from '../transforms';
+import { effectByName } from '../effects';
 import {
   Color,
   Image,
   ImageData,
-  ImageTransformResult,
-  TransformInput,
+  ImageEffectResult,
+  EffectInput,
 } from './types';
 import {
   fromHexColor,
@@ -22,23 +22,23 @@ import {
 export interface RunArgs {
   randomSeed: string;
   image: Image;
-  transformInput: TransformInput;
+  effectInput: EffectInput;
   fps: number;
 }
 
-// Returns a list of gif data URLs, for each transform
-export const runTransforms = async ({
+// Returns a list of gif data URLs, for each effect
+export const runEffects = async ({
   image,
-  transformInput,
+  effectInput,
   randomSeed,
   fps,
-}: RunArgs): Promise<ImageTransformResult> => {
+}: RunArgs): Promise<ImageEffectResult> => {
   const random = seedrandom(randomSeed);
 
-  const transform = transformByName(transformInput.transformName);
-  const result = transform.fn({
+  const effect = effectByName(effectInput.effectName);
+  const result = effect.fn({
     image,
-    parameters: transformInput.params,
+    parameters: effectInput.params,
     random,
   });
 

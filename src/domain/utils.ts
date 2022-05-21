@@ -9,8 +9,8 @@ import {
   Image,
   ImageData,
   Random,
-  TransformFn,
-  TransformFnOpts,
+  EffectFn,
+  EffectFnOpts,
 } from './types';
 
 /**
@@ -35,7 +35,7 @@ export const fromHexColor = (hex: string): Color => [
 export const isHexColor = (s: string) => /^#[0-9A-F]{6}$/.test(s);
 
 /**
- * Our transformation functions allow for an alpha channel, but gifs do not.
+ * Our effect functions allow for an alpha channel, but gifs do not.
  * All pixels are either fully solid or fully transparent.
  * This function returns true if the color's alpha is below a certain threshold.
  */
@@ -151,8 +151,8 @@ export const mapImage = <T>(
     animationProgress: number;
     getSrcPixel: (coord: Coord) => Color;
   }) => Color
-): TransformFn<T> => {
-  return ({ image, random, parameters }: TransformFnOpts<T>) =>
+): EffectFn<T> => {
+  return ({ image, random, parameters }: EffectFnOpts<T>) =>
     mapFrames(image, (imageData, frameIndex, frameCount) =>
       mapCoords(image.dimensions, (coord) =>
         cb({
@@ -201,8 +201,8 @@ export const mapImageWithPrecompute = <T, R>(
     animationProgress: number;
     getSrcPixel: (coord: Coord) => Color;
   }) => Color
-): TransformFn<T> => {
-  return ({ image, random, parameters }: TransformFnOpts<T>) =>
+): EffectFn<T> => {
+  return ({ image, random, parameters }: EffectFnOpts<T>) =>
     mapFrames(image, (imageData, frameIndex, frameCount) => {
       const animationProgress = frameIndex / frameCount;
       const computed = compute({

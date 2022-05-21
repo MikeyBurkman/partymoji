@@ -1,17 +1,17 @@
 import { RunArgs } from './run';
 // @ts-ignore
-import RunTransformWorker from './transform.worker';
-import { AsyncRunMessage, ImageTransformResult } from './types';
+import RunEffectWorker from './effect.worker';
+import { AsyncRunMessage, ImageEffectResult } from './types';
 
-export const runTransformsAsync = (args: RunArgs) =>
-  new Promise<ImageTransformResult>((resolve, reject) => {
-    const worker = new RunTransformWorker();
+export const runEffectsAsync = (args: RunArgs) =>
+  new Promise<ImageEffectResult>((resolve, reject) => {
+    const worker = new RunEffectWorker();
 
     worker.addEventListener('error', reject);
     worker.addEventListener('messageerror', reject);
 
     worker.onmessage = (message: { data: AsyncRunMessage }) => {
-      // See transform.worker.ts for what messages look like
+      // See effect.worker.ts for what messages look like
       const data = message.data;
       if (data.status === 'complete') {
         resolve(data.result);

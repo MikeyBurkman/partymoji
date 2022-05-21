@@ -1,4 +1,4 @@
-import { AppState, AppStateTransforms } from './domain/types';
+import { AppState, AppStateEffect } from './domain/types';
 
 const LOCAL_STORAGE_KEY = 'partymoji-state';
 
@@ -7,7 +7,7 @@ export const getStoredAppState = (): AppState | undefined => {
     const stored = window.localStorage.getItem(LOCAL_STORAGE_KEY);
     if (stored) {
       const savedState = JSON.parse(stored);
-      if (Array.isArray(savedState.transforms)) {
+      if (Array.isArray(savedState.effects)) {
         return savedState;
       }
     }
@@ -40,8 +40,8 @@ export const clearAppState = () => {
 const serializeAppState = (state: AppState): string => {
   const toStore: AppState = {
     ...state,
-    transforms: state.transforms.map(
-      (t): AppStateTransforms => ({
+    effects: state.effects.map(
+      (t): AppStateEffect => ({
         ...t,
         // Remove the computed image for the state before storing.
         // This just bloats the storage and doesn't keep anything that isn't reproduceable.
