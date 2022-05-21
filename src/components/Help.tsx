@@ -132,7 +132,7 @@ const SectionHeader: React.FC = ({ children }) => (
 );
 
 const SectionText: React.FC = ({ children }) => (
-  <Typography variant="caption" paddingLeft="1.0rem">
-    <Icon sx={{ fontSize: 8, marginRight: 2 }}>circle</Icon> {children}
+  <Typography variant="body2" paddingLeft="1.0rem">
+    <Icon sx={{ fontSize: 8, marginRight: 1 }}>circle</Icon> {children}
   </Typography>
 );
