@@ -172,17 +172,23 @@ export const App: React.FC = () => {
   return (
     <>
       <ScopedCssBaseline />
-      <Container maxWidth="md">
-        <Stack spacing={4} justifyContent="space-evenly" divider={<Divider />}>
+      <Container maxWidth="sm">
+        <Stack
+          spacing={4}
+          justifyContent="space-evenly"
+          alignItems="center"
+          width="sm"
+          divider={<Divider />}
+        >
           <Typography variant="h2" pt={4}>
             Partymoji
           </Typography>
-          <Stack spacing={4} divider={<Divider />}>
+          <Stack spacing={4} divider={<Divider />} alignItems="center">
             <Paper style={{ padding: 16 }}>
               <Help />
             </Paper>
             <Paper style={{ padding: 16 }}>
-              <Stack spacing={1}>
+              <Stack spacing={1} alignItems="center">
                 <Typography variant="h5">Source Image</Typography>
                 <ImagePicker
                   name="Choose a source image"

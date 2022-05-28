@@ -22,6 +22,7 @@ interface SelectedEffect {
 }
 
 interface ImageEffectProps {
+  open: boolean;
   selectedEffect: SelectedEffect;
   possibleEffects: Effect<any>[];
   onChangeEffect: (effect: SelectedEffect) => void;
@@ -29,6 +30,7 @@ interface ImageEffectProps {
 }
 
 export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
+  open,
   selectedEffect,
   possibleEffects,
   onChangeEffect,
@@ -50,7 +52,7 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
   };
 
   return (
-    <Dialog fullWidth maxWidth="sm" open>
+    <Dialog fullWidth maxWidth="sm" open={open}>
       <DialogTitle>
         <Stack direction="row" spacing={4} marginTop={2}>
           <FormControl fullWidth>

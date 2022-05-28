@@ -74,98 +74,98 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
       : undefined;
 
   return (
-    <Stack spacing={4}>
+    <Stack spacing={4} alignItems="center">
       <Typography variant="h5">Image Effects</Typography>
       {currentEffects.map((t, tIdx) => (
         <Stack direction="row" key={effectKey(t, tIdx)} spacing={4}>
-          <Stack>
-            <Typography
-              variant="subtitle1"
-              fontWeight="semiBold"
-              marginLeft={2}
-              marginBottom={1}
-            >
-              {t.effectName}
-            </Typography>
-            <Stack direction="row" spacing={2}>
-              <Tooltip title="Delete effect">
-                <IconButton aria-label="delete" onClick={onDelete(tIdx)}>
-                  <Icon>delete</Icon>
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Move effect earlier">
-                <IconButton
-                  aria-label="move-before"
-                  onClick={onMoveUp(tIdx)}
-                  disabled={tIdx === 0}
-                >
-                  <Icon>arrow_upward</Icon>
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Move effect later">
-                <IconButton
-                  aria-label="move-after"
-                  onClick={onMoveDown(tIdx)}
-                  disabled={tIdx === currentEffects.length - 1}
-                >
-                  <Icon>arrow_downward</Icon>
-                </IconButton>
-              </Tooltip>
-            </Stack>
-            <Paper style={{ padding: 8 }} elevation={3} sx={{ width: 300 }}>
-              <Stack spacing={1}>
-                <Button
-                  variant="contained"
-                  startIcon={<Icon>edit</Icon>}
-                  onClick={() =>
-                    setEffectDialogOpen({ open: true, idx: tIdx, isNew: false })
-                  }
-                >
-                  Edit Effect
-                </Button>
+          <Paper style={{ padding: 8 }} elevation={3} sx={{ width: 300 }}>
+            <Stack>
+              <Typography
+                variant="subtitle1"
+                fontWeight="bold"
+                marginLeft={2}
+                marginBottom={1}
+              >
+                {t.effectName}
+              </Typography>
+              <Stack direction="row" spacing={2}>
+                <Tooltip title="Remove effect">
+                  <IconButton aria-label="delete" onClick={onDelete(tIdx)}>
+                    <Icon>delete</Icon>
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Move effect earlier">
+                  <IconButton
+                    aria-label="move-before"
+                    onClick={onMoveUp(tIdx)}
+                    disabled={tIdx === 0}
+                  >
+                    <Icon>arrow_upward</Icon>
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Move effect later">
+                  <IconButton
+                    aria-label="move-after"
+                    onClick={onMoveDown(tIdx)}
+                    disabled={tIdx === currentEffects.length - 1}
+                  >
+                    <Icon>arrow_downward</Icon>
+                  </IconButton>
+                </Tooltip>
               </Stack>
-            </Paper>
-            {effectDialogOpen.open && effectDialogOpen.idx === tIdx && (
-              <ImageEffectDialog
-                possibleEffects={possibleEffects}
-                selectedEffect={{
-                  effect: effectByName(t.effectName),
-                  paramValues: t.paramsValues,
-                }}
-                onChangeEffect={(newEffect) => {
-                  onEffectsChange(
-                    replaceIndex(currentEffects, tIdx, () => ({
-                      effectName: newEffect.effect.name,
-                      paramsValues: newEffect.paramValues,
-                      state: { status: 'init' },
-                    }))
-                  );
-                  setEffectDialogOpen({ open: false });
-                }}
-                onCancel={() => {
-                  if (effectDialogOpen.isNew) {
-                    // They pressed cancel on a new effect, so just remove this one.
-                    // (It's assumed to be the last effect in the chain
-                    onEffectsChange(
-                      currentEffects.slice(0, currentEffects.length - 1)
-                    );
-                  }
-
-                  setEffectDialogOpen({ open: false });
-                }}
-              />
-            )}
-          </Stack>
-          {t.state.status === 'done' && (
-            <Stack sx={{ width: 200 }}>
-              <img
-                src={t.state.image.gif}
-                alt={`gif-${t.effectName}-${tIdx}`}
-                style={{ maxWidth: '300px', maxHeight: 'auto' }}
-              ></img>
             </Stack>
-          )}
-          {t.state.status === 'computing' && <CircularProgress size={100} />}
+            {t.state.status === 'done' && (
+              <Stack sx={{ width: 200 }}>
+                <img
+                  src={t.state.image.gif}
+                  alt={`gif-${t.effectName}-${tIdx}`}
+                  style={{ maxWidth: '300px', maxHeight: 'auto' }}
+                ></img>
+              </Stack>
+            )}
+            {t.state.status === 'computing' && <CircularProgress size={100} />}
+            <Stack spacing={1} marginTop={1}>
+              <Button
+                variant="contained"
+                startIcon={<Icon>edit</Icon>}
+                onClick={() =>
+                  setEffectDialogOpen({ open: true, idx: tIdx, isNew: false })
+                }
+              >
+                Edit Effect
+              </Button>
+            </Stack>
+            <ImageEffectDialog
+              open={effectDialogOpen.open && effectDialogOpen.idx === tIdx}
+              possibleEffects={possibleEffects}
+              selectedEffect={{
+                effect: effectByName(t.effectName),
+                paramValues: t.paramsValues,
+              }}
+              onChangeEffect={(newEffect) => {
+                onEffectsChange(
+                  replaceIndex(currentEffects, tIdx, () => ({
+                    effectName: newEffect.effect.name,
+                    paramsValues: newEffect.paramValues,
+                    state: { status: 'init' },
+                  }))
+                );
+                setEffectDialogOpen({ open: false });
+              }}
+              onCancel={() => {
+                // Assumed to be open at this point
+                if (effectDialogOpen.open && effectDialogOpen.isNew) {
+                  // They pressed cancel on a new effect, so just remove this one.
+                  // (It's assumed to be the last effect in the chain
+                  onEffectsChange(
+                    currentEffects.slice(0, currentEffects.length - 1)
+                  );
+                }
+
+                setEffectDialogOpen({ open: false });
+              }}
+            />
+          </Paper>
         </Stack>
       ))}
       <Button
@@ -190,7 +190,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
           });
         }}
       >
-        New Effect
+        Add New Effect
       </Button>
     </Stack>
   );

@@ -35,8 +35,8 @@ export const Help: React.FC = () => (
                 or number of animation frames.
               </SectionText>
               <SectionText>
-                thers may apply animated effects, such as making the image spin,
-                or cycle through colors.
+                Others may apply animated effects, such as making the image
+                spin, or cycle through colors.
               </SectionText>
             </Section>
           </Section>
@@ -122,7 +122,9 @@ export const Help: React.FC = () => (
 const Group: React.FC = ({ children }) => <Stack spacing={2}>{children}</Stack>;
 
 const Section: React.FC = ({ children }) => (
-  <Stack spacing={1}>{children}</Stack>
+  <Stack width="sm" spacing={1}>
+    {children}
+  </Stack>
 );
 
 const SectionHeader: React.FC = ({ children }) => (

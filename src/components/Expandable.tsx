@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   ClickAwayListener,
   Collapse,
@@ -20,18 +19,20 @@ export const Expandable: React.FC<ExpandableProps> = ({
 
   return (
     <ClickAwayListener onClickAway={() => setCollapsed(true)}>
-      <Box>
+      <Stack>
         <Button
+          variant="text"
           onClick={() => setCollapsed(!collapsed)}
-          style={{ textTransform: 'none', color: 'black' }}
+          style={{ color: 'black' }}
+          size="small"
         >
-          <Stack direction="row" spacing={4}>
+          <Stack direction="row" alignItems="center" spacing={4}>
             <div>{mainEle}</div>
-            <Icon style={{ marginTop: 5 }}>{collapsed ? 'add' : 'remove'}</Icon>
+            <Icon>{collapsed ? 'add' : 'remove'}</Icon>
           </Stack>
         </Button>
         <Collapse in={!collapsed}>{children}</Collapse>
-      </Box>
+      </Stack>
     </ClickAwayListener>
   );
 };

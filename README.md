@@ -18,3 +18,4 @@ https://mikeyburkman.github.io/partymoji/
 
 1. Changing things while stuff is being computed can lead to undefined behavior
 2. Add a preview GIF to the effect dialog window
+3. Flickering when adding a new effect on prod

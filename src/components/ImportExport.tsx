@@ -28,6 +28,9 @@ export const ImportExport: React.FC<ImportExportProps> = ({
   return (
     <Stack spacing={3}>
       <Typography variant="h5">Import/Export</Typography>
+      <Typography variant="caption">
+        This is used to share image transformations with other Partymoji users
+      </Typography>
       <Button
         startIcon={<Icon>file_upload</Icon>}
         sx={{ maxWidth: '300px' }}
