@@ -17,3 +17,4 @@ https://mikeyburkman.github.io/partymoji/
 ### TODO
 
 1. Changing things while stuff is being computed can lead to undefined behavior
+2. Add a preview GIF to the effect dialog window

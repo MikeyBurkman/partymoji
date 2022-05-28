@@ -214,7 +214,7 @@ export const App: React.FC = () => {
             </Paper>
             <Paper style={{ padding: 16 }}>
               <ImageEffectList
-                currentEffect={state.effects}
+                currentEffects={state.effects}
                 possibleEffects={POSSIBLE_EFFECTS}
                 onEffectsChange={(effects) =>
                   setState(
