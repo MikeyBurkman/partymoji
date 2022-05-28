@@ -7,8 +7,6 @@ import {
   DialogTitle,
   Divider,
   FormControl,
-  Icon,
-  Paper,
   Stack,
   TextField,
   Typography,
