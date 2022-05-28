@@ -1,9 +1,9 @@
 import {
   Button,
   CircularProgress,
+  Divider,
   Icon,
   IconButton,
-  Paper,
   Stack,
   Tooltip,
   Typography,
@@ -76,9 +76,9 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
   return (
     <Stack spacing={4} alignItems="center">
       <Typography variant="h5">Image Effects</Typography>
-      {currentEffects.map((t, tIdx) => (
+      {currentEffects.flatMap((t, tIdx) => [
         <Stack direction="row" key={effectKey(t, tIdx)} spacing={4}>
-          <Paper style={{ padding: 8 }} elevation={3} sx={{ width: 300 }}>
+          <Stack>
             <Stack>
               <Typography
                 variant="subtitle1"
@@ -115,7 +115,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
               </Stack>
             </Stack>
             {t.state.status === 'done' && (
-              <Stack sx={{ width: 200 }}>
+              <Stack sx={{ width: 250 }}>
                 <img
                   src={t.state.image.gif}
                   alt={`gif-${t.effectName}-${tIdx}`}
@@ -165,9 +165,10 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
                 setEffectDialogOpen({ open: false });
               }}
             />
-          </Paper>
-        </Stack>
-      ))}
+          </Stack>
+        </Stack>,
+        <FxDivider />,
+      ])}
       <Button
         variant="contained"
         startIcon={<Icon>add</Icon>}
@@ -195,3 +196,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
     </Stack>
   );
 };
+
+const FxDivider: React.FC = () => (
+  <Divider variant="middle" sx={{ width: 300 }} />
+);

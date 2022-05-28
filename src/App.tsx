@@ -184,10 +184,10 @@ export const App: React.FC = () => {
             Partymoji
           </Typography>
           <Stack spacing={4} divider={<Divider />} alignItems="center">
-            <Paper style={{ padding: 16 }}>
+            <Section>
               <Help />
-            </Paper>
-            <Paper style={{ padding: 16 }}>
+            </Section>
+            <Section>
               <Stack spacing={1} alignItems="center">
                 <Typography variant="h5">Source Image</Typography>
                 <ImagePicker
@@ -217,8 +217,8 @@ export const App: React.FC = () => {
                   })}
                 </div>
               </Stack>
-            </Paper>
-            <Paper style={{ padding: 16 }}>
+            </Section>
+            <Section>
               <ImageEffectList
                 currentEffects={state.effects}
                 possibleEffects={POSSIBLE_EFFECTS}
@@ -232,14 +232,14 @@ export const App: React.FC = () => {
                   )
                 }
               />
-            </Paper>
-            <Paper style={{ padding: 16 }}>
+            </Section>
+            <Section>
               <ImportExport
                 state={state}
                 onImport={(o) => setState(() => o, { compute: 'now' })}
               />
-            </Paper>
-            <Paper style={{ padding: 16 }}>
+            </Section>
+            <Section>
               <Stack spacing={3}>
                 <Typography variant="h5">Clear State</Typography>
                 <Typography variant="body1">
@@ -259,7 +259,7 @@ export const App: React.FC = () => {
                   Clear State
                 </Button>
               </Stack>
-            </Paper>
+            </Section>
             <a
               href="https://github.com/MikeyBurkman/partymoji"
               target="_blank"
@@ -278,5 +278,11 @@ export const App: React.FC = () => {
     </>
   );
 };
+
+const Section: React.FC = ({ children }) => (
+  <Paper style={{ padding: 16 }} sx={{ width: 300 }}>
+    {children}
+  </Paper>
+);
 
 // Icons at https://fonts.google.com/icons?selected=Material+Icons
