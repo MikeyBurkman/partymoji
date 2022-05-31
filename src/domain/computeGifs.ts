@@ -1,10 +1,30 @@
 import { debugLog } from '../debug';
 import { readImage, runEffects } from './run';
 import { runEffectsAsync } from './runAsync';
-import { AppState, Image, ImageEffectResult } from './types';
+import { AppState, EffectInput, Image, ImageEffectResult } from './types';
 import { assert } from './utils';
 
 const ENV = (window as any).ENV as 'DEV' | 'PROD';
+
+// Can't get web workers working with the dev build, so just use the synchrounous version
+//  if not a prod build.
+const run = ENV === 'DEV' ? runEffects : runEffectsAsync;
+
+export const applyEffect = ({
+  state,
+  image,
+  effect,
+}: {
+  state: AppState;
+  image: Image;
+  effect: EffectInput;
+}) =>
+  run({
+    randomSeed: state.baseImage!,
+    image,
+    effectInput: effect,
+    fps: state.fps,
+  });
 
 export const computeGifs = async ({
   state,
@@ -29,22 +49,18 @@ export const computeGifs = async ({
     image = prevEffectState.image.image;
   }
 
-  // Can't get web workers working with the dev build, so just use the synchrounous version
-  //  if not a prod build.
-  const run = ENV === 'DEV' ? runEffects : runEffectsAsync;
   for (let i = startEffectIndex; i < state.effects.length; i += 1) {
     const start = Date.now();
 
     const effect = state.effects[i];
 
-    const result = await run({
-      randomSeed: state.baseImage,
+    const result = await applyEffect({
+      state,
       image,
-      effectInput: {
+      effect: {
         effectName: effect.effectName,
         params: effect.paramsValues,
       },
-      fps: state.fps,
     });
 
     // Google analytics

@@ -1,6 +1,7 @@
 import {
   Autocomplete,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -12,35 +13,46 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import { ParamFunction, Effect } from '../domain/types';
+import {
+  ParamFunction,
+  Effect,
+  AppStateEffect,
+  EffectInput,
+} from '../domain/types';
 import { replaceIndex } from '../domain/utils';
 import { effectByName } from '../effects';
-
-interface SelectedEffect {
-  effect: Effect<any>;
-  paramValues: any[];
-}
+import { Gif } from './Gif';
 
 interface ImageEffectProps {
   open: boolean;
-  selectedEffect: SelectedEffect;
+  currentImage: AppStateEffect;
+  selectedEffect: EffectInput;
   possibleEffects: Effect<any>[];
-  onChangeEffect: (effect: SelectedEffect) => void;
+  onChangeEffect: (effect: EffectInput) => void;
   onCancel: () => void;
+  applyEffect: (effect: EffectInput) => Promise<string | null>;
 }
 
 export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
   open,
+  currentImage,
   selectedEffect,
   possibleEffects,
   onChangeEffect,
   onCancel,
+  applyEffect,
 }) => {
-  const [editingEffect, setEditingEffect] = React.useState<SelectedEffect>({
-    effect: selectedEffect.effect, // Make a copy of the effect being passed in
-    paramValues: [...selectedEffect.paramValues],
+  const [image, setImage] = React.useState<
+    { computing: true } | { computing: false; gif: string }
+  >({ computing: true });
+  const [initialLoaded, setInitialLoaded] = React.useState(false);
+
+  const [editingEffect, setEditingEffect] = React.useState<EffectInput>({
+    effectName: selectedEffect.effectName, // Make a copy of the effect being passed in
+    params: [...selectedEffect.params],
   });
   const [dirty, setDirty] = React.useState(false);
+  const [needsNewPreview, setNeedsNewPreview] = React.useState(false);
   const closeDialog = ({ save }: { save: boolean }) => {
     if (!save) {
       onCancel();
@@ -49,7 +61,52 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
 
     onChangeEffect(editingEffect);
     setDirty(false);
+    setNeedsNewPreview(false);
   };
+
+  React.useEffect(() => {
+    if (currentImage.state.status !== 'done') {
+      // Can't compute any preview until the previous image has computed
+      return;
+    }
+
+    if (!initialLoaded) {
+      // The initial loading of the original effect
+      setImage({
+        computing: false,
+        gif: currentImage.state.image.gif,
+      });
+      setInitialLoaded(true);
+      return;
+    }
+
+    if (needsNewPreview && !image.computing) {
+      // The user changed the effect
+      setImage({
+        computing: true,
+      });
+      applyEffect(editingEffect).then((gif) => {
+        // Should only be null if the original effect hasn't compute yet...
+        if (gif) {
+          setNeedsNewPreview(false);
+          setImage({
+            computing: false,
+            gif,
+          });
+        }
+      });
+    }
+  }, [
+    image,
+    setImage,
+    currentImage,
+    editingEffect,
+    applyEffect,
+    initialLoaded,
+    needsNewPreview,
+  ]);
+
+  const effect = effectByName(editingEffect.effectName);
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open}>
@@ -58,16 +115,17 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
           <FormControl fullWidth>
             <Autocomplete
               disableClearable
-              value={editingEffect.effect.name}
+              value={editingEffect.effectName}
               options={possibleEffects.map((t) => t.name)}
               onChange={(event, newEffectName) => {
                 const t = effectByName(newEffectName)!;
                 // Reset all the params when you select a new effect
                 setEditingEffect({
-                  effect: t,
-                  paramValues: t.params.map((p) => p.defaultValue),
+                  effectName: t.name,
+                  params: t.params.map((p) => p.defaultValue),
                 });
                 setDirty(true);
+                setNeedsNewPreview(true);
               }}
               renderOption={(props, option) => (
                 <li {...props}>
@@ -87,44 +145,48 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
       <DialogContent>
         <Stack divider={<Divider />} spacing={2}>
           <Typography variant="body2">
-            {editingEffect.effect.description}
+            {effect.description}
             <div>
-              {editingEffect.effect.secondaryDescription && (
+              {effect.secondaryDescription && (
                 <Typography variant="caption" marginLeft={2}>
-                  {editingEffect.effect.secondaryDescription}
+                  {effect.secondaryDescription}
                 </Typography>
               )}
             </div>
           </Typography>
 
-          {editingEffect.effect.params.map(
+          {effect.params.map(
             // Create elements for each of the parameters for the selectect effect.
             // Each of these would get an onChange event so we know when the user has
             //  selected a value.
             (param: ParamFunction<any>, idx: number) => {
               const ele = param.fn({
-                value: editingEffect.paramValues[idx],
+                value: editingEffect.params[idx],
                 onChange: (v) => {
                   setDirty(true);
+                  setNeedsNewPreview(true);
                   setEditingEffect({
-                    effect: editingEffect.effect,
-                    paramValues: replaceIndex(
-                      editingEffect.paramValues,
-                      idx,
-                      () => v
-                    ),
+                    ...editingEffect,
+                    params: replaceIndex(editingEffect.params, idx, () => v),
                   });
                 },
               });
               return (
                 <React.Fragment
-                  key={`${editingEffect.effect.name}-${param.name}`}
+                  key={`${editingEffect.effectName}-${param.name}`}
                 >
                   {ele}
                 </React.Fragment>
               );
             }
           )}
+          <Stack sx={{ height: 300 }}>
+            {image.computing ? (
+              <CircularProgress size={100} />
+            ) : (
+              <Gif src={image.gif} alt={`effect-${editingEffect.effectName}`} />
+            )}
+          </Stack>
         </Stack>
       </DialogContent>
       <DialogActions>

@@ -9,15 +9,22 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import { ParamFunction, Effect, AppStateEffect } from '../domain/types';
+import {
+  ParamFunction,
+  Effect,
+  AppStateEffect,
+  EffectInput,
+  Image,
+} from '../domain/types';
 import { replaceIndex } from '../domain/utils';
-import { effectByName } from '../effects';
+import { Gif } from './Gif';
 import { ImageEffectDialog } from './ImageEffectDialog';
 
 interface EffectListProps {
   currentEffects: AppStateEffect[];
   possibleEffects: Effect<any>[];
   onEffectsChange: (t: AppStateEffect[]) => void;
+  applyEffect: (image: Image, effect: EffectInput) => Promise<string>;
 }
 
 const effectKey = (t: AppStateEffect, idx: number): string =>
@@ -29,6 +36,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
   currentEffects,
   possibleEffects,
   onEffectsChange,
+  applyEffect,
 }) => {
   const [effectDialogOpen, setEffectDialogOpen] = React.useState<
     { open: false } | { open: true; idx: number; isNew: boolean }
@@ -116,11 +124,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
             </Stack>
             {t.state.status === 'done' && (
               <Stack sx={{ width: 250 }}>
-                <img
-                  src={t.state.image.gif}
-                  alt={`gif-${t.effectName}-${tIdx}`}
-                  style={{ maxWidth: '300px', maxHeight: 'auto' }}
-                ></img>
+                <Gif src={t.state.image.gif} alt={`${t.effectName}-${tIdx}`} />
               </Stack>
             )}
             {t.state.status === 'computing' && <CircularProgress size={100} />}
@@ -139,14 +143,14 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
               open={effectDialogOpen.open && effectDialogOpen.idx === tIdx}
               possibleEffects={possibleEffects}
               selectedEffect={{
-                effect: effectByName(t.effectName),
-                paramValues: t.paramsValues,
+                effectName: t.effectName,
+                params: t.paramsValues,
               }}
               onChangeEffect={(newEffect) => {
                 onEffectsChange(
                   replaceIndex(currentEffects, tIdx, () => ({
-                    effectName: newEffect.effect.name,
-                    paramsValues: newEffect.paramValues,
+                    effectName: newEffect.effectName,
+                    paramsValues: newEffect.params,
                     state: { status: 'init' },
                   }))
                 );
@@ -164,10 +168,17 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
 
                 setEffectDialogOpen({ open: false });
               }}
+              currentImage={t}
+              applyEffect={async (effect) => {
+                if (t.state.status === 'done') {
+                  return await applyEffect(t.state.image.image, effect);
+                }
+                return null;
+              }}
             />
           </Stack>
         </Stack>,
-        <FxDivider />,
+        <FxDivider key={`divider-${effectKey(t, tIdx)}`} />,
       ])}
       <Button
         variant="contained"

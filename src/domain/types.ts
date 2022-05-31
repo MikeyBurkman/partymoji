@@ -93,11 +93,6 @@ export interface Effect<T extends readonly ParamFunction<any>[]> {
   disabled: boolean;
 }
 
-export interface EffectWithParams<T extends readonly ParamFunction<any>[]> {
-  effectName: string;
-  paramsValues: T[];
-}
-
 export interface EffectInput {
   effectName: string;
   params: any;

@@ -14,7 +14,7 @@ import { Help } from './components/Help';
 import { ImagePicker } from './components/ImagePicker';
 import { ImageEffectList } from './components/ImageEffectList';
 import { ImportExport } from './components/ImportExport';
-import { computeGifs, getEffectsDiff } from './domain/computeGifs';
+import { applyEffect, computeGifs, getEffectsDiff } from './domain/computeGifs';
 import { AppState, AppStateEffect } from './domain/types';
 import { replaceIndex } from './domain/utils';
 import * as localStorage from './localStorage';
@@ -231,6 +231,14 @@ export const App: React.FC = () => {
                     { compute: 'now' }
                   )
                 }
+                applyEffect={async (image, effect) => {
+                  const result = await applyEffect({
+                    state,
+                    image,
+                    effect,
+                  });
+                  return result.gif;
+                }}
               />
             </Section>
             <Section>
