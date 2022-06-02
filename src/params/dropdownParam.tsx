@@ -7,7 +7,11 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { HelpTooltip } from '../components/HelpTooltip';
-import { ParamFunction } from '../domain/types';
+import {
+  ParamFnDefault,
+  ParamFunction,
+  toParamFunction,
+} from '../domain/types';
 
 const DropdownParam: React.FC<{
   name: string;
@@ -43,11 +47,11 @@ export function dropdownParam(args: {
   name: string;
   options: readonly { name: string; value: string }[];
   description?: string;
-  defaultValue: string;
+  defaultValue: ParamFnDefault<string>;
 }): ParamFunction<string> {
   return {
     name: args.name,
-    defaultValue: args.defaultValue,
+    defaultValue: toParamFunction(args.defaultValue),
     fn: (params) => {
       return (
         <DropdownParam

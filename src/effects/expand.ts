@@ -9,7 +9,8 @@ export const expand = buildEffect({
     intParam({
       name: 'Radius',
       description: 'Positive number',
-      defaultValue: 10,
+      defaultValue: (image) =>
+        image ? Math.floor(image.dimensions[0] / 6) : 10,
       min: 0,
     }),
   ] as const,

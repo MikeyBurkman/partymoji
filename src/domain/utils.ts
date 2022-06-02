@@ -427,12 +427,18 @@ export const shiftHue = ([r, g, b, a]: Color, amount: number): Color => {
 };
 
 /**
- * Returns the angle in degrees (0 to 360) betwee the two coordinates
+ * Returns the angle in degrees (0 to 360) from c2 to c1
  */
 export const calculateAngle = (c1: Coord, c2: Coord): number => {
   const xRelCenter = c2[0] - c1[0];
   const yRelCenter = c2[1] - c1[1];
   return (360 + (Math.atan2(yRelCenter, xRelCenter) * 180) / Math.PI) % 360;
+};
+
+export const pointDistance = ([x1, y1]: Coord, [x2, y2]: Coord): number => {
+  const xDiff = Math.pow(x2 - x1, 2);
+  const yDiff = Math.pow(y2 - y1, 2);
+  return Math.sqrt(xDiff + yDiff);
 };
 
 /**

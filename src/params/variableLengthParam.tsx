@@ -8,9 +8,14 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { HelpTooltip } from '../components/HelpTooltip';
-import { ParamFunction } from '../domain/types';
+import {
+  JsonType,
+  ParamFnDefault,
+  ParamFunction,
+  toParamFunction,
+} from '../domain/types';
 
-interface VariableLengthProps<T> {
+interface VariableLengthProps<T extends JsonType> {
   name: string;
   newParamText: string;
   createNewParam: () => ParamFunction<T>;
@@ -98,16 +103,16 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
   );
 };
 
-export function variableLengthParam<T>(args: {
+export function variableLengthParam<T extends JsonType>(args: {
   name: string;
   newParamText: string;
   createNewParam: () => ParamFunction<T>;
   description?: string;
-  defaultValue: T[];
+  defaultValue: ParamFnDefault<T[]>;
 }): ParamFunction<T[]> {
   return {
     name: args.name,
-    defaultValue: args.defaultValue,
+    defaultValue: toParamFunction(args.defaultValue),
     fn: (params) => {
       return (
         <VariableLengthParam

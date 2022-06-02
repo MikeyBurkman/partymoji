@@ -1,5 +1,12 @@
-import { buildEffect, Coord, Image } from '../domain/types';
-import { mapImage, setPixel, TRANSPARENT_COLOR } from '../domain/utils';
+import { buildEffect, Color, Coord, Image } from '../domain/types';
+import {
+  colorDiff,
+  duplicateImage,
+  getPixelFromSource,
+  setPixel,
+  TRANSPARENT_COLOR,
+} from '../domain/utils';
+import { colorPickerParam } from '../params/colorPickerParam';
 import { sliderParam } from '../params/sliderParam';
 
 // TODO
@@ -9,92 +16,101 @@ export const fill = buildEffect({
   description:
     'Makes transparent all pixels of similar color surrounding a point',
   params: [
+    colorPickerParam({
+      name: 'Color to Make Transparent',
+      defaultValue: [0, 0, 0, 255],
+    }),
     sliderParam({
       name: 'Tolerance',
-      defaultValue: 50,
+      defaultValue: 10,
       min: 0,
       max: 100,
     }),
   ] as const,
-  fn: mapImage(({ coord, getSrcPixel, parameters: [tolerance] }) => {
-    const matchP = getSrcPixel([0, 0]);
+  fn: ({ image: oldImage, parameters: [colorToReplace, tolerance] }) => {
+    const image = duplicateImage(oldImage);
 
-    const p = getSrcPixel(coord);
-    const [x, y] = coord;
+    for (
+      let frameIndex = 0;
+      frameIndex < image.frames.length;
+      frameIndex += 1
+    ) {
+      floodFill({
+        image,
+        frameIndex,
+        colorToReplace,
+        newColor: TRANSPARENT_COLOR,
+        tolerance,
+      });
+    }
 
-    return [0, 0, 0, 0];
-  }),
+    return image;
+  },
 });
 
-const fillFn = (image: Image, frameIndex: number, coord: Coord) => {
+// Mutates the given image/frameIndex
+const floodFill = ({
+  image,
+  frameIndex,
+  colorToReplace,
+  newColor,
+  tolerance,
+}: {
+  image: Image;
+  frameIndex: number;
+  colorToReplace: Color;
+  tolerance: number;
+  newColor: Color;
+}) => {
   const visited = (() => {
     const set = new Set<string>();
     return {
-      set: (x: number, y: number) => {
+      add: ([x, y]: Coord) => {
         set.add(`${x}-${y}`);
       },
-      has: (x: number, y: number) => set.has(`${x}-${y}`),
+      has: ([x, y]: Coord) => set.has(`${x}-${y}`),
     };
   })();
+  const stack: Coord[] = [[0, image.dimensions[1] - 1]]; // Bottom right pixel
+  const push = (coord: Coord) => {
+    if (!visited.has(coord)) {
+      visited.add(coord);
+      stack.push(coord);
+    }
+  };
 
-  const set = (x: number, y: number) =>
+  while (stack.length > 0) {
+    const coord = stack.pop()!;
+    const [x, y] = coord;
+    if (
+      x < 0 ||
+      x >= image.dimensions[0] ||
+      y < 0 ||
+      y >= image.dimensions[1]
+    ) {
+      // Out of bounds
+      continue;
+    }
+
+    const currColor = getPixelFromSource(
+      image.dimensions,
+      image.frames[frameIndex],
+      coord
+    );
+    if (colorDiff(currColor, colorToReplace) * 100 > tolerance) {
+      continue;
+    }
+
     setPixel({
       image,
       frameIndex,
-      color: TRANSPARENT_COLOR,
-      coord: [x - 1, y],
+      color: newColor,
+      coord: coord,
     });
 
-  const s: { x1: number; x2: number; y: number; dy: number }[] = [];
-  s.push({ x1: coord[0], x2: coord[0], y: coord[1], dy: 1 });
-  s.push({ x1: coord[0], x2: coord[0], y: coord[1] - 1, dy: -1 });
-
-  while (s.length > 0) {
-    const n = s.pop()!;
-    let x = n.x1;
-    let y = n.y;
-    if (visited.has(x, y)) {
-      while (visited.has(x - 1, y)) {
-        set(x - 1, y);
-        x = x - 1;
-      }
-    }
-
-    if (x < n.x1) {
-      s.push({ x1: x, x2: n.x1 - 1, y: y - n.dy, dy: n.dy * -1 });
-    }
-
-    while (n.x1 < n.x2) {
-      while (visited.has(n.x1, y)) {
-        set(n.x1, y);
-      }
-    }
+    push([x + 1, y]);
+    push([x - 1, y]);
+    push([x, y + y]);
+    push([x, y - 1]);
   }
 };
-
-/*
-fn fill(x, y):
-  if not Inside(x, y) then return
-  let s = new empty queue or stack
-  Add (x, x, y, 1) to s
-  Add (x, x, y - 1, -1) to s
-  while s is not empty:
-    Remove an (x1, x2, y, dy) from s
-    let x = x1
-    if Inside(x, y):
-      while Inside(x - 1, y):
-        Set(x - 1, y)
-        x = x - 1
-    if x < x1:
-      Add (x, x1-1, y-dy, -dy) to s
-    while x1 < x2:
-      while Inside(x1, y):
-        Set(x1, y)
-        x1 = x1 + 1
-      Add (x, x1 - 1, y+dy, dy) to s
-      if x1 - 1 > x2:
-        Add (x2 + 1, x1 - 1, y-dy, -dy)
-      while x1 < x2 and not Inside(x1, y):
-        x1 = x1 + 1
-      x = x1
-*/

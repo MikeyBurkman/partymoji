@@ -13,14 +13,14 @@ export const resizeImage = buildEffect({
       name: 'Width',
       description:
         'Set to 0 when height is set to non-zero to keep the same aspect ratio',
-      defaultValue: 128,
+      defaultValue: (image) => (image ? image.dimensions[0] : 0),
       min: 0,
     }),
     intParam({
       name: 'Height',
       description:
         'Set to 0 when width is set to non-zero to keep the same aspect ratio',
-      defaultValue: 128,
+      defaultValue: (image) => (image ? image.dimensions[1] : 0),
       min: 0,
     }),
   ] as const,

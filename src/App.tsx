@@ -21,6 +21,7 @@ import * as localStorage from './localStorage';
 import { sliderParam } from './params/sliderParam';
 import { POSSIBLE_EFFECTS } from './effects';
 import { debugLog, isDebug } from './debug';
+import { readImage } from './domain/run';
 
 // Number of millis to wait after a change before recomputing the gif
 const COMPUTE_DEBOUNCE_MILLIS = 1000;
@@ -220,7 +221,7 @@ export const App: React.FC = () => {
             </Section>
             <Section>
               <ImageEffectList
-                currentEffects={state.effects}
+                appState={state}
                 possibleEffects={POSSIBLE_EFFECTS}
                 onEffectsChange={(effects) =>
                   setState(

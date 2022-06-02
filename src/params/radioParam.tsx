@@ -8,7 +8,11 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { HelpTooltip } from '../components/HelpTooltip';
-import { ParamFunction } from '../domain/types';
+import {
+  ParamFnDefault,
+  ParamFunction,
+  toParamFunction,
+} from '../domain/types';
 
 const RadioParam: React.FC<{
   name: string;
@@ -47,11 +51,11 @@ export function radioParam<T extends string>(args: {
   name: string;
   options: readonly { name: string; value: T }[];
   description?: string;
-  defaultValue: T;
+  defaultValue: ParamFnDefault<T>;
 }): ParamFunction<T> {
   return {
     name: args.name,
-    defaultValue: args.defaultValue,
+    defaultValue: toParamFunction(args.defaultValue),
     fn: (params) => {
       return (
         <RadioParam

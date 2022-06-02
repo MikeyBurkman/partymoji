@@ -9,7 +9,8 @@ export const bounce = buildEffect({
     intParam({
       name: 'Bounce Speed',
       description: 'Positive number',
-      defaultValue: 5,
+      defaultValue: (image) =>
+        image ? Math.floor(image.dimensions[1] / 10) : 10,
       min: 0,
     }),
   ] as const,

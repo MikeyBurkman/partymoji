@@ -3,7 +3,11 @@ import * as convert from 'color-convert';
 import React from 'react';
 import { HuePicker } from 'react-color';
 import { HelpTooltip } from '../components/HelpTooltip';
-import { ParamFunction } from '../domain/types';
+import {
+  ParamFnDefault,
+  ParamFunction,
+  toParamFunction,
+} from '../domain/types';
 import { toHexColor } from '../domain/utils';
 
 const HuePickerParam: React.FC<{
@@ -32,12 +36,12 @@ const HuePickerParam: React.FC<{
 
 export function huePickerParam(args: {
   name: string;
-  defaultValue: number;
+  defaultValue: ParamFnDefault<number>;
   description?: string;
 }): ParamFunction<number> {
   return {
     name: args.name,
-    defaultValue: args.defaultValue,
+    defaultValue: toParamFunction(args.defaultValue),
     fn: (params) => {
       return (
         <HuePickerParam

@@ -1,5 +1,12 @@
 import seedrandom from 'seedrandom';
 
+type JsonPrimitive = string | number | boolean | Uint8Array | null;
+interface JsonMap {
+  [member: string]: JsonPrimitive | JsonArray | JsonMap;
+}
+interface JsonArray extends Array<JsonPrimitive | JsonArray | JsonMap> {}
+export type JsonType = JsonPrimitive | JsonMap | JsonArray;
+
 /**
  * [R, G, B, A] in values 0 - 255 inclusive
  */
@@ -36,10 +43,10 @@ export type ImageData = Uint8Array;
 /**
  * The results of get-pixels processImage()
  */
-export interface Image {
+export type Image = {
   dimensions: Dimensions;
   frames: ImageData[];
-}
+};
 
 export type Random = seedrandom.prng;
 
@@ -60,21 +67,38 @@ export interface EffectFnOpts<Params> {
   parameters: Params;
 }
 
-export interface Parameter<T> {
+export interface Parameter<T extends JsonType> {
   name: string;
   defaultValue: T;
   ele: JSX.Element;
 }
 
-export interface Params<T> {
+export interface Params<T extends JsonType> {
   value: T;
   onChange: (v: T) => void;
 }
 
-export type ParamFunction<T = any> = {
+export type ParamFunction<T extends JsonType> = {
   name: string;
-  defaultValue: T;
+  /**
+   * If the previous image is done computing, it will be given to this function.
+   * If it's not done computing, `undefined` will be given
+   */
+  defaultValue: (image?: Image) => T;
   fn: (params: Params<T>) => JSX.Element;
+};
+
+export type ParamFnDefault<T extends JsonType> =
+  | ParamFunction<T>['defaultValue']
+  | T;
+
+export const toParamFunction = <T extends JsonType>(
+  x: ParamFnDefault<T>
+): ParamFunction<T>['defaultValue'] => {
+  if (typeof x === 'function') {
+    return x;
+  }
+  return () => x;
 };
 
 export type EffectFn<Params> = (opts: EffectFnOpts<Params>) => Image;

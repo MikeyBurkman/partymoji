@@ -1,7 +1,11 @@
 import { debounce, Slider, Stack, Typography } from '@material-ui/core';
 import React from 'react';
 import { HelpTooltip } from '../components/HelpTooltip';
-import { ParamFunction } from '../domain/types';
+import {
+  ParamFnDefault,
+  ParamFunction,
+  toParamFunction,
+} from '../domain/types';
 
 const DEBOUNCE_MILLIS = 500;
 
@@ -55,12 +59,12 @@ export function sliderParam(args: {
   min: number;
   max: number;
   step?: number;
-  defaultValue: number;
+  defaultValue: ParamFnDefault<number>;
   description?: string;
 }): ParamFunction<number> {
   return {
     name: args.name,
-    defaultValue: args.defaultValue,
+    defaultValue: toParamFunction(args.defaultValue),
     fn: (params) => {
       return (
         <SliderParam

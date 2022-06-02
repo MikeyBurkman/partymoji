@@ -122,7 +122,13 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
                 // Reset all the params when you select a new effect
                 setEditingEffect({
                   effectName: t.name,
-                  params: t.params.map((p) => p.defaultValue),
+                  params: t.params.map((p) =>
+                    p.defaultValue(
+                      currentImage.state.status === 'done'
+                        ? currentImage.state.image.image
+                        : undefined
+                    )
+                  ),
                 });
                 setDirty(true);
                 setNeedsNewPreview(true);

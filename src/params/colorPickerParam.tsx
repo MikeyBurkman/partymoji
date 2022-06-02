@@ -3,7 +3,12 @@ import React from 'react';
 import { SketchPicker } from 'react-color';
 import { Expandable } from '../components/Expandable';
 import { HelpTooltip } from '../components/HelpTooltip';
-import { Color, ParamFunction } from '../domain/types';
+import {
+  Color,
+  ParamFnDefault,
+  ParamFunction,
+  toParamFunction,
+} from '../domain/types';
 import { fromHexColor, toHexColor } from '../domain/utils';
 
 const ColorBox: React.FC<{ color: Color }> = ({ color }) => (
@@ -46,12 +51,12 @@ const ColorPickerParam: React.FC<{
 
 export function colorPickerParam(args: {
   name: string;
-  defaultValue: Color;
+  defaultValue: ParamFnDefault<Color>;
   description?: string;
 }): ParamFunction<Color> {
   return {
     name: args.name,
-    defaultValue: args.defaultValue,
+    defaultValue: toParamFunction(args.defaultValue),
     fn: (params) => {
       return (
         <ColorPickerParam

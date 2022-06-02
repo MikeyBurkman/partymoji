@@ -9,19 +9,21 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
+import { readImage } from '../domain/run';
 import {
   ParamFunction,
   Effect,
   AppStateEffect,
   EffectInput,
   Image,
+  AppState,
 } from '../domain/types';
 import { replaceIndex } from '../domain/utils';
 import { Gif } from './Gif';
 import { ImageEffectDialog } from './ImageEffectDialog';
 
 interface EffectListProps {
-  currentEffects: AppStateEffect[];
+  appState: AppState;
   possibleEffects: Effect<any>[];
   onEffectsChange: (t: AppStateEffect[]) => void;
   applyEffect: (image: Image, effect: EffectInput) => Promise<string>;
@@ -33,17 +35,35 @@ const effectKey = (t: AppStateEffect, idx: number): string =>
   }`;
 
 export const ImageEffectList: React.FC<EffectListProps> = ({
-  currentEffects,
+  appState,
   possibleEffects,
   onEffectsChange,
   applyEffect,
 }) => {
+  const currentEffects = appState.effects;
   const [effectDialogOpen, setEffectDialogOpen] = React.useState<
     { open: false } | { open: true; idx: number; isNew: boolean }
   >({ open: false });
 
   const onDelete = (idx: number) => () =>
     onEffectsChange(currentEffects.filter((nextT, newIdx) => newIdx !== idx));
+
+  const [baseImage, setBaseImage] = React.useState<
+    { gif: string; image: Image } | undefined
+  >();
+  React.useEffect(() => {
+    if (!appState.baseImage || baseImage?.gif === appState.baseImage) {
+      return;
+    }
+
+    const gif = appState.baseImage;
+    readImage(gif).then((image) =>
+      setBaseImage({
+        gif,
+        image,
+      })
+    );
+  }, [appState, baseImage]);
 
   const onMoveUp = (idx: number) =>
     idx > 0
@@ -190,7 +210,20 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
             {
               effectName: possibleEffects[0].name,
               paramsValues: possibleEffects[0].params.map(
-                (p: ParamFunction<any>) => p.defaultValue
+                (p: ParamFunction<any>) => {
+                  let image: Image | undefined = undefined;
+                  if (currentEffects.length === 0) {
+                    image = baseImage?.image;
+                  } else {
+                    const lastEffect =
+                      currentEffects[currentEffects.length - 1];
+                    if (lastEffect.state.status === 'done') {
+                      image = lastEffect.state.image.image;
+                    }
+                  }
+
+                  return p.defaultValue(image);
+                }
               ),
               state: { status: 'init' },
             },

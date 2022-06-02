@@ -7,10 +7,10 @@ interface ImagePickerParamsProps {
   name: string;
 }
 
-interface ParamType {
+type ParamType = {
   dataUrl: string;
   image: Image;
-}
+};
 
 // Just a 1x1 black jpg. Surprisingly big!
 const DEFAULT_IMAGE: ParamType = {
@@ -27,7 +27,7 @@ export function imagePickerParam({
 }: ImagePickerParamsProps): ParamFunction<ParamType> {
   return {
     name,
-    defaultValue: DEFAULT_IMAGE,
+    defaultValue: () => DEFAULT_IMAGE,
     fn: (params) => (
       <ImagePicker
         currentImageUrl={params.value.dataUrl}

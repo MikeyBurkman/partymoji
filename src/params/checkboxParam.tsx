@@ -1,7 +1,11 @@
 import { Checkbox, Stack, Typography } from '@material-ui/core';
 import React from 'react';
 import { HelpTooltip } from '../components/HelpTooltip';
-import { ParamFunction } from '../domain/types';
+import {
+  ParamFnDefault,
+  ParamFunction,
+  toParamFunction,
+} from '../domain/types';
 
 const CheckboxParam: React.FC<{
   name: string;
@@ -30,12 +34,12 @@ const CheckboxParam: React.FC<{
 
 export function checkboxParam(args: {
   name: string;
-  defaultValue: boolean;
+  defaultValue: ParamFnDefault<boolean>;
   description?: string;
 }): ParamFunction<boolean> {
   return {
     name: args.name,
-    defaultValue: args.defaultValue,
+    defaultValue: toParamFunction(args.defaultValue),
     fn: (params) => {
       return (
         <CheckboxParam

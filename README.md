@@ -17,5 +17,5 @@ https://mikeyburkman.github.io/partymoji/
 ### TODO
 
 1. Changing things while stuff is being computed can lead to undefined behavior
-2. Add a preview GIF to the effect dialog window
-3. Flickering when adding a new effect on prod
+2. Flickering when adding a new effect on prod
+3. Let params receive the current image when calculating default values

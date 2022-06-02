@@ -9,7 +9,8 @@ export const circle = buildEffect({
     intParam({
       name: 'Radius',
       description: 'Positive number',
-      defaultValue: 10,
+      defaultValue: (image) =>
+        image ? Math.floor(image.dimensions[0] / 10) : 10,
       min: 0,
     }),
   ] as const,

@@ -21,23 +21,23 @@ export const adjustImage = buildEffect({
     sliderParam({
       name: 'Number of Frames',
       description:
-        'Set how many frames of animation there will be. Leave at 0 to not change the current frame count.',
-      defaultValue: 0,
+        'Set how many frames of animation there will be. Set to 0 to not change the current frame count.',
+      defaultValue: (image) => (image ? image.frames.length : 0),
       min: 0,
       max: 60,
     }),
     intParam({
       name: 'Width',
       description:
-        'Leave at 0 to not change the width. If height is changed, the image will keep the same aspect ratio.',
-      defaultValue: 0,
+        'Set to 0 to not change the width. If height is changed, the image will keep the same aspect ratio.',
+      defaultValue: (image) => (image ? image.dimensions[0] : 0),
       min: 0,
     }),
     intParam({
       name: 'Height',
       description:
-        'Leave at 0 to not change the height. If width is changed, the image will keep the same aspect ratio.',
-      defaultValue: 0,
+        'Set to 0 to not change the height. If width is changed, the image will keep the same aspect ratio.',
+      defaultValue: (image) => (image ? image.dimensions[1] : 0),
       min: 0,
     }),
     sliderParam({

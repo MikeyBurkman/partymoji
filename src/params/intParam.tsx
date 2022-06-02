@@ -7,7 +7,11 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { HelpTooltip } from '../components/HelpTooltip';
-import { ParamFunction } from '../domain/types';
+import {
+  ParamFnDefault,
+  ParamFunction,
+  toParamFunction,
+} from '../domain/types';
 
 type ParsedParam<T> =
   | { valid: true; value: T }
@@ -59,13 +63,13 @@ const IntParam: React.FC<{
 
 export const intParam = (args: {
   name: string;
-  defaultValue: number;
+  defaultValue: ParamFnDefault<number>;
   min?: number;
   max?: number;
   description?: string;
 }): ParamFunction<number> => ({
   name: args.name,
-  defaultValue: args.defaultValue,
+  defaultValue: toParamFunction(args.defaultValue),
   fn: (params) => {
     const { min, max } = args;
     const parse = (s: string): ParsedParam<number> => {

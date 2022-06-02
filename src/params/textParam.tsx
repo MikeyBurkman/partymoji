@@ -1,7 +1,11 @@
 import { FormControl, Stack, TextField, Typography } from '@material-ui/core';
 import React from 'react';
 import { HelpTooltip } from '../components/HelpTooltip';
-import { ParamFunction } from '../domain/types';
+import {
+  ParamFnDefault,
+  ParamFunction,
+  toParamFunction,
+} from '../domain/types';
 
 const TextParam: React.FC<{
   name: string;
@@ -35,10 +39,10 @@ const TextParam: React.FC<{
 export const textParam = (args: {
   name: string;
   description?: string;
-  defaultValue: string;
+  defaultValue: ParamFnDefault<string>;
 }): ParamFunction<string> => ({
   name: args.name,
-  defaultValue: args.defaultValue,
+  defaultValue: toParamFunction(args.defaultValue),
   fn: (params) => (
     <TextParam
       name={args.name}
