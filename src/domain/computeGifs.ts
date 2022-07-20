@@ -1,10 +1,8 @@
-import { debugLog } from '../debug';
 import { readImage, runEffects } from './run';
 import { runEffectsAsync } from './runAsync';
 import { AppState, EffectInput, Image, ImageEffectResult } from './types';
+import { ENV, debugLog } from './env';
 import { assert } from './utils';
-
-const ENV = (window as any).ENV as 'DEV' | 'PROD';
 
 // Can't get web workers working with the dev build, so just use the synchrounous version
 //  if not a prod build.

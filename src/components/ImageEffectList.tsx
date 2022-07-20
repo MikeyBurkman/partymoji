@@ -189,12 +189,8 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
                 setEffectDialogOpen({ open: false });
               }}
               currentImage={t}
-              applyEffect={async (effect) => {
-                if (t.state.status === 'done') {
-                  return await applyEffect(t.state.image.image, effect);
-                }
-                return null;
-              }}
+              currFps={appState.fps}
+              currRandomSeed="partymoji"
             />
           </Stack>
         </Stack>,

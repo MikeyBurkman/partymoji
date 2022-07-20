@@ -9,6 +9,14 @@
   "engines": {
     "node": "16.x"
   },
+  "scripts": {
+    "tsc": "tsc",
+    "start": "REACT_APP_ENV=DEV REACT_APP_BUILD_TIME=$(date '+%m/%d/%y %r %Z') node scripts/start.js",
+    "build": "REACT_APP_ENV=PROD REACT_APP_BUILD_TIME=$(date '+%m/%d/%y %r %Z') node scripts/build.js && del ./docs && mkdir ./docs && mv ./build/* ./docs",
+    "test-prod": "yarn build && sed -i '' 's/\\/partymoji//g' ./docs/index.html && npx http-serve ./docs -a localhost -p 3000 -o",
+    "pretty": "prettier --write \"**/*.{js,md,ts,html,tsx,json}\"",
+    "prepare": "husky install"
+  },
   "dependencies": {
     "@babel/core": "7.12.3",
     "@emotion/react": "^11.4.1",
@@ -93,14 +101,6 @@
     "husky": "^7.0.2",
     "prettier": "^2.3.2",
     "typescript": "^4.4.2"
-  },
-  "scripts": {
-    "tsc": "tsc",
-    "start": "REACT_APP_ENV=DEV REACT_APP_BUILD_TIME=$(date '+%m/%d/%y %r %Z') node scripts/start.js",
-    "build": "REACT_APP_ENV=PROD REACT_APP_BUILD_TIME=$(date '+%m/%d/%y %r %Z') node scripts/build.js && del ./docs && mkdir ./docs && mv ./build/* ./docs",
-    "test-prod": "yarn build && sed -i '' 's/\\/partymoji//g' ./docs/index.html && npx http-serve ./docs -a localhost -p 3000 -o",
-    "pretty": "prettier --write \"**/*.{js,md,ts,html,tsx,json}\"",
-    "prepare": "husky install"
   },
   "eslintConfig": {
     "extends": [

@@ -17,11 +17,10 @@ import { ImportExport } from './components/ImportExport';
 import { applyEffect, computeGifs, getEffectsDiff } from './domain/computeGifs';
 import { AppState, AppStateEffect } from './domain/types';
 import { replaceIndex } from './domain/utils';
+import { ENV, debugLog } from './domain/env';
 import * as localStorage from './localStorage';
 import { sliderParam } from './params/sliderParam';
 import { POSSIBLE_EFFECTS } from './effects';
-import { debugLog, isDebug } from './debug';
-import { readImage } from './domain/run';
 
 // Number of millis to wait after a change before recomputing the gif
 const COMPUTE_DEBOUNCE_MILLIS = 1000;
@@ -77,7 +76,7 @@ export const App: React.FC = () => {
         const newState = fn(oldState);
         localStorage.saveAppState(newState);
 
-        if (isDebug()) {
+        if (ENV === 'DEV') {
           (window as any).STATE = newState;
         }
 

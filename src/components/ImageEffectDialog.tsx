@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Autocomplete,
   Button,
@@ -12,7 +13,6 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-import React from 'react';
 import {
   ParamFunction,
   Effect,
@@ -20,17 +20,20 @@ import {
   EffectInput,
 } from '../domain/types';
 import { replaceIndex } from '../domain/utils';
+import { debugLog } from '../domain/env';
 import { effectByName } from '../effects';
 import { Gif } from './Gif';
+import { useEffectComputer } from './useEffectComputer';
 
 interface ImageEffectProps {
   open: boolean;
   currentImage: AppStateEffect;
   selectedEffect: EffectInput;
   possibleEffects: Effect<any>[];
+  currFps: number;
+  currRandomSeed: string;
   onChangeEffect: (effect: EffectInput) => void;
   onCancel: () => void;
-  applyEffect: (effect: EffectInput) => Promise<string | null>;
 }
 
 export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
@@ -38,13 +41,19 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
   currentImage,
   selectedEffect,
   possibleEffects,
+  currFps,
+  currRandomSeed,
   onChangeEffect,
   onCancel,
-  applyEffect,
 }) => {
   const [image, setImage] = React.useState<
     { computing: true } | { computing: false; gif: string }
   >({ computing: true });
+
+  const onImageChange = useEffectComputer((results) => {
+    setImage({ computing: false, gif: results.gif });
+  });
+
   const [initialLoaded, setInitialLoaded] = React.useState(false);
 
   const [editingEffect, setEditingEffect] = React.useState<EffectInput>({
@@ -52,7 +61,7 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
     params: [...selectedEffect.params],
   });
   const [dirty, setDirty] = React.useState(false);
-  const [needsNewPreview, setNeedsNewPreview] = React.useState(false);
+
   const closeDialog = ({ save }: { save: boolean }) => {
     if (!save) {
       onCancel();
@@ -61,7 +70,6 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
 
     onChangeEffect(editingEffect);
     setDirty(false);
-    setNeedsNewPreview(false);
   };
 
   React.useEffect(() => {
@@ -71,6 +79,7 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
     }
 
     if (!initialLoaded) {
+      debugLog('Initial loading');
       // The initial loading of the original effect
       setImage({
         computing: false,
@@ -80,31 +89,26 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
       return;
     }
 
-    if (needsNewPreview && !image.computing) {
-      // The user changed the effect
-      setImage({
-        computing: true,
-      });
-      applyEffect(editingEffect).then((gif) => {
-        // Should only be null if the original effect hasn't compute yet...
-        if (gif) {
-          setNeedsNewPreview(false);
-          setImage({
-            computing: false,
-            gif,
-          });
-        }
-      });
+    // Just used for setting the initial image, so just change it when the initial image does.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentImage]);
+
+  React.useEffect(() => {
+    if (currentImage.state.status !== 'done' || !dirty) {
+      return;
     }
-  }, [
-    image,
-    setImage,
-    currentImage,
-    editingEffect,
-    applyEffect,
-    initialLoaded,
-    needsNewPreview,
-  ]);
+
+    setImage({ computing: true });
+    onImageChange({
+      fps: currFps,
+      randomSeed: currRandomSeed,
+      image: currentImage.state.image.image,
+      effectInput: editingEffect,
+    });
+
+    // Only fire this hook when the effect changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editingEffect]);
 
   const effect = effectByName(editingEffect.effectName);
 
@@ -131,7 +135,6 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
                   ),
                 });
                 setDirty(true);
-                setNeedsNewPreview(true);
               }}
               renderOption={(props, option) => (
                 <li {...props}>
@@ -170,7 +173,6 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
                 value: editingEffect.params[idx],
                 onChange: (v) => {
                   setDirty(true);
-                  setNeedsNewPreview(true);
                   setEditingEffect({
                     ...editingEffect,
                     params: replaceIndex(editingEffect.params, idx, () => v),
