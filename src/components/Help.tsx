@@ -92,25 +92,21 @@ export const Help: React.FC = () => (
             <SectionHeader>Gifs will compute automatically</SectionHeader>
             <SectionText>
               Whenever you add or change an effect, it will compute a new gif
-              next to that effect.
+              directly below that effect.
             </SectionText>
             <SectionText>
-              The gif next to each effect shows what the results of that effect
-              on the previous gif were.
+              The gif below to each effect shows the results of that effect on
+              the previous gif.
             </SectionText>
           </Section>
 
           <Divider />
 
           <Section>
-            <SectionHeader>Exporting a GIF</SectionHeader>
+            <SectionHeader>Creating a GIF</SectionHeader>
             <SectionText>
-              To export a gif, just right click on the gif next to an effect,
-              and click "Save Image As...".
-            </SectionText>
-            <SectionText>
-              Importing/exporting further down on the page is used if you want
-              to share your Partymoji steps with someone else!
+              To export a gif, just right click on the gif itself, and click
+              "Save Image As...".
             </SectionText>
           </Section>
         </Group>

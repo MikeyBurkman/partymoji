@@ -1,7 +1,7 @@
 import { Alert, Button, Icon, Stack, Typography } from '@material-ui/core';
-import * as lz from 'lz-string';
 import React from 'react';
 import { AppState } from '../domain/types';
+import { exportToClipboard, importFromClipboard } from '../domain/importExport';
 
 interface ImportExportProps {
   state: AppState;
@@ -13,16 +13,16 @@ export const ImportExport: React.FC<ImportExportProps> = ({
   onImport,
 }) => {
   const [info, setInfo] = React.useState<string | undefined>();
-  const [isInvalid, setInvalid] = React.useState(false);
+  const [errorText, setErrorText] = React.useState<string | undefined>();
 
   const showInfo = (text: string) => {
     setInfo(text);
     setTimeout(() => setInfo(undefined), 3000);
   };
 
-  const showError = () => {
-    setInvalid(true);
-    setTimeout(() => setInvalid(false), 3000);
+  const showError = (message: string) => {
+    setErrorText(message);
+    setTimeout(() => setErrorText(undefined), 3000);
   };
 
   return (
@@ -36,8 +36,7 @@ export const ImportExport: React.FC<ImportExportProps> = ({
         sx={{ maxWidth: '300px' }}
         variant="contained"
         onClick={() => {
-          const output = lz.compressToBase64(JSON.stringify(state));
-          navigator.clipboard.writeText(output);
+          exportToClipboard(state);
           showInfo('Copied to clipboard');
         }}
       >
@@ -49,24 +48,12 @@ export const ImportExport: React.FC<ImportExportProps> = ({
         sx={{ maxWidth: '300px' }}
         variant="contained"
         onClick={async () => {
-          try {
-            const clipboardContents = await navigator.clipboard.readText();
-            if (!clipboardContents) {
-              showError();
-              return;
-            }
-            const data = JSON.parse(
-              lz.decompressFromBase64(clipboardContents)!
-            );
-            if (!Array.isArray(data.effects)) {
-              showError();
-              return;
-            }
-            onImport(data);
-            setInvalid(false);
-          } catch (e) {
-            console.error(e);
-            showError();
+          const results = await importFromClipboard();
+          if (results.status === 'success') {
+            onImport(results.appState);
+            setErrorText(undefined);
+          } else {
+            showError(results.message);
           }
         }}
       >
@@ -77,9 +64,9 @@ export const ImportExport: React.FC<ImportExportProps> = ({
           {info}
         </Alert>
       )}
-      {isInvalid && (
+      {errorText && (
         <Alert severity="error" sx={{ maxWidth: '300px' }}>
-          Error importing from clipboard
+          Error importing from clipboard: {errorText}
         </Alert>
       )}
     </Stack>

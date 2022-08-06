@@ -13,7 +13,6 @@ import React from 'react';
 import { Help } from './components/Help';
 import { ImagePicker } from './components/ImagePicker';
 import { ImageEffectList } from './components/ImageEffectList';
-import { ImportExport } from './components/ImportExport';
 import { computeGifsForState, getEffectsDiff } from './domain/computeGifs';
 import { AppState, AppStateEffect } from './domain/types';
 import { replaceIndex } from './domain/utils';
@@ -233,12 +232,13 @@ export const App: React.FC = () => {
                 }
               />
             </Section>
-            <Section>
-              <ImportExport
+            {/* <Section>
+            // Disabling this for now as I think it's confusing the way it is.
+              <ImportExportComponent
                 state={state}
                 onImport={(o) => setState(() => o, { compute: 'now' })}
               />
-            </Section>
+            </Section> */}
             <Section>
               <Stack spacing={3}>
                 <Typography variant="h5">Clear State</Typography>
