@@ -162,16 +162,14 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
             <ImageEffectDialog
               open={effectDialogOpen.open && effectDialogOpen.idx === tIdx}
               possibleEffects={possibleEffects}
-              selectedEffect={{
-                effectName: t.effectName,
-                params: t.paramsValues,
-              }}
-              onChangeEffect={(newEffect) => {
+              onChangeEffect={(newEffect, computedImage) => {
                 onEffectsChange(
                   replaceIndex(currentEffects, tIdx, () => ({
                     effectName: newEffect.effectName,
                     paramsValues: newEffect.params,
-                    state: { status: 'init' },
+                    state: computedImage
+                      ? { status: 'done', image: computedImage }
+                      : { status: 'init' },
                   }))
                 );
                 setEffectDialogOpen({ open: false });

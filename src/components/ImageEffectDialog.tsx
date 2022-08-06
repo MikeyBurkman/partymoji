@@ -18,6 +18,7 @@ import {
   Effect,
   AppStateEffect,
   EffectInput,
+  ImageEffectResult,
 } from '../domain/types';
 import { replaceIndex } from '../domain/utils';
 import { debugLog } from '../domain/env';
@@ -28,18 +29,19 @@ import { useEffectComputer } from './useEffectComputer';
 interface ImageEffectProps {
   open: boolean;
   currentImage: AppStateEffect;
-  selectedEffect: EffectInput;
   possibleEffects: Effect<any>[];
   currFps: number;
   currRandomSeed: string;
-  onChangeEffect: (effect: EffectInput) => void;
+  onChangeEffect: (
+    effect: EffectInput,
+    computedImage: ImageEffectResult | undefined
+  ) => void;
   onCancel: () => void;
 }
 
 export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
   open,
   currentImage,
-  selectedEffect,
   possibleEffects,
   currFps,
   currRandomSeed,
@@ -47,18 +49,19 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
   onCancel,
 }) => {
   const [image, setImage] = React.useState<
-    { computing: true } | { computing: false; gif: string }
+    { computing: true } | { computing: false; results: ImageEffectResult }
   >({ computing: true });
 
   const onImageChange = useEffectComputer((results) => {
-    setImage({ computing: false, gif: results.gif });
+    setImage({ computing: false, results });
   });
 
   const [initialLoaded, setInitialLoaded] = React.useState(false);
 
   const [editingEffect, setEditingEffect] = React.useState<EffectInput>({
-    effectName: selectedEffect.effectName, // Make a copy of the effect being passed in
-    params: [...selectedEffect.params],
+    // Make a copy of the effect being passed in
+    effectName: currentImage.effectName,
+    params: [...currentImage.paramsValues],
   });
   const [dirty, setDirty] = React.useState(false);
 
@@ -68,7 +71,7 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
       return;
     }
 
-    onChangeEffect(editingEffect);
+    onChangeEffect(editingEffect, image.computing ? undefined : image.results);
     setDirty(false);
   };
 
@@ -83,7 +86,7 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
       // The initial loading of the original effect
       setImage({
         computing: false,
-        gif: currentImage.state.image.gif,
+        results: currentImage.state.image,
       });
       setInitialLoaded(true);
       return;
@@ -192,7 +195,10 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
             {image.computing ? (
               <CircularProgress size={100} />
             ) : (
-              <Gif src={image.gif} alt={`effect-${editingEffect.effectName}`} />
+              <Gif
+                src={image.results.gif}
+                alt={`effect-${editingEffect.effectName}`}
+              />
             )}
           </Stack>
         </Stack>

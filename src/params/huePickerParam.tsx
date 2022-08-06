@@ -16,10 +16,13 @@ const HuePickerParam: React.FC<{
   description?: string;
   onChange: (v: number) => void;
 }> = ({ name, value, description, onChange }) => {
-  const hexColor =
-    value === undefined
-      ? undefined
-      : toHexColor([...convert.hsl.rgb([value, 255, 255]), 255]);
+  const hexColor = React.useMemo(
+    () =>
+      value === undefined
+        ? undefined
+        : toHexColor([...convert.hsl.rgb([value, 100, 50]), 255]),
+    [value]
+  );
   return (
     <Stack spacing={1}>
       <Stack direction="row" spacing={1}>
@@ -28,6 +31,7 @@ const HuePickerParam: React.FC<{
       </Stack>
       <HuePicker
         color={hexColor}
+        // HSL is in [0-360, 0-100, 0-100]
         onChangeComplete={({ hsl }) => onChange(hsl.h)}
       />
     </Stack>
