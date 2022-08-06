@@ -14,7 +14,7 @@ import { Help } from './components/Help';
 import { ImagePicker } from './components/ImagePicker';
 import { ImageEffectList } from './components/ImageEffectList';
 import { ImportExport } from './components/ImportExport';
-import { applyEffect, computeGifs, getEffectsDiff } from './domain/computeGifs';
+import { computeGifsForState, getEffectsDiff } from './domain/computeGifs';
 import { AppState, AppStateEffect } from './domain/types';
 import { replaceIndex } from './domain/utils';
 import { ENV, debugLog } from './domain/env';
@@ -145,7 +145,7 @@ export const App: React.FC = () => {
         { compute: 'no' }
       );
       // TODO error handling
-      await computeGifs({
+      await computeGifsForState({
         state,
         onCompute: (image, computeIdx) => {
           setState(
@@ -231,14 +231,6 @@ export const App: React.FC = () => {
                     { compute: 'now' }
                   )
                 }
-                applyEffect={async (image, effect) => {
-                  const result = await applyEffect({
-                    state,
-                    image,
-                    effect,
-                  });
-                  return result.gif;
-                }}
               />
             </Section>
             <Section>

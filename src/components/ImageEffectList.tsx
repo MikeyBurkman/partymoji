@@ -14,9 +14,9 @@ import {
   ParamFunction,
   Effect,
   AppStateEffect,
-  EffectInput,
   Image,
   AppState,
+  ImageEffectResult,
 } from '../domain/types';
 import { replaceIndex } from '../domain/utils';
 import { Gif } from './Gif';
@@ -26,7 +26,6 @@ interface EffectListProps {
   appState: AppState;
   possibleEffects: Effect<any>[];
   onEffectsChange: (t: AppStateEffect[]) => void;
-  applyEffect: (image: Image, effect: EffectInput) => Promise<string>;
 }
 
 const effectKey = (t: AppStateEffect, idx: number): string =>
@@ -38,7 +37,6 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
   appState,
   possibleEffects,
   onEffectsChange,
-  applyEffect,
 }) => {
   const currentEffects = appState.effects;
   const [effectDialogOpen, setEffectDialogOpen] = React.useState<
@@ -49,7 +47,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
     onEffectsChange(currentEffects.filter((nextT, newIdx) => newIdx !== idx));
 
   const [baseImage, setBaseImage] = React.useState<
-    { gif: string; image: Image } | undefined
+    ImageEffectResult | undefined
   >();
   React.useEffect(() => {
     if (!appState.baseImage || baseImage?.gif === appState.baseImage) {
@@ -64,6 +62,20 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
       })
     );
   }, [appState, baseImage]);
+
+  const getInitialImage = React.useCallback(
+    (idx: number): ImageEffectResult | undefined => {
+      const prevEffect = currentEffects[idx - 1];
+      if (prevEffect) {
+        return prevEffect.state.status === 'done'
+          ? prevEffect.state.image
+          : undefined;
+      }
+
+      return baseImage;
+    },
+    [baseImage, currentEffects]
+  );
 
   const onMoveUp = (idx: number) =>
     idx > 0
@@ -186,7 +198,11 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
 
                 setEffectDialogOpen({ open: false });
               }}
-              currentImage={t}
+              initialImage={getInitialImage(tIdx)}
+              currentEffect={{
+                effectName: t.effectName,
+                params: t.paramsValues,
+              }}
               currFps={appState.fps}
               currRandomSeed="partymoji"
             />

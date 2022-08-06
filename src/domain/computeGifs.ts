@@ -1,30 +1,14 @@
 import { readImage, runEffects } from './run';
 import { runEffectsAsync } from './runAsync';
-import { AppState, EffectInput, Image, ImageEffectResult } from './types';
+import { AppState, Image, ImageEffectResult } from './types';
 import { ENV, debugLog } from './env';
 import { assert } from './utils';
 
 // Can't get web workers working with the dev build, so just use the synchrounous version
 //  if not a prod build.
-const run = ENV === 'DEV' ? runEffects : runEffectsAsync;
+export const computeGif = ENV === 'DEV' ? runEffects : runEffectsAsync;
 
-export const applyEffect = ({
-  state,
-  image,
-  effect,
-}: {
-  state: AppState;
-  image: Image;
-  effect: EffectInput;
-}) =>
-  run({
-    randomSeed: state.baseImage!,
-    image,
-    effectInput: effect,
-    fps: state.fps,
-  });
-
-export const computeGifs = async ({
+export const computeGifsForState = async ({
   state,
   startEffectIndex,
   onCompute,
@@ -52,13 +36,14 @@ export const computeGifs = async ({
 
     const effect = state.effects[i];
 
-    const result = await applyEffect({
-      state,
+    const result = await computeGif({
+      randomSeed: state.baseImage!,
       image,
-      effect: {
+      effectInput: {
         effectName: effect.effectName,
         params: effect.paramsValues,
       },
+      fps: state.fps,
     });
 
     // Google analytics

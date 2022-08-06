@@ -16,7 +16,6 @@ import {
 import {
   ParamFunction,
   Effect,
-  AppStateEffect,
   EffectInput,
   ImageEffectResult,
 } from '../domain/types';
@@ -24,11 +23,13 @@ import { replaceIndex } from '../domain/utils';
 import { debugLog } from '../domain/env';
 import { effectByName } from '../effects';
 import { Gif } from './Gif';
-import { useEffectComputer } from './useEffectComputer';
+import { useProcessingQueue } from './useProcessingQueue';
+import { computeGif } from '../domain/computeGifs';
 
 interface ImageEffectProps {
   open: boolean;
-  currentImage: AppStateEffect;
+  initialImage: ImageEffectResult | undefined;
+  currentEffect: EffectInput;
   possibleEffects: Effect<any>[];
   currFps: number;
   currRandomSeed: string;
@@ -41,7 +42,8 @@ interface ImageEffectProps {
 
 export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
   open,
-  currentImage,
+  initialImage,
+  currentEffect,
   possibleEffects,
   currFps,
   currRandomSeed,
@@ -52,18 +54,70 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
     { computing: true } | { computing: false; results: ImageEffectResult }
   >({ computing: true });
 
-  const onImageChange = useEffectComputer((results) => {
-    setImage({ computing: false, results });
+  const onImageChange = useProcessingQueue({
+    fn: computeGif,
+    onComplete: (results) => setImage({ computing: false, results }),
   });
 
   const [initialLoaded, setInitialLoaded] = React.useState(false);
 
   const [editingEffect, setEditingEffect] = React.useState<EffectInput>({
     // Make a copy of the effect being passed in
-    effectName: currentImage.effectName,
-    params: [...currentImage.paramsValues],
+    effectName: currentEffect.effectName,
+    params: [...currentEffect.params],
   });
   const [dirty, setDirty] = React.useState(false);
+
+  React.useEffect(() => {
+    // Reset state to default values on close
+    if (!open) {
+      setInitialLoaded(false);
+      setEditingEffect({
+        // Make a copy of the effect being passed in
+        effectName: currentEffect.effectName,
+        params: [...currentEffect.params],
+      });
+      setImage({ computing: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  React.useEffect(() => {
+    // Set initial loaded image once we have it
+    if (!initialImage) {
+      return;
+    }
+
+    if (!initialLoaded) {
+      debugLog('Initial loading');
+      // The initial loading of the original effect
+      setImage({
+        computing: false,
+        results: initialImage,
+      });
+      setInitialLoaded(true);
+      return;
+    }
+
+    // Just used for setting the initial image, so just change it when the initial image does.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialImage]);
+
+  React.useEffect(() => {
+    if (!initialImage) {
+      return;
+    }
+
+    setImage({ computing: true });
+    onImageChange({
+      fps: currFps,
+      randomSeed: currRandomSeed,
+      image: initialImage.image,
+      effectInput: editingEffect,
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialImage, editingEffect, currFps, currRandomSeed]);
 
   const closeDialog = ({ save }: { save: boolean }) => {
     if (!save) {
@@ -74,44 +128,6 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
     onChangeEffect(editingEffect, image.computing ? undefined : image.results);
     setDirty(false);
   };
-
-  React.useEffect(() => {
-    if (currentImage.state.status !== 'done') {
-      // Can't compute any preview until the previous image has computed
-      return;
-    }
-
-    if (!initialLoaded) {
-      debugLog('Initial loading');
-      // The initial loading of the original effect
-      setImage({
-        computing: false,
-        results: currentImage.state.image,
-      });
-      setInitialLoaded(true);
-      return;
-    }
-
-    // Just used for setting the initial image, so just change it when the initial image does.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentImage]);
-
-  React.useEffect(() => {
-    if (currentImage.state.status !== 'done' || !dirty) {
-      return;
-    }
-
-    setImage({ computing: true });
-    onImageChange({
-      fps: currFps,
-      randomSeed: currRandomSeed,
-      image: currentImage.state.image.image,
-      effectInput: editingEffect,
-    });
-
-    // Only fire this hook when the effect changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editingEffect]);
 
   const effect = effectByName(editingEffect.effectName);
 
@@ -130,11 +146,7 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
                 setEditingEffect({
                   effectName: t.name,
                   params: t.params.map((p) =>
-                    p.defaultValue(
-                      currentImage.state.status === 'done'
-                        ? currentImage.state.image.image
-                        : undefined
-                    )
+                    p.defaultValue(initialImage?.image ?? undefined)
                   ),
                 });
                 setDirty(true);
