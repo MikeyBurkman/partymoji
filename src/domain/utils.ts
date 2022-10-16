@@ -528,3 +528,8 @@ export const debounce = <T extends Function>(func: T, timeout: number): T => {
     }, timeout);
   }) as any as T;
 };
+
+export const isUrl = (s: string): boolean =>
+  /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(
+    s
+  );

@@ -31,7 +31,6 @@ export function imagePickerParam({
     fn: (params) => (
       <ImagePicker
         currentImageUrl={params.value.dataUrl}
-        name={name}
         width={64}
         height={64}
         onChange={async (dataUrl) => {

@@ -190,7 +190,7 @@ export const App: React.FC = () => {
               <Stack spacing={1} alignItems="center">
                 <Typography variant="h5">Source Image</Typography>
                 <ImagePicker
-                  name="Choose a source image"
+                  name="Upload a source image"
                   currentImageUrl={state.baseImage}
                   onChange={(baseImage) => {
                     setState(

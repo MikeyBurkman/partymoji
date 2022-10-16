@@ -33,7 +33,7 @@ export const hueWave = buildEffect({
       parameters: [amplitude, period],
       getSrcPixel,
     }) => {
-      const [x, y] = coord;
+      const [, y] = coord;
       const amount = Math.round(
         amplitude * Math.sin((y / height) * period * Math.PI + shift)
       );
