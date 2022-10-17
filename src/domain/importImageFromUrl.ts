@@ -3,8 +3,7 @@ export const getImageFromUrl = async (url: string) => {
   return new Promise<string>((resolve, reject) => {
     const img = new Image();
     img.setAttribute('crossOrigin', 'anonymous');
-    img.onload = (...args) => {
-      console.log('OnLoad', { args });
+    img.onload = () => {
       const canvas = document.createElement('canvas');
       canvas.width = img.width;
       canvas.height = img.height;
@@ -16,8 +15,7 @@ export const getImageFromUrl = async (url: string) => {
       resolve(canvas.toDataURL());
     };
 
-    img.onerror = (...args) => {
-      console.log('Error loading url', { args });
+    img.onerror = () => {
       reject(new Error('Error loading url'));
     };
 

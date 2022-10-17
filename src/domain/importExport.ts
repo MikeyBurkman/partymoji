@@ -1,5 +1,6 @@
 import * as lz from 'lz-string';
 import { AppState } from './types';
+import { readFromClipboard, copyToClipboard } from './utils';
 
 type ImportResults =
   | { status: 'error'; message: string }
@@ -7,7 +8,7 @@ type ImportResults =
 
 export const importFromClipboard = async (): Promise<ImportResults> => {
   try {
-    const clipboardContents = await navigator.clipboard.readText();
+    const clipboardContents = await readFromClipboard();
     if (!clipboardContents) {
       return { status: 'error', message: 'No text found on clipboard' };
     }
@@ -24,7 +25,7 @@ export const importFromClipboard = async (): Promise<ImportResults> => {
   }
 };
 
-export const exportToClipboard = (state: AppState) => {
+export const exportToClipboard = async (state: AppState) => {
   const output = lz.compressToBase64(JSON.stringify(state));
-  navigator.clipboard.writeText(output);
+  await copyToClipboard(output);
 };

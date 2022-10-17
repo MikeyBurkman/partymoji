@@ -533,3 +533,9 @@ export const isUrl = (s: string): boolean =>
   /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(
     s
   );
+
+export const copyToClipboard = (s: string): Promise<void> =>
+  navigator.clipboard.writeText(s);
+
+export const readFromClipboard = (): Promise<string> =>
+  navigator.clipboard.readText();
