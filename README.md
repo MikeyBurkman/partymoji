@@ -19,3 +19,5 @@ https://mikeyburkman.github.io/partymoji/
 1. Changing things while stuff is being computed can lead to undefined behavior
 2. Flickering when adding a new effect on prod
 3. Insert effects before/after current effect. (Can ditch current Add button)
+4. CheckboxParam doesn't seem to work?
+5. Change all of our resizing/hue stuff to use canvas when possible

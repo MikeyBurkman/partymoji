@@ -56,10 +56,14 @@ export const text = buildEffect({
   ] as const,
   fn: ({ image, parameters: [text, font, x, y, fontSize, color] }) =>
     mapFrames(image, (frame) =>
-      applyCanvasFromFrame(image.dimensions, frame, (ctx) => {
-        ctx.font = `${fontSize}px ${font}`;
-        ctx.fillStyle = toHexColor(color);
-        ctx.fillText(text, x, y);
+      applyCanvasFromFrame({
+        dimensions: image.dimensions,
+        frame,
+        postEffect: (ctx) => {
+          ctx.font = `${fontSize}px ${font}`;
+          ctx.fillStyle = toHexColor(color);
+          ctx.fillText(text, x, y);
+        },
       })
     ),
 });

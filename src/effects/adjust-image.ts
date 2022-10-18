@@ -1,11 +1,7 @@
 import { buildEffect } from '../domain/types';
 import {
-  adjustBrightness,
-  adjustContrast,
-  adjustSaturation,
+  applyCanvasFromFrame,
   changeFrameCount,
-  getPixelFromSource,
-  mapCoords,
   mapFrames,
   scaleImage,
 } from '../domain/utils';
@@ -109,26 +105,14 @@ export const adjustImage = buildEffect({
     }
 
     currImage = mapFrames(currImage, (imageData) =>
-      mapCoords(currImage.dimensions, (coord) => {
-        let currColor = getPixelFromSource(
-          currImage.dimensions,
-          imageData,
-          coord
-        );
-
-        if (brightness !== 0) {
-          currColor = adjustBrightness(currColor, brightness);
-        }
-
-        if (contrast !== 0) {
-          currColor = adjustContrast(currColor, contrast);
-        }
-
-        if (saturation !== 0) {
-          currColor = adjustSaturation(currColor, saturation);
-        }
-
-        return currColor;
+      applyCanvasFromFrame({
+        dimensions: currImage.dimensions,
+        frame: imageData,
+        preEffect: (ctx) => {
+          ctx.filter = `brightness(${brightness + 100}%) contrast(${
+            contrast + 100
+          }%) saturate(${saturation + 100}%)`;
+        },
       })
     );
 

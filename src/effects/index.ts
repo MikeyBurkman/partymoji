@@ -4,6 +4,7 @@ import { assert } from '../domain/utils';
 import { adjustImage } from './adjust-image';
 import { backgroundColor } from './background-color';
 import { backgroundImage } from './background-image';
+import { blur } from './blur';
 import { bounce } from './bounce';
 import { bounceAnimation } from './bounce-animation';
 import { circle } from './circle';
@@ -46,6 +47,7 @@ export const POSSIBLE_EFFECTS = pipe(
     adjustImage,
     backgroundColor,
     backgroundImage,
+    blur,
     bounce,
     bounceAnimation,
     circle,

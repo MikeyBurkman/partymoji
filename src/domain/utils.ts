@@ -540,20 +540,47 @@ export const copyToClipboard = (s: string): Promise<void> =>
 export const readFromClipboard = (): Promise<string> =>
   navigator.clipboard.readText();
 
-export const applyCanvasFromFrame = (
-  [width, height]: Dimensions,
-  frame: FrameData,
-  fn: (ctx: OffscreenCanvasRenderingContext2D) => void
-): FrameData => {
+/**
+ * Allows you to apply a JS Canvas to an image.
+ * Use the `preEffect` and `postEffect` functions to maniuplate the image
+ *  both before and after drawing the image to the canvas.
+ */
+export const applyCanvasFromFrame = ({
+  dimensions,
+  frame,
+  preEffect,
+  postEffect,
+}: {
+  dimensions: Dimensions;
+  frame: FrameData;
+  /** Manipulate the context *before* drawing the image. Set things like filters here */
+  preEffect?: (ctx: OffscreenCanvasRenderingContext2D) => void;
+  /** Manipulate the context *after* drawing the image. Use this to draw on top of the image */
+  postEffect?: (ctx: OffscreenCanvasRenderingContext2D) => void;
+}): FrameData => {
+  const [width, height] = dimensions;
   const canvas = new OffscreenCanvas(width, height);
   const ctx = canvas.getContext('2d');
   if (!ctx) {
     throw new Error('Canvas not supported');
   }
 
+  // Create a new Canvas using our existing image.
+  // We can then draw that onto a new one, which will allow effects to be made to it.
+  // Surely there's a better way of doing this...
   ctx.putImageData(new ImageData(frame, width, height), 0, 0);
 
-  fn(ctx);
+  const newCanvas = new OffscreenCanvas(width, height);
+  const ctxNew = newCanvas.getContext('2d');
+  if (!ctxNew) {
+    throw new Error('Canvas not supported');
+  }
 
-  return ctx.getImageData(0, 0, width, height).data;
+  ctxNew.save();
+  preEffect?.(ctxNew);
+  ctxNew.drawImage(canvas, 0, 0);
+  ctxNew.restore();
+  postEffect?.(ctxNew);
+
+  return ctxNew.getImageData(0, 0, width, height).data;
 };
