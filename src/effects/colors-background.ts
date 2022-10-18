@@ -1,9 +1,6 @@
 import { buildEffect } from '../domain/types';
-import {
-  fromHexColor,
-  isTransparent,
-  mapImageWithPrecompute,
-} from '../domain/utils';
+import { fromHexColor, isTransparent } from '../domain/utils/color';
+import { mapImageWithPrecompute } from '../domain/utils/image';
 import { colorPickerParam } from '../params/colorPickerParam';
 import { variableLengthParam } from '../params/variableLengthParam';
 

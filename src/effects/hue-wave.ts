@@ -1,5 +1,6 @@
 import { buildEffect } from '../domain/types';
-import { mapImageWithPrecompute, shiftHue } from '../domain/utils';
+import { shiftHue } from '../domain/utils/color';
+import { mapImageWithPrecompute } from '../domain/utils/image';
 import { sliderParam } from '../params/sliderParam';
 
 export const hueWave = buildEffect({

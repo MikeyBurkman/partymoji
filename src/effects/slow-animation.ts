@@ -1,6 +1,6 @@
 import { range } from 'remeda';
 import { buildEffect } from '../domain/types';
-import { getPixelFromSource, mapCoords } from '../domain/utils';
+import { getPixelFromSource, mapCoords } from '../domain/utils/image';
 import { radioParam } from '../params/radioParam';
 
 export const slowAnimation = buildEffect({

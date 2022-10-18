@@ -1,5 +1,5 @@
 import { buildEffect, Coord } from '../domain/types';
-import { mapImageWithPrecompute } from '../domain/utils';
+import { mapImageWithPrecompute } from '../domain/utils/image';
 
 export const roxbury = buildEffect({
   name: 'Roxbury',

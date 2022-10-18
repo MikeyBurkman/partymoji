@@ -1,10 +1,10 @@
 import { buildEffect } from '../domain/types';
+import { isTransparent } from '../domain/utils/color';
 import {
-  getPixel,
-  isTransparent,
-  resizeImage,
   mapImageWithPrecompute,
-} from '../domain/utils';
+  getPixel,
+  resizeImage,
+} from '../domain/utils/image';
 import { imagePickerParam } from '../params/imagePickerParam';
 import { radioParam } from '../params/radioParam';
 

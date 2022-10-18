@@ -1,5 +1,5 @@
 import { buildEffect } from '../domain/types';
-import { mapImage } from '../domain/utils';
+import { mapImage } from '../domain/utils/image';
 import { intParam } from '../params/intParam';
 
 export const transpose = buildEffect({

@@ -1,5 +1,5 @@
 import { buildEffect } from '../domain/types';
-import { mapImageWithPrecompute } from '../domain/utils';
+import { mapImageWithPrecompute } from '../domain/utils/image';
 import { sliderParam } from '../params/sliderParam';
 
 export const ripple = buildEffect({

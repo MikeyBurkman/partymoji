@@ -1,5 +1,6 @@
 import { buildEffect } from '../domain/types';
-import { applyCanvasFromFrame, mapFrames } from '../domain/utils';
+import { applyCanvasFromFrame } from '../domain/utils/canvas';
+import { mapFrames } from '../domain/utils/image';
 import { sliderParam } from '../params/sliderParam';
 
 export const blur = buildEffect({

@@ -1,11 +1,11 @@
 import { buildEffect } from '../domain/types';
 import {
-  adjustBrightness,
   fromHexColor,
-  getAveragePixelValue,
   isTransparent,
-  mapImageWithPrecompute,
-} from '../domain/utils';
+  adjustBrightness,
+  getAveragePixelValue,
+} from '../domain/utils/color';
+import { mapImageWithPrecompute } from '../domain/utils/image';
 import { colorPickerParam } from '../params/colorPickerParam';
 import { sliderParam } from '../params/sliderParam';
 import { variableLengthParam } from '../params/variableLengthParam';

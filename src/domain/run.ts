@@ -13,11 +13,11 @@ import {
 } from './types';
 import {
   fromHexColor,
-  getPixelFromSource,
   isTransparent,
   randomColor,
   toHexColor,
-} from './utils';
+} from './utils/color';
+import { getPixelFromSource } from './utils/image';
 
 export interface RunArgs {
   randomSeed: string;

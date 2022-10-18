@@ -1,6 +1,6 @@
 import * as convert from 'color-convert';
 import { buildEffect } from '../domain/types';
-import { mapImage } from '../domain/utils';
+import { mapImage } from '../domain/utils/image';
 
 export const nuke = buildEffect({
   name: 'Nuke',

@@ -1,10 +1,6 @@
 import { buildEffect } from '../domain/types';
-import {
-  applyCanvasFromFrame,
-  changeFrameCount,
-  mapFrames,
-  scaleImage,
-} from '../domain/utils';
+import { applyCanvasFromFrame } from '../domain/utils/canvas';
+import { changeFrameCount, scaleImage, mapFrames } from '../domain/utils/image';
 import { intParam } from '../params/intParam';
 import { sliderParam } from '../params/sliderParam';
 

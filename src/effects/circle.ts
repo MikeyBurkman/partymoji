@@ -1,5 +1,5 @@
 import { buildEffect } from '../domain/types';
-import { mapImageWithPrecompute } from '../domain/utils';
+import { mapImageWithPrecompute } from '../domain/utils/image';
 import { intParam } from '../params/intParam';
 
 export const circle = buildEffect({

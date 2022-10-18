@@ -9,7 +9,7 @@ import {
   ParamFunction,
   toParamFunction,
 } from '../domain/types';
-import { fromHexColor, toHexColor } from '../domain/utils';
+import { fromHexColor, toHexColor } from '../domain/utils/color';
 
 const ColorBox: React.FC<{ color: Color }> = ({ color }) => (
   <div

@@ -1,5 +1,5 @@
 import { buildEffect } from '../domain/types';
-import { mapImageWithPrecompute } from '../domain/utils';
+import { mapImageWithPrecompute } from '../domain/utils/image';
 import { intParam } from '../params/intParam';
 
 // Probably still needs work -- the inner pixels get all funky still

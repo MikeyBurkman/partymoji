@@ -1,5 +1,6 @@
 import { buildEffect } from '../domain/types';
-import { fromHexColor, isTransparent, mapImage } from '../domain/utils';
+import { fromHexColor, isTransparent } from '../domain/utils/color';
+import { mapImage } from '../domain/utils/image';
 import { colorPickerParam } from '../params/colorPickerParam';
 
 export const backgroundColor = buildEffect({

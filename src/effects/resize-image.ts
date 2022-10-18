@@ -1,5 +1,5 @@
 import { buildEffect } from '../domain/types';
-import { resizeImage as resizeImageUtil } from '../domain/utils';
+import { resizeImage as resizeImageUtil } from '../domain/utils/image';
 import { intParam } from '../params/intParam';
 
 export const resizeImage = buildEffect({

@@ -1,11 +1,11 @@
 import { buildEffect, Coord } from '../domain/types';
 import {
+  isTransparent,
   calculateAngle,
   colorFromHue,
-  isTransparent,
-  mapImageWithPrecompute,
   shiftTowardsHue,
-} from '../domain/utils';
+} from '../domain/utils/color';
+import { mapImageWithPrecompute } from '../domain/utils/image';
 import { intParam } from '../params/intParam';
 import { radioParam } from '../params/radioParam';
 import { sliderParam } from '../params/sliderParam';

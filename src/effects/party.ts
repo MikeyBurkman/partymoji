@@ -1,10 +1,10 @@
 import { buildEffect } from '../domain/types';
 import {
-  colorFromHue,
   isTransparent,
-  mapImage,
+  colorFromHue,
   shiftTowardsHue,
-} from '../domain/utils';
+} from '../domain/utils/color';
+import { mapImage } from '../domain/utils/image';
 import { radioParam } from '../params/radioParam';
 import { sliderParam } from '../params/sliderParam';
 

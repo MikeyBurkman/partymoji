@@ -18,7 +18,7 @@ import {
   AppState,
   ImageEffectResult,
 } from '../domain/types';
-import { replaceIndex } from '../domain/utils';
+import { replaceIndex } from '../domain/utils/misc';
 import { Gif } from './Gif';
 import { ImageEffectDialog } from './ImageEffectDialog';
 

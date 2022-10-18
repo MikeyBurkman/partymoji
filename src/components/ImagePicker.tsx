@@ -1,7 +1,7 @@
 import { Button, Icon, Stack, Box, TextField } from '@material-ui/core';
 import React from 'react';
 import { getImageFromUrl } from '../domain/importImageFromUrl';
-import { isUrl } from '../domain/utils';
+import { isUrl } from '../domain/utils/misc';
 
 interface ImagePickerProps {
   currentImageUrl?: string;

@@ -19,7 +19,7 @@ import {
   EffectInput,
   ImageEffectResult,
 } from '../domain/types';
-import { replaceIndex } from '../domain/utils';
+import { replaceIndex } from '../domain/utils/misc';
 import { debugLog } from '../domain/env';
 import { effectByName } from '../effects';
 import { Gif } from './Gif';

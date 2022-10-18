@@ -2,7 +2,7 @@ import { readImage, runEffects } from './run';
 import { runEffectsAsync } from './runAsync';
 import { AppState, Image, ImageEffectResult } from './types';
 import { ENV, debugLog } from './env';
-import { assert } from './utils';
+import { assert } from './utils/misc';
 
 // Can't get web workers working with the dev build, so just use the synchrounous version
 //  if not a prod build.

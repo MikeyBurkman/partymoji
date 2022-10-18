@@ -1,5 +1,6 @@
 import { buildEffect } from '../domain/types';
-import { mapImage, shiftTowardsHue } from '../domain/utils';
+import { shiftTowardsHue } from '../domain/utils/color';
+import { mapImage } from '../domain/utils/image';
 import { huePickerParam } from '../params/huePickerParam';
 import { sliderParam } from '../params/sliderParam';
 

@@ -1,11 +1,10 @@
 import { buildEffect, Color, Coord, Image } from '../domain/types';
+import { TRANSPARENT_COLOR, colorDiff } from '../domain/utils/color';
 import {
-  colorDiff,
   duplicateImage,
   getPixelFromSource,
   setPixel,
-  TRANSPARENT_COLOR,
-} from '../domain/utils';
+} from '../domain/utils/image';
 import { colorPickerParam } from '../params/colorPickerParam';
 import { sliderParam } from '../params/sliderParam';
 

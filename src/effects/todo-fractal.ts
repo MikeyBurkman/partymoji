@@ -1,5 +1,6 @@
 import { buildEffect } from '../domain/types';
-import { isTransparent, mapImage, shiftTowardsHue } from '../domain/utils';
+import { isTransparent, shiftTowardsHue } from '../domain/utils/color';
+import { mapImage } from '../domain/utils/image';
 import { intParam } from '../params/intParam';
 import { sliderParam } from '../params/sliderParam';
 

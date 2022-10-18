@@ -1,5 +1,6 @@
 import { buildEffect } from '../domain/types';
-import { isTransparent, mapImage } from '../domain/utils';
+import { isTransparent } from '../domain/utils/color';
+import { mapImage } from '../domain/utils/image';
 import { radioParam } from '../params/radioParam';
 import { sliderParam } from '../params/sliderParam';
 

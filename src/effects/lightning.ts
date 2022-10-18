@@ -1,11 +1,11 @@
 import seedrandom from 'seedrandom';
 import { buildEffect, Color } from '../domain/types';
+import { isTransparent } from '../domain/utils/color';
 import {
-  getPixelFromSource,
-  isTransparent,
-  mapCoords,
   mapFrames,
-} from '../domain/utils';
+  mapCoords,
+  getPixelFromSource,
+} from '../domain/utils/image';
 import { textParam } from '../params/textParam';
 
 const lightningIntensities: Color[] = [

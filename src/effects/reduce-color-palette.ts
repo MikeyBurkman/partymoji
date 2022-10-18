@@ -1,16 +1,18 @@
 import { minBy, sortBy } from 'remeda';
 import { buildEffect, Color } from '../domain/types';
 import {
-  colorDiff,
-  fromHexColor,
-  getPixelFromSource,
   isTransparent,
-  mapCoords,
-  mapFrames,
-  mapImageWithPrecompute,
   toHexColor,
   TRANSPARENT_COLOR,
-} from '../domain/utils';
+  fromHexColor,
+  colorDiff,
+} from '../domain/utils/color';
+import {
+  mapImageWithPrecompute,
+  mapFrames,
+  mapCoords,
+  getPixelFromSource,
+} from '../domain/utils/image';
 import { sliderParam } from '../params/sliderParam';
 
 export const reduceColorPalette = buildEffect({

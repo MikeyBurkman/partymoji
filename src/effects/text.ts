@@ -1,10 +1,7 @@
 import { buildEffect } from '../domain/types';
-import {
-  applyCanvasFromFrame,
-  fromHexColor,
-  mapFrames,
-  toHexColor,
-} from '../domain/utils';
+import { applyCanvasFromFrame } from '../domain/utils/canvas';
+import { fromHexColor, toHexColor } from '../domain/utils/color';
+import { mapFrames } from '../domain/utils/image';
 import { colorPickerParam } from '../params/colorPickerParam';
 import { dropdownParam } from '../params/dropdownParam';
 import { intParam } from '../params/intParam';

@@ -1,5 +1,6 @@
 import { buildEffect } from '../domain/types';
-import { adjustSaturation, mapImage } from '../domain/utils';
+import { adjustSaturation } from '../domain/utils/color';
+import { mapImage } from '../domain/utils/image';
 import { sliderParam } from '../params/sliderParam';
 
 const MAX_GRID_SIZE = 64;

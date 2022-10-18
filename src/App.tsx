@@ -15,7 +15,7 @@ import { ImagePicker } from './components/ImagePicker';
 import { ImageEffectList } from './components/ImageEffectList';
 import { computeGifsForState, getEffectsDiff } from './domain/computeGifs';
 import { AppState, AppStateEffect } from './domain/types';
-import { replaceIndex } from './domain/utils';
+import { replaceIndex } from './domain/utils/misc';
 import { ENV, debugLog } from './domain/env';
 import * as localStorage from './localStorage';
 import { sliderParam } from './params/sliderParam';

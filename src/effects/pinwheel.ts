@@ -1,10 +1,10 @@
 import { buildEffect, Coord } from '../domain/types';
 import {
-  calculateAngle,
   fromHexColor,
   isTransparent,
-  mapImageWithPrecompute,
-} from '../domain/utils';
+  calculateAngle,
+} from '../domain/utils/color';
+import { mapImageWithPrecompute } from '../domain/utils/image';
 import { colorPickerParam } from '../params/colorPickerParam';
 import { intParam } from '../params/intParam';
 import { sliderParam } from '../params/sliderParam';

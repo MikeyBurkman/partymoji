@@ -1,5 +1,6 @@
 import { buildEffect } from '../domain/types';
-import { isTransparent, mapImage, shiftHue } from '../domain/utils';
+import { isTransparent, shiftHue } from '../domain/utils/color';
+import { mapImage } from '../domain/utils/image';
 
 export const partyTwo = buildEffect({
   name: 'Party Two',

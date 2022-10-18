@@ -1,6 +1,6 @@
 import { pipe, reject, sortBy } from 'remeda';
 import { ParamFunction, Effect } from '../domain/types';
-import { assert } from '../domain/utils';
+import { assert } from '../domain/utils/misc';
 import { adjustImage } from './adjust-image';
 import { backgroundColor } from './background-color';
 import { backgroundImage } from './background-image';

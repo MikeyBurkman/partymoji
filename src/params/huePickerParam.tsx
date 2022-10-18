@@ -8,7 +8,7 @@ import {
   ParamFunction,
   toParamFunction,
 } from '../domain/types';
-import { toHexColor } from '../domain/utils';
+import { toHexColor } from '../domain/utils/color';
 
 const HuePickerParam: React.FC<{
   name: string;

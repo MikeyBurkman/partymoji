@@ -1,5 +1,6 @@
 import { buildEffect } from '../domain/types';
-import { fromHexColor, mapImage, colorDiff } from '../domain/utils';
+import { fromHexColor, colorDiff } from '../domain/utils/color';
+import { mapImage } from '../domain/utils/image';
 import { checkboxParam } from '../params/checkboxParam';
 import { colorPickerParam } from '../params/colorPickerParam';
 import { sliderParam } from '../params/sliderParam';
