@@ -7,7 +7,7 @@ import {
   Coord,
   Dimensions,
   Image,
-  ImageData,
+  FrameData,
   Random,
   EffectFn,
   EffectFnOpts,
@@ -65,7 +65,7 @@ export const TRANSPARENT_COLOR: Color = [0, 0, 0, 0];
 
 export const getPixelFromSource = (
   dimensions: Dimensions,
-  image: ImageData,
+  image: FrameData,
   coord: Coord
 ): Color => {
   const [width, height] = dimensions;
@@ -103,10 +103,10 @@ export function assert(
 export const mapFrames = (
   image: Image,
   cb: (
-    imageData: ImageData,
+    imageData: FrameData,
     frameIndex: number,
     frameCount: number
-  ) => ImageData
+  ) => FrameData
 ): Image => ({
   dimensions: image.dimensions,
   frames: image.frames.map((frame, idx) => cb(frame, idx, image.frames.length)),
@@ -118,9 +118,9 @@ export const mapFrames = (
 export const mapCoords = (
   dimensions: Dimensions,
   cb: (coord: Coord) => Color
-): ImageData => {
+): FrameData => {
   const [width, height] = dimensions;
-  const transformedImageData = new Uint8Array(width * height * 4);
+  const transformedImageData = new Uint8ClampedArray(width * height * 4);
   for (let y = 0; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
       const c = clampColor(cb([x, y]));
@@ -347,13 +347,13 @@ export const createNewImage = (args: {
   dimensions: args.dimensions,
   frames: range(0, args.frameCount).map(
     // 4 == bytes used per color (RGBA)
-    () => new Uint8Array(args.dimensions[0] * args.dimensions[1] * 4)
+    () => new Uint8ClampedArray(args.dimensions[0] * args.dimensions[1] * 4)
   ),
 });
 
 export const duplicateImage = (image: Image): Image => ({
   dimensions: image.dimensions,
-  frames: image.frames.map((f) => new Uint8Array(f)),
+  frames: image.frames.map((f) => new Uint8ClampedArray(f)),
 });
 
 export const getPixel = (args: {
@@ -539,3 +539,21 @@ export const copyToClipboard = (s: string): Promise<void> =>
 
 export const readFromClipboard = (): Promise<string> =>
   navigator.clipboard.readText();
+
+export const applyCanvasFromFrame = (
+  [width, height]: Dimensions,
+  frame: FrameData,
+  fn: (ctx: OffscreenCanvasRenderingContext2D) => void
+): FrameData => {
+  const canvas = new OffscreenCanvas(width, height);
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    throw new Error('Canvas not supported');
+  }
+
+  ctx.putImageData(new ImageData(frame, width, height), 0, 0);
+
+  fn(ctx);
+
+  return ctx.getImageData(0, 0, width, height).data;
+};

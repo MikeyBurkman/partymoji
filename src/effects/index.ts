@@ -37,6 +37,7 @@ import { shake } from './shake';
 import { slowAnimation } from './slow-animation';
 import { spin } from './spin';
 import { staticc } from './static';
+import { text } from './text';
 import { transparency } from './transparency';
 import { transpose } from './transpose';
 
@@ -78,6 +79,7 @@ export const POSSIBLE_EFFECTS = pipe(
     slowAnimation,
     spin,
     staticc,
+    text,
     transparency,
     transpose,
   ],

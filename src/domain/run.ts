@@ -7,7 +7,7 @@ import { effectByName } from '../effects';
 import {
   Color,
   Image,
-  ImageData,
+  FrameData,
   ImageEffectResult,
   EffectInput,
 } from './types';
@@ -36,7 +36,7 @@ export const runEffects = async ({
   const random = seedrandom(randomSeed);
 
   const effect = effectByName(effectInput.effectName);
-  const result = effect.fn({
+  const result = await effect.fn({
     image,
     parameters: effectInput.params,
     random,
@@ -66,7 +66,7 @@ const encodeTransparency = (
   transparentColor: Color | undefined
 ): Image => {
   const newFrames = image.frames.map((frame) => {
-    const img = new Uint8Array(frame.length);
+    const img = new Uint8ClampedArray(frame.length);
     for (let i = 0; i < frame.length; i += 4) {
       if (transparentColor && frame[i + 3] < 128) {
         // Anything more than halfway transparent is considered transparent
@@ -137,7 +137,7 @@ export const readImage = (dataUrl: string): Promise<Image> =>
   new Promise<Image>((res, rej) =>
     getPixels(
       dataUrl,
-      (err: Error, results: { shape: number[]; data: ImageData }) => {
+      (err: Error, results: { shape: number[]; data: FrameData }) => {
         if (err) {
           return rej(err);
         }
@@ -146,7 +146,7 @@ export const readImage = (dataUrl: string): Promise<Image> =>
           const [width, height] = results.shape;
           // Single frame
           return res({
-            frames: [Uint8Array.from(results.data)],
+            frames: [Uint8ClampedArray.from(results.data)],
             dimensions: [width, height],
           });
         }
@@ -154,11 +154,14 @@ export const readImage = (dataUrl: string): Promise<Image> =>
         // Multiple frames, need to slice up the image data into numFrames slices
         const [numFrames, width, height] = results.shape;
         const sliceSize = width * height * 4;
-        const frames: Uint8Array[] = [];
+        const frames: Uint8ClampedArray[] = [];
         for (let i = 0; i < numFrames; i += 1) {
-          frames.push(
-            results.data.subarray(i * sliceSize, (i + 1) * sliceSize)
+          const frame = results.data.subarray(
+            i * sliceSize,
+            (i + 1) * sliceSize
           );
+          // Contrary to the TS types, the result of subarray returns a regular Uint8Array, NOT a clamped one!
+          frames.push(Uint8ClampedArray.from(frame));
         }
         return res({
           frames,

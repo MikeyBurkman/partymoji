@@ -1,6 +1,6 @@
 import seedrandom from 'seedrandom';
 
-type JsonPrimitive = string | number | boolean | Uint8Array | null;
+type JsonPrimitive = string | number | boolean | Uint8ClampedArray | null;
 interface JsonMap {
   [member: string]: JsonPrimitive | JsonArray | JsonMap;
 }
@@ -38,14 +38,14 @@ export type Dimensions = [number, number];
  * [2, 1] = index 20
  * To get pixel [x, y], do (x + y * width) * 4
  */
-export type ImageData = Uint8Array;
+export type FrameData = Uint8ClampedArray;
 
 /**
  * The results of get-pixels processImage()
  */
 export type Image = {
   dimensions: Dimensions;
-  frames: ImageData[];
+  frames: FrameData[];
 };
 
 export type Random = seedrandom.prng;
@@ -101,7 +101,9 @@ export const toParamFunction = <T extends JsonType>(
   return () => x;
 };
 
-export type EffectFn<Params> = (opts: EffectFnOpts<Params>) => Image;
+export type EffectFn<Params> = (
+  opts: EffectFnOpts<Params>
+) => Image | Promise<Image>;
 
 type ParamType<Type> = Type extends ParamFunction<infer X> ? X : never;
 
