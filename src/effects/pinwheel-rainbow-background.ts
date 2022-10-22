@@ -1,13 +1,17 @@
 import { buildEffect, Coord } from '../domain/types';
-import { combineImages } from '../domain/utils/canvas';
+import {
+  applyCanvasFromFrame,
+  applyFilter,
+  combineImages,
+} from '../domain/utils/canvas';
 import { calculateAngle, colorFromHue } from '../domain/utils/color';
 import { mapCoords, mapFrames } from '../domain/utils/image';
 import { intParam } from '../params/intParam';
 import { sliderParam } from '../params/sliderParam';
 
-export const pinwheelPartyBackground = buildEffect({
-  name: 'Pinwheel Party Background',
-  description: 'Create a pinwheel of party colors behind the image',
+export const pinwheelRainbowBackground = buildEffect({
+  name: 'Pinwheel Rainbow Background',
+  description: 'Create a background pinwheel of rainbow colors',
   params: [
     sliderParam({
       name: 'Group Count',
@@ -26,8 +30,14 @@ export const pinwheelPartyBackground = buildEffect({
       description: 'Change the vertical center of the pinwheel',
       defaultValue: 0,
     }),
+    sliderParam({
+      name: 'Foreground Opacity',
+      defaultValue: 100,
+      min: 0,
+      max: 100,
+    }),
   ] as const,
-  fn: ({ image, parameters: [groupCount, offsetX, offsetY] }) =>
+  fn: ({ image, parameters: [groupCount, offsetX, offsetY, opacity] }) =>
     mapFrames(image, (frame, frameIndex, frameCount) => {
       const animationProgress = frameIndex / frameCount;
       const [width, height] = image.dimensions;
@@ -39,10 +49,19 @@ export const pinwheelPartyBackground = buildEffect({
         return colorFromHue(newH);
       });
 
+      const foreground =
+        opacity === 100
+          ? frame
+          : applyCanvasFromFrame({
+              dimensions: image.dimensions,
+              frame,
+              preEffect: (canvasData) => applyFilter(canvasData, { opacity }),
+            });
+
       return combineImages({
         dimensions: image.dimensions,
         background,
-        foreground: frame,
+        foreground,
       });
     }),
 });

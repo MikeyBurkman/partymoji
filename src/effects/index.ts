@@ -23,13 +23,14 @@ import { lightning } from './lightning';
 import { nuke } from './nuke';
 import { opacity } from './opacity';
 import { party } from './party';
-import { partyTwo } from './party-two';
-import { pinwheel } from './pinwheel';
-import { pinwheelParty } from './pinwheel-party';
-import { pinwheelPartyBackground } from './pinwheel-party-background';
-import { radiance } from './radiance';
-import { radianceParty } from './radiance-party';
-import { radiancePartyBackground } from './radiance-party-background';
+import { partyBackground } from './party-background';
+import { partyHarder } from './party-harder';
+import { pinwheelColors } from './pinwheel-colors';
+import { pinwheelRainbow } from './pinwheel-rainbow';
+import { pinwheelRainbowBackground } from './pinwheel-rainbow-background';
+import { radianceColors } from './radiance-colors';
+import { radianceRainbow } from './radiance-rainbow';
+import { radianceRainbowBackground } from './radiance-rainbow-background';
 import { reduceColorPalette } from './reduce-color-palette';
 import { repeatAnimation } from './repeat-animation';
 import { resizeImage } from './resize-image';
@@ -69,13 +70,14 @@ export const POSSIBLE_EFFECTS = pipe(
     nuke,
     opacity,
     party,
-    partyTwo,
-    pinwheel,
-    pinwheelParty,
-    pinwheelPartyBackground,
-    radiance,
-    radianceParty,
-    radiancePartyBackground,
+    partyBackground,
+    partyHarder,
+    pinwheelColors,
+    pinwheelRainbow,
+    pinwheelRainbowBackground,
+    radianceColors,
+    radianceRainbow,
+    radianceRainbowBackground,
     reduceColorPalette,
     repeatAnimation,
     resizeImage,

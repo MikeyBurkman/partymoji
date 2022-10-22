@@ -1,12 +1,12 @@
 import { buildEffect } from '../domain/types';
-import { isTransparent, shiftTowardsHue } from '../domain/utils/color';
+import { shiftTowardsHue } from '../domain/utils/color';
 import { mapImageWithPrecompute } from '../domain/utils/image';
 import { intParam } from '../params/intParam';
 import { sliderParam } from '../params/sliderParam';
 
-export const radianceParty = buildEffect({
-  name: 'Radiance Party',
-  description: 'Radiate party colors out in rings',
+export const radianceRainbow = buildEffect({
+  name: 'Radiance Rainbow',
+  description: 'Radiate rainbow colors out in rings',
   params: [
     sliderParam({
       name: 'Group Count',
@@ -16,8 +16,7 @@ export const radianceParty = buildEffect({
       max: 24,
     }),
     sliderParam({
-      name: 'Amount',
-      description: 'How strong the effect is.',
+      name: 'Strength',
       min: 0,
       max: 100,
       step: 5,
@@ -46,16 +45,10 @@ export const radianceParty = buildEffect({
       computed: { centerX, centerY, maxDist },
       coord,
       animationProgress,
-      parameters: [groupCount, amount, offsetX, offsetY],
+      parameters: [groupCount, strength, offsetX, offsetY],
       getSrcPixel,
     }) => {
       const src = getSrcPixel(coord);
-
-      const isBackground = isTransparent(src);
-
-      if (isBackground) {
-        return src;
-      }
 
       const [x, y] = coord;
       const xRelCenter = x - centerX - offsetX;
@@ -70,7 +63,7 @@ export const radianceParty = buildEffect({
           360 * animationProgress) %
         360;
 
-      return shiftTowardsHue(src, newH, amount);
+      return shiftTowardsHue(src, newH, strength);
     }
   ),
 });

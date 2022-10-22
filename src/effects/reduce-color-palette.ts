@@ -1,7 +1,6 @@
 import { minBy, sortBy } from 'remeda';
 import { buildEffect, Color } from '../domain/types';
 import {
-  isTransparent,
   toHexColor,
   TRANSPARENT_COLOR,
   fromHexColor,
@@ -40,9 +39,7 @@ export const reduceColorPalette = buildEffect({
       mapFrames(image, (frame) =>
         mapCoords(image.dimensions, (coord) => {
           const px = getPixelFromSource(image.dimensions, frame, coord);
-          if (!isTransparent(px)) {
-            allColorsSet.add(toHexColor(px));
-          }
+          allColorsSet.add(toHexColor(px));
           return TRANSPARENT_COLOR; // Not actually used, just makes TS happy
         })
       );
@@ -93,9 +90,6 @@ export const reduceColorPalette = buildEffect({
     },
     ({ coord, getSrcPixel, computed: { colorPalette } }) => {
       const px = getSrcPixel(coord);
-      if (isTransparent(px)) {
-        return px;
-      }
       // Find the color in the palette this one is closest to
       const closestColor = minBy(colorPalette, (top) => colorDiff(top, px))!;
       return closestColor;

@@ -1,5 +1,5 @@
 import { buildEffect } from '../domain/types';
-import { isTransparent, shiftTowardsHue } from '../domain/utils/color';
+import { shiftTowardsHue } from '../domain/utils/color';
 import { mapImage } from '../domain/utils/image';
 import { huePickerParam } from '../params/huePickerParam';
 
@@ -14,15 +14,8 @@ export const hueShiftPulse = buildEffect({
   ],
   fn: mapImage(
     ({ coord, getSrcPixel, frameCount, frameIndex, parameters: [hue] }) => {
-      const srcPixel = getSrcPixel(coord);
-      const isBackground = isTransparent(srcPixel);
-
-      if (isBackground) {
-        return srcPixel;
-      }
-
       const amount = Math.abs(Math.sin(Math.PI * (frameIndex / frameCount)));
-      return shiftTowardsHue(srcPixel, hue, amount * 360);
+      return shiftTowardsHue(getSrcPixel(coord), hue, amount * 360);
     }
   ),
 });

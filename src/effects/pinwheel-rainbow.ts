@@ -1,16 +1,12 @@
 import { buildEffect, Coord } from '../domain/types';
-import {
-  isTransparent,
-  calculateAngle,
-  shiftTowardsHue,
-} from '../domain/utils/color';
+import { calculateAngle, shiftTowardsHue } from '../domain/utils/color';
 import { mapImageWithPrecompute } from '../domain/utils/image';
 import { intParam } from '../params/intParam';
 import { sliderParam } from '../params/sliderParam';
 
-export const pinwheelParty = buildEffect({
-  name: 'Pinwheel Party',
-  description: 'Make the image look like a pinwheel party',
+export const pinwheelRainbow = buildEffect({
+  name: 'Pinwheel Rainbow',
+  description: 'Make the image look like a pinwheel rainbow',
   params: [
     sliderParam({
       name: 'Group Count',
@@ -20,8 +16,7 @@ export const pinwheelParty = buildEffect({
       max: 24,
     }),
     sliderParam({
-      name: 'Amount',
-      description: 'How strong the effect is.',
+      name: 'Strength',
       min: 0,
       max: 100,
       step: 5,
@@ -51,20 +46,14 @@ export const pinwheelParty = buildEffect({
       coord,
       animationProgress,
       getSrcPixel,
-      parameters: [groupCount, amount],
+      parameters: [groupCount, strength],
     }) => {
       const srcPixel = getSrcPixel(coord);
-
-      const isBackground = isTransparent(srcPixel);
-
-      if (isBackground) {
-        return srcPixel;
-      }
 
       const pointAngle = calculateAngle(coord, center);
       const newH = (pointAngle * groupCount + animationProgress * 360) % 360;
 
-      return shiftTowardsHue(srcPixel, newH, amount);
+      return shiftTowardsHue(srcPixel, newH, strength);
     }
   ),
 });

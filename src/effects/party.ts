@@ -1,32 +1,12 @@
 import { buildEffect } from '../domain/types';
-import {
-  isTransparent,
-  colorFromHue,
-  shiftTowardsHue,
-} from '../domain/utils/color';
+import { shiftTowardsHue } from '../domain/utils/color';
 import { mapImage } from '../domain/utils/image';
-import { radioParam } from '../params/radioParam';
 import { sliderParam } from '../params/sliderParam';
 
 export const party = buildEffect({
   name: 'Party',
   description: 'Shift the hue of the image over the course of the animation',
   params: [
-    radioParam<'background' | 'foreground'>({
-      name: 'Type',
-      description: 'Whether to apply the party to the foreground or background',
-      defaultValue: 'background',
-      options: [
-        {
-          name: 'Background',
-          value: 'background',
-        },
-        {
-          name: 'Foreground',
-          value: 'foreground',
-        },
-      ],
-    }),
     sliderParam({
       name: 'Amount',
       description: 'How strong the effect is',
@@ -48,22 +28,11 @@ export const party = buildEffect({
       coord,
       getSrcPixel,
       animationProgress,
-      parameters: [type, amount, shiftSpeed],
+      parameters: [amount, shiftSpeed],
     }) => {
-      const srcPixel = getSrcPixel(coord);
-      const isBackground = isTransparent(srcPixel);
-
       const newH = (animationProgress * shiftSpeed * 360) % 360;
-
-      if (isBackground && type === 'background') {
-        return colorFromHue(newH);
-      }
-
-      if (!isBackground && type === 'foreground') {
-        return shiftTowardsHue(srcPixel, newH, amount);
-      }
-
-      return srcPixel;
+      const srcPixel = getSrcPixel(coord);
+      return shiftTowardsHue(srcPixel, newH, amount);
     }
   ),
 });
