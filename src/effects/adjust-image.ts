@@ -1,5 +1,5 @@
 import { buildEffect } from '../domain/types';
-import { applyCanvasFromFrame } from '../domain/utils/canvas';
+import { applyCanvasFromFrame, applyFilter } from '../domain/utils/canvas';
 import { changeFrameCount, scaleImage, mapFrames } from '../domain/utils/image';
 import { intParam } from '../params/intParam';
 import { sliderParam } from '../params/sliderParam';
@@ -104,11 +104,12 @@ export const adjustImage = buildEffect({
       applyCanvasFromFrame({
         dimensions: currImage.dimensions,
         frame: imageData,
-        preEffect: (ctx) => {
-          ctx.filter = `brightness(${brightness + 100}%) contrast(${
-            contrast + 100
-          }%) saturate(${saturation + 100}%)`;
-        },
+        preEffect: (canvasData) =>
+          applyFilter(canvasData, {
+            brightness: brightness + 100,
+            contrast: contrast + 100,
+            saturation: saturation + 100,
+          }),
       })
     );
 

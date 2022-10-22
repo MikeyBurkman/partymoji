@@ -1,12 +1,7 @@
 import { buildEffect } from '../domain/types';
-import {
-  isTransparent,
-  colorFromHue,
-  shiftTowardsHue,
-} from '../domain/utils/color';
+import { isTransparent, shiftTowardsHue } from '../domain/utils/color';
 import { mapImageWithPrecompute } from '../domain/utils/image';
 import { intParam } from '../params/intParam';
-import { radioParam } from '../params/radioParam';
 import { sliderParam } from '../params/sliderParam';
 
 export const radianceParty = buildEffect({
@@ -20,25 +15,9 @@ export const radianceParty = buildEffect({
       min: 1,
       max: 24,
     }),
-    radioParam<'background' | 'foreground'>({
-      name: 'Type',
-      description: 'Whether to apply the party to the foreground or background',
-      defaultValue: 'background',
-      options: [
-        {
-          name: 'Background',
-          value: 'background',
-        },
-        {
-          name: 'Foreground',
-          value: 'foreground',
-        },
-      ],
-    }),
     sliderParam({
       name: 'Amount',
-      description:
-        'How strong the effect is. Only applies when type = foreground.',
+      description: 'How strong the effect is.',
       min: 0,
       max: 100,
       step: 5,
@@ -67,14 +46,14 @@ export const radianceParty = buildEffect({
       computed: { centerX, centerY, maxDist },
       coord,
       animationProgress,
-      parameters: [groupCount, type, amount, offsetX, offsetY],
+      parameters: [groupCount, amount, offsetX, offsetY],
       getSrcPixel,
     }) => {
       const src = getSrcPixel(coord);
 
       const isBackground = isTransparent(src);
 
-      if (type === 'foreground' ? isBackground : !isBackground) {
+      if (isBackground) {
         return src;
       }
 
@@ -91,9 +70,7 @@ export const radianceParty = buildEffect({
           360 * animationProgress) %
         360;
 
-      return isBackground
-        ? colorFromHue(newH)
-        : shiftTowardsHue(src, newH, amount);
+      return shiftTowardsHue(src, newH, amount);
     }
   ),
 });

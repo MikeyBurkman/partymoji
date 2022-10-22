@@ -2,17 +2,15 @@ import { buildEffect, Coord } from '../domain/types';
 import {
   isTransparent,
   calculateAngle,
-  colorFromHue,
   shiftTowardsHue,
 } from '../domain/utils/color';
 import { mapImageWithPrecompute } from '../domain/utils/image';
 import { intParam } from '../params/intParam';
-import { radioParam } from '../params/radioParam';
 import { sliderParam } from '../params/sliderParam';
 
 export const pinwheelParty = buildEffect({
   name: 'Pinwheel Party',
-  description: 'Create a pinwheel of party colors',
+  description: 'Make the image look like a pinwheel party',
   params: [
     sliderParam({
       name: 'Group Count',
@@ -21,25 +19,9 @@ export const pinwheelParty = buildEffect({
       min: 1,
       max: 24,
     }),
-    radioParam<'background' | 'foreground'>({
-      name: 'Type',
-      description: 'Whether to apply the party to the foreground or background',
-      defaultValue: 'background',
-      options: [
-        {
-          name: 'Background',
-          value: 'background',
-        },
-        {
-          name: 'Foreground',
-          value: 'foreground',
-        },
-      ],
-    }),
     sliderParam({
       name: 'Amount',
-      description:
-        'How strong the effect is. Only applies when type = foreground.',
+      description: 'How strong the effect is.',
       min: 0,
       max: 100,
       step: 5,
@@ -59,7 +41,7 @@ export const pinwheelParty = buildEffect({
   fn: mapImageWithPrecompute(
     ({
       dimensions: [width, height],
-      parameters: [groupCount, type, amount, offsetX, offsetY],
+      parameters: [groupCount, amount, offsetX, offsetY],
     }) => {
       const center: Coord = [width / 2 + offsetX, height / 2 - offsetY];
       return { center };
@@ -69,22 +51,20 @@ export const pinwheelParty = buildEffect({
       coord,
       animationProgress,
       getSrcPixel,
-      parameters: [groupCount, type, amount],
+      parameters: [groupCount, amount],
     }) => {
       const srcPixel = getSrcPixel(coord);
 
       const isBackground = isTransparent(srcPixel);
 
-      if (type === 'foreground' ? isBackground : !isBackground) {
+      if (isBackground) {
         return srcPixel;
       }
 
       const pointAngle = calculateAngle(coord, center);
       const newH = (pointAngle * groupCount + animationProgress * 360) % 360;
 
-      return isBackground
-        ? colorFromHue(newH)
-        : shiftTowardsHue(srcPixel, newH, amount);
+      return shiftTowardsHue(srcPixel, newH, amount);
     }
   ),
 });

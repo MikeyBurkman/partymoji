@@ -56,7 +56,7 @@ export const text = buildEffect({
       applyCanvasFromFrame({
         dimensions: image.dimensions,
         frame,
-        postEffect: (ctx) => {
+        postEffect: ({ ctx }) => {
           ctx.font = `${fontSize}px ${font}`;
           ctx.fillStyle = toHexColor(color);
           ctx.fillText(text, x, y);

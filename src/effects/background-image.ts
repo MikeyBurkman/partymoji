@@ -1,16 +1,15 @@
 import { buildEffect } from '../domain/types';
-import { isTransparent } from '../domain/utils/color';
-import {
-  mapImageWithPrecompute,
-  getPixel,
-  resizeImage,
-} from '../domain/utils/image';
+import { combineImages, frameToCanvas } from '../domain/utils/canvas';
+import { resizeImage, mapFrames } from '../domain/utils/image';
 import { imagePickerParam } from '../params/imagePickerParam';
 import { radioParam } from '../params/radioParam';
 
 export const backgroundImage = buildEffect({
   name: 'Background Image',
   description: 'Select another image to be used as a background or foreground',
+  secondaryDescription:
+    'If the selected image is animated, this will speed up/slow down ' +
+    'the animation to match the original image',
   params: [
     imagePickerParam({
       name: 'Image',
@@ -30,38 +29,34 @@ export const backgroundImage = buildEffect({
       ],
     }),
   ] as const,
-  fn: mapImageWithPrecompute(
-    ({ image: { dimensions }, parameters: [otherImagePreResize, type] }) => {
-      const otherImage = resizeImage({
-        image: otherImagePreResize.image,
-        newWidth: dimensions[0],
-        newHeight: dimensions[1],
+  fn: ({ image, parameters: [otherImagePreResize, type] }) => {
+    const otherImage = resizeImage({
+      image: otherImagePreResize.image,
+      newWidth: image.dimensions[0],
+      newHeight: image.dimensions[1],
+    });
+
+    return mapFrames(image, (frame, frameIndex, frameCount) => {
+      const animationProgress = frameIndex / frameCount;
+
+      const thisFrameCanvas = frameToCanvas({
+        dimensions: image.dimensions,
+        frame,
       });
-      return { otherImage, type };
-    },
-    ({
-      coord,
-      animationProgress,
-      computed: { otherImage, type },
-      getSrcPixel,
-    }) => {
-      const otherImageFrame = Math.floor(
+
+      const otherImageFrameIndex = Math.floor(
         animationProgress * otherImage.frames.length
       );
-      const otherImageSrc = getPixel({
-        image: otherImage,
-        frameIndex: otherImageFrame,
-        coord,
+      const otherFrameCanvas = frameToCanvas({
+        dimensions: otherImage.dimensions,
+        frame: otherImage.frames[otherImageFrameIndex],
       });
 
-      const src = getSrcPixel(coord);
-
-      if (type === 'background') {
-        // Only print the other image if the src image is transparent here
-        return isTransparent(src) ? otherImageSrc : src;
-      } else {
-        return isTransparent(otherImageSrc) ? src : otherImageSrc;
-      }
-    }
-  ),
+      return combineImages({
+        dimensions: image.dimensions,
+        background: type === 'background' ? otherFrameCanvas : thisFrameCanvas,
+        foreground: type === 'background' ? thisFrameCanvas : otherFrameCanvas,
+      });
+    });
+  },
 });

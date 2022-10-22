@@ -165,3 +165,8 @@ export type AsyncRunMessage = {
   status: 'complete';
   result: ImageEffectResult;
 };
+
+export interface CanvasData {
+  canvas: OffscreenCanvas;
+  ctx: OffscreenCanvasRenderingContext2D;
+}

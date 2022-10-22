@@ -1,7 +1,13 @@
 import { buildEffect } from '../domain/types';
-import { fromHexColor, isTransparent } from '../domain/utils/color';
-import { mapImageWithPrecompute } from '../domain/utils/image';
+import {
+  combineImages,
+  applyCanvasFromFrame,
+  applyFilter,
+} from '../domain/utils/canvas';
+import { fromHexColor } from '../domain/utils/color';
+import { mapCoords, mapFrames } from '../domain/utils/image';
 import { colorPickerParam } from '../params/colorPickerParam';
+import { sliderParam } from '../params/sliderParam';
 import { variableLengthParam } from '../params/variableLengthParam';
 
 const DEFAULT_COLORS = [
@@ -32,20 +38,31 @@ export const colorsBackground = buildEffect({
           defaultValue: DEFAULT_COLORS[0],
         }),
     }),
-  ] as const,
-  fn: mapImageWithPrecompute(
-    ({ animationProgress, parameters: [colors] }) => ({
-      bgColor: colors[Math.floor(animationProgress * colors.length)],
+    sliderParam({
+      name: 'Foreground Opacity',
+      defaultValue: 100,
+      min: 0,
+      max: 100,
     }),
-    ({ computed: { bgColor }, coord, getSrcPixel }) => {
-      const srcPixel = getSrcPixel(coord);
+  ] as const,
+  fn: ({ image, parameters: [colors, opacity] }) =>
+    mapFrames(image, (frame, frameIndex, frameCount) => {
+      const animationProgress = frameIndex / frameCount;
+      const bgColor = colors[Math.floor(animationProgress * colors.length)];
 
-      // Make the transparent parts colorful
-      if (isTransparent(srcPixel)) {
-        return bgColor;
-      }
+      const foreground =
+        opacity === 100
+          ? frame
+          : applyCanvasFromFrame({
+              dimensions: image.dimensions,
+              frame,
+              preEffect: (canvasData) => applyFilter(canvasData, { opacity }),
+            });
 
-      return srcPixel;
-    }
-  ),
+      return combineImages({
+        dimensions: image.dimensions,
+        background: mapCoords(image.dimensions, () => bgColor),
+        foreground,
+      });
+    }),
 });
