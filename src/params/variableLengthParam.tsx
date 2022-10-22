@@ -24,6 +24,8 @@ interface VariableLengthProps<T extends JsonType> {
   onChange: (v: T) => void;
 }
 
+type ParamState = { param: ParamFunction<any>; pValue: any };
+
 const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
   name,
   newParamText,
@@ -32,9 +34,9 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
   description,
   onChange,
 }) => {
-  const [params, setParams] = React.useState<
-    { param: ParamFunction<any>; pValue: any }[]
-  >(value.map((v) => ({ param: createNewParam(), pValue: v })));
+  const [params, setParams] = React.useState<ParamState[]>(
+    value.map((v) => ({ param: createNewParam(), pValue: v }))
+  );
   return (
     <Paper>
       <Stack spacing={1}>
@@ -85,15 +87,16 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
           variant="contained"
           onClick={() => {
             const p = createNewParam();
-            const newParams = [
+            const newParams: ParamState[] = [
               ...params,
               {
                 param: p,
-                pValue: p.defaultValue,
+                pValue: p.defaultValue(),
               },
             ];
             setParams(newParams);
-            onChange(newParams.map((n) => n.pValue));
+            const vals = newParams.map((n) => n.pValue);
+            onChange(vals);
           }}
         >
           {newParamText}
