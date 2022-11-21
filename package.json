@@ -58,6 +58,7 @@
     "identity-obj-proxy": "3.0.0",
     "lz-string": "^1.4.4",
     "mini-css-extract-plugin": "0.11.3",
+    "mobile-detect": "^1.4.5",
     "optimize-css-assets-webpack-plugin": "5.0.4",
     "pnp-webpack-plugin": "1.6.4",
     "postcss-flexbugs-fixes": "4.2.1",

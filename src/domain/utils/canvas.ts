@@ -1,11 +1,23 @@
 import { CanvasData, Dimensions, FrameData } from '../types';
+import { IS_WORKER } from './isWorker';
 import { assert } from './misc';
 
 export const createCanvas = ([width, height]: Dimensions): CanvasData => {
-  const canvas = new OffscreenCanvas(width, height);
-  const ctx = canvas.getContext('2d');
-  assert(ctx, 'Canvas not supported');
-  return { canvas, ctx };
+  if (IS_WORKER) {
+    // Note that mobile does NOT support OffscreenCanvas.
+    // So if mobile, then we can not use web workers!
+    const canvas = new OffscreenCanvas(width, height);
+    const ctx = canvas.getContext('2d');
+    assert(ctx, 'Canvas not supported');
+    return { canvas, ctx };
+  } else {
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    assert(ctx, 'Canvas not supported');
+    return { canvas, ctx };
+  }
 };
 
 /** Converts a frame to a CanvasData */

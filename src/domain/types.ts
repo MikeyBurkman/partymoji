@@ -167,6 +167,6 @@ export type AsyncRunMessage = {
 };
 
 export interface CanvasData {
-  canvas: OffscreenCanvas;
-  ctx: OffscreenCanvasRenderingContext2D;
+  canvas: OffscreenCanvas | HTMLCanvasElement;
+  ctx: OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D;
 }

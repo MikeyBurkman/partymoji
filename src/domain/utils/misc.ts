@@ -1,5 +1,3 @@
-import { AssertionError } from 'assert';
-
 /**
  * Asserts that a given value is truthy. Uses TypeScript 3.7 assertion types.
  *
@@ -15,7 +13,7 @@ export function assert(
   message = 'Unexpected falsy value'
 ): asserts condition {
   if (!condition) {
-    throw new AssertionError({ message, actual: condition });
+    throw new Error(`AssertionFailure: ${message}`);
   }
 }
 

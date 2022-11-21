@@ -1,6 +1,7 @@
 import { pipe, reject, sortBy } from 'remeda';
 import { ParamFunction, Effect } from '../domain/types';
 import { assert } from '../domain/utils/misc';
+
 import { adjustImage } from './adjust-image';
 import { backgroundColor } from './background-color';
 import { backgroundImage } from './background-image';
@@ -46,9 +47,8 @@ import { text } from './text';
 import { transparency } from './transparency';
 import { transpose } from './transpose';
 
-export const POSSIBLE_EFFECTS = pipe(
+const extraEffects = pipe(
   [
-    adjustImage,
     backgroundColor,
     backgroundImage,
     blur,
@@ -96,6 +96,12 @@ export const POSSIBLE_EFFECTS = pipe(
   sortBy((x) => x.name),
   reject((x) => x.disabled)
 );
+
+export const POSSIBLE_EFFECTS = [
+  // The first one is the one that is automatically selected, so make sure this is at the top of the list
+  adjustImage,
+  ...extraEffects,
+];
 
 export const effectByName = (
   name: string
