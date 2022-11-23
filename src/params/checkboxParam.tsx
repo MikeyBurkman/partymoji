@@ -25,7 +25,7 @@ const CheckboxParam: React.FC<{
         <Checkbox
           aria-label={name}
           checked={value}
-          onChange={(e, value) => onChange(value)}
+          onChange={(e) => onChange(e.target.checked)}
         />
       </Stack>
     </Stack>
