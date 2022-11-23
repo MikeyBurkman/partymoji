@@ -24,4 +24,3 @@ https://mikeyburkman.github.io/partymoji/
 6. Add movement/scaling/rotation to background image and text
 7. Add rotate/mirror effect
 8. Split frame count from brightness/etc. "Set Animation Length" to change number of frames
-9. Detect mobile and either show error, or maybe fall back to non-worker version of code

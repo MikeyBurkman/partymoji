@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Button,
   Container,
@@ -8,7 +9,6 @@ import {
   Typography,
 } from '@material-ui/core';
 import ScopedCssBaseline from '@material-ui/core/ScopedCssBaseline';
-import React from 'react';
 
 import { Help } from './components/Help';
 import { ImagePicker } from './components/ImagePicker';
@@ -16,10 +16,11 @@ import { ImageEffectList } from './components/ImageEffectList';
 import { computeGifsForState, getEffectsDiff } from './domain/computeGifs';
 import { AppState, AppStateEffect } from './domain/types';
 import { replaceIndex } from './domain/utils/misc';
-import { ENV, debugLog } from './domain/env';
+import { ENV, debugLog, IS_MOBILE } from './domain/env';
 import * as localStorage from './localStorage';
 import { sliderParam } from './params/sliderParam';
 import { POSSIBLE_EFFECTS } from './effects';
+import { AlertProvider, AlertSnackbar, useSetAlert } from './AlertContext';
 
 // Number of millis to wait after a change before recomputing the gif
 const COMPUTE_DEBOUNCE_MILLIS = 1000;
@@ -43,7 +44,7 @@ const DEFAULT_STATE: AppState = {
   fps: DEFAULT_FPS,
 };
 
-export const App: React.FC = () => {
+const Inner: React.FC = () => {
   const [state, setStateRaw] = React.useState(DEFAULT_STATE);
   const [doCompute, setDoCompute] = React.useState<
     { compute: true; startIndex: number } | { compute: false }
@@ -51,6 +52,18 @@ export const App: React.FC = () => {
   const [computeTimer, setComputeTimer] = React.useState<null | NodeJS.Timeout>(
     null
   );
+
+  const setAlert = useSetAlert();
+
+  React.useEffect(() => {
+    if (IS_MOBILE) {
+      setAlert({
+        severity: 'warning',
+        message:
+          'This app is not well optimized for mobile. Your experience may not be great.',
+      });
+    }
+  }, [setAlert]);
 
   React.useEffect(() => {
     // If we have local storage state on startup, then reload that
@@ -275,6 +288,8 @@ export const App: React.FC = () => {
           </Stack>
         </Stack>
       </Container>
+
+      <AlertSnackbar />
     </>
   );
 };
@@ -286,3 +301,11 @@ const Section: React.FC = ({ children }) => (
 );
 
 // Icons at https://fonts.google.com/icons?selected=Material+Icons
+
+export const App: React.FC = () => {
+  return (
+    <AlertProvider>
+      <Inner />
+    </AlertProvider>
+  );
+};
