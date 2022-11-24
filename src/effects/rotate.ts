@@ -1,45 +1,28 @@
-import { buildEffect, Coord } from '../domain/types';
-import { mapImageWithPrecompute } from '../domain/utils/image';
-import { radioParam } from '../params/radioParam';
+import { buildEffect } from '../domain/types';
+import { applyCanvasFromFrame, applyRotation } from '../domain/utils/canvas';
+import { mapFrames } from '../domain/utils/image';
+import { sliderParam } from '../params/sliderParam';
 
 export const rotate = buildEffect({
   name: 'Rotate',
-  description: 'Make the image rotate about the center point in an animation',
+  description: 'Rotes the image to a given angle',
   params: [
-    radioParam<'clockwise' | 'counter'>({
-      name: 'Direction',
-      defaultValue: 'clockwise',
-      options: [
-        { name: 'Clockwise', value: 'clockwise' },
-        { name: 'Counter-Clockwise', value: 'counter' },
-      ],
+    sliderParam({
+      name: 'Angle',
+      defaultValue: 0,
+      min: 0,
+      max: 360,
+      step: 5,
+      description:
+        'The angle in degrees. 0 degrees points to the right, 90 degrees points up.',
     }),
-  ] as const,
-  fn: mapImageWithPrecompute(
-    ({ animationProgress, parameters: [direction] }) => {
-      const amount = animationProgress * (direction === 'counter' ? 1 : -1);
-      return {
-        cos: Math.cos(2 * Math.PI * amount),
-        sin: Math.sin(2 * Math.PI * amount),
-      };
-    },
-    ({
-      dimensions: [width, height],
-      coord: [x, y],
-      computed: { cos, sin },
-      getSrcPixel,
-    }) => {
-      const centerX = width / 2;
-      const centerY = height / 2;
-      const xRelCenter = x - centerX;
-      const yRelCenter = y - centerY;
-
-      const newCoord: Coord = [
-        Math.round(centerX + xRelCenter * cos - yRelCenter * sin),
-        Math.round(centerY + yRelCenter * cos + xRelCenter * sin),
-      ];
-
-      return getSrcPixel(newCoord);
-    }
-  ),
+  ],
+  fn: ({ image, parameters: [angle] }) =>
+    mapFrames(image, (frame) =>
+      applyCanvasFromFrame({
+        dimensions: image.dimensions,
+        frame,
+        preEffect: (canvasData) => applyRotation(canvasData, angle),
+      })
+    ),
 });

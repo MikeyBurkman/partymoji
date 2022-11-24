@@ -156,7 +156,7 @@ export const applyTransform = (
     verticalTranslation?: number;
   }
 ): CanvasData => {
-  canvas.ctx.setTransform(
+  canvas.ctx.transform(
     horizontalScale ?? 1,
     verticalSkew ?? 0,
     horizontalSkew ?? 0,
@@ -164,5 +164,28 @@ export const applyTransform = (
     horizontalTranslation ?? 0,
     verticalTranslation ?? 0
   );
+  return canvas;
+};
+
+/**
+ * Rotates a canvas a number of degrees.
+ * 0 degrees points to the right, 90 degrees points up.
+ */
+export const applyRotation = (
+  canvas: CanvasData,
+  degrees: number
+): CanvasData => {
+  const offsetX = canvas.canvas.width / 2;
+  const offsetY = canvas.canvas.height / 2;
+  applyTransform(canvas, {
+    horizontalTranslation: offsetX,
+    verticalTranslation: offsetY,
+  });
+  const radians = -(degrees * Math.PI) / 180;
+  canvas.ctx.rotate(radians);
+  applyTransform(canvas, {
+    horizontalTranslation: -offsetX,
+    verticalTranslation: -offsetY,
+  });
   return canvas;
 };

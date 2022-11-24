@@ -21,6 +21,7 @@ import { hueShift } from './hue-shift';
 import { hueShiftPulse } from './hue-shift-pulse';
 import { hueWave } from './hue-wave';
 import { lightning } from './lightning';
+import { mirror } from './mirror';
 import { nuke } from './nuke';
 import { opacity } from './opacity';
 import { party } from './party';
@@ -68,6 +69,7 @@ const extraEffects = pipe(
     hueShiftPulse,
     hueWave,
     lightning,
+    mirror,
     nuke,
     opacity,
     party,
