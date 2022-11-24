@@ -38,16 +38,16 @@ export const clearAppState = () => {
 };
 
 const serializeAppState = (state: AppState): string => {
-  const toStore: AppState = {
-    ...state,
-    effects: state.effects.map(
-      (t): AppStateEffect => ({
-        ...t,
-        // Remove the computed image for the state before storing.
-        // This just bloats the storage and doesn't keep anything that isn't reproduceable.
-        state: { status: 'init' },
-      })
-    ),
-  };
-  return JSON.stringify(toStore);
+  // const toStore: AppState = {
+  //   ...state,
+  //   effects: state.effects.map(
+  //     (t): AppStateEffect => ({
+  //       ...t,
+  //       // Remove the computed image for the state before storing.
+  //       // This just bloats the storage and doesn't keep anything that isn't reproduceable.
+  //       state: { status: 'init' },
+  //     })
+  //   ),
+  // };
+  return JSON.stringify(state);
 };

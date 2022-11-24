@@ -143,10 +143,6 @@ export const buildEffect = <T extends readonly ParamFunction<any>[]>(args: {
 export interface AppStateEffect {
   effectName: string;
   paramsValues: any[];
-  state:
-    | { status: 'init' }
-    | { status: 'computing' }
-    | { status: 'done'; image: ImageEffectResult };
 }
 
 export interface AppState {
@@ -155,6 +151,12 @@ export interface AppState {
   effects: AppStateEffect[];
   fps: number;
 }
+
+export type ComputeState =
+  | { status: 'init' }
+  | { status: 'computing' }
+  | { status: 'done'; image: ImageEffectResult }
+  | undefined;
 
 export interface ImageEffectResult {
   gif: string;

@@ -1,6 +1,6 @@
 import { readImage, runEffects } from './run';
 import { runEffectsAsync } from './runAsync';
-import { AppState, Image, ImageEffectResult } from './types';
+import { AppState, ComputeState, Image, ImageEffectResult } from './types';
 import { ENV, debugLog, IS_MOBILE } from './env';
 import { assert } from './utils/misc';
 
@@ -12,41 +12,49 @@ export const computeGif =
   IS_MOBILE || ENV === 'DEV' ? runEffects : runEffectsAsync;
 
 export const computeGifsForState = async ({
-  state,
+  appState,
+  computeState,
   startEffectIndex,
   onCompute,
 }: {
-  state: AppState;
+  appState: AppState;
+  computeState: ComputeState[];
   startEffectIndex: number;
   onCompute: (image: ImageEffectResult, idx: number) => void;
 }): Promise<void> => {
-  assert(state.baseImage, 'No source image, this button should be disabled!');
+  if (!appState.baseImage) {
+    return;
+  }
+  // assert(
+  //   appState.baseImage,
+  //   'No source image, this button should be disabled!'
+  // );
 
   let image: Image;
   if (startEffectIndex === 0) {
-    image = await readImage(state.baseImage);
+    image = await readImage(appState.baseImage);
   } else {
-    const prevEffectState = state.effects[startEffectIndex - 1].state;
+    const prevEffectState = computeState[startEffectIndex - 1];
     assert(
-      prevEffectState.status === 'done',
+      prevEffectState?.status === 'done',
       'We should not be starting with this effect if the previous is not done computing'
     );
     image = prevEffectState.image.image;
   }
 
-  for (let i = startEffectIndex; i < state.effects.length; i += 1) {
+  for (let i = startEffectIndex; i < appState.effects.length; i += 1) {
     const start = Date.now();
 
-    const effect = state.effects[i];
+    const effect = appState.effects[i];
 
     const result = await computeGif({
-      randomSeed: state.baseImage!,
+      randomSeed: appState.baseImage,
       image,
       effectInput: {
         effectName: effect.effectName,
         params: effect.paramsValues,
       },
-      fps: state.fps,
+      fps: appState.fps,
     });
 
     // Google analytics
@@ -63,14 +71,22 @@ export const computeGifsForState = async ({
   }
 };
 
+export type EffectsDiff = { diff: true; index: number } | { diff: false };
+
 /** Get the index of the first effect that differs from curr to prev state */
 export const getEffectsDiff = ({
   currState,
   prevState,
+  computeState,
 }: {
   currState: AppState;
   prevState: AppState;
-}): { diff: true; index: number } | { diff: false } => {
+  computeState: ComputeState[];
+}): EffectsDiff => {
+  if (currState.effects.length === 0) {
+    return { diff: false };
+  }
+
   if (
     currState.fps !== prevState.fps ||
     currState.baseImage !== prevState.baseImage
@@ -84,27 +100,28 @@ export const getEffectsDiff = ({
 
   // Find the first newEffect that is different from prevEffects
   for (let i = 0; i < currEffects.length; i += 1) {
-    const currE = currEffects[i];
-    const prevE = prevEffects[i];
-    if (!prevE) {
+    const currEffect = currEffects[i];
+    const prevEffect = prevEffects[i];
+    const compute = computeState[i];
+    if (compute == null) {
       debugLog('No prevE, index ', i);
       return { diff: true, index: i };
     }
 
-    if (prevE.state.status !== 'done') {
+    if (compute.status !== 'done') {
       debugLog('PrevE not done ', i);
       return { diff: true, index: i };
     }
 
-    if (currE.effectName !== prevE.effectName) {
+    if (currEffect.effectName !== prevEffect.effectName) {
       debugLog('Different effect name ', i);
       return { diff: true, index: i };
     }
 
     // Compare the param values
-    for (let ei = 0; ei < currE.paramsValues.length; ei += 1) {
-      const currEParam = currE.paramsValues[ei];
-      const prevEP = prevE.paramsValues[ei];
+    for (let ei = 0; ei < currEffect.paramsValues.length; ei += 1) {
+      const currEParam = currEffect.paramsValues[ei];
+      const prevEP = prevEffect.paramsValues[ei];
       if (JSON.stringify(currEParam) !== JSON.stringify(prevEP)) {
         debugLog('Param different', i, ei);
         return { diff: true, index: i };

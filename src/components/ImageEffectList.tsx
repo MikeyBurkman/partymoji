@@ -17,6 +17,7 @@ import {
   Image,
   AppState,
   ImageEffectResult,
+  ComputeState,
 } from '../domain/types';
 import { replaceIndex } from '../domain/utils/misc';
 import { Gif } from './Gif';
@@ -24,17 +25,19 @@ import { ImageEffectDialog } from './ImageEffectDialog';
 
 interface EffectListProps {
   appState: AppState;
+  computeState: ComputeState[];
   possibleEffects: Effect<any>[];
   onEffectsChange: (t: AppStateEffect[]) => void;
 }
 
-const effectKey = (t: AppStateEffect, idx: number): string =>
+const effectKey = (t: AppStateEffect, c: ComputeState, idx: number): string =>
   `${t.effectName}-${idx}-${
-    t.state.status === 'done' ? t.state.image.gif.substring(0, 10) : 'pending'
+    c?.status === 'done' ? c.image.gif.substring(0, 10) : 'pending'
   }`;
 
 export const ImageEffectList: React.FC<EffectListProps> = ({
   appState,
+  computeState,
   possibleEffects,
   onEffectsChange,
 }) => {
@@ -65,16 +68,14 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
 
   const getInitialImage = React.useCallback(
     (idx: number): ImageEffectResult | undefined => {
-      const prevEffect = currentEffects[idx - 1];
+      const prevEffect = computeState[idx - 1];
       if (prevEffect) {
-        return prevEffect.state.status === 'done'
-          ? prevEffect.state.image
-          : undefined;
+        return prevEffect.status === 'done' ? prevEffect.image : undefined;
       }
 
       return baseImage;
     },
-    [baseImage, currentEffects]
+    [baseImage, computeState]
   );
 
   const onMoveUp = (idx: number) =>
@@ -113,11 +114,17 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
           )
       : undefined;
 
+  const fx = currentEffects.map((t, tIdx) => ({
+    t,
+    c: computeState[tIdx] as ComputeState | undefined,
+    tIdx,
+  }));
+
   return (
     <Stack spacing={4} alignItems="center">
       <Typography variant="h5">Image Effects</Typography>
-      {currentEffects.flatMap((t, tIdx) => [
-        <Stack direction="row" key={effectKey(t, tIdx)} spacing={4}>
+      {fx.flatMap(({ t, c, tIdx }) => [
+        <Stack direction="row" key={effectKey(t, c, tIdx)} spacing={4}>
           <Stack>
             <Stack>
               <Typography
@@ -154,12 +161,12 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
                 </Tooltip>
               </Stack>
             </Stack>
-            {t.state.status === 'done' && (
+            {c?.status === 'done' && (
               <Stack sx={{ width: 250 }}>
-                <Gif src={t.state.image.gif} alt={`${t.effectName}-${tIdx}`} />
+                <Gif src={c.image.gif} alt={`${t.effectName}-${tIdx}`} />
               </Stack>
             )}
-            {t.state.status === 'computing' && <CircularProgress size={100} />}
+            {c?.status === 'computing' && <CircularProgress size={100} />}
             <Stack spacing={1} marginTop={1}>
               <Button
                 variant="contained"
@@ -179,9 +186,6 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
                   replaceIndex(currentEffects, tIdx, () => ({
                     effectName: newEffect.effectName,
                     paramsValues: newEffect.params,
-                    state: computedImage
-                      ? { status: 'done', image: computedImage }
-                      : { status: 'init' },
                   }))
                 );
                 setEffectDialogOpen({ open: false });
@@ -208,7 +212,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
             />
           </Stack>
         </Stack>,
-        <FxDivider key={`divider-${effectKey(t, tIdx)}`} />,
+        <FxDivider key={`divider-${effectKey(t, c, tIdx)}`} />,
       ])}
       <Button
         variant="contained"
@@ -225,17 +229,15 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
                   if (currentEffects.length === 0) {
                     image = baseImage?.image;
                   } else {
-                    const lastEffect =
-                      currentEffects[currentEffects.length - 1];
-                    if (lastEffect.state.status === 'done') {
-                      image = lastEffect.state.image.image;
+                    const lastEffect = computeState[currentEffects.length - 1];
+                    if (lastEffect?.status === 'done') {
+                      image = lastEffect.image.image;
                     }
                   }
 
                   return p.defaultValue(image);
                 }
               ),
-              state: { status: 'init' },
             },
           ]);
           setEffectDialogOpen({

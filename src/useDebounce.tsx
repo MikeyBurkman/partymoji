@@ -5,14 +5,24 @@ const DEFAULT_WAIT = 750;
 
 interface Props<T> {
   initial: T;
-  callback: (arg: T) => void;
+  callback: (arg: T, prev: T) => void;
   waitMillis?: number;
 }
 
 export function useDebounce<T>({ initial, callback, waitMillis }: Props<T>) {
   const [val, setVal] = React.useState(initial);
+  const lastVal = React.useRef(initial);
+
+  const onChange = React.useCallback(
+    (arg: T) => {
+      callback(arg, lastVal.current);
+      lastVal.current = arg;
+    },
+    [callback]
+  );
+
   const onChangeDebounce = useDebounceCallback(
-    callback,
+    onChange,
     waitMillis ?? DEFAULT_WAIT
   );
 
@@ -27,9 +37,9 @@ export function useDebounce<T>({ initial, callback, waitMillis }: Props<T>) {
   const setImmediate = React.useCallback(
     (arg: T) => {
       setVal(arg);
-      callback(arg);
+      onChange(arg);
     },
-    [callback]
+    [onChange]
   );
 
   return [val, setDebounced, setImmediate] as const;
