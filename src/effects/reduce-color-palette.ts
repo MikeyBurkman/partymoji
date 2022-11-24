@@ -28,7 +28,6 @@ export const reduceColorPalette = buildEffect({
       defaultValue: 70,
       min: 0,
       max: 100,
-      step: 5,
     }),
   ] as const,
   fn: mapImageWithPrecompute(

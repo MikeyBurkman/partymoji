@@ -24,18 +24,6 @@ export const replaceIndex = <T>(
   newValueFn: (oldValue: T) => T
 ): T[] => arr.map((x, i) => (index === i ? newValueFn(x) : x));
 
-export const debounce = <T extends Function>(func: T, timeout: number): T => {
-  let timer: NodeJS.Timeout | undefined;
-  return ((...args: any[]) => {
-    if (timer) {
-      clearTimeout(timer);
-    }
-    timer = setTimeout(() => {
-      func(args);
-    }, timeout);
-  }) as any as T;
-};
-
 export const isUrl = (s: string): boolean =>
   /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(
     s

@@ -1,4 +1,4 @@
-import { debounce, Slider, Stack, Typography } from '@material-ui/core';
+import { Slider, Stack, Typography } from '@material-ui/core';
 import React from 'react';
 import { HelpTooltip } from '../components/HelpTooltip';
 import {
@@ -6,8 +6,7 @@ import {
   ParamFunction,
   toParamFunction,
 } from '../domain/types';
-
-const DEBOUNCE_MILLIS = 500;
+import { useDebounce } from '../useDebounce';
 
 const SliderParam: React.FC<{
   name: string;
@@ -18,12 +17,11 @@ const SliderParam: React.FC<{
   description?: string;
   onChange: (v: number) => void;
 }> = ({ name, value, min, max, step, description, onChange }) => {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const onChangeDebounce = React.useCallback(
-    debounce(onChange, DEBOUNCE_MILLIS),
-    [onChange]
-  );
-  const [val, setVal] = React.useState(value);
+  const [val, setVal] = useDebounce({
+    initial: value,
+    callback: onChange,
+  });
+
   return (
     <Stack spacing={1}>
       <Stack direction="row" spacing={1}>
@@ -45,7 +43,6 @@ const SliderParam: React.FC<{
           max={max}
           onChange={(e, value) => {
             setVal(value as number);
-            onChangeDebounce(value as number);
           }}
         />
         <Typography variant="body2">{val}</Typography>

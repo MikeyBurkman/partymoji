@@ -25,6 +25,7 @@
     "@material-ui/icons": "^5.0.0-beta.4",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@pmmmwh/react-refresh-webpack-plugin": "0.4.3",
+    "@react-hook/debounce": "^4.0.0",
     "@svgr/webpack": "5.5.0",
     "@typescript-eslint/eslint-plugin": "^4.5.0",
     "@typescript-eslint/parser": "^4.5.0",
