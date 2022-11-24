@@ -1,13 +1,11 @@
 import { buildEffect } from '../domain/types';
 import { resizeImage as resizeImageUtil } from '../domain/utils/image';
+import { checkboxParam } from '../params/checkboxParam';
 import { intParam } from '../params/intParam';
 
 export const resizeImage = buildEffect({
   name: 'Resize Image',
-  description: 'Change the dimensions of the image without scaling',
-  secondaryDescription:
-    'If bigger than original, the extra space will be transparent. ' +
-    'If smaller, the image will be cropped. ',
+  description: 'Change the absolute dimensions of the image.',
   params: [
     intParam({
       name: 'Width',
@@ -23,8 +21,14 @@ export const resizeImage = buildEffect({
       defaultValue: (image) => (image ? image.dimensions[1] : 0),
       min: 0,
     }),
+    checkboxParam({
+      name: 'Keep scale',
+      description:
+        'If checked, the image will be stretched to fit the new dimensions',
+      defaultValue: false,
+    }),
   ] as const,
-  fn: ({ image, parameters: [resizeToWidth, resizeToHeight] }) => {
+  fn: ({ image, parameters: [resizeToWidth, resizeToHeight, keepScale] }) => {
     const [oldWidth, oldHeight] = image.dimensions;
     const newWidth =
       resizeToWidth === 0
@@ -38,6 +42,7 @@ export const resizeImage = buildEffect({
       image,
       newWidth,
       newHeight,
+      keepScale,
     });
   },
 });

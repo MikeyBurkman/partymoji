@@ -137,3 +137,32 @@ export const applyFilter = (
 
   return canvas;
 };
+
+export const applyTransform = (
+  canvas: CanvasData,
+  {
+    horizontalScale,
+    verticalScale,
+    horizontalSkew,
+    verticalSkew,
+    horizontalTranslation,
+    verticalTranslation,
+  }: {
+    horizontalScale?: number;
+    verticalScale?: number;
+    horizontalSkew?: number;
+    verticalSkew?: number;
+    horizontalTranslation?: number;
+    verticalTranslation?: number;
+  }
+): CanvasData => {
+  canvas.ctx.setTransform(
+    horizontalScale ?? 1,
+    verticalSkew ?? 0,
+    horizontalSkew ?? 0,
+    verticalScale ?? 1,
+    horizontalTranslation ?? 0,
+    verticalTranslation ?? 0
+  );
+  return canvas;
+};

@@ -39,6 +39,7 @@ import { reverseAnimation } from './reverse-animation';
 import { ripple } from './ripple';
 import { rotate } from './rotate';
 import { roxbury } from './roxbury';
+import { scaleImage } from './scale-image';
 import { shake } from './shake';
 import { slowAnimation } from './slow-animation';
 import { spin } from './spin';
@@ -85,6 +86,7 @@ const extraEffects = pipe(
     ripple,
     rotate,
     roxbury,
+    scaleImage,
     shake,
     slowAnimation,
     spin,

@@ -1,6 +1,7 @@
 import { buildEffect } from '../domain/types';
 import { combineImages, frameToCanvas } from '../domain/utils/canvas';
 import { resizeImage, mapFrames } from '../domain/utils/image';
+import { checkboxParam } from '../params/checkboxParam';
 import { imagePickerParam } from '../params/imagePickerParam';
 import { radioParam } from '../params/radioParam';
 
@@ -28,12 +29,19 @@ export const backgroundImage = buildEffect({
         },
       ],
     }),
+    checkboxParam({
+      name: 'Scale Image',
+      defaultValue: false,
+      description:
+        'If true, the new image will be scaled to fit the dimensions of the original image',
+    }),
   ] as const,
-  fn: ({ image, parameters: [otherImagePreResize, type] }) => {
+  fn: ({ image, parameters: [otherImagePreResize, type, keepScale] }) => {
     const otherImage = resizeImage({
       image: otherImagePreResize.image,
       newWidth: image.dimensions[0],
       newHeight: image.dimensions[1],
+      keepScale,
     });
 
     return mapFrames(image, (frame, frameIndex, frameCount) => {

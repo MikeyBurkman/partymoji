@@ -1,6 +1,10 @@
 import { buildEffect } from '../domain/types';
 import { applyCanvasFromFrame, applyFilter } from '../domain/utils/canvas';
-import { changeFrameCount, scaleImage, mapFrames } from '../domain/utils/image';
+import {
+  changeFrameCount,
+  resizeImage,
+  mapFrames,
+} from '../domain/utils/image';
 import { intParam } from '../params/intParam';
 import { sliderParam } from '../params/sliderParam';
 
@@ -93,10 +97,11 @@ export const adjustImage = buildEffect({
 
     // If making a smaller image, might as well do the brightness/contrast after making it smaller
     if (hasScaleChange && !isBiggerImage) {
-      currImage = scaleImage({
+      currImage = resizeImage({
         image: currImage,
         newWidth,
         newHeight,
+        keepScale: false,
       });
     }
 
@@ -115,7 +120,12 @@ export const adjustImage = buildEffect({
 
     // If the image will be made bigger, we'll run that after adjusting the brightness/contrast
     if (hasScaleChange && isBiggerImage) {
-      currImage = scaleImage({ image: currImage, newWidth, newHeight });
+      currImage = resizeImage({
+        image: currImage,
+        newWidth,
+        newHeight,
+        keepScale: false,
+      });
     }
 
     // Finally change the number of frames if we're adding frames

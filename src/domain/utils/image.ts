@@ -9,6 +9,13 @@ import {
   Image,
   Random,
 } from '../types';
+import {
+  applyCanvasFromFrame,
+  applyTransform,
+  canvasToFrame,
+  createCanvas,
+  frameToCanvas,
+} from './canvas';
 import { clampColor, TRANSPARENT_COLOR } from './color';
 
 export const getPixelFromSource = (
@@ -166,107 +173,84 @@ export const getImageIndex = ([width]: Dimensions, x: number, y: number) =>
   (x + y * width) * 4;
 
 /**
- * Change the dimensions of the image, scaling it to make it fit the new dimensions
+ * Scales the image according to a coefficient
+ * Coefficient should be greater than 0.
+ * A coefficient of 1 equals no scaling.
+ * The image will be centered.
  */
-export const scaleImage = (args: {
+export const scaleImage = ({
+  image,
+  horizontalScale,
+  verticalScale,
+}: {
   image: Image;
-  newWidth: number;
-  newHeight: number;
+  horizontalScale?: number;
+  verticalScale?: number;
 }): Image => {
-  const { image, newWidth, newHeight } = args;
   const [width, height] = image.dimensions;
-  const xRatio = width / newWidth;
-  const yRatio = height / newHeight;
-
-  const newImage = createNewImage({
-    dimensions: [newWidth, newHeight],
-    frameCount: image.frames.length,
-  });
-
-  for (
-    let frameIndex = 0;
-    frameIndex < newImage.frames.length;
-    frameIndex += 1
-  ) {
-    for (let y = 0; y < newHeight; y += 1) {
-      for (let x = 0; x < newWidth; x += 1) {
-        // Simple nearest-neighbor image scaling.
-        // Arguably the worst of the scaling algorithms, but it's quick,
-        //  and we're generally dealing with small images anyhow.
-        const srcX = Math.floor(x * xRatio);
-        const srcY = Math.floor(y * yRatio);
-
-        const color = getPixel({
-          image,
-          frameIndex,
-          coord: [srcX, srcY],
-        });
-        setPixel({
-          image: newImage,
-          frameIndex,
-          color,
-          coord: [x, y],
-        });
-      }
-    }
-  }
-
-  return newImage;
+  // Adjust how much the image is offset in order to keep it centered
+  const offsetX = (width / 2) * (horizontalScale ?? 1) - width / 2;
+  const offsetY = (height / 2) * (verticalScale ?? 1) - height / 2;
+  return mapFrames(image, (imageData) =>
+    applyCanvasFromFrame({
+      dimensions: image.dimensions,
+      frame: imageData,
+      preEffect: (canvasData) =>
+        applyTransform(canvasData, {
+          horizontalScale,
+          verticalScale,
+          horizontalTranslation: -offsetX,
+          verticalTranslation: -offsetY,
+        }),
+    })
+  );
 };
 
 /**
- * Will change the image dimensions without altering the scale.
- * If the new dimensions are larger, the image will be centered.
- * If the new dimensions are smaller, it'll be cropped
+ * Resize the image to the given dimensions.
+ * If `keepScale` is true, then the image will be automatically
+ *  resized to keep match the new dimensions.
+ * If false, then the image will remain the same size, and will be cropped
+ *  if the new dimensions are smaller.
  */
 export const resizeImage = ({
   image,
   newWidth,
   newHeight,
+  keepScale,
 }: {
   image: Image;
   newWidth: number;
   newHeight: number;
+  keepScale: boolean;
 }): Image => {
-  const [sourceWidth, sourceHeight] = image.dimensions;
+  const newFrames = mapFrames(image, (frame) => {
+    const rootCanvas = createCanvas([newWidth, newHeight]);
+    const imgCanvas = frameToCanvas({ dimensions: image.dimensions, frame });
 
-  const xPadding = Math.round((newWidth - sourceWidth) / 2);
-  const yPadding = Math.round((newHeight - sourceHeight) / 2);
+    if (keepScale) {
+      // Just blow it up
+      rootCanvas.ctx.drawImage(imgCanvas.canvas, 0, 0, newWidth, newHeight);
+    } else {
+      // Keep the image the same size, but be sure to center it
+      const offsetX = newWidth / 2 - image.dimensions[0] / 2;
+      const offsetY = newHeight / 2 - image.dimensions[1] / 2;
+      rootCanvas.ctx.drawImage(
+        imgCanvas.canvas,
+        offsetX,
+        offsetY,
+        image.dimensions[0],
+        image.dimensions[1]
+      );
+    }
 
-  const newImage = createNewImage({
-    dimensions: [newWidth, newHeight],
-    frameCount: image.frames.length,
+    return canvasToFrame(rootCanvas);
   });
 
-  for (
-    let frameIndex = 0;
-    frameIndex < newImage.frames.length;
-    frameIndex += 1
-  ) {
-    for (let y = 0; y < newHeight; y += 1) {
-      for (let x = 0; x < newWidth; x += 1) {
-        const color: Color =
-          x > xPadding &&
-          x < newWidth - xPadding &&
-          y > yPadding &&
-          y < newHeight - yPadding
-            ? getPixel({
-                image,
-                frameIndex,
-                coord: [x - xPadding, y - yPadding],
-              })
-            : TRANSPARENT_COLOR;
-        setPixel({
-          image: newImage,
-          frameIndex,
-          coord: [x, y],
-          color,
-        });
-      }
-    }
-  }
-
-  return newImage;
+  return {
+    dimensions: [newWidth, newHeight],
+    frames: newFrames.frames,
+  };
 };
 
 export const createNewImage = (args: {
