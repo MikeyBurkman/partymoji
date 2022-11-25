@@ -117,98 +117,143 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
     <Stack spacing={4} alignItems="center">
       <Typography variant="h5">Image Effects</Typography>
       {currentEffects.flatMap((t, tIdx) => [
-        <Stack direction="row" key={effectKey(t, tIdx)} spacing={4}>
-          <Stack>
-            <Stack>
-              <Typography
-                variant="subtitle1"
-                fontWeight="bold"
-                marginLeft={2}
-                marginBottom={1}
-              >
-                {t.effectName}
-              </Typography>
-              <Stack direction="row" spacing={2}>
-                <Tooltip title="Remove effect">
-                  <IconButton aria-label="delete" onClick={onDelete(tIdx)}>
-                    <Icon>delete</Icon>
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Move effect earlier">
-                  <IconButton
-                    aria-label="move-before"
-                    onClick={onMoveUp(tIdx)}
-                    disabled={tIdx === 0}
-                  >
-                    <Icon>arrow_upward</Icon>
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Move effect later">
-                  <IconButton
-                    aria-label="move-after"
-                    onClick={onMoveDown(tIdx)}
-                    disabled={tIdx === currentEffects.length - 1}
-                  >
-                    <Icon>arrow_downward</Icon>
-                  </IconButton>
-                </Tooltip>
-              </Stack>
-            </Stack>
-            {t.state.status === 'done' && (
-              <Stack sx={{ width: 250 }}>
-                <Gif src={t.state.image.gif} alt={`${t.effectName}-${tIdx}`} />
-              </Stack>
-            )}
-            {t.state.status === 'computing' && <CircularProgress size={100} />}
-            <Stack spacing={1} marginTop={1}>
-              <Button
-                variant="contained"
-                startIcon={<Icon>edit</Icon>}
-                onClick={() =>
-                  setEffectDialogOpen({ open: true, idx: tIdx, isNew: false })
-                }
-              >
-                Edit Effect
-              </Button>
-            </Stack>
-            <ImageEffectDialog
-              open={effectDialogOpen.open && effectDialogOpen.idx === tIdx}
-              possibleEffects={possibleEffects}
-              onChangeEffect={(newEffect, computedImage) => {
-                onEffectsChange(
-                  replaceIndex(currentEffects, tIdx, () => ({
-                    effectName: newEffect.effectName,
-                    paramsValues: newEffect.params,
-                    state: computedImage
-                      ? { status: 'done', image: computedImage }
-                      : { status: 'init' },
-                  }))
-                );
-                setEffectDialogOpen({ open: false });
-              }}
-              onCancel={() => {
-                // Assumed to be open at this point
-                if (effectDialogOpen.open && effectDialogOpen.isNew) {
-                  // They pressed cancel on a new effect, so just remove this one.
-                  // (It's assumed to be the last effect in the chain
-                  onEffectsChange(
-                    currentEffects.slice(0, currentEffects.length - 1)
-                  );
-                }
+        <>
+          <Button
+            variant="contained"
+            startIcon={<Icon>add</Icon>}
+            size="large"
+            onClick={() => {
+              onEffectsChange([
+                {
+                  effectName: possibleEffects[0].name,
+                  paramsValues: possibleEffects[0].params.map(
+                    (p: ParamFunction<any>) => {
+                      let image: Image | undefined = undefined;
+                      if (tIdx === 0) {
+                        image = baseImage?.image;
+                      } else {
+                        const previousEffect = currentEffects[tIdx - 1];
+                        if (previousEffect.state.status === 'done') {
+                          image = previousEffect.state.image.image;
+                        }
+                      }
 
-                setEffectDialogOpen({ open: false });
-              }}
-              initialImage={getInitialImage(tIdx)}
-              currentEffect={{
-                effectName: t.effectName,
-                params: t.paramsValues,
-              }}
-              currFps={appState.fps}
-              currRandomSeed="partymoji"
-            />
+                      return p.defaultValue(image);
+                    }
+                  ),
+                  state: { status: 'init' },
+                },
+                ...currentEffects,
+              ]);
+              setEffectDialogOpen({
+                open: true,
+                idx: tIdx,
+                isNew: true,
+              });
+            }}
+          >
+            Insert New Effect
+          </Button>
+          <FxDivider key={`divider-top-${effectKey(t, tIdx)}`} />
+          <Stack direction="row" key={effectKey(t, tIdx)} spacing={4}>
+            <Stack border="black">
+              <Stack>
+                <Typography
+                  variant="subtitle1"
+                  fontWeight="bold"
+                  marginLeft={2}
+                  marginBottom={1}
+                >
+                  Effect: {t.effectName}
+                </Typography>
+                <Stack direction="row" spacing={2}>
+                  <Tooltip title="Remove effect">
+                    <IconButton aria-label="delete" onClick={onDelete(tIdx)}>
+                      <Icon>delete</Icon>
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Move effect earlier">
+                    <IconButton
+                      aria-label="move-before"
+                      onClick={onMoveUp(tIdx)}
+                      disabled={tIdx === 0}
+                    >
+                      <Icon>arrow_upward</Icon>
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Move effect later">
+                    <IconButton
+                      aria-label="move-after"
+                      onClick={onMoveDown(tIdx)}
+                      disabled={tIdx === currentEffects.length - 1}
+                    >
+                      <Icon>arrow_downward</Icon>
+                    </IconButton>
+                  </Tooltip>
+                </Stack>
+              </Stack>
+              {t.state.status === 'done' && (
+                <Stack sx={{ width: 250 }}>
+                  <Gif
+                    src={t.state.image.gif}
+                    alt={`${t.effectName}-${tIdx}`}
+                    dimensions={t.state.image.image.dimensions}
+                  />
+                </Stack>
+              )}
+              {t.state.status === 'computing' && (
+                <CircularProgress size={100} />
+              )}
+              <Stack spacing={1} marginTop={1}>
+                <Button
+                  variant="contained"
+                  startIcon={<Icon>edit</Icon>}
+                  onClick={() =>
+                    setEffectDialogOpen({ open: true, idx: tIdx, isNew: false })
+                  }
+                >
+                  Edit: "{t.effectName}"
+                </Button>
+              </Stack>
+              <ImageEffectDialog
+                open={effectDialogOpen.open && effectDialogOpen.idx === tIdx}
+                possibleEffects={possibleEffects}
+                onChangeEffect={(newEffect, computedImage) => {
+                  onEffectsChange(
+                    replaceIndex(currentEffects, tIdx, () => ({
+                      effectName: newEffect.effectName,
+                      paramsValues: newEffect.params,
+                      state: computedImage
+                        ? { status: 'done', image: computedImage }
+                        : { status: 'init' },
+                    }))
+                  );
+                  setEffectDialogOpen({ open: false });
+                }}
+                onCancel={() => {
+                  // Assumed to be open at this point
+                  if (effectDialogOpen.open && effectDialogOpen.isNew) {
+                    // They pressed cancel on a new effect, so just remove this one.
+                    // (It's assumed to be the last effect in the chain
+                    onEffectsChange(
+                      currentEffects.slice(0, currentEffects.length - 1)
+                    );
+                  }
+
+                  setEffectDialogOpen({ open: false });
+                }}
+                initialImage={getInitialImage(tIdx)}
+                currentEffect={{
+                  effectName: t.effectName,
+                  params: t.paramsValues,
+                }}
+                currFps={appState.fps}
+                currRandomSeed="partymoji"
+              />
+            </Stack>
           </Stack>
-        </Stack>,
-        <FxDivider key={`divider-${effectKey(t, tIdx)}`} />,
+          <FxDivider key={`divider-bottom-${effectKey(t, tIdx)}`} />
+        </>,
       ])}
       <Button
         variant="contained"
@@ -245,7 +290,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
           });
         }}
       >
-        Add New Effect
+        Append New Effect
       </Button>
     </Stack>
   );

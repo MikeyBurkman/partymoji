@@ -41,6 +41,7 @@ import { ripple } from './ripple';
 import { rotate } from './rotate';
 import { roxbury } from './roxbury';
 import { scaleImage } from './scale-image';
+import { setAnimationLength } from './set-animation-length';
 import { shake } from './shake';
 import { slowAnimation } from './slow-animation';
 import { spin } from './spin';
@@ -49,7 +50,7 @@ import { text } from './text';
 import { transparency } from './transparency';
 import { transpose } from './transpose';
 
-const extraEffects = pipe(
+const otherEffects = pipe(
   [
     backgroundColor,
     backgroundImage,
@@ -103,8 +104,9 @@ const extraEffects = pipe(
 
 export const POSSIBLE_EFFECTS = [
   // The first one is the one that is automatically selected, so make sure this is at the top of the list
+  setAnimationLength,
   adjustImage,
-  ...extraEffects,
+  ...otherEffects,
 ];
 
 export const effectByName = (

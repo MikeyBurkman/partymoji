@@ -27,7 +27,7 @@ const COMPUTE_DEBOUNCE_MILLIS = 1000;
 
 // Increase this by 1 when there's a breaking change to the app state.
 // Don't change this unless we have to!
-const CURRENT_APP_STATE_VERSION = 4;
+const CURRENT_APP_STATE_VERSION = 5;
 
 const DEFAULT_FPS = 20;
 const fpsParam = sliderParam({
@@ -254,10 +254,9 @@ const Inner: React.FC = () => {
             </Section> */}
             <Section>
               <Stack spacing={3}>
-                <Typography variant="h5">Clear State</Typography>
+                <Typography variant="h5">Clear Effects</Typography>
                 <Typography variant="body1">
-                  Clicking this button will clear the source image and all
-                  effects
+                  Clicking this button will clear all effects for the image
                 </Typography>
                 <Button
                   startIcon={<Icon>clear</Icon>}
@@ -265,11 +264,15 @@ const Inner: React.FC = () => {
                   variant="contained"
                   color="warning"
                   onClick={() => {
-                    localStorage.clearAppState();
-                    setStateRaw(DEFAULT_STATE);
+                    const newState: AppState = {
+                      ...DEFAULT_STATE,
+                      baseImage: state.baseImage,
+                    };
+                    setStateRaw(newState);
+                    localStorage.saveAppState(newState);
                   }}
                 >
-                  Clear State
+                  Clear Effects
                 </Button>
               </Stack>
             </Section>

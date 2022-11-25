@@ -210,6 +210,7 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
               <Gif
                 src={image.results.gif}
                 alt={`effect-${editingEffect.effectName}`}
+                dimensions={image.results.image.dimensions}
               />
             )}
           </Stack>

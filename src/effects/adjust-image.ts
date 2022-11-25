@@ -1,27 +1,13 @@
 import { buildEffect } from '../domain/types';
 import { applyCanvasFromFrame, applyFilter } from '../domain/utils/canvas';
-import {
-  changeFrameCount,
-  resizeImage,
-  mapFrames,
-} from '../domain/utils/image';
+import { resizeImage, mapFrames } from '../domain/utils/image';
 import { intParam } from '../params/intParam';
 import { sliderParam } from '../params/sliderParam';
 
 export const adjustImage = buildEffect({
   name: 'Adjust Image',
-  description:
-    'Change the length of the animation, the dimensions, brightness, etc.',
-  secondaryDescription: 'Leave a parameter at 0 if you want to not change it',
+  description: 'Change the dimensions, brightness, contrast etc.',
   params: [
-    sliderParam({
-      name: 'Number of Frames',
-      description:
-        'Set how many frames of animation there will be. Set to 0 to not change the current frame count.',
-      defaultValue: (image) => (image ? image.frames.length : 0),
-      min: 0,
-      max: 60,
-    }),
     intParam({
       name: 'Width',
       description:
@@ -61,7 +47,6 @@ export const adjustImage = buildEffect({
   fn: ({
     image,
     parameters: [
-      frameCount,
       resizeToWidth,
       resizeToHeight,
       brightness,
@@ -69,8 +54,6 @@ export const adjustImage = buildEffect({
       saturation,
     ],
   }) => {
-    const hasFrameCount = frameCount !== 0;
-
     const [oldWidth, oldHeight] = image.dimensions;
 
     const hasScaleChange = resizeToWidth > 0 || resizeToHeight > 0;
@@ -89,11 +72,6 @@ export const adjustImage = buildEffect({
     const isBiggerImage = newWidth * newHeight > oldWidth * oldHeight;
 
     let currImage = image;
-
-    if (hasFrameCount && frameCount < image.frames.length) {
-      // Reducing the number of frames, so do that first so we have fewer pixels to change
-      currImage = changeFrameCount(currImage, frameCount);
-    }
 
     // If making a smaller image, might as well do the brightness/contrast after making it smaller
     if (hasScaleChange && !isBiggerImage) {
@@ -126,11 +104,6 @@ export const adjustImage = buildEffect({
         newHeight,
         keepScale: false,
       });
-    }
-
-    // Finally change the number of frames if we're adding frames
-    if (hasFrameCount && frameCount > image.frames.length) {
-      currImage = changeFrameCount(currImage, frameCount);
     }
 
     return currImage;
