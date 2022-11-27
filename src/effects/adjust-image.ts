@@ -79,7 +79,7 @@ export const adjustImage = buildEffect({
         image: currImage,
         newWidth,
         newHeight,
-        keepScale: false,
+        keepScale: true,
       });
     }
 
@@ -102,7 +102,7 @@ export const adjustImage = buildEffect({
         image: currImage,
         newWidth,
         newHeight,
-        keepScale: false,
+        keepScale: true,
       });
     }
 
