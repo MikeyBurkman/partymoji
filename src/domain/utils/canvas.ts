@@ -31,7 +31,9 @@ export const frameToCanvas = ({
   const [width, height] = dimensions;
   const { canvas, ctx } = createCanvas(dimensions);
 
-  ctx.putImageData(new ImageData(frame, width, height), 0, 0);
+  const imageData = new ImageData(frame, width, height);
+
+  ctx.putImageData(imageData, 0, 0);
 
   return { canvas, ctx };
 };

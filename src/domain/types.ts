@@ -151,7 +151,7 @@ export interface AppStateEffect {
 
 export interface AppState {
   version: number;
-  baseImage?: string;
+  baseImage?: ImageEffectResult;
   effects: AppStateEffect[];
   fps: number;
 }

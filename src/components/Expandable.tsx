@@ -1,11 +1,6 @@
-import {
-  Button,
-  ClickAwayListener,
-  Collapse,
-  Icon,
-  Stack,
-} from '@material-ui/core';
+import { Button, ClickAwayListener, Collapse, Stack } from '@material-ui/core';
 import React from 'react';
+import { Icon } from './Icon';
 
 interface ExpandableProps {
   mainEle: JSX.Element;
@@ -28,7 +23,7 @@ export const Expandable: React.FC<ExpandableProps> = ({
         >
           <Stack direction="row" alignItems="center" spacing={4}>
             <div>{mainEle}</div>
-            <Icon>{collapsed ? 'add' : 'remove'}</Icon>
+            <Icon name={collapsed ? 'add' : 'remove'} />
           </Stack>
         </Button>
         <Collapse in={!collapsed}>{children}</Collapse>

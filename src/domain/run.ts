@@ -119,10 +119,9 @@ const createGif = async ({
     gif.on('data', (chunk: any) => {
       data.push(chunk);
     });
-    gif.on('end', () => {
-      const dataUrl = URL.createObjectURL(
-        new Blob(data, { type: 'image/gif' })
-      );
+    gif.on('end', async () => {
+      const blob = new Blob(data, { type: 'image/gif' });
+      const dataUrl = await blobOrFileToDataUrl(blob);
       resolve(dataUrl);
     });
 
@@ -213,3 +212,10 @@ const findRandomColorNotInSet = (
     ? findRandomColorNotInSet(random, set, attempts + 1)
     : col;
 };
+
+export const blobOrFileToDataUrl = (file: File | Blob) =>
+  new Promise<string>((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.readAsDataURL(file);
+  });

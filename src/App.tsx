@@ -3,7 +3,6 @@ import {
   Button,
   Container,
   Divider,
-  Icon,
   Paper,
   Stack,
   Typography,
@@ -21,6 +20,8 @@ import * as localStorage from './localStorage';
 import { sliderParam } from './params/sliderParam';
 import { POSSIBLE_EFFECTS } from './effects';
 import { AlertProvider, AlertSnackbar, useSetAlert } from './AlertContext';
+import { Icon } from './components/Icon';
+import { ProcessorQueueProvider } from './components/useProcessingQueue';
 
 // Number of millis to wait after a change before recomputing the gif
 const COMPUTE_DEBOUNCE_MILLIS = 1000;
@@ -66,17 +67,19 @@ const Inner: React.FC = () => {
   }, [setAlert]);
 
   React.useEffect(() => {
-    // If we have local storage state on startup, then reload that
-    const stored = localStorage.getStoredAppState();
-    if (stored) {
-      if (stored.version === CURRENT_APP_STATE_VERSION) {
-        setStateRaw(stored);
-        setDoCompute({ compute: true, startIndex: 0 });
-      } else {
-        // TODO Might be nice to tell the user we erased their previous stuff
-        localStorage.clearAppState();
+    (async () => {
+      // If we have local storage state on startup, then reload that
+      const stored = await localStorage.getStoredAppState();
+      if (stored) {
+        if (stored.version === CURRENT_APP_STATE_VERSION) {
+          setStateRaw(stored);
+          setDoCompute({ compute: true, startIndex: 0 });
+        } else {
+          // TODO Might be nice to tell the user we erased their previous stuff
+          localStorage.clearAppState();
+        }
       }
-    }
+    })();
   }, []);
 
   const setState = React.useCallback(
@@ -204,7 +207,7 @@ const Inner: React.FC = () => {
                 <Typography variant="h5">Source Image</Typography>
                 <ImagePicker
                   name="Upload a source image"
-                  currentImageUrl={state.baseImage}
+                  currentImage={state.baseImage}
                   onChange={(baseImage) => {
                     setState(
                       (prevState) => ({
@@ -245,13 +248,6 @@ const Inner: React.FC = () => {
                 }
               />
             </Section>
-            {/* <Section>
-            // Disabling this for now as I think it's confusing the way it is.
-              <ImportExportComponent
-                state={state}
-                onImport={(o) => setState(() => o, { compute: 'now' })}
-              />
-            </Section> */}
             <Section>
               <Stack spacing={3}>
                 <Typography variant="h5">Clear Effects</Typography>
@@ -259,7 +255,7 @@ const Inner: React.FC = () => {
                   Clicking this button will clear all effects for the image
                 </Typography>
                 <Button
-                  startIcon={<Icon>clear</Icon>}
+                  startIcon={<Icon name="clear" />}
                   sx={{ maxWidth: '300px' }}
                   variant="contained"
                   color="warning"
@@ -307,8 +303,10 @@ const Section: React.FC = ({ children }) => (
 
 export const App: React.FC = () => {
   return (
-    <AlertProvider>
-      <Inner />
-    </AlertProvider>
+    <ProcessorQueueProvider>
+      <AlertProvider>
+        <Inner />
+      </AlertProvider>
+    </ProcessorQueueProvider>
   );
 };

@@ -1,18 +1,21 @@
 import { Button, Icon, Stack, Box, TextField } from '@material-ui/core';
 import React from 'react';
 import { getImageFromUrl } from '../domain/importImageFromUrl';
+import { blobOrFileToDataUrl, readImage } from '../domain/run';
+import { ImageEffectResult } from '../domain/types';
 import { isUrl } from '../domain/utils/misc';
+import { Gif } from './Gif';
 
 interface ImagePickerProps {
-  currentImageUrl?: string;
+  currentImage?: ImageEffectResult;
   name?: string;
   width?: number;
   height?: number;
-  onChange: (imageUrl: string) => void;
+  onChange: (image: ImageEffectResult) => void;
 }
 
 export const ImagePicker: React.FC<ImagePickerProps> = ({
-  currentImageUrl,
+  currentImage,
   onChange,
 }) => {
   const [error, setError] = React.useState<string | undefined>();
@@ -31,8 +34,12 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
               if (!isUrl(text)) {
                 return;
               }
-              const dataUrl = await getImageFromUrl(text);
-              onChange(dataUrl);
+              const gif = await getImageFromUrl(text);
+              const image = await readImage(gif);
+              onChange({
+                gif,
+                image,
+              });
             } catch {
               setError('Error importing url');
             }
@@ -57,26 +64,23 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
             const file = files[0];
             if (file) {
               // Will be undefined if user clicked the cancel button
-              const baseImage = await readFile(file);
-              onChange(baseImage);
+              const gif = await blobOrFileToDataUrl(file);
+              const image = await readImage(gif);
+              onChange({
+                gif,
+                image,
+              });
             }
           }}
         />
       </Button>
-      {currentImageUrl && (
-        <img
-          style={{ maxWidth: '200px', maxHeight: 'auto' }}
-          src={currentImageUrl}
+      {currentImage && (
+        <Gif
+          src={currentImage.gif}
+          dimensions={currentImage.image.dimensions}
           alt="Source"
-        ></img>
+        />
       )}
     </Stack>
   );
 };
-
-const readFile = (file: File) =>
-  new Promise<string>((resolve) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.readAsDataURL(file);
-  });

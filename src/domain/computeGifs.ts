@@ -1,4 +1,4 @@
-import { readImage, runEffects } from './run';
+import { runEffects } from './run';
 import { runEffectsAsync } from './runAsync';
 import { AppState, Image, ImageEffectResult } from './types';
 import { ENV, debugLog, IS_MOBILE } from './env';
@@ -24,7 +24,7 @@ export const computeGifsForState = async ({
 
   let image: Image;
   if (startEffectIndex === 0) {
-    image = await readImage(state.baseImage);
+    image = state.baseImage.image;
   } else {
     const prevEffectState = state.effects[startEffectIndex - 1].state;
     assert(
@@ -40,7 +40,7 @@ export const computeGifsForState = async ({
     const effect = state.effects[i];
 
     const result = await computeGif({
-      randomSeed: state.baseImage!,
+      randomSeed: state.baseImage.gif,
       image,
       effectInput: {
         effectName: effect.effectName,

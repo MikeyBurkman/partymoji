@@ -1,7 +1,28 @@
 import React from 'react';
 import { debugLog } from '../domain/env';
+import { computeGif } from '../domain/computeGifs';
+import { ImageEffectResult } from '../domain/types';
+import { RunArgs } from '../domain/run';
 
 const getRunId = () => Math.floor(Math.random() * 100000);
+
+interface ContextProps {
+  latestRunIdRef: React.MutableRefObject<number>;
+}
+
+const ProcessorQueueContext = React.createContext<ContextProps>({
+  latestRunIdRef: null as any, // Will be set immediately in the provider
+});
+
+export const ProcessorQueueProvider: React.FC = ({ children }) => {
+  const latestRunIdRef = React.useRef(0);
+
+  return (
+    <ProcessorQueueContext.Provider value={{ latestRunIdRef }}>
+      {children}
+    </ProcessorQueueContext.Provider>
+  );
+};
 
 /**
  * Computes an asynchronous, calling the given callback when finished.
@@ -10,32 +31,37 @@ const getRunId = () => Math.floor(Math.random() * 100000);
  *  result for the previous compute will be thrown away. The callback will
  *  only be called a single time. Think of it like a debounce.
  */
-export function useProcessingQueue<T, R>({
-  fn,
+export function useProcessingQueue({
   onComplete,
   onError,
 }: {
-  fn: (args: T) => Promise<R>;
-  onComplete: (results: R) => void;
+  onComplete: (results: ImageEffectResult) => void;
   onError?: (error: Error) => void;
 }) {
-  const latestRunId = React.useRef<number>(0);
+  const { latestRunIdRef } = React.useContext(ProcessorQueueContext);
 
-  const onFinish = (runId: number) => (results: R) => {
-    debugLog('Finished', { runId, latestRunId: latestRunId.current });
-    if (runId === latestRunId.current) {
-      onComplete(results);
-    } else {
-      // Throw away this result -- it's been superceded by another compute
-      debugLog('Throwing away an old compute');
-    }
-  };
+  const onFinish = React.useCallback(
+    (runId: number, results: ImageEffectResult) => {
+      debugLog('Finished', { runId, latestRunIdRef });
+      if (runId === latestRunIdRef.current) {
+        onComplete(results);
+      } else {
+        // Throw away this result -- it's been superceded by another compute
+        debugLog('Throwing away an old compute');
+      }
+    },
+    [onComplete, latestRunIdRef]
+  );
 
-  return React.useCallback((args: T): void => {
-    const runId = getRunId();
-    debugLog('Computing: ', { runId, args });
-    latestRunId.current = runId;
-    fn(args).then(onFinish(runId)).catch(onError);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // TODO use React memo everywhere so we can do this properly?
+  return React.useCallback(
+    (args: RunArgs): void => {
+      const runId = getRunId();
+      debugLog('Computing: ', { runId, args });
+      latestRunIdRef.current = runId;
+      computeGif(args)
+        .then((results) => onFinish(runId, results))
+        .catch(onError);
+    },
+    [onError, onFinish, latestRunIdRef]
+  );
 }

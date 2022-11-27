@@ -11,7 +11,9 @@ export interface GifProps {
  * Returns a size that will make the image at most 300px width or tall,
  *  while preserving the aspect ratio.
  */
-const calculateDimensions = (dimensions: GifProps['dimensions']): any => {
+const calculateDimensions = (
+  dimensions: GifProps['dimensions']
+): { maxWidth: string; maxHeight: string } => {
   if (dimensions == null) {
     // TODO This happens in image picker, where we don't have a parsed image.
     // We can probably parse the image in the image picker instead of just using a URL.

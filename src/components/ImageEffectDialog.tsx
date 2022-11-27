@@ -24,12 +24,11 @@ import { debugLog } from '../domain/env';
 import { effectByName } from '../effects';
 import { Gif } from './Gif';
 import { useProcessingQueue } from './useProcessingQueue';
-import { computeGif } from '../domain/computeGifs';
 
-interface ImageEffectProps {
+interface Props {
   open: boolean;
   initialImage: ImageEffectResult | undefined;
-  currentEffect: EffectInput;
+  currentEffect: EffectInput | undefined;
   possibleEffects: Effect<any>[];
   currFps: number;
   currRandomSeed: string;
@@ -40,7 +39,7 @@ interface ImageEffectProps {
   onCancel: () => void;
 }
 
-export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
+export const ImageEffectDialog: React.FC<Props> = ({
   open,
   initialImage,
   currentEffect,
@@ -55,31 +54,35 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
   >({ computing: true });
 
   const onImageChange = useProcessingQueue({
-    fn: computeGif,
-    onComplete: (results) => setImage({ computing: false, results }),
+    onComplete: (results) => {
+      setImage({ computing: false, results });
+    },
   });
 
   const [initialLoaded, setInitialLoaded] = React.useState(false);
 
-  const [editingEffect, setEditingEffect] = React.useState<EffectInput>({
-    // Make a copy of the effect being passed in
-    effectName: currentEffect.effectName,
-    params: [...currentEffect.params],
-  });
+  const [editingEffect, setEditingEffect] = React.useState<
+    EffectInput | undefined
+  >(undefined);
+
   const [dirty, setDirty] = React.useState(false);
+
+  React.useEffect(() => {
+    if (currentEffect) {
+      setEditingEffect({
+        effectName: currentEffect.effectName,
+        params: [...currentEffect.params], // Make a defensive copy so we can edit the params
+      });
+    }
+  }, [currentEffect]);
 
   React.useEffect(() => {
     // Reset state to default values on close
     if (!open) {
       setInitialLoaded(false);
-      setEditingEffect({
-        // Make a copy of the effect being passed in
-        effectName: currentEffect.effectName,
-        params: [...currentEffect.params],
-      });
+      setEditingEffect(undefined);
       setImage({ computing: true });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   React.useEffect(() => {
@@ -104,7 +107,7 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
   }, [initialImage]);
 
   React.useEffect(() => {
-    if (!initialImage) {
+    if (!initialImage || !editingEffect) {
       return;
     }
 
@@ -120,7 +123,7 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
   }, [initialImage, editingEffect, currFps, currRandomSeed]);
 
   const closeDialog = ({ save }: { save: boolean }) => {
-    if (!save) {
+    if (!save || !editingEffect) {
       onCancel();
       return;
     }
@@ -129,114 +132,125 @@ export const ImageEffectDialog: React.FC<ImageEffectProps> = ({
     setDirty(false);
   };
 
-  const effect = effectByName(editingEffect.effectName);
+  const effect =
+    editingEffect == null ? undefined : effectByName(editingEffect.effectName);
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open}>
-      <DialogTitle>
-        <Stack direction="row" spacing={4} marginTop={2}>
-          <FormControl fullWidth>
-            <Autocomplete
-              disableClearable
-              value={editingEffect.effectName}
-              options={possibleEffects.map((t) => t.name)}
-              onChange={(event, newEffectName) => {
-                const t = effectByName(newEffectName)!;
-                // Reset all the params when you select a new effect
-                setEditingEffect({
-                  effectName: t.name,
-                  params: t.params.map((p) =>
-                    p.defaultValue(initialImage?.image ?? undefined)
-                  ),
-                });
-                setDirty(true);
-              }}
-              renderOption={(props, option) => (
-                <li {...props}>
-                  <Stack marginLeft={2} marginRight={2}>
-                    <Typography variant="body1">{option}</Typography>
+      {editingEffect && effect && (
+        <>
+          <DialogTitle>
+            <Stack direction="row" spacing={4} marginTop={2}>
+              <FormControl fullWidth>
+                <Autocomplete
+                  disableClearable
+                  value={editingEffect.effectName}
+                  options={possibleEffects.map((t) => t.name)}
+                  onChange={(event, newEffectName) => {
+                    const t = effectByName(newEffectName)!;
+                    // Reset all the params when you select a new effect
+                    setEditingEffect({
+                      effectName: t.name,
+                      params: t.params.map((p) =>
+                        p.defaultValue(initialImage?.image ?? undefined)
+                      ),
+                    });
+                    setDirty(true);
+                  }}
+                  renderOption={(props, option) => (
+                    <li {...props}>
+                      <Stack marginLeft={2} marginRight={2}>
+                        <Typography variant="body1">{option}</Typography>
+                        <Typography variant="caption" marginLeft={2}>
+                          {effectByName(option).description}
+                        </Typography>
+                      </Stack>
+                    </li>
+                  )}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Effect" />
+                  )}
+                />
+              </FormControl>
+            </Stack>
+          </DialogTitle>
+          <DialogContent>
+            <Stack divider={<Divider />} spacing={2}>
+              <Typography variant="body2">
+                {effect.description}
+                <div>
+                  {effect.secondaryDescription && (
                     <Typography variant="caption" marginLeft={2}>
-                      {effectByName(option).description}
+                      {effect.secondaryDescription}
                     </Typography>
-                  </Stack>
-                </li>
-              )}
-              renderInput={(params) => <TextField {...params} label="Effect" />}
-            />
-          </FormControl>
-        </Stack>
-      </DialogTitle>
-      <DialogContent>
-        <Stack divider={<Divider />} spacing={2}>
-          <Typography variant="body2">
-            {effect.description}
-            <div>
-              {effect.secondaryDescription && (
-                <Typography variant="caption" marginLeft={2}>
-                  {effect.secondaryDescription}
-                </Typography>
-              )}
-            </div>
-          </Typography>
+                  )}
+                </div>
+              </Typography>
 
-          {effect.params.map(
-            // Create elements for each of the parameters for the selectect effect.
-            // Each of these would get an onChange event so we know when the user has
-            //  selected a value.
-            (param: ParamFunction<any>, idx: number) => {
-              const ele = param.fn({
-                value: editingEffect.params[idx],
-                onChange: (v) => {
-                  setDirty(true);
-                  setEditingEffect({
-                    ...editingEffect,
-                    params: replaceIndex(editingEffect.params, idx, () => v),
+              {effect.params.map(
+                // Create elements for each of the parameters for the selectect effect.
+                // Each of these would get an onChange event so we know when the user has
+                //  selected a value.
+                (param: ParamFunction<any>, idx: number) => {
+                  const ele = param.fn({
+                    value: editingEffect.params[idx],
+                    onChange: (v) => {
+                      setDirty(true);
+                      setEditingEffect({
+                        ...editingEffect,
+                        params: replaceIndex(
+                          editingEffect.params,
+                          idx,
+                          () => v
+                        ),
+                      });
+                    },
                   });
-                },
-              });
-              return (
-                <React.Fragment
-                  key={`${editingEffect.effectName}-${param.name}`}
-                >
-                  {ele}
-                </React.Fragment>
-              );
-            }
-          )}
-          <Stack sx={{ height: 300 }}>
-            {image.computing ? (
-              <CircularProgress size={100} />
-            ) : (
-              <Gif
-                src={image.results.gif}
-                alt={`effect-${editingEffect.effectName}`}
-                dimensions={image.results.image.dimensions}
-              />
-            )}
-          </Stack>
-        </Stack>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          variant="outlined"
-          autoFocus
-          onClick={() => {
-            closeDialog({ save: false });
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          autoFocus
-          disabled={!dirty}
-          onClick={() => {
-            closeDialog({ save: true });
-          }}
-        >
-          Save and Close
-        </Button>
-      </DialogActions>
+                  return (
+                    <React.Fragment
+                      key={`${editingEffect.effectName}-${param.name}`}
+                    >
+                      {ele}
+                    </React.Fragment>
+                  );
+                }
+              )}
+              <Stack sx={{ height: 300 }}>
+                {image.computing ? (
+                  <CircularProgress size={100} />
+                ) : (
+                  <Gif
+                    src={image.results.gif}
+                    alt={`effect-${editingEffect.effectName}`}
+                    dimensions={image.results.image.dimensions}
+                  />
+                )}
+              </Stack>
+            </Stack>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              variant="outlined"
+              autoFocus
+              onClick={() => {
+                closeDialog({ save: false });
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              autoFocus
+              disabled={!dirty}
+              onClick={() => {
+                closeDialog({ save: true });
+              }}
+            >
+              Save and Close
+            </Button>
+          </DialogActions>
+        </>
+      )}
     </Dialog>
   );
 };

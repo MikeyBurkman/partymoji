@@ -9,12 +9,11 @@ export const setAnimationLength = buildEffect({
     sliderParam({
       name: 'Number of Frames',
       description: 'Set how many frames of animation there will be.',
-      defaultValue: (image) => (image ? image.frames.length : 0),
+      defaultValue: (image) => (image ? image.frames.length : 1),
       min: 1,
       max: 60,
     }),
   ] as const,
-  fn: ({ image, parameters: [frameCount] }) => {
-    return changeFrameCount(image, frameCount);
-  },
+  fn: ({ image, parameters: [frameCount] }) =>
+    changeFrameCount(image, frameCount),
 });
