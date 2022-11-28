@@ -7,7 +7,6 @@ import {
   Stack,
   Typography,
   Divider,
-  Tooltip,
 } from '@material-ui/core';
 import { saveAs } from 'file-saver';
 
@@ -135,7 +134,7 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
             onAddBefore();
           }}
         >
-          Insert new effect to the left
+          Insert new effect before this
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -143,7 +142,7 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
             onAddAfter();
           }}
         >
-          Insert new effect to the right
+          Add new effect after this
         </MenuItem>
         <Divider />
         <MenuItem
@@ -268,6 +267,35 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
       })
     );
 
+  const onAddNew = React.useCallback(() => {
+    onEffectsChange([
+      ...currentEffects,
+      {
+        effectName: possibleEffects[0].name,
+        paramsValues: possibleEffects[0].params.map((p: ParamFunction<any>) => {
+          let image: Image | undefined = undefined;
+          if (currentEffects.length === 0) {
+            image = baseImage?.image;
+          } else {
+            const lastEffect = currentEffects[currentEffects.length - 1];
+            if (lastEffect.state.status === 'done') {
+              image = lastEffect.state.image.image;
+            }
+          }
+
+          return p.defaultValue(image);
+        }),
+        state: { status: 'init' },
+      },
+    ]);
+    setTimeout(() => swiper?.slideTo(currentEffects.length + 1), 50);
+    setEffectDialogOpen({
+      open: true,
+      idx: currentEffects.length,
+      isNew: true,
+    });
+  }, [baseImage, currentEffects, onEffectsChange, possibleEffects, swiper]);
+
   const finalGif = React.useMemo((): string | undefined => {
     const lastEffect = currentEffects[currentEffects.length - 1];
     if (!lastEffect) {
@@ -370,40 +398,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
                     isNew: true,
                   });
                 }}
-                onAddAfter={() => {
-                  onEffectsChange([
-                    ...currentEffects,
-                    {
-                      effectName: possibleEffects[0].name,
-                      paramsValues: possibleEffects[0].params.map(
-                        (p: ParamFunction<any>) => {
-                          let image: Image | undefined = undefined;
-                          if (currentEffects.length === 0) {
-                            image = baseImage?.image;
-                          } else {
-                            const lastEffect =
-                              currentEffects[currentEffects.length - 1];
-                            if (lastEffect.state.status === 'done') {
-                              image = lastEffect.state.image.image;
-                            }
-                          }
-
-                          return p.defaultValue(image);
-                        }
-                      ),
-                      state: { status: 'init' },
-                    },
-                  ]);
-                  setTimeout(
-                    () => swiper?.slideTo(currentEffects.length + 1),
-                    50
-                  );
-                  setEffectDialogOpen({
-                    open: true,
-                    idx: currentEffects.length,
-                    isNew: true,
-                  });
-                }}
+                onAddAfter={onAddNew}
                 onMoveBefore={() => onMoveBefore(tIdx)}
                 onMoveAfter={() => onMoveAfter(tIdx)}
               />
@@ -411,6 +406,11 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
           ))}
         </Swiper>
       </Stack>
+      {currentEffects.length === 0 && (
+        <Button variant="contained" fullWidth onClick={onAddNew}>
+          Add First Effect
+        </Button>
+      )}
       <Button
         variant="contained"
         disabled={finalGif == null}
