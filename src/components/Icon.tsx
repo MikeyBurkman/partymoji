@@ -14,7 +14,9 @@ export type Icons =
   | 'edit'
   | 'image'
   | 'priority_high'
-  | 'list';
+  | 'list'
+  | 'settings'
+  | 'save_alt';
 
 export interface IconProps {
   name: Icons;

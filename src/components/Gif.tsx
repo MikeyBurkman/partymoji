@@ -1,6 +1,8 @@
 import React from 'react';
 import { Dimensions } from '../domain/types';
 
+const MAX_SIZE = 220;
+
 export interface GifProps {
   src: string;
   alt: string;
@@ -17,20 +19,20 @@ const calculateDimensions = (
   if (dimensions == null) {
     // TODO This happens in image picker, where we don't have a parsed image.
     // We can probably parse the image in the image picker instead of just using a URL.
-    return { maxWidth: '300px', maxHeight: '300px' };
+    return { maxWidth: `${MAX_SIZE}px`, maxHeight: `${MAX_SIZE}px` };
   }
 
   const [width, height] = dimensions;
   const aspectRatio = height / width;
   if (width > height) {
-    const maxWidth = 300;
-    const maxHeight = aspectRatio * 300;
+    const maxWidth = MAX_SIZE;
+    const maxHeight = aspectRatio * MAX_SIZE;
     // If width is bigger, then limit by width
     return { maxWidth: `${maxWidth}px`, maxHeight: `${maxHeight}px` };
   } else {
     // Else, limit by height
-    const maxHeight = 300;
-    const maxWidth = (1 / aspectRatio) * 300;
+    const maxHeight = MAX_SIZE;
+    const maxWidth = (1 / aspectRatio) * MAX_SIZE;
     return { maxHeight: `${maxHeight}px`, maxWidth: `${maxWidth}px` };
   }
 };

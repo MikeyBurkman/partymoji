@@ -28,7 +28,7 @@ const COMPUTE_DEBOUNCE_MILLIS = 1000;
 
 // Increase this by 1 when there's a breaking change to the app state.
 // Don't change this unless we have to!
-const CURRENT_APP_STATE_VERSION = 5;
+const CURRENT_APP_STATE_VERSION = 6;
 
 const DEFAULT_FPS = 20;
 const fpsParam = sliderParam({
@@ -208,7 +208,7 @@ const Inner: React.FC = () => {
                 <ImagePicker
                   name="Upload a source image"
                   currentImage={state.baseImage}
-                  onChange={(baseImage) => {
+                  onChange={(baseImage, fname) => {
                     if (IS_MOBILE) {
                       const [width, height] = baseImage.image.dimensions;
                       if (width > 512 || height > 512) {
@@ -226,6 +226,7 @@ const Inner: React.FC = () => {
                       (prevState) => ({
                         ...prevState,
                         baseImage,
+                        fname,
                       }),
                       { compute: 'now' }
                     );

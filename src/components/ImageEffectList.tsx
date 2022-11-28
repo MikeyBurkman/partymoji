@@ -2,12 +2,14 @@ import React from 'react';
 import {
   Button,
   CircularProgress,
-  Divider,
   Menu,
   MenuItem,
   Stack,
   Typography,
+  Divider,
+  Tooltip,
 } from '@material-ui/core';
+import { saveAs } from 'file-saver';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Controller } from 'swiper';
@@ -44,11 +46,13 @@ interface ImageEffectProps {
   effect: AppStateEffect;
   index: number;
   totalEffects: number;
+  fname?: string;
   onDelete: () => void;
   onEdit: () => void;
   onMoveBefore: () => void;
   onMoveAfter: () => void;
   onAddBefore: () => void;
+  onAddAfter: () => void;
 }
 
 export const ImageEffect: React.FC<ImageEffectProps> = ({
@@ -60,6 +64,7 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
   onMoveBefore,
   onMoveAfter,
   onAddBefore,
+  onAddAfter,
 }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const isOpen = anchorEl != null;
@@ -83,7 +88,7 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
         </Typography>
       </Stack>
       {effect.state.status === 'done' ? (
-        <Stack sx={{ width: 250 }}>
+        <Stack sx={{ width: 250, paddingLeft: 3.5 }}>
           <Gif
             src={effect.state.image.gif}
             alt={`${effect.effectName}-${index}`}
@@ -95,12 +100,12 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
       )}
 
       <Button
-        startIcon={<Icon name="list" />}
+        startIcon={<Icon name="settings" />}
         onClick={handleClick}
         variant="contained"
         style={{ marginTop: 12 }}
       >
-        Edit
+        Options
       </Button>
       <Menu
         open={isOpen}
@@ -123,41 +128,53 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
         >
           Edit effect
         </MenuItem>
-        {index > 0 && (
-          <MenuItem
-            onClick={() => {
-              handleClose();
-              onMoveBefore();
-            }}
-          >
-            Move effect to the left
-          </MenuItem>
-        )}
-        {index < totalEffects - 1 && (
-          <MenuItem
-            onClick={() => {
-              handleClose();
-              onMoveAfter();
-            }}
-          >
-            Move effect to the right
-          </MenuItem>
-        )}
+        <Divider />
         <MenuItem
           onClick={() => {
             handleClose();
             onAddBefore();
           }}
         >
-          Insert new effect before
+          Insert new effect to the left
         </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleClose();
+            onAddAfter();
+          }}
+        >
+          Insert new effect to the right
+        </MenuItem>
+        <Divider />
+        <MenuItem
+          disabled={index <= 0}
+          onClick={() => {
+            handleClose();
+            onMoveBefore();
+          }}
+        >
+          Move effect to the left
+        </MenuItem>
+        <MenuItem
+          disabled={index >= totalEffects - 1}
+          onClick={() => {
+            handleClose();
+            onMoveAfter();
+          }}
+        >
+          Move effect to the right
+        </MenuItem>
+        <Divider />
         <MenuItem
           onClick={() => {
             handleClose();
             onDelete();
           }}
         >
-          Delete Effect
+          <>
+            <Icon name="delete" />
+            Delete Effect
+          </>
         </MenuItem>
       </Menu>
     </Stack>
@@ -251,6 +268,19 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
       })
     );
 
+  const finalGif = React.useMemo((): string | undefined => {
+    const lastEffect = currentEffects[currentEffects.length - 1];
+    if (!lastEffect) {
+      return undefined;
+    }
+
+    if (lastEffect.state.status !== 'done') {
+      return undefined;
+    }
+
+    return lastEffect.state.image.gif;
+  }, [currentEffects]);
+
   return (
     <Stack spacing={4}>
       <ImageEffectDialog
@@ -302,6 +332,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
                 effect={t}
                 index={tIdx}
                 totalEffects={currentEffects.length}
+                fname={appState.fname}
                 onDelete={() => onDelete(tIdx)}
                 onEdit={() =>
                   setEffectDialogOpen({
@@ -339,6 +370,40 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
                     isNew: true,
                   });
                 }}
+                onAddAfter={() => {
+                  onEffectsChange([
+                    ...currentEffects,
+                    {
+                      effectName: possibleEffects[0].name,
+                      paramsValues: possibleEffects[0].params.map(
+                        (p: ParamFunction<any>) => {
+                          let image: Image | undefined = undefined;
+                          if (currentEffects.length === 0) {
+                            image = baseImage?.image;
+                          } else {
+                            const lastEffect =
+                              currentEffects[currentEffects.length - 1];
+                            if (lastEffect.state.status === 'done') {
+                              image = lastEffect.state.image.image;
+                            }
+                          }
+
+                          return p.defaultValue(image);
+                        }
+                      ),
+                      state: { status: 'init' },
+                    },
+                  ]);
+                  setTimeout(
+                    () => swiper?.slideTo(currentEffects.length + 1),
+                    50
+                  );
+                  setEffectDialogOpen({
+                    open: true,
+                    idx: currentEffects.length,
+                    isNew: true,
+                  });
+                }}
                 onMoveBefore={() => onMoveBefore(tIdx)}
                 onMoveAfter={() => onMoveAfter(tIdx)}
               />
@@ -348,41 +413,16 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
       </Stack>
       <Button
         variant="contained"
-        startIcon={<Icon name="add" />}
-        size="large"
+        disabled={finalGif == null}
         onClick={() => {
-          onEffectsChange([
-            ...currentEffects,
-            {
-              effectName: possibleEffects[0].name,
-              paramsValues: possibleEffects[0].params.map(
-                (p: ParamFunction<any>) => {
-                  let image: Image | undefined = undefined;
-                  if (currentEffects.length === 0) {
-                    image = baseImage?.image;
-                  } else {
-                    const lastEffect =
-                      currentEffects[currentEffects.length - 1];
-                    if (lastEffect.state.status === 'done') {
-                      image = lastEffect.state.image.image;
-                    }
-                  }
-
-                  return p.defaultValue(image);
-                }
-              ),
-              state: { status: 'init' },
-            },
-          ]);
-          setTimeout(() => swiper?.slideTo(currentEffects.length + 1), 50);
-          setEffectDialogOpen({
-            open: true,
-            idx: currentEffects.length,
-            isNew: true,
-          });
+          if (!finalGif) {
+            return; // Button will be disabled
+          }
+          saveAs(finalGif, appState.fname || 'image.gif');
         }}
+        startIcon={<Icon name="save_alt" />}
       >
-        Append New Effect
+        Save Gif
       </Button>
     </Stack>
   );

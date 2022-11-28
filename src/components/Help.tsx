@@ -11,12 +11,16 @@ export const Help: React.FC = () => (
         mainEle={<Typography variant="h6">Getting Started</Typography>}
       >
         <Section>
-          <SectionHeader>
-            Start by importing an image from your device
-          </SectionHeader>
-          <SectionText>You may choose a png, jpg, or gif</SectionText>
+          <SectionHeader>Start by importing an image.</SectionHeader>
           <SectionText>
-            The frames per second controls how fast the final gif will animate
+            You may upload a png, jpg, or gif from your device.
+          </SectionText>
+          <SectionText>
+            Alternatively, you can post a URL to a png, jpg, or gif, though this
+            can be a little flaky, and does not support animated images.
+          </SectionText>
+          <SectionText>
+            The frames per second controls how fast the final gif will animate.
           </SectionText>
         </Section>
       </Expandable>
@@ -45,11 +49,9 @@ export const Help: React.FC = () => (
 
           <Section>
             <SectionHeader>
-              Animation effects require multiple animaion frames
+              For static images, you'll likely want to first "Set Animation
+              Length".
             </SectionHeader>
-            <SectionText>
-              The "Adjust Image" effect has a "Frame Count" paramter.
-            </SectionText>
             <SectionText>
               This controls how many frames are in the animation. Typically this
               is between 10 and 20.
@@ -60,7 +62,26 @@ export const Help: React.FC = () => (
             </SectionText>
             <SectionText>
               Remember that some places (like Slack and Discord) have strict
-              limits on the size of emojis.
+              limits on the file size of emojis, so you may need to reduce the
+              number of frames in order to meet those requirements. Slack has a
+              limit of 128kb, and Discord has a limit of 256kb.
+            </SectionText>
+          </Section>
+
+          <Divider />
+
+          <Section>
+            <SectionHeader>
+              If uploading to Slack or Discord, you will probably want to use
+              "Adjust Image" to set the width and height.
+            </SectionHeader>
+            <SectionText>
+              Slack has a limit of 128x128 pixels. Discord has a limit of
+              256x256.
+            </SectionText>
+            <SectionText>
+              Making images smaller will also decrease how long it takes to
+              apply effects.
             </SectionText>
           </Section>
 
@@ -91,22 +112,15 @@ export const Help: React.FC = () => (
           <Section>
             <SectionHeader>Gifs will compute automatically</SectionHeader>
             <SectionText>
-              Whenever you add or change an effect, it will compute a new gif
-              directly below that effect.
+              Whenever you add an effect, it will automatically compute a new
+              gif with that effect.
             </SectionText>
             <SectionText>
-              The gif below to each effect shows the results of that effect on
-              the previous gif.
+              The gif below each effect shows the results of that effect.
             </SectionText>
-          </Section>
-
-          <Divider />
-
-          <Section>
-            <SectionHeader>Creating a GIF</SectionHeader>
             <SectionText>
-              To export a gif, just right click on the gif itself, and click
-              "Save Image As...".
+              Click on "Save Gif" at the bottom to export the final version of
+              the gif after all effects have been applied.
             </SectionText>
           </Section>
         </Group>

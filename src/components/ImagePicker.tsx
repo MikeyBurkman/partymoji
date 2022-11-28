@@ -6,12 +6,23 @@ import { ImageEffectResult } from '../domain/types';
 import { isUrl } from '../domain/utils/misc';
 import { Gif } from './Gif';
 
+const parseFileName = (s: string): string => {
+  const parts = s.split('/'); // For URLs
+  const name = parts[parts.length - 1];
+  // Now remove file extension
+  const nameParts = name.split('.');
+  if (nameParts.length === 1) {
+    return nameParts[0];
+  }
+  return nameParts.slice(0, nameParts.length - 1).join('.');
+};
+
 interface ImagePickerProps {
   currentImage?: ImageEffectResult;
   name?: string;
   width?: number;
   height?: number;
-  onChange: (image: ImageEffectResult) => void;
+  onChange: (image: ImageEffectResult, fileName: string) => void;
 }
 
 export const ImagePicker: React.FC<ImagePickerProps> = ({
@@ -25,21 +36,39 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
         <TextField
           label="URL"
           variant="outlined"
+          fullWidth
           error={!!error}
           helperText={error ?? 'Only supports static images'}
           onBlur={async (e) => {
             const text = e.target.value;
             try {
               setError(undefined);
+
+              if (text.startsWith('data:')) {
+                // Data URL
+                const image = await readImage(text);
+                onChange(
+                  {
+                    gif: text,
+                    image,
+                  },
+                  'image'
+                );
+                return;
+              }
+
               if (!isUrl(text)) {
                 return;
               }
               const gif = await getImageFromUrl(text);
               const image = await readImage(gif);
-              onChange({
-                gif,
-                image,
-              });
+              onChange(
+                {
+                  gif,
+                  image,
+                },
+                parseFileName(text)
+              );
             } catch {
               setError('Error importing url');
             }
@@ -66,10 +95,13 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
               // Will be undefined if user clicked the cancel button
               const gif = await blobOrFileToDataUrl(file);
               const image = await readImage(gif);
-              onChange({
-                gif,
-                image,
-              });
+              onChange(
+                {
+                  gif,
+                  image,
+                },
+                parseFileName(file.name)
+              );
             }
           }}
         />
