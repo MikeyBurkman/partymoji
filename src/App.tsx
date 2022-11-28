@@ -209,6 +209,19 @@ const Inner: React.FC = () => {
                   name="Upload a source image"
                   currentImage={state.baseImage}
                   onChange={(baseImage) => {
+                    if (IS_MOBILE) {
+                      const [width, height] = baseImage.image.dimensions;
+                      if (width > 512 || height > 512) {
+                        setAlert({
+                          severity: 'error',
+                          message:
+                            'The image you chose is too large to work well on mobile.',
+                        });
+
+                        return;
+                      }
+                    }
+
                     setState(
                       (prevState) => ({
                         ...prevState,

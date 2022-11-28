@@ -20,3 +20,4 @@ https://mikeyburkman.github.io/partymoji/
 2. Flickering when adding a new effect on prod
 3. Change all of our hue stuff to use canvas when possible
 4. Add movement/scaling/rotation to text
+5. Effect previews? Could reduce image to a really small thumbnail and reduce the number of frames to a max of like 5 before running each effect.
