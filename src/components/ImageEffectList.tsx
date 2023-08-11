@@ -76,13 +76,14 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
 
   return (
     <Stack alignItems="center" margin={2}>
-      <Stack direction="row" width="100%" spacing={16}>
+      <Stack direction="row" width="100%">
         <Typography
           variant="subtitle1"
           fontWeight="bold"
           marginLeft={2}
           marginBottom={1}
           alignSelf="left"
+          width="95%"
         >
           {effect.effectName}
         </Typography>
