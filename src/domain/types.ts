@@ -30,18 +30,23 @@ export type Dimensions = [number, number];
  *    r4,g4,b4,a4, r5,g5,b5,a5, r6,g6,b6,a6
  *  ]
  *
- * [0, 0] = index 0
- * [1, 0] = index 4
- * [2, 0] = index 8
- * [0, 1] = index 12
- * [1, 1] = index 16
- * [2, 1] = index 20
+ * Coordinate to index mapping:
+ * [0, 0] = indices 0-3
+ * [1, 0] = indices 4-7
+ * [2, 0] = indices 8-11
+ * [0, 1] = indices 12-15
+ * [1, 1] = indices 16-19
+ * [2, 1] = indices 20-23
+ *
  * To get pixel [x, y], do (x + y * width) * 4
  */
 export type FrameData = Uint8ClampedArray;
 
 /**
- * The results of get-pixels processImage()
+ * Contains the dimensions of an image, along with an array of frames.
+ * Each frame is a one-dimension array of colors (see `FrameData`).
+ * Each frame represents one frame in the animation -- if `frames` has length 4, then
+ *  it means that there are 4 animation frames in the image.
  */
 export type Image = {
   dimensions: Dimensions;

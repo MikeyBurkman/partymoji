@@ -67,25 +67,32 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
 }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const isOpen = anchorEl != null;
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleOpenOptionsClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
-  const handleClose = () => {
+  const handleOptionsClose = () => {
     setAnchorEl(null);
   };
 
   return (
     <Stack alignItems="center" margin={2}>
-      <Stack>
+      <Stack direction="row" width="100%" spacing={16}>
         <Typography
           variant="subtitle1"
           fontWeight="bold"
           marginLeft={2}
           marginBottom={1}
+          alignSelf="left"
         >
           {effect.effectName}
         </Typography>
+        <Button
+          endIcon={<Icon name="settings" />}
+          onClick={handleOpenOptionsClick}
+          variant="text"
+        />
       </Stack>
+
       {effect.state.status === 'done' ? (
         <Stack sx={{ width: 250, paddingLeft: 3.5 }}>
           <Gif
@@ -99,17 +106,19 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
       )}
 
       <Button
-        startIcon={<Icon name="settings" />}
-        onClick={handleClick}
-        variant="contained"
+        startIcon={<Icon name="add" />}
+        onClick={onAddAfter}
+        variant="outlined"
+        fullWidth
         style={{ marginTop: 12 }}
       >
-        Options
+        New Effect
       </Button>
+
       <Menu
         open={isOpen}
         anchorEl={anchorEl}
-        onClose={handleClose}
+        onClose={handleOptionsClose}
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'right',
@@ -121,7 +130,7 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
       >
         <MenuItem
           onClick={() => {
-            handleClose();
+            handleOptionsClose();
             onEdit();
           }}
         >
@@ -130,43 +139,55 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
         <Divider />
         <MenuItem
           onClick={() => {
-            handleClose();
+            handleOptionsClose();
             onAddBefore();
           }}
         >
-          Insert new effect before this
+          <>
+            <Icon name="add" />
+            Insert new effect before this
+          </>
         </MenuItem>
         <MenuItem
           onClick={() => {
-            handleClose();
+            handleOptionsClose();
             onAddAfter();
           }}
         >
-          Add new effect after this
+          <>
+            Add new effect after this
+            <Icon name="add" />
+          </>
         </MenuItem>
         <Divider />
         <MenuItem
           disabled={index <= 0}
           onClick={() => {
-            handleClose();
+            handleOptionsClose();
             onMoveBefore();
           }}
         >
-          Move effect to the left
+          <>
+            <Icon name="arrow_left" />
+            Move effect to the left
+          </>
         </MenuItem>
         <MenuItem
           disabled={index >= totalEffects - 1}
           onClick={() => {
-            handleClose();
+            handleOptionsClose();
             onMoveAfter();
           }}
         >
-          Move effect to the right
+          <>
+            Move effect to the right
+            <Icon name="arrow_right" />
+          </>
         </MenuItem>
         <Divider />
         <MenuItem
           onClick={() => {
-            handleClose();
+            handleOptionsClose();
             onDelete();
           }}
         >
@@ -407,7 +428,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
         </Swiper>
       </Stack>
       {currentEffects.length === 0 && (
-        <Button variant="contained" fullWidth onClick={onAddNew}>
+        <Button variant="outlined" fullWidth onClick={onAddNew}>
           Add First Effect
         </Button>
       )}

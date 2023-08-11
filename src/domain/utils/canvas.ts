@@ -80,7 +80,10 @@ export const applyCanvasFromFrame = ({
   return canvasData.ctx.getImageData(0, 0, dimensions[0], dimensions[1]).data;
 };
 
-/** Combines two canvases together. It's assumed that the first frame has some transparency to it. */
+/**
+ * Combines two canvases or frames together.
+ * It's assumed that the foreground has some transparency to it.
+ */
 export const combineImages = ({
   dimensions,
   background,
