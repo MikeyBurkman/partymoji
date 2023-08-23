@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  Button,
-  CircularProgress,
-  Menu,
-  MenuItem,
-  Stack,
-  Typography,
-  Divider,
-} from '@material-ui/core';
+import { Button, CircularProgress, Stack, Typography } from '@material-ui/core';
 import { saveAs } from 'file-saver';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -27,7 +19,7 @@ import {
 } from '../domain/types';
 import { replaceIndex } from '../domain/utils/misc';
 import { Gif } from './Gif';
-import { Icon } from './Icon';
+import { Icon, ClickableIcon } from './Icon';
 import { ImageEffectDialog } from './ImageEffectDialog';
 
 interface EffectListProps {
@@ -65,18 +57,9 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
   onAddBefore,
   onAddAfter,
 }) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const isOpen = anchorEl != null;
-  const handleOpenOptionsClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleOptionsClose = () => {
-    setAnchorEl(null);
-  };
-
   return (
-    <Stack alignItems="center" margin={2}>
-      <Stack direction="row" width="100%">
+    <Stack alignItems="center" margin={2} justifyContent="space-evenly">
+      <Stack direction="row" width="100%" minHeight="4rem">
         <Typography
           variant="subtitle1"
           fontWeight="bold"
@@ -87,10 +70,10 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
         >
           {effect.effectName}
         </Typography>
-        <Button
-          endIcon={<Icon name="settings" />}
-          onClick={handleOpenOptionsClick}
-          variant="text"
+        <ClickableIcon
+          tooltip="Delete effect"
+          name="delete"
+          onClick={onDelete}
         />
       </Stack>
 
@@ -106,98 +89,31 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
         <CircularProgress size={100} />
       )}
 
-      <Button
-        startIcon={<Icon name="add" />}
-        onClick={onAddAfter}
-        variant="outlined"
-        fullWidth
-        style={{ marginTop: 12 }}
-      >
-        New Effect
-      </Button>
-
-      <Menu
-        open={isOpen}
-        anchorEl={anchorEl}
-        onClose={handleOptionsClose}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
-      >
-        <MenuItem
-          onClick={() => {
-            handleOptionsClose();
-            onEdit();
-          }}
-        >
-          Edit effect
-        </MenuItem>
-        <Divider />
-        <MenuItem
-          onClick={() => {
-            handleOptionsClose();
-            onAddBefore();
-          }}
-        >
-          <>
-            <Icon name="add" />
-            Insert new effect before this
-          </>
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleOptionsClose();
-            onAddAfter();
-          }}
-        >
-          <>
-            Add new effect after this
-            <Icon name="add" />
-          </>
-        </MenuItem>
-        <Divider />
-        <MenuItem
-          disabled={index <= 0}
-          onClick={() => {
-            handleOptionsClose();
-            onMoveBefore();
-          }}
-        >
-          <>
-            <Icon name="arrow_left" />
-            Move effect to the left
-          </>
-        </MenuItem>
-        <MenuItem
-          disabled={index >= totalEffects - 1}
-          onClick={() => {
-            handleOptionsClose();
-            onMoveAfter();
-          }}
-        >
-          <>
-            Move effect to the right
-            <Icon name="arrow_right" />
-          </>
-        </MenuItem>
-        <Divider />
-        <MenuItem
-          onClick={() => {
-            handleOptionsClose();
-            onDelete();
-          }}
-        >
-          <>
-            <Icon name="delete" />
-            Delete Effect
-          </>
-        </MenuItem>
-      </Menu>
+      <Stack direction="row" spacing={2} mt={4}>
+        <ClickableIcon
+          tooltip="Add new effect before this"
+          name="add"
+          onClick={onAddBefore}
+        />
+        <ClickableIcon
+          tooltip="Move effect left"
+          isDisabled={index <= 0}
+          name="keyboard_double_arrow_left"
+          onClick={onMoveBefore}
+        />
+        <ClickableIcon tooltip="Edit effect" name="settings" onClick={onEdit} />
+        <ClickableIcon
+          tooltip="Move effect right"
+          isDisabled={index >= totalEffects - 1}
+          name="keyboard_double_arrow_right"
+          onClick={onMoveAfter}
+        />
+        <ClickableIcon
+          tooltip="Add new effect after this"
+          name="add"
+          onClick={onAddAfter}
+        />
+      </Stack>
     </Stack>
   );
 };
