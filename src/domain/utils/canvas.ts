@@ -171,7 +171,6 @@ export const applyFilter = (
   ].filter((x) => x.length > 0);
 
   canvas.ctx.filter = filters.join(' ');
-  console.log(canvas.ctx.filter);
 
   return canvas;
 };
