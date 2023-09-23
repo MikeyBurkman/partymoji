@@ -12,6 +12,7 @@ import { circle } from './circle';
 import { colors } from './colors';
 import { colorsBackground } from './colors-background';
 import { doubleVision } from './double-vision';
+import { dropShadow } from './drop-shadow';
 import { expand } from './expand';
 import { fill } from './fill';
 import { fisheye } from './fisheye';
@@ -61,6 +62,7 @@ const otherEffects = pipe(
     colors,
     colorsBackground,
     doubleVision,
+    dropShadow,
     expand,
     fill,
     fisheye,

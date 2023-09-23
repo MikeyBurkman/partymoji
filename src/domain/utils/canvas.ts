@@ -1,4 +1,5 @@
-import { CanvasData, Dimensions, FrameData } from '../types';
+import { CanvasData, Dimensions, FrameData, Color } from '../types';
+import { toHexColor } from './color';
 import { IS_WORKER } from './isWorker';
 import { assert } from './misc';
 
@@ -122,23 +123,55 @@ export const applyFilter = (
     contrast,
     opacity,
     saturation,
+    hueRotate,
+    sepia,
+    dropShadow,
   }: {
-    opacity?: number;
+    /** # pixels */
     blur?: number;
+    /** [0, 100) percent */
+    opacity?: number;
+    /** [0, 100) percent */
     brightness?: number;
+    /** [0, 100) percent */
     contrast?: number;
+    /** [0, 100) percent */
     saturation?: number;
+    /** [0, 360) degrees */
+    hueRotate?: number;
+    /** [0, 100) percent */
+    sepia?: number;
+    dropShadow?: {
+      offsetX: number;
+      offsetY: number;
+      color: Color;
+      /** Positive number, defaults to 0 */
+      blurRadius?: number;
+    };
   }
 ): CanvasData => {
+  const shadow = dropShadow
+    ? [
+        `${dropShadow.offsetX}px`,
+        `${dropShadow.offsetY}px`,
+        `${dropShadow.blurRadius ?? 0}px`,
+        `${toHexColor(dropShadow.color)}`,
+      ].join(' ')
+    : null;
+
   const filters = [
     blur == null ? '' : `blur(${blur}px)`,
     brightness == null ? '' : `brightness(${brightness}%)`,
     contrast == null ? '' : `contrast(${contrast}%)`,
     opacity == null ? '' : `opacity(${opacity}%)`,
     saturation == null ? '' : `saturate(${saturation}%)`,
+    hueRotate == null ? '' : `hue-rotate(${hueRotate}deg)`,
+    sepia == null ? '' : `sepia(${sepia}%)`,
+    shadow == null ? '' : `drop-shadow(${shadow})`,
   ].filter((x) => x.length > 0);
 
   canvas.ctx.filter = filters.join(' ');
+  console.log(canvas.ctx.filter);
 
   return canvas;
 };

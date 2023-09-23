@@ -7,7 +7,7 @@ export const bounce = buildEffect({
   description: 'Make the image bounce up and down',
   params: [
     intParam({
-      name: 'Bounce Speed',
+      name: 'Bounce Height',
       description: 'Positive number',
       defaultValue: (image) =>
         image ? Math.floor(image.dimensions[1] / 10) : 10,
@@ -15,8 +15,8 @@ export const bounce = buildEffect({
     }),
   ] as const,
   fn: mapImageWithPrecompute(
-    ({ animationProgress, parameters: [speed] }) => ({
-      yOffset: Math.round(speed * Math.sin(animationProgress * 2 * Math.PI)),
+    ({ animationProgress, parameters: [height] }) => ({
+      yOffset: Math.round(height * Math.sin(animationProgress * 2 * Math.PI)),
     }),
     ({ computed: { yOffset }, coord: [x, y], getSrcPixel }) =>
       getSrcPixel([x, y + yOffset])

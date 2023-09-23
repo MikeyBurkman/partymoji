@@ -43,6 +43,13 @@ export const adjustImage = buildEffect({
       step: 5,
       defaultValue: 0,
     }),
+    sliderParam({
+      name: 'Sepia',
+      min: 0,
+      max: 100,
+      step: 5,
+      defaultValue: 0,
+    }),
   ] as const,
   fn: ({
     image,
@@ -52,6 +59,7 @@ export const adjustImage = buildEffect({
       brightness,
       contrast,
       saturation,
+      sepia,
     ],
   }) => {
     const [oldWidth, oldHeight] = image.dimensions;
@@ -92,6 +100,7 @@ export const adjustImage = buildEffect({
             brightness: brightness + 100,
             contrast: contrast + 100,
             saturation: saturation + 100,
+            sepia: sepia,
           }),
       })
     );

@@ -1,6 +1,6 @@
 import { buildEffect } from '../domain/types';
-import { shiftHue } from '../domain/utils/color';
-import { mapImage } from '../domain/utils/image';
+import { applyCanvasFromFrame, applyFilter } from '../domain/utils/canvas';
+import { mapFrames } from '../domain/utils/image';
 import { sliderParam } from '../params/sliderParam';
 
 export const hueShift = buildEffect({
@@ -16,7 +16,15 @@ export const hueShift = buildEffect({
       defaultValue: 50,
     }),
   ] as const,
-  fn: mapImage(({ coord, getSrcPixel, parameters: [amount] }) =>
-    shiftHue(getSrcPixel(coord), (amount / 100) * 360)
-  ),
+  fn: ({ image, parameters: [amount] }) =>
+    mapFrames(image, (frame) =>
+      applyCanvasFromFrame({
+        dimensions: image.dimensions,
+        frame,
+        preEffect: (canvasData) =>
+          applyFilter(canvasData, {
+            hueRotate: amount * 3.6,
+          }),
+      })
+    ),
 });
