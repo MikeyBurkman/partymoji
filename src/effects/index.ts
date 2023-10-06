@@ -28,6 +28,7 @@ import { opacity } from './opacity';
 import { party } from './party';
 import { partyBackground } from './party-background';
 import { partyHarder } from './party-harder';
+import { partyShadow } from './party-shadow';
 import { pinwheelColors } from './pinwheel-colors';
 import { pinwheelRainbow } from './pinwheel-rainbow';
 import { pinwheelRainbowBackground } from './pinwheel-rainbow-background';
@@ -78,6 +79,7 @@ const otherEffects = pipe(
     party,
     partyBackground,
     partyHarder,
+    partyShadow,
     pinwheelColors,
     pinwheelRainbow,
     pinwheelRainbowBackground,
