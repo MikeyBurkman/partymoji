@@ -18,6 +18,7 @@ import {
   toHexColor,
 } from './utils/color';
 import { getPixelFromSource } from './utils/image';
+import { backgroundColor } from '../effects/background-color';
 
 export interface RunArgs {
   randomSeed: string;
@@ -51,9 +52,20 @@ export const runEffects = async ({
     fps,
   });
 
+  const resultWithBlackBG = await backgroundColor.fn({
+    image: result,
+    parameters: [[0, 0, 0, 255], 100],
+    random,
+  });
+
   return {
     gif,
     image: result,
+    gifWithBackgroundColor: await createGif({
+      image: resultWithBlackBG,
+      transparentColor: undefined,
+      fps,
+    }),
   };
 };
 

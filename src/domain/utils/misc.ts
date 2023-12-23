@@ -24,6 +24,15 @@ export const replaceIndex = <T>(
   newValueFn: (oldValue: T) => T
 ): T[] => arr.map((x, i) => (index === i ? newValueFn(x) : x));
 
+/**
+ * Returns a new array with the new item inserted into the given index.
+ * @example
+ * insertInto(['a','b','c'], 1, 'z'); // ['a','z','b','c']
+ */
+export const insertInto = <T>(arr: T[], index: number, newValue: T): T[] => {
+  return [...arr.slice(0, index), newValue, ...arr.slice(index)];
+};
+
 export const isUrl = (s: string): boolean =>
   /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(
     s

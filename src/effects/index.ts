@@ -14,6 +14,7 @@ import { colorsBackground } from './colors-background';
 import { doubleVision } from './double-vision';
 import { dropShadow } from './drop-shadow';
 import { expand } from './expand';
+import { fade } from './fade';
 import { fill } from './fill';
 import { fisheye } from './fisheye';
 import { grid } from './grid';
@@ -65,6 +66,7 @@ const otherEffects = pipe(
     doubleVision,
     dropShadow,
     expand,
+    fade,
     fill,
     fisheye,
     grid,

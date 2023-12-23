@@ -12,12 +12,10 @@ export const dropShadow = buildEffect({
     intParam({
       name: 'Offset X',
       defaultValue: 10,
-      min: 0,
     }),
     intParam({
       name: 'Offset Y',
       defaultValue: 10,
-      min: 0,
     }),
     sliderParam({
       name: 'Blur Radius',

@@ -17,10 +17,12 @@ import {
   ImageEffectResult,
   EffectInput,
 } from '../domain/types';
-import { replaceIndex } from '../domain/utils/misc';
+import { insertInto, replaceIndex } from '../domain/utils/misc';
 import { Gif } from './Gif';
 import { Icon, ClickableIcon } from './Icon';
 import { ImageEffectDialog } from './ImageEffectDialog';
+import { effectByName } from '../effects';
+import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
 
 interface EffectListProps {
   appState: AppState;
@@ -57,6 +59,7 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
   onAddBefore,
   onAddAfter,
 }) => {
+  const e = effectByName(effect.effectName);
   return (
     <Stack alignItems="center" margin={2} justifyContent="space-evenly">
       <Stack direction="row" width="100%" minHeight="4rem">
@@ -80,10 +83,15 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
       {effect.state.status === 'done' ? (
         <Stack sx={{ width: 250, paddingLeft: 3.5 }}>
           <Gif
-            src={effect.state.image.gif}
+            src={
+              e.applyBackgroundColor
+                ? effect.state.image.gifWithBackgroundColor
+                : effect.state.image.gif
+            }
             alt={`${effect.effectName}-${index}`}
             dimensions={effect.state.image.image.dimensions}
           />
+          {e.applyBackgroundColor ? <BackgroundPreviewTooltip /> : null}
         </Stack>
       ) : (
         <CircularProgress size={100} />
@@ -172,10 +180,24 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
     };
   }, [effectDialogOpen, currentEffects]);
 
+  const newDefaultEffect = (tIdx: number): AppStateEffect => ({
+    effectName: possibleEffects[0].name,
+    paramsValues: possibleEffects[0].params.map((p: ParamFunction<any>) => {
+      let image: Image | undefined = undefined;
+      const previousEffect = currentEffects[tIdx];
+      if (previousEffect.state.status === 'done') {
+        image = previousEffect.state.image.image;
+      }
+
+      return p.defaultValue(image);
+    }),
+    state: { status: 'init' },
+  });
+
   const onDelete = (idx: number) =>
     onEffectsChange(currentEffects.filter((nextT, newIdx) => newIdx !== idx));
 
-  const onMoveBefore = (idx: number) =>
+  const onMoveBefore = (idx: number) => {
     onEffectsChange(
       currentEffects.map((nextT, newIdx) => {
         if (newIdx === idx - 1) {
@@ -189,8 +211,10 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
         }
       })
     );
+    setTimeout(() => swiper?.slideTo(idx - 1), 50);
+  };
 
-  const onMoveAfter = (idx: number) =>
+  const onMoveAfter = (idx: number) => {
     onEffectsChange(
       currentEffects.map((nextT, newIdx) => {
         if (newIdx === idx + 1) {
@@ -204,27 +228,13 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
         }
       })
     );
+    setTimeout(() => swiper?.slideTo(idx + 1), 50);
+  };
 
-  const onAddNew = React.useCallback(() => {
+  const onAddNew = () => {
     onEffectsChange([
       ...currentEffects,
-      {
-        effectName: possibleEffects[0].name,
-        paramsValues: possibleEffects[0].params.map((p: ParamFunction<any>) => {
-          let image: Image | undefined = undefined;
-          if (currentEffects.length === 0) {
-            image = baseImage?.image;
-          } else {
-            const lastEffect = currentEffects[currentEffects.length - 1];
-            if (lastEffect.state.status === 'done') {
-              image = lastEffect.state.image.image;
-            }
-          }
-
-          return p.defaultValue(image);
-        }),
-        state: { status: 'init' },
-      },
+      newDefaultEffect(currentEffects.length - 1),
     ]);
     setTimeout(() => swiper?.slideTo(currentEffects.length + 1), 50);
     setEffectDialogOpen({
@@ -232,7 +242,37 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
       idx: currentEffects.length,
       isNew: true,
     });
-  }, [baseImage, currentEffects, onEffectsChange, possibleEffects, swiper]);
+  };
+
+  const onAddAfter = (tIdx: number) => {
+    const newIdx = tIdx + 1;
+    onEffectsChange(insertInto(currentEffects, newIdx, newDefaultEffect(tIdx)));
+    setTimeout(() => swiper?.slideTo(newIdx), 50);
+    setTimeout(
+      () =>
+        setEffectDialogOpen({
+          open: true,
+          idx: newIdx,
+          isNew: true,
+        }),
+      2
+    );
+  };
+
+  const onAddBefore = (tIdx: number) => {
+    onEffectsChange(
+      insertInto(currentEffects, tIdx, newDefaultEffect(tIdx - 1))
+    );
+    setTimeout(
+      () =>
+        setEffectDialogOpen({
+          open: true,
+          idx: tIdx,
+          isNew: true,
+        }),
+      2
+    );
+  };
 
   const finalGif = React.useMemo((): string | undefined => {
     const lastEffect = currentEffects[currentEffects.length - 1];
@@ -307,36 +347,8 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
                     isNew: false,
                   })
                 }
-                onAddBefore={() => {
-                  onEffectsChange([
-                    {
-                      effectName: possibleEffects[0].name,
-                      paramsValues: possibleEffects[0].params.map(
-                        (p: ParamFunction<any>) => {
-                          let image: Image | undefined = undefined;
-                          if (tIdx === 0) {
-                            image = baseImage?.image;
-                          } else {
-                            const previousEffect = currentEffects[tIdx - 1];
-                            if (previousEffect.state.status === 'done') {
-                              image = previousEffect.state.image.image;
-                            }
-                          }
-
-                          return p.defaultValue(image);
-                        }
-                      ),
-                      state: { status: 'init' },
-                    },
-                    ...currentEffects,
-                  ]);
-                  setEffectDialogOpen({
-                    open: true,
-                    idx: tIdx,
-                    isNew: true,
-                  });
-                }}
-                onAddAfter={onAddNew}
+                onAddBefore={() => onAddBefore(tIdx)}
+                onAddAfter={() => onAddAfter(tIdx)}
                 onMoveBefore={() => onMoveBefore(tIdx)}
                 onMoveAfter={() => onMoveAfter(tIdx)}
               />

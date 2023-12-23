@@ -43,12 +43,12 @@ const DropdownParam: React.FC<{
   );
 };
 
-export function dropdownParam(args: {
+export function dropdownParam<T extends string>(args: {
   name: string;
-  options: readonly { name: string; value: string }[];
+  options: readonly { name: string; value: T }[];
   description?: string;
-  defaultValue: ParamFnDefault<string>;
-}): ParamFunction<string> {
+  defaultValue: ParamFnDefault<T>;
+}): ParamFunction<T> {
   return {
     name: args.name,
     defaultValue: toParamFunction(args.defaultValue),
@@ -59,7 +59,7 @@ export function dropdownParam(args: {
           value={params.value}
           options={args.options}
           description={args.description}
-          onChange={params.onChange}
+          onChange={params.onChange as any}
         />
       );
     },

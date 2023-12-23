@@ -51,6 +51,7 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
                   {
                     gif: text,
                     image,
+                    gifWithBackgroundColor: text,
                   },
                   'image'
                 );
@@ -66,6 +67,7 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
                 {
                   gif,
                   image,
+                  gifWithBackgroundColor: gif,
                 },
                 parseFileName(text)
               );
@@ -99,6 +101,7 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
                 {
                   gif,
                   image,
+                  gifWithBackgroundColor: gif,
                 },
                 parseFileName(file.name)
               );

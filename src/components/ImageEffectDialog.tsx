@@ -24,6 +24,7 @@ import { debugLog } from '../domain/env';
 import { effectByName } from '../effects';
 import { Gif } from './Gif';
 import { useProcessingQueue } from './useProcessingQueue';
+import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
 
 interface Props {
   open: boolean;
@@ -219,11 +220,20 @@ export const ImageEffectDialog: React.FC<Props> = ({
                 {image.computing ? (
                   <CircularProgress size={100} />
                 ) : (
-                  <Gif
-                    src={image.results.gif}
-                    alt={`effect-${editingEffect.effectName}`}
-                    dimensions={image.results.image.dimensions}
-                  />
+                  <>
+                    <Gif
+                      src={
+                        effect.applyBackgroundColor
+                          ? image.results.gifWithBackgroundColor
+                          : image.results.gif
+                      }
+                      alt={`effect-${editingEffect.effectName}`}
+                      dimensions={image.results.image.dimensions}
+                    />
+                    {effect.applyBackgroundColor ? (
+                      <BackgroundPreviewTooltip />
+                    ) : null}
+                  </>
                 )}
               </Stack>
             </Stack>
