@@ -6,7 +6,7 @@ import {
   ParamFunction,
   toParamFunction,
 } from '../domain/types';
-import { useDebounce } from '../useDebounce';
+import { useDebounce } from '../domain/utils/useDebounce';
 
 const SliderParam: React.FC<{
   name: string;
@@ -18,8 +18,9 @@ const SliderParam: React.FC<{
   onChange: (v: number) => void;
 }> = ({ name, value, min, max, step, description, onChange }) => {
   const [val, setVal] = useDebounce({
-    initial: value,
-    callback: onChange,
+    value,
+    onChange,
+    debounceMillis: 500,
   });
 
   return (
