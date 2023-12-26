@@ -2,31 +2,13 @@ import bezier from 'bezier-easing';
 import { buildEffect } from '../domain/types';
 import { applyCanvasFromFrame, applyFilter } from '../domain/utils/canvas';
 import { mapFrames } from '../domain/utils/image';
-import { radioParam, bezierParam, BezierTuple } from '../params';
+import { bezierParam, BezierTuple } from '../params';
 
 export const fade = buildEffect({
   name: 'Fade',
   description: 'Fades the image in or out',
   applyBackgroundColor: true,
   params: [
-    radioParam({
-      name: 'Fade',
-      options: [
-        {
-          name: 'In',
-          value: 'in',
-        },
-        {
-          name: 'Out',
-          value: 'out',
-        },
-        {
-          name: 'Pulse',
-          value: 'pulse',
-        },
-      ],
-      defaultValue: 'pulse',
-    } as const),
     bezierParam({
       name: 'Curve',
       defaultValue: [
@@ -35,7 +17,7 @@ export const fade = buildEffect({
       ],
     }),
   ] as const,
-  fn: ({ image, parameters: [kind, curve] }) =>
+  fn: ({ image, parameters: [curve] }) =>
     mapFrames(image, (frame, frameIndex, frameCount) =>
       applyCanvasFromFrame({
         dimensions: image.dimensions,
@@ -46,7 +28,6 @@ export const fade = buildEffect({
               frameCount,
               frameIndex,
               curve,
-              kind,
             }),
           }),
       })
@@ -57,33 +38,19 @@ const getOpacityAmount = ({
   frameIndex,
   frameCount,
   curve,
-  kind,
 }: {
   frameIndex: number;
   frameCount: number;
   curve: BezierTuple;
-  kind: 'in' | 'out' | 'pulse';
 }): number => {
   const progress = frameIndex / (frameCount - 1);
 
   const b = bezier.apply(undefined, [...curve[0], ...curve[1]]);
 
-  const opacity = (() => {
-    if (kind === 'pulse') {
-      if (progress < 0.5) {
-        return Math.round(b(progress) * 100);
-      } else {
-        return Math.round(b(1 - progress) * 100);
-      }
-    }
-
-    const amount = Math.round(b(progress) * 100);
-    if (kind === 'in') {
-      return amount;
-    } else {
-      return 100 - amount;
-    }
-  })();
+  const opacity =
+    progress < 0.5
+      ? Math.round(b(progress * 2) * 100)
+      : Math.round(b(1 - 2 * (progress - 0.5)) * 100);
 
   return opacity;
 };
