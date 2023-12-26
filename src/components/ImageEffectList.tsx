@@ -185,7 +185,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
     paramsValues: possibleEffects[0].params.map((p: ParamFunction<any>) => {
       let image: Image | undefined = undefined;
       const previousEffect = currentEffects[tIdx];
-      if (previousEffect.state.status === 'done') {
+      if (previousEffect?.state.status === 'done') {
         image = previousEffect.state.image.image;
       }
 
@@ -232,14 +232,11 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
   };
 
   const onAddNew = () => {
-    onEffectsChange([
-      ...currentEffects,
-      newDefaultEffect(currentEffects.length - 1),
-    ]);
-    setTimeout(() => swiper?.slideTo(currentEffects.length + 1), 50);
+    onEffectsChange([newDefaultEffect(0)]);
+    setTimeout(() => swiper?.slideTo(0), 50);
     setEffectDialogOpen({
       open: true,
-      idx: currentEffects.length,
+      idx: 0,
       isNew: true,
     });
   };

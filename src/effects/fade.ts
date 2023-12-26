@@ -2,9 +2,7 @@ import bezier from 'bezier-easing';
 import { buildEffect } from '../domain/types';
 import { applyCanvasFromFrame, applyFilter } from '../domain/utils/canvas';
 import { mapFrames } from '../domain/utils/image';
-import { radioParam } from '../params';
-
-type Curve = 'linear' | 'fast' | 'slow';
+import { radioParam, bezierParam, BezierTuple } from '../params';
 
 export const fade = buildEffect({
   name: 'Fade',
@@ -29,24 +27,13 @@ export const fade = buildEffect({
       ],
       defaultValue: 'pulse',
     } as const),
-    radioParam({
+    bezierParam({
       name: 'Curve',
-      options: [
-        {
-          name: 'Linear',
-          value: 'linear',
-        },
-        {
-          name: 'Fast',
-          value: 'fast',
-        },
-        {
-          name: 'Slow',
-          value: 'slow',
-        },
+      defaultValue: [
+        [0.25, 0.75],
+        [0.75, 0.25],
       ],
-      defaultValue: 'linear',
-    } as const),
+    }),
   ] as const,
   fn: ({ image, parameters: [kind, curve] }) =>
     mapFrames(image, (frame, frameIndex, frameCount) =>
@@ -66,13 +53,6 @@ export const fade = buildEffect({
     ),
 });
 
-// TODO work on these curves, particularly for pulse
-const CURVES: Record<Curve, [number, number, number, number]> = {
-  linear: [0.5, 0.5, 0.5, 0.5],
-  slow: [0.5, 0.0, 1.0, 0.5],
-  fast: [0.0, 0.5, 0.5, 1.0],
-};
-
 const getOpacityAmount = ({
   frameIndex,
   frameCount,
@@ -81,12 +61,12 @@ const getOpacityAmount = ({
 }: {
   frameIndex: number;
   frameCount: number;
-  curve: Curve;
+  curve: BezierTuple;
   kind: 'in' | 'out' | 'pulse';
 }): number => {
   const progress = frameIndex / (frameCount - 1);
 
-  const b = bezier.apply(undefined, CURVES[curve]);
+  const b = bezier.apply(undefined, [...curve[0], ...curve[1]]);
 
   const opacity = (() => {
     if (kind === 'pulse') {
