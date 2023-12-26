@@ -4,7 +4,8 @@ import {
   applyFilter,
   combineImages,
 } from '../domain/utils/canvas';
-import { fromHexColor, calculateAngle } from '../domain/utils/color';
+import { fromHexColor } from '../domain/utils/color';
+import { calculateAngle } from '../domain/utils/misc';
 import { mapCoords, mapFrames } from '../domain/utils/image';
 import { colorPickerParam } from '../params/colorPickerParam';
 import { intParam } from '../params/intParam';

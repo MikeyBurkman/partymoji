@@ -1,3 +1,5 @@
+import { Coord } from '../types';
+
 /**
  * Asserts that a given value is truthy. Uses TypeScript 3.7 assertion types.
  *
@@ -43,3 +45,28 @@ export const copyToClipboard = (s: string): Promise<void> =>
 
 export const readFromClipboard = (): Promise<string> =>
   navigator.clipboard.readText();
+
+export const clamp = (n: number, min: number, max: number) =>
+  Math.max(Math.min(n, max), min);
+
+/**
+ * Calculate a value between v1 and v2, determined by percent.
+ * @param percent Between 0 and 100. 0 is all v1, and 100 is all v2.
+ */
+export const weightedValue = (percent: number, v1: number, v2: number) =>
+  (1 - percent / 100) * v1 + (percent / 100) * v2;
+
+/**
+ * Returns the angle in degrees (0 to 360) from c2 to c1
+ */
+export const calculateAngle = (c1: Coord, c2: Coord): number => {
+  const xRelCenter = c2[0] - c1[0];
+  const yRelCenter = c2[1] - c1[1];
+  return (360 + (Math.atan2(yRelCenter, xRelCenter) * 180) / Math.PI) % 360;
+};
+
+export const pointDistance = ([x1, y1]: Coord, [x2, y2]: Coord): number => {
+  const xDiff = Math.pow(x2 - x1, 2);
+  const yDiff = Math.pow(y2 - y1, 2);
+  return Math.sqrt(xDiff + yDiff);
+};

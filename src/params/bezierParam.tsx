@@ -10,6 +10,7 @@ import {
 } from '../domain/types';
 import { CanvasElement } from '../domain/utils/CanvasElement';
 import { useDebounce } from '../domain/utils/useDebounce';
+import { clamp, pointDistance } from '../domain/utils/misc';
 
 export type BezierTuple = [Coord, Coord];
 
@@ -21,23 +22,8 @@ const BezierParam: React.FC<{
 }> = ({ name, value, description, onChange }) => {
   const WIDTH = 64;
   const HEIGHT = 64;
-  const CLICK_SLOP = 10;
+  const MARKER_RADIUS = 5;
   const DEBOUNCE_TIME = 200;
-
-  // const [v, setV] = React.useState<BezierTuple>(value);
-  // const debounceRef = React.useRef<NodeJS.Timeout>();
-  // const onValueChange = React.useCallback(
-  //   (newV: BezierTuple) => {
-  //     setV(newV);
-  //     if (debounceRef.current != null) {
-  //       clearTimeout(debounceRef.current);
-  //     }
-  //     debounceRef.current = setTimeout(() => {
-  //       onChange(newV);
-  //     }, DEBOUNCE_TIME);
-  //   },
-  //   [onChange]
-  // );
 
   const [curValue, setCurValue] = useDebounce({
     value,
@@ -58,19 +44,18 @@ const BezierParam: React.FC<{
   const [isDragging, setIsDragging] = React.useState<number | null>(null);
 
   const closestPointIdx = React.useMemo(() => {
-    const distances = curValue.map((c, idx) => {
-      const xDif = Math.pow(c[0] * WIDTH - latestMouseLocation[0], 2);
-      const yDif = Math.pow(c[1] * HEIGHT - latestMouseLocation[1], 2);
-      return {
-        idx,
-        coord: c,
-        distance: Math.sqrt(xDif + yDif),
-      };
-    });
+    const distances = curValue.map((c, idx) => ({
+      idx,
+      coord: c,
+      distance: pointDistance(
+        [c[0] * WIDTH, c[1] * HEIGHT],
+        latestMouseLocation
+      ),
+    }));
 
     const sorted = R.sortBy(distances, (d) => d.distance);
     const closest = sorted[0];
-    return closest.distance < CLICK_SLOP ? closest.idx : null;
+    return closest.distance < MARKER_RADIUS ? closest.idx : null;
   }, [latestMouseLocation, curValue]);
 
   React.useEffect(() => {
@@ -86,7 +71,7 @@ const BezierParam: React.FC<{
       const x = coord[0] * WIDTH;
       const y = coord[1] * HEIGHT;
       canvasCtx.beginPath();
-      canvasCtx.ellipse(x, y, 5, 5, 0, 0, 2 * Math.PI);
+      canvasCtx.ellipse(x, y, MARKER_RADIUS, MARKER_RADIUS, 0, 0, 2 * Math.PI);
       canvasCtx.fill();
     }
 
@@ -105,12 +90,9 @@ const BezierParam: React.FC<{
     canvasCtx.stroke();
   }, [curValue, canvasCtx]);
 
-  const onMouseDown = React.useCallback(
-    (c: Coord) => {
-      setIsDragging(closestPointIdx);
-    },
-    [closestPointIdx]
-  );
+  const onMouseDown = React.useCallback(() => {
+    setIsDragging(closestPointIdx);
+  }, [closestPointIdx]);
 
   const onMouseUp = React.useCallback(() => {
     setIsDragging(null);
@@ -120,14 +102,15 @@ const BezierParam: React.FC<{
     (c: Coord) => {
       setLatestMouseLocation(c);
 
-      const newCoord: Coord = [c[0] / WIDTH, c[1] / HEIGHT];
+      const newCoord: Coord = [
+        clamp(c[0] / WIDTH, 0, WIDTH),
+        clamp(c[1] / HEIGHT, 0, HEIGHT),
+      ];
 
       if (isDragging === 0) {
-        const newCoords: BezierTuple = [newCoord, curValue[1]];
-        setCurValue(newCoords);
+        setCurValue([newCoord, curValue[1]]);
       } else if (isDragging === 1) {
-        const newCoords: BezierTuple = [curValue[0], newCoord];
-        setCurValue(newCoords);
+        setCurValue([curValue[0], newCoord]);
       }
     },
     [isDragging, curValue, setCurValue]

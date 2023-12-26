@@ -1,12 +1,6 @@
 import * as convert from 'color-convert';
-import { Color, Coord } from '../types';
-
-/**
- * Calculate a value between v1 and v2, determined by percent.
- * @param percent Between 0 and 100. 0 is all v1, and 100 is all v2.
- */
-const weightedValue = (percent: number, v1: number, v2: number) =>
-  (1 - percent / 100) * v1 + (percent / 100) * v2;
+import { Color } from '../types';
+import { clamp, weightedValue } from './misc';
 
 /**
  * Converts a Pixel into a hex string like '#00FF00'
@@ -45,9 +39,6 @@ export const randomColor = (random: seedrandom.prng): Color => [
 
 export const getAveragePixelValue = ([r, g, b]: Color) =>
   Math.round((r + g + b) / 3);
-
-export const clamp = (n: number, min: number, max: number) =>
-  Math.max(Math.min(n, max), min);
 
 export const clampColor = ([r, g, b, a]: Color): Color => [
   clamp(r, 0, 255),
@@ -90,21 +81,6 @@ export const shiftHue = ([r, g, b, a]: Color, amount: number): Color => {
   const [h, s, l] = convert.rgb.hsl([r, g, b]);
   const [newR, newG, newB] = convert.hsl.rgb([(h + amount) % 360, s, l]);
   return [newR, newG, newB, a];
-};
-
-/**
- * Returns the angle in degrees (0 to 360) from c2 to c1
- */
-export const calculateAngle = (c1: Coord, c2: Coord): number => {
-  const xRelCenter = c2[0] - c1[0];
-  const yRelCenter = c2[1] - c1[1];
-  return (360 + (Math.atan2(yRelCenter, xRelCenter) * 180) / Math.PI) % 360;
-};
-
-export const pointDistance = ([x1, y1]: Coord, [x2, y2]: Coord): number => {
-  const xDiff = Math.pow(x2 - x1, 2);
-  const yDiff = Math.pow(y2 - y1, 2);
-  return Math.sqrt(xDiff + yDiff);
 };
 
 /**

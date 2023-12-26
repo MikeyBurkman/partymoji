@@ -4,7 +4,8 @@ import {
   applyFilter,
   combineImages,
 } from '../domain/utils/canvas';
-import { calculateAngle, colorFromHue } from '../domain/utils/color';
+import { colorFromHue } from '../domain/utils/color';
+import { calculateAngle } from '../domain/utils/misc';
 import { mapCoords, mapFrames } from '../domain/utils/image';
 import { intParam } from '../params/intParam';
 import { sliderParam } from '../params/sliderParam';

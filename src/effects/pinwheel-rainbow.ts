@@ -1,5 +1,6 @@
 import { buildEffect, Coord } from '../domain/types';
-import { calculateAngle, shiftTowardsHue } from '../domain/utils/color';
+import { shiftTowardsHue } from '../domain/utils/color';
+import { calculateAngle } from '../domain/utils/misc';
 import { mapImageWithPrecompute } from '../domain/utils/image';
 import { intParam } from '../params/intParam';
 import { sliderParam } from '../params/sliderParam';
