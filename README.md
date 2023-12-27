@@ -16,10 +16,7 @@ https://mikeyburkman.github.io/partymoji/
 
 ### TODO
 
-1. Changing things while stuff is being computed can lead to undefined behavior
-2. Flickering when adding a new effect on prod
-3. Change all of our hue stuff to use canvas when possible
-4. Add movement/scaling/rotation to text
-5. Effect previews? Could reduce image to a really small thumbnail and reduce the number of frames to a max of like 5 before running each effect.
-6. Make current page and effects options static, and use swiper controller to decide what is displayed/enabled
-7. Tooltips on edit effect options?
+1. Automatically detect if rendered gif has transparent pixels, and show default transparent grid background and tooltip
+2. Custom bezier library -> more points? Would be nice to have start and end points instead of always [0,0],[1,1]
+3. Add movement/scaling/rotation/drop-shaodw to text
+4. Use absolute import paths, IE `import foo from '~/domain/utils';`

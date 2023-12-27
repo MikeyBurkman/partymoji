@@ -1,4 +1,6 @@
+import bezier from 'bezier-easing';
 import { Coord } from '../types';
+import { BezierTuple } from '../../params';
 
 /**
  * Asserts that a given value is truthy. Uses TypeScript 3.7 assertion types.
@@ -70,3 +72,25 @@ export const pointDistance = ([x1, y1]: Coord, [x2, y2]: Coord): number => {
   const yDiff = Math.pow(y2 - y1, 2);
   return Math.sqrt(xDiff + yDiff);
 };
+
+/**
+ * Calculates a cubic bezier curve for a given value.
+ * Each value in the BezierTuple must also be between 0 and 1.
+ * The amount must be between 0 and 1.
+ * If mirror is true, then amount of [0, 0.5] will go from 0 to 1, and (0.5, 1] will go from 1 to 0.
+ * The returned value will be between 0 and 1
+ */
+export const bezierCurve = (easing: BezierTuple, mirror?: boolean) => {
+  const fn = bezier(easing[0][0], easing[0][1], easing[1][0], easing[1][1]);
+  if (!mirror) {
+    return (amount: number): number => fn(amount);
+  }
+  return (amount: number): number => {
+    return amount < 0.5 ? fn(amount * 2) : fn(1 - 2 * (amount - 0.5));
+  };
+};
+
+export const LINEAR_BEZIER: BezierTuple = [
+  [0.1, 0.1],
+  [0.9, 0.9],
+];

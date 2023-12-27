@@ -1,7 +1,7 @@
-import bezier from 'bezier-easing';
 import { buildEffect } from '../domain/types';
 import { applyCanvasFromFrame, applyFilter } from '../domain/utils/canvas';
 import { mapFrames } from '../domain/utils/image';
+import { bezierCurve } from '../domain/utils/misc';
 import { bezierParam, BezierTuple } from '../params';
 
 export const fade = buildEffect({
@@ -45,12 +45,5 @@ const getOpacityAmount = ({
 }): number => {
   const progress = frameIndex / (frameCount - 1);
 
-  const b = bezier.apply(undefined, [...curve[0], ...curve[1]]);
-
-  const opacity =
-    progress < 0.5
-      ? Math.round(b(progress * 2) * 100)
-      : Math.round(b(1 - 2 * (progress - 0.5)) * 100);
-
-  return opacity;
+  return Math.round(bezierCurve(curve, true)(progress) * 100);
 };
