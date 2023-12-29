@@ -7,7 +7,6 @@ import { bezierParam, BezierTuple } from '../params';
 export const fade = buildEffect({
   name: 'Fade',
   description: 'Fades the image in or out',
-  applyBackgroundColor: true,
   params: [
     bezierParam({
       name: 'Curve',

@@ -16,7 +16,11 @@ import {
   createCanvas,
   frameToCanvas,
 } from './canvas';
-import { clampColor, TRANSPARENT_COLOR } from './color';
+import {
+  clampColor,
+  TRANSPARENT_COLOR,
+  isPartiallyTransparent as isColorPartiallyTransparent,
+} from './color';
 
 export const getPixelFromSource = (
   dimensions: Dimensions,
@@ -312,4 +316,19 @@ export const changeFrameCount = (image: Image, frameCount: number): Image => {
       return currentFrames[frameToCopy];
     }),
   };
+};
+
+export const isPartiallyTransparent = (image: Image): boolean => {
+  // Could probably optimize this to just read the image data arrays directly, for every 4th index
+  for (const frame of image.frames) {
+    for (let x = 0; x < image.dimensions[0]; x += 1) {
+      for (let y = 0; y < image.dimensions[1]; y += 1) {
+        const px = getPixelFromSource(image.dimensions, frame, [x, y]);
+        if (isColorPartiallyTransparent(px)) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
 };

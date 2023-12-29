@@ -10,6 +10,7 @@ type ParamType = {
   gif: string;
   gifWithBackgroundColor: string;
   image: Image;
+  partiallyTransparent: boolean;
 };
 
 // Just a 1x1 black jpg. Surprisingly big!
@@ -21,6 +22,7 @@ const DEFAULT_IMAGE: ImageEffectResult = {
     dimensions: [1, 1],
     frames: [new Uint8ClampedArray([0, 0, 0, 255])],
   },
+  partiallyTransparent: false,
 };
 
 export function imagePickerParam({

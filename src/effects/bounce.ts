@@ -23,10 +23,8 @@ export const bounce = buildEffect({
   fn: mapImageWithPrecompute(
     ({ animationProgress, parameters: [height, easing] }) => {
       const b = bezierCurve(easing, true)(animationProgress);
-      const yOffset = Math.round(height * b);
-      console.log('yoffset', { yOffset, b });
       return {
-        yOffset,
+        yOffset: Math.round(height * b),
       };
     },
     ({ computed: { yOffset }, coord: [x, y], getSrcPixel }) =>

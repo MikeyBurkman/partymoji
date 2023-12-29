@@ -30,6 +30,13 @@ export const isHexColor = (s: string) => /^#[0-9A-F]{6}$/.test(s);
  */
 export const isTransparent = (pixel: Color) => pixel[3] < 64;
 
+/**
+ * Returns true if the pixel is partially transparent enough that
+ *  it would cause issues rendering.
+ */
+export const isPartiallyTransparent = (pixel: Color) =>
+  !isTransparent(pixel) && pixel[3] < 220;
+
 export const randomColor = (random: seedrandom.prng): Color => [
   Math.floor(random.int32() * 256),
   Math.floor(random.int32() * 256),

@@ -16,7 +16,6 @@ https://mikeyburkman.github.io/partymoji/
 
 ### TODO
 
-1. Automatically detect if rendered gif has transparent pixels, and show default transparent grid background and tooltip
-2. Custom bezier library -> more points? Would be nice to have start and end points instead of always [0,0],[1,1]
-3. Add movement/scaling/rotation/drop-shaodw to text
-4. Use absolute import paths, IE `import foo from '~/domain/utils';`
+1. Custom bezier library -> more points? Would be nice to have start and end points instead of always [0,0],[1,1]
+2. Add movement/scaling/rotation/drop-shaodw to text
+3. Use absolute import paths, IE `import foo from '~/domain/utils';`

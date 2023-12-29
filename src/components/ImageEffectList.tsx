@@ -83,15 +83,13 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
       {effect.state.status === 'done' ? (
         <Stack sx={{ width: 250, paddingLeft: 3.5 }}>
           <Gif
-            src={
-              e.applyBackgroundColor
-                ? effect.state.image.gifWithBackgroundColor
-                : effect.state.image.gif
-            }
+            src={effect.state.image.gifWithBackgroundColor}
             alt={`${effect.effectName}-${index}`}
             dimensions={effect.state.image.image.dimensions}
           />
-          {e.applyBackgroundColor ? <BackgroundPreviewTooltip /> : null}
+          {effect.state.image.partiallyTransparent ? (
+            <BackgroundPreviewTooltip />
+          ) : null}
         </Stack>
       ) : (
         <CircularProgress size={100} />

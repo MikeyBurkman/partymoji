@@ -222,15 +222,11 @@ export const ImageEffectDialog: React.FC<Props> = ({
                 ) : (
                   <>
                     <Gif
-                      src={
-                        effect.applyBackgroundColor
-                          ? image.results.gifWithBackgroundColor
-                          : image.results.gif
-                      }
+                      src={image.results.gifWithBackgroundColor}
                       alt={`effect-${editingEffect.effectName}`}
                       dimensions={image.results.image.dimensions}
                     />
-                    {effect.applyBackgroundColor ? (
+                    {image.results.partiallyTransparent ? (
                       <BackgroundPreviewTooltip />
                     ) : null}
                   </>

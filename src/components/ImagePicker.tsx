@@ -4,6 +4,7 @@ import { getImageFromUrl } from '../domain/importImageFromUrl';
 import { blobOrFileToDataUrl, readImage } from '../domain/run';
 import { ImageEffectResult } from '../domain/types';
 import { isUrl } from '../domain/utils/misc';
+import { isPartiallyTransparent } from '../domain/utils/image';
 import { Gif } from './Gif';
 
 const parseFileName = (s: string): string => {
@@ -52,6 +53,7 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
                     gif: text,
                     image,
                     gifWithBackgroundColor: text,
+                    partiallyTransparent: isPartiallyTransparent(image),
                   },
                   'image'
                 );
@@ -68,6 +70,7 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
                   gif,
                   image,
                   gifWithBackgroundColor: gif,
+                  partiallyTransparent: isPartiallyTransparent(image),
                 },
                 parseFileName(text)
               );
@@ -102,6 +105,7 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
                   gif,
                   image,
                   gifWithBackgroundColor: gif,
+                  partiallyTransparent: isPartiallyTransparent(image),
                 },
                 parseFileName(file.name)
               );

@@ -13,12 +13,13 @@ import {
 } from './types';
 import {
   fromHexColor,
+  isPartiallyTransparent,
   isTransparent,
   randomColor,
   toHexColor,
 } from './utils/color';
 import { getPixelFromSource } from './utils/image';
-import { backgroundColor } from '../effects/background-color';
+import { fakeTransparency } from '../effects/fake-transparency';
 
 export interface RunArgs {
   randomSeed: string;
@@ -43,7 +44,10 @@ export const runEffects = async ({
     random,
   });
 
-  const transparentColor = getTransparentColor(result, random);
+  const { transparentColor, hasPartialTransparency } = getTransparentColor(
+    result,
+    random
+  );
 
   const gif = await createGif({
     // Transform any of our transparent pixels to what our gif understands to be transparent
@@ -52,20 +56,25 @@ export const runEffects = async ({
     fps,
   });
 
-  const resultWithBlackBG = await backgroundColor.fn({
-    image: result,
-    parameters: [[0, 0, 0, 255], 100],
-    random,
-  });
+  const resultWithBG = hasPartialTransparency
+    ? await fakeTransparency.fn({
+        image: result,
+        parameters: [],
+        random,
+      })
+    : null;
 
   return {
     gif,
     image: result,
-    gifWithBackgroundColor: await createGif({
-      image: resultWithBlackBG,
-      transparentColor: undefined,
-      fps,
-    }),
+    gifWithBackgroundColor: resultWithBG
+      ? await createGif({
+          image: resultWithBG,
+          transparentColor: undefined,
+          fps,
+        })
+      : gif,
+    partiallyTransparent: hasPartialTransparency,
   };
 };
 
@@ -185,15 +194,22 @@ export const readImage = (dataUrl: string): Promise<Image> =>
 const getTransparentColor = (
   image: Image,
   random: seedrandom.prng
-): Color | undefined => {
+): {
+  transparentColor: Color | undefined;
+  hasPartialTransparency: boolean;
+} => {
   let hasTransparent = false;
   const seenPixels = new Set<string>();
   const [width, height] = image.dimensions;
+  let hasPartialTransparency = false;
   let attempt = toHexColor([0, 255, 0, 255]); // Just start with green for now, since it's a likely candidate
   image.frames.forEach((frame) => {
     for (let y = 0; y < height; y += 1) {
       for (let x = 0; x < width; x += 1) {
         const px = getPixelFromSource(image.dimensions, frame, [x, y]);
+        if (isPartiallyTransparent(px)) {
+          hasPartialTransparency = true;
+        }
         if (isTransparent(px)) {
           hasTransparent = true;
         } else {
@@ -207,7 +223,10 @@ const getTransparentColor = (
       }
     }
   });
-  return hasTransparent ? fromHexColor(attempt) : undefined;
+  return {
+    transparentColor: hasTransparent ? fromHexColor(attempt) : undefined,
+    hasPartialTransparency,
+  };
 };
 
 const findRandomColorNotInSet = (

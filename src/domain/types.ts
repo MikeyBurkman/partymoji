@@ -122,8 +122,6 @@ export interface Effect<T extends readonly ParamFunction<any>[]> {
   secondaryDescription?: string;
   fn: EffectFn<{ [P in keyof T]: ParamType<T[P]> }>;
   disabled: boolean;
-  /** Set to true to demo transparency effects that won't render properly */
-  applyBackgroundColor: boolean;
 }
 
 export interface EffectInput {
@@ -138,8 +136,6 @@ export const buildEffect = <T extends readonly ParamFunction<any>[]>(args: {
   secondaryDescription?: string;
   fn: EffectFn<{ [P in keyof T]: ParamType<T[P]> }>;
   disabled?: boolean;
-  /** Set to true to demo transparency effects that won't render properly */
-  applyBackgroundColor?: boolean;
 }): Effect<T> => ({
   name: args.name,
   params: args.params,
@@ -147,7 +143,6 @@ export const buildEffect = <T extends readonly ParamFunction<any>[]>(args: {
   secondaryDescription: args.secondaryDescription,
   fn: args.fn,
   disabled: args.disabled ?? false,
-  applyBackgroundColor: args.applyBackgroundColor ?? false,
 });
 
 export interface AppStateEffect {
@@ -174,6 +169,7 @@ export interface ImageEffectResult {
   gif: string;
   image: Image;
   gifWithBackgroundColor: string;
+  partiallyTransparent: boolean;
 }
 
 export type AsyncRunMessage = {
