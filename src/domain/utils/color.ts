@@ -35,7 +35,7 @@ export const isTransparent = (pixel: Color) => pixel[3] < 64;
  *  it would cause issues rendering.
  */
 export const isPartiallyTransparent = (pixel: Color) =>
-  !isTransparent(pixel) && pixel[3] < 220;
+  !isTransparent(pixel) && pixel[3] < 128;
 
 export const randomColor = (random: seedrandom.prng): Color => [
   Math.floor(random.int32() * 256),

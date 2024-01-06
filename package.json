@@ -57,6 +57,7 @@
     "fs-extra": "^9.0.1",
     "get-pixels": "^3.3.3",
     "gif-encoder": "^0.7.2",
+    "gifuct-js": "^2.1.2",
     "html-webpack-plugin": "4.5.0",
     "identity-obj-proxy": "3.0.0",
     "lz-string": "^1.4.4",

@@ -22,6 +22,13 @@ export const Help: React.FC = () => (
           <SectionText>
             The frames per second controls how fast the final gif will animate.
           </SectionText>
+          <SectionText>
+            Remember that gifs do not support partial transparency. A pixel will
+            be either completely transparent, or not transparent at all. Some
+            effects will create partially transparent pixels. When your gif has
+            partially transparent pixels, you'll see a fake background applied
+            behind it in the preview.
+          </SectionText>
         </Section>
       </Expandable>
 

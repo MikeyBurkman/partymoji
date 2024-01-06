@@ -1,16 +1,8 @@
 // @ts-ignore
-import getPixels from 'get-pixels';
-// @ts-ignore
 import gifEncoder from 'gif-encoder';
 import seedrandom from 'seedrandom';
 import { effectByName } from '../effects';
-import {
-  Color,
-  Image,
-  FrameData,
-  ImageEffectResult,
-  EffectInput,
-} from './types';
+import { Color, Image, ImageEffectResult, EffectInput } from './types';
 import {
   fromHexColor,
   isPartiallyTransparent,
@@ -19,6 +11,7 @@ import {
   toHexColor,
 } from './utils/color';
 import { getPixelFromSource } from './utils/image';
+import { blobOrFileToDataUrl } from './utils/misc';
 import { fakeTransparency } from '../effects/fake-transparency';
 
 export interface RunArgs {
@@ -153,44 +146,6 @@ const createGif = async ({
     gif.finish();
   });
 
-export const readImage = (dataUrl: string): Promise<Image> =>
-  new Promise<Image>((res, rej) =>
-    getPixels(
-      dataUrl,
-      (err: Error, results: { shape: number[]; data: FrameData }) => {
-        if (err) {
-          return rej(err);
-        }
-
-        if (results.shape.length === 3) {
-          const [width, height] = results.shape;
-          // Single frame
-          return res({
-            frames: [Uint8ClampedArray.from(results.data)],
-            dimensions: [width, height],
-          });
-        }
-
-        // Multiple frames, need to slice up the image data into numFrames slices
-        const [numFrames, width, height] = results.shape;
-        const sliceSize = width * height * 4;
-        const frames: Uint8ClampedArray[] = [];
-        for (let i = 0; i < numFrames; i += 1) {
-          const frame = results.data.subarray(
-            i * sliceSize,
-            (i + 1) * sliceSize
-          );
-          // Contrary to the TS types, the result of subarray returns a regular Uint8Array, NOT a clamped one!
-          frames.push(Uint8ClampedArray.from(frame));
-        }
-        return res({
-          frames,
-          dimensions: [width, height],
-        });
-      }
-    )
-  );
-
 const getTransparentColor = (
   image: Image,
   random: seedrandom.prng
@@ -243,10 +198,3 @@ const findRandomColorNotInSet = (
     ? findRandomColorNotInSet(random, set, attempts + 1)
     : col;
 };
-
-export const blobOrFileToDataUrl = (file: File | Blob) =>
-  new Promise<string>((resolve) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.readAsDataURL(file);
-  });

@@ -94,3 +94,35 @@ export const LINEAR_BEZIER: BezierTuple = [
   [0.1, 0.1],
   [0.9, 0.9],
 ];
+
+// Shamelessly stolen from https://stackoverflow.com/questions/12168909/blob-from-dataurl
+export const dataURItoBlob = (dataURI: string): Blob => {
+  // convert base64 to raw binary data held in a string
+  // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+  const split = dataURI.split(',');
+  const byteString = atob(split[1]);
+
+  // separate out the mime component
+  const mimeString = split[0].split(':')[1].split(';')[0];
+
+  // write the bytes of the string to an ArrayBuffer
+  const ab = new ArrayBuffer(byteString.length);
+
+  // create a view into the buffer
+  const ia = new Uint8Array(ab);
+
+  // set the bytes of the buffer to the correct values
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+
+  // write the ArrayBuffer to a blob, and you're done
+  return new Blob([ab], { type: mimeString });
+};
+
+export const blobOrFileToDataUrl = (file: File | Blob) =>
+  new Promise<string>((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.readAsDataURL(file);
+  });

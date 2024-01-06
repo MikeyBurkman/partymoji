@@ -1,7 +1,21 @@
-import { readImage } from './domain/run';
-import { AppState, AppStateEffect } from './domain/types';
+import { AppState, ImageEffectResult } from './domain/types';
+import { isPartiallyTransparent } from './domain/utils/image';
+import { readImage, readGifFromFile } from './domain/utils/imageImport';
+import { dataURItoBlob } from './domain/utils/misc';
 
 const LOCAL_STORAGE_KEY = 'partymoji-state';
+
+interface SerializedAppState {
+  baseImage: string | undefined;
+  effects: {
+    effectName: string;
+    paramsValues: any[];
+    state: { status: 'init' };
+  }[];
+  version: number;
+  fname?: string | undefined;
+  fps: number;
+}
 
 export const getStoredAppState = async (): Promise<AppState | undefined> => {
   try {
@@ -9,16 +23,33 @@ export const getStoredAppState = async (): Promise<AppState | undefined> => {
     if (stored) {
       const savedState = JSON.parse(stored);
       if (Array.isArray(savedState.effects)) {
+        const state = savedState as SerializedAppState;
+        // Need to re-hydrate the baseImage's image data, as we don't save that to local storage
+        let hydratedBaseImage: ImageEffectResult | undefined = undefined;
+        if (typeof state.baseImage === 'string') {
+          if (state.baseImage.startsWith('data:image/gif')) {
+            const blob = dataURItoBlob(state.baseImage);
+            const f = new File([blob], state.fname!); // Can't have a baseImage without a filename
+            const image = await readGifFromFile(f);
+            hydratedBaseImage = {
+              gif: state.baseImage,
+              gifWithBackgroundColor: state.baseImage,
+              image,
+              partiallyTransparent: false,
+            };
+          } else {
+            const image = await readImage(savedState.baseImage);
+            hydratedBaseImage = {
+              gif: state.baseImage,
+              gifWithBackgroundColor: state.baseImage,
+              image,
+              partiallyTransparent: isPartiallyTransparent(image),
+            };
+          }
+        }
         return {
-          ...savedState,
-          // Need to re-hydrate the baseImage's image data, as we don't save that to local storage
-          baseImage:
-            typeof savedState.baseImage === 'string'
-              ? {
-                  gif: savedState.baseImage,
-                  image: await readImage(savedState.baseImage),
-                }
-              : undefined,
+          ...state,
+          baseImage: hydratedBaseImage,
         };
       }
     }
@@ -49,18 +80,16 @@ export const clearAppState = () => {
 };
 
 const serializeAppState = (state: AppState): string => {
-  const toStore = {
+  const toStore: SerializedAppState = {
     ...state,
     // Do not save the frame data -- it's big and can be re-hydrated on load.
     baseImage: state.baseImage?.gif,
-    effects: state.effects.map(
-      (t): AppStateEffect => ({
-        ...t,
-        // Remove the computed image for the state before storing.
-        // Like the base image frame data, it can be recreated when the app first loads.
-        state: { status: 'init' },
-      })
-    ),
+    effects: state.effects.map((t): SerializedAppState['effects'][0] => ({
+      ...t,
+      // Remove the computed image for the state before storing.
+      // Like the base image frame data, it can be recreated when the app first loads.
+      state: { status: 'init' },
+    })),
   };
   return JSON.stringify(toStore);
 };

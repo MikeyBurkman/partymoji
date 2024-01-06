@@ -1,10 +1,10 @@
 import { Button, Icon, Stack, Box, TextField } from '@material-ui/core';
 import React from 'react';
 import { getImageFromUrl } from '../domain/importImageFromUrl';
-import { blobOrFileToDataUrl, readImage } from '../domain/run';
 import { ImageEffectResult } from '../domain/types';
-import { isUrl } from '../domain/utils/misc';
+import { isUrl, blobOrFileToDataUrl } from '../domain/utils/misc';
 import { isPartiallyTransparent } from '../domain/utils/image';
+import { readGifFromFile, readImage } from '../domain/utils/imageImport';
 import { Gif } from './Gif';
 
 const parseFileName = (s: string): string => {
@@ -99,7 +99,10 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
             if (file) {
               // Will be undefined if user clicked the cancel button
               const gif = await blobOrFileToDataUrl(file);
-              const image = await readImage(gif);
+              // TODO refactor readGifFromeFile and readImage so this conditional isn't necessary
+              const image = file.name.endsWith('.gif')
+                ? await readGifFromFile(file)
+                : await readImage(gif);
               onChange(
                 {
                   gif,

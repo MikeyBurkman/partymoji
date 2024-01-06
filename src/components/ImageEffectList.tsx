@@ -21,7 +21,6 @@ import { insertInto, replaceIndex } from '../domain/utils/misc';
 import { Gif } from './Gif';
 import { Icon, ClickableIcon } from './Icon';
 import { ImageEffectDialog } from './ImageEffectDialog';
-import { effectByName } from '../effects';
 import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
 
 interface EffectListProps {
@@ -59,7 +58,6 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
   onAddBefore,
   onAddAfter,
 }) => {
-  const e = effectByName(effect.effectName);
   return (
     <Stack alignItems="center" margin={2} justifyContent="space-evenly">
       <Stack direction="row" width="100%" minHeight="4rem">
