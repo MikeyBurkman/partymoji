@@ -1,12 +1,9 @@
 import { Slider, Stack, Typography } from '@material-ui/core';
 import React from 'react';
-import { HelpTooltip } from '../components/HelpTooltip';
-import {
-  ParamFnDefault,
-  ParamFunction,
-  toParamFunction,
-} from '../domain/types';
-import { useDebounce } from '../domain/utils/useDebounce';
+import { HelpTooltip } from '~/components/HelpTooltip';
+import type { ParamFnDefault, ParamFunction } from '~/domain/types';
+import { useDebounce } from '~/domain/utils/useDebounce';
+import { toParamFunction } from './utils';
 
 const SliderParam: React.FC<{
   name: string;

@@ -1,11 +1,8 @@
 import React from 'react';
 import { Checkbox, Stack, Typography } from '@material-ui/core';
-import { HelpTooltip } from '../components/HelpTooltip';
-import {
-  ParamFnDefault,
-  ParamFunction,
-  toParamFunction,
-} from '../domain/types';
+import { HelpTooltip } from '~/components/HelpTooltip';
+import type { ParamFnDefault, ParamFunction } from '~/domain/types';
+import { toParamFunction } from './utils';
 
 const CheckboxParam: React.FC<{
   name: string;

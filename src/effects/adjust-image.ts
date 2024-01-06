@@ -1,8 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { applyCanvasFromFrame, applyFilter } from '../domain/utils/canvas';
-import { resizeImage, mapFrames } from '../domain/utils/image';
-import { intParam } from '../params/intParam';
-import { sliderParam } from '../params/sliderParam';
+import { canvasUtil, imageUtil } from '~/domain/utils';
+import { intParam, sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const adjustImage = buildEffect({
   name: 'Adjust Image',
@@ -83,7 +81,7 @@ export const adjustImage = buildEffect({
 
     // If making a smaller image, might as well do the brightness/contrast after making it smaller
     if (hasScaleChange && !isBiggerImage) {
-      currImage = resizeImage({
+      currImage = imageUtil.resizeImage({
         image: currImage,
         newWidth,
         newHeight,
@@ -91,12 +89,12 @@ export const adjustImage = buildEffect({
       });
     }
 
-    currImage = mapFrames(currImage, (imageData) =>
-      applyCanvasFromFrame({
+    currImage = imageUtil.mapFrames(currImage, (imageData) =>
+      canvasUtil.applyCanvasFromFrame({
         dimensions: currImage.dimensions,
         frame: imageData,
         preEffect: (canvasData) =>
-          applyFilter(canvasData, {
+          canvasUtil.applyFilter(canvasData, {
             brightness: brightness + 100,
             contrast: contrast + 100,
             saturation: saturation + 100,
@@ -107,7 +105,7 @@ export const adjustImage = buildEffect({
 
     // If the image will be made bigger, we'll run that after adjusting the brightness/contrast
     if (hasScaleChange && isBiggerImage) {
-      currImage = resizeImage({
+      currImage = imageUtil.resizeImage({
         image: currImage,
         newWidth,
         newHeight,

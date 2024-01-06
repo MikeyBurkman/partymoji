@@ -1,18 +1,10 @@
 // @ts-ignore
 import gifEncoder from 'gif-encoder';
 import seedrandom from 'seedrandom';
-import { effectByName } from '../effects';
+import { effectByName } from '~/effects';
 import { Color, Image, ImageEffectResult, EffectInput } from './types';
-import {
-  fromHexColor,
-  isPartiallyTransparent,
-  isTransparent,
-  randomColor,
-  toHexColor,
-} from './utils/color';
-import { getPixelFromSource } from './utils/image';
-import { blobOrFileToDataUrl } from './utils/misc';
-import { fakeTransparency } from '../effects/fake-transparency';
+import { colorUtil, imageUtil, miscUtil } from '~/domain/utils';
+import { fakeTransparency } from '~/effects/fake-transparency';
 
 export interface RunArgs {
   randomSeed: string;
@@ -125,7 +117,7 @@ const createGif = async ({
 
     if (transparentColor) {
       // Need to convert '#RRGGBB' to '0xRRGGBB'
-      const hexColor = toHexColor(transparentColor).slice(1);
+      const hexColor = colorUtil.toHexColor(transparentColor).slice(1);
       gif.setTransparent(`0x${hexColor}`);
     }
 
@@ -135,7 +127,7 @@ const createGif = async ({
     });
     gif.on('end', async () => {
       const blob = new Blob(data, { type: 'image/gif' });
-      const dataUrl = await blobOrFileToDataUrl(blob);
+      const dataUrl = await miscUtil.blobOrFileToDataUrl(blob);
       resolve(dataUrl);
     });
 
@@ -157,18 +149,21 @@ const getTransparentColor = (
   const seenPixels = new Set<string>();
   const [width, height] = image.dimensions;
   let hasPartialTransparency = false;
-  let attempt = toHexColor([0, 255, 0, 255]); // Just start with green for now, since it's a likely candidate
+  let attempt = colorUtil.toHexColor([0, 255, 0, 255]); // Just start with green for now, since it's a likely candidate
   image.frames.forEach((frame) => {
     for (let y = 0; y < height; y += 1) {
       for (let x = 0; x < width; x += 1) {
-        const px = getPixelFromSource(image.dimensions, frame, [x, y]);
-        if (isPartiallyTransparent(px)) {
+        const px = imageUtil.getPixelFromSource(image.dimensions, frame, [
+          x,
+          y,
+        ]);
+        if (colorUtil.isPartiallyTransparent(px)) {
           hasPartialTransparency = true;
         }
-        if (isTransparent(px)) {
+        if (colorUtil.isTransparent(px)) {
           hasTransparent = true;
         } else {
-          const hex = toHexColor(px);
+          const hex = colorUtil.toHexColor(px);
           seenPixels.add(hex);
           if (hex === attempt) {
             // Uh oh, can't use our current pick for transparent because it exists in the image already
@@ -179,7 +174,9 @@ const getTransparentColor = (
     }
   });
   return {
-    transparentColor: hasTransparent ? fromHexColor(attempt) : undefined,
+    transparentColor: hasTransparent
+      ? colorUtil.fromHexColor(attempt)
+      : undefined,
     hasPartialTransparency,
   };
 };
@@ -189,7 +186,7 @@ const findRandomColorNotInSet = (
   set: Set<string>,
   attempts = 0
 ): string => {
-  const col = toHexColor(randomColor(random));
+  const col = colorUtil.toHexColor(colorUtil.randomColor(random));
   if (attempts > 2000) {
     // Just give up in order to prevent a stack overflow or something...
     return col;

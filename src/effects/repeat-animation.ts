@@ -1,6 +1,6 @@
 import { range } from 'remeda';
-import { buildEffect } from '../domain/types';
-import { sliderParam } from '../params/sliderParam';
+import { sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const repeatAnimation = buildEffect({
   name: 'Repeat Animation',

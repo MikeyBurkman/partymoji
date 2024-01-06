@@ -1,5 +1,5 @@
 import { range } from 'remeda';
-import {
+import type {
   Color,
   Coord,
   Dimensions,
@@ -8,7 +8,7 @@ import {
   FrameData,
   Image,
   Random,
-} from '../types';
+} from '~/domain/types';
 import {
   applyCanvasFromFrame,
   applyTransform,

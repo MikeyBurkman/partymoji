@@ -1,8 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { shiftTowardsHue } from '../domain/utils/color';
-import { mapImage } from '../domain/utils/image';
-import { huePickerParam } from '../params/huePickerParam';
-import { sliderParam } from '../params/sliderParam';
+import { colorUtil, imageUtil } from '~/domain/utils';
+import { huePickerParam, sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const hueChange = buildEffect({
   name: 'Hue Change',
@@ -21,7 +19,8 @@ export const hueChange = buildEffect({
       defaultValue: 75,
     }),
   ] as const,
-  fn: mapImage(({ coord, getSrcPixel, parameters: [newHue, amount] }) =>
-    shiftTowardsHue(getSrcPixel(coord), newHue, amount)
+  fn: imageUtil.mapImage(
+    ({ coord, getSrcPixel, parameters: [newHue, amount] }) =>
+      colorUtil.shiftTowardsHue(getSrcPixel(coord), newHue, amount)
   ),
 });

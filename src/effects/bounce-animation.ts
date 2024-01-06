@@ -1,5 +1,5 @@
 import { concat, drop, pipe, reverse } from 'remeda';
-import { buildEffect } from '../domain/types';
+import { buildEffect } from './utils';
 
 export const bounceAnimation = buildEffect({
   name: 'Bounce Animation',

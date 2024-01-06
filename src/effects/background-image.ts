@@ -1,9 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { combineImages, frameToCanvas } from '../domain/utils/canvas';
-import { resizeImage, mapFrames } from '../domain/utils/image';
-import { checkboxParam } from '../params/checkboxParam';
-import { imagePickerParam } from '../params/imagePickerParam';
-import { radioParam } from '../params/radioParam';
+import { canvasUtil, imageUtil } from '~/domain/utils';
+import { checkboxParam, imagePickerParam, radioParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const backgroundImage = buildEffect({
   name: 'Background Image',
@@ -37,17 +34,17 @@ export const backgroundImage = buildEffect({
     }),
   ] as const,
   fn: ({ image, parameters: [otherImagePreResize, type, keepScale] }) => {
-    const otherImage = resizeImage({
+    const otherImage = imageUtil.resizeImage({
       image: otherImagePreResize.image,
       newWidth: image.dimensions[0],
       newHeight: image.dimensions[1],
       keepScale,
     });
 
-    return mapFrames(image, (frame, frameIndex, frameCount) => {
+    return imageUtil.mapFrames(image, (frame, frameIndex, frameCount) => {
       const animationProgress = frameIndex / frameCount;
 
-      const thisFrameCanvas = frameToCanvas({
+      const thisFrameCanvas = canvasUtil.frameToCanvas({
         dimensions: image.dimensions,
         frame,
       });
@@ -55,12 +52,12 @@ export const backgroundImage = buildEffect({
       const otherImageFrameIndex = Math.floor(
         animationProgress * otherImage.frames.length
       );
-      const otherFrameCanvas = frameToCanvas({
+      const otherFrameCanvas = canvasUtil.frameToCanvas({
         dimensions: otherImage.dimensions,
         frame: otherImage.frames[otherImageFrameIndex],
       });
 
-      return combineImages({
+      return canvasUtil.combineImages({
         dimensions: image.dimensions,
         background: type === 'background' ? otherFrameCanvas : thisFrameCanvas,
         foreground: type === 'background' ? thisFrameCanvas : otherFrameCanvas,

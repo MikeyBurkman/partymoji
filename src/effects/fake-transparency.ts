@@ -1,6 +1,5 @@
-import { buildEffect } from '../domain/types';
-import { combineImages, createCanvas } from '../domain/utils/canvas';
-import { mapFrames } from '../domain/utils/image';
+import { canvasUtil, imageUtil } from '~/domain/utils';
+import { buildEffect } from './utils';
 
 // NOTE: This is not intended as an end-user effect!
 // This is just to display behind a picture when there are partially-transparent pixels,
@@ -16,7 +15,7 @@ export const fakeTransparency = buildEffect({
   params: [] as const,
   fn: ({ image }) => {
     const createBackground = () => {
-      const canvas = createCanvas(image.dimensions);
+      const canvas = canvasUtil.createCanvas(image.dimensions);
       const ctx = canvas.ctx;
 
       const numBlocks = 10;
@@ -36,8 +35,8 @@ export const fakeTransparency = buildEffect({
       return canvas;
     };
 
-    return mapFrames(image, (imageData) =>
-      combineImages({
+    return imageUtil.mapFrames(image, (imageData) =>
+      canvasUtil.combineImages({
         dimensions: image.dimensions,
         background: createBackground(),
         foreground: imageData,

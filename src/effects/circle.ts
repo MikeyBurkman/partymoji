@@ -1,6 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { mapImageWithPrecompute } from '../domain/utils/image';
-import { intParam } from '../params/intParam';
+import { imageUtil } from '~/domain/utils';
+import { intParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const circle = buildEffect({
   name: 'Circle',
@@ -14,7 +14,7 @@ export const circle = buildEffect({
       min: 0,
     }),
   ] as const,
-  fn: mapImageWithPrecompute(
+  fn: imageUtil.mapImageWithPrecompute(
     ({ animationProgress, parameters: [radius] }) => ({
       xOffset: Math.round(radius * Math.sin(-2 * Math.PI * animationProgress)),
       yOffset: Math.round(radius * Math.cos(-2 * Math.PI * animationProgress)),

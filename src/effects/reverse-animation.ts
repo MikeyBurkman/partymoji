@@ -1,5 +1,5 @@
 import { reverse } from 'remeda';
-import { buildEffect } from '../domain/types';
+import { buildEffect } from './utils';
 
 export const reverseAnimation = buildEffect({
   name: 'Reverse Animation',

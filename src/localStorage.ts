@@ -1,7 +1,5 @@
-import { AppState, ImageEffectResult } from './domain/types';
-import { isPartiallyTransparent } from './domain/utils/image';
-import { readImage, readGifFromFile } from './domain/utils/imageImport';
-import { dataURItoBlob } from './domain/utils/misc';
+import type { AppState, ImageEffectResult } from '~/domain/types';
+import { miscUtil, imageImportUtil, imageUtil } from '~/domain/utils';
 
 const LOCAL_STORAGE_KEY = 'partymoji-state';
 
@@ -28,9 +26,9 @@ export const getStoredAppState = async (): Promise<AppState | undefined> => {
         let hydratedBaseImage: ImageEffectResult | undefined = undefined;
         if (typeof state.baseImage === 'string') {
           if (state.baseImage.startsWith('data:image/gif')) {
-            const blob = dataURItoBlob(state.baseImage);
+            const blob = miscUtil.dataURItoBlob(state.baseImage);
             const f = new File([blob], state.fname!); // Can't have a baseImage without a filename
-            const image = await readGifFromFile(f);
+            const image = await imageImportUtil.readGifFromFile(f);
             hydratedBaseImage = {
               gif: state.baseImage,
               gifWithBackgroundColor: state.baseImage,
@@ -38,12 +36,12 @@ export const getStoredAppState = async (): Promise<AppState | undefined> => {
               partiallyTransparent: false,
             };
           } else {
-            const image = await readImage(savedState.baseImage);
+            const image = await imageImportUtil.readImage(savedState.baseImage);
             hydratedBaseImage = {
               gif: state.baseImage,
               gifWithBackgroundColor: state.baseImage,
               image,
-              partiallyTransparent: isPartiallyTransparent(image),
+              partiallyTransparent: imageUtil.isPartiallyTransparent(image),
             };
           }
         }

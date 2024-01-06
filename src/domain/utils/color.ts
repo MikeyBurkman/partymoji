@@ -1,5 +1,5 @@
 import * as convert from 'color-convert';
-import { Color } from '../types';
+import type { Color } from '~/domain/types';
 import { clamp, weightedValue } from './misc';
 
 /**

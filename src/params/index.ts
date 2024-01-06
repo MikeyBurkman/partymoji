@@ -1,5 +1,4 @@
 export { bezierParam } from './bezierParam';
-export type { BezierTuple } from './bezierParam';
 export { checkboxParam } from './checkboxParam';
 export { colorPickerParam } from './colorPickerParam';
 export { dropdownParam } from './dropdownParam';

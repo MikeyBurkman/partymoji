@@ -1,7 +1,7 @@
 import { range } from 'remeda';
-import { buildEffect } from '../domain/types';
-import { getPixelFromSource, mapCoords } from '../domain/utils/image';
-import { radioParam } from '../params/radioParam';
+import { imageUtil } from '~/domain/utils';
+import { radioParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const slowAnimation = buildEffect({
   name: 'Slow Animation',
@@ -39,13 +39,13 @@ export const slowAnimation = buildEffect({
       }
 
       // Smooth interpolation means intermediate frames are an average of the surrounding frames
-      return mapCoords(image.dimensions, (coord) => {
-        const [r1, g1, b1, a1] = getPixelFromSource(
+      return imageUtil.mapCoords(image.dimensions, (coord) => {
+        const [r1, g1, b1, a1] = imageUtil.getPixelFromSource(
           image.dimensions,
           image.frames[ogFrameIdx],
           coord
         );
-        const [r2, g2, b2, a2] = getPixelFromSource(
+        const [r2, g2, b2, a2] = imageUtil.getPixelFromSource(
           image.dimensions,
           image.frames[ogFrameIdx + 1],
           coord

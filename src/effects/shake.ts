@@ -1,6 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { mapImageWithPrecompute } from '../domain/utils/image';
-import { floatParam } from '../params/floatParam';
+import { imageUtil } from '~/domain/utils';
+import { floatParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const shake = buildEffect({
   name: 'Shake',
@@ -13,7 +13,7 @@ export const shake = buildEffect({
       min: 0,
     }),
   ] as const,
-  fn: mapImageWithPrecompute(
+  fn: imageUtil.mapImageWithPrecompute(
     ({ animationProgress, parameters: [amplitude] }) => ({
       xOffset: Math.round(
         amplitude * Math.cos(animationProgress * 2 * Math.PI)

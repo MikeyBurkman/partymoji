@@ -1,6 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { mapImageWithPrecompute } from '../domain/utils/image';
-import { floatParam } from '../params/floatParam';
+import { imageUtil } from '~/domain/utils';
+import { floatParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const doubleVision = buildEffect({
   name: 'Double Vision',
@@ -8,7 +8,7 @@ export const doubleVision = buildEffect({
   params: [
     floatParam({ name: 'Amplitude', defaultValue: 10, min: 0 }),
   ] as const,
-  fn: mapImageWithPrecompute(
+  fn: imageUtil.mapImageWithPrecompute(
     ({ animationProgress, parameters: [amplitude] }) => ({
       xOffset: amplitude * Math.sin(-2 * Math.PI * animationProgress),
     }),

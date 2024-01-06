@@ -1,18 +1,8 @@
 import { minBy, sortBy } from 'remeda';
-import { buildEffect, Color } from '../domain/types';
-import {
-  toHexColor,
-  TRANSPARENT_COLOR,
-  fromHexColor,
-  colorDiff,
-} from '../domain/utils/color';
-import {
-  mapImageWithPrecompute,
-  mapFrames,
-  mapCoords,
-  getPixelFromSource,
-} from '../domain/utils/image';
-import { sliderParam } from '../params/sliderParam';
+import type { Color } from '~/domain/types';
+import { colorUtil, imageUtil } from '~/domain/utils';
+import { sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const reduceColorPalette = buildEffect({
   name: 'Reduce Color Palette',
@@ -30,20 +20,24 @@ export const reduceColorPalette = buildEffect({
       max: 100,
     }),
   ] as const,
-  fn: mapImageWithPrecompute(
+  fn: imageUtil.mapImageWithPrecompute(
     ({ image, parameters: [percentReduction] }) => {
       // Buid up a set of all unique colors.
       // These will be our data points that we're going to group into to N clusters
       const allColorsSet = new Set<string>();
-      mapFrames(image, (frame) =>
-        mapCoords(image.dimensions, (coord) => {
-          const px = getPixelFromSource(image.dimensions, frame, coord);
-          allColorsSet.add(toHexColor(px));
-          return TRANSPARENT_COLOR; // Not actually used, just makes TS happy
+      imageUtil.mapFrames(image, (frame) =>
+        imageUtil.mapCoords(image.dimensions, (coord) => {
+          const px = imageUtil.getPixelFromSource(
+            image.dimensions,
+            frame,
+            coord
+          );
+          allColorsSet.add(colorUtil.toHexColor(px));
+          return colorUtil.TRANSPARENT_COLOR; // Not actually used, just makes TS happy
         })
       );
 
-      const allColors = Array.from(allColorsSet).map(fromHexColor);
+      const allColors = Array.from(allColorsSet).map(colorUtil.fromHexColor);
       const numColors = Math.max(
         Math.floor((allColors.length * (100 - percentReduction)) / 100),
         1
@@ -62,7 +56,7 @@ export const reduceColorPalette = buildEffect({
 
       for (let i = 1; i < allColors.length; i += 1) {
         let closestColorIdx = 0;
-        let closetsColorDist = colorDiff(
+        let closetsColorDist = colorUtil.colorDiff(
           allColors[i],
           allColors[closestColorIdx]
         );
@@ -72,7 +66,7 @@ export const reduceColorPalette = buildEffect({
             // Don't check the distance between this color and itself
             continue;
           }
-          const dist = colorDiff(allColors[k], allColors[i]);
+          const dist = colorUtil.colorDiff(allColors[k], allColors[i]);
           if (dist < closetsColorDist) {
             closestColorIdx = k;
             closetsColorDist = dist;
@@ -90,7 +84,9 @@ export const reduceColorPalette = buildEffect({
     ({ coord, getSrcPixel, computed: { colorPalette } }) => {
       const px = getSrcPixel(coord);
       // Find the color in the palette this one is closest to
-      const closestColor = minBy(colorPalette, (top) => colorDiff(top, px))!;
+      const closestColor = minBy(colorPalette, (top) =>
+        colorUtil.colorDiff(top, px)
+      )!;
       return closestColor;
     }
   ),

@@ -7,13 +7,9 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import { HelpTooltip } from '../components/HelpTooltip';
-import {
-  JsonType,
-  ParamFnDefault,
-  ParamFunction,
-  toParamFunction,
-} from '../domain/types';
+import { HelpTooltip } from '~/components/HelpTooltip';
+import type { JsonType, ParamFnDefault, ParamFunction } from '~/domain/types';
+import { toParamFunction } from './utils';
 
 interface VariableLengthProps<T extends JsonType> {
   name: string;

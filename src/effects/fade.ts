@@ -1,8 +1,7 @@
-import { buildEffect } from '../domain/types';
-import { applyCanvasFromFrame, applyFilter } from '../domain/utils/canvas';
-import { mapFrames } from '../domain/utils/image';
-import { bezierCurve } from '../domain/utils/misc';
-import { bezierParam, BezierTuple } from '../params';
+import { BezierTuple } from '~/domain/types';
+import { canvasUtil, imageUtil, miscUtil } from '~/domain/utils';
+import { bezierParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const fade = buildEffect({
   name: 'Fade',
@@ -17,12 +16,12 @@ export const fade = buildEffect({
     }),
   ] as const,
   fn: ({ image, parameters: [curve] }) =>
-    mapFrames(image, (frame, frameIndex, frameCount) =>
-      applyCanvasFromFrame({
+    imageUtil.mapFrames(image, (frame, frameIndex, frameCount) =>
+      canvasUtil.applyCanvasFromFrame({
         dimensions: image.dimensions,
         frame,
         preEffect: (canvasData) =>
-          applyFilter(canvasData, {
+          canvasUtil.applyFilter(canvasData, {
             opacity: getOpacityAmount({
               frameCount,
               frameIndex,
@@ -44,5 +43,5 @@ const getOpacityAmount = ({
 }): number => {
   const progress = frameIndex / (frameCount - 1);
 
-  return Math.round(bezierCurve(curve, true)(progress) * 100);
+  return Math.round(miscUtil.bezierCurve(curve, true)(progress) * 100);
 };

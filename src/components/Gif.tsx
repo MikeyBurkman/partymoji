@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions } from '../domain/types';
+import type { Dimensions } from '~/domain/types';
 
 const MAX_SIZE = 220;
 

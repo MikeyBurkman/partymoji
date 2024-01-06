@@ -1,12 +1,8 @@
 import seedrandom from 'seedrandom';
-import { buildEffect, Color } from '../domain/types';
-import { isTransparent } from '../domain/utils/color';
-import {
-  mapFrames,
-  mapCoords,
-  getPixelFromSource,
-} from '../domain/utils/image';
-import { textParam } from '../params/textParam';
+import type { Color } from '~/domain/types';
+import { colorUtil, imageUtil } from '~/domain/utils';
+import { textParam } from '~/params';
+import { buildEffect } from './utils';
 
 const lightningIntensities: Color[] = [
   [0, 15, 40, 255], // dark color
@@ -28,14 +24,14 @@ export const lightning = buildEffect({
   ] as const,
   fn: ({ image, parameters: [seed] }) => {
     const random = seedrandom(seed);
-    return mapFrames(image, (data) => {
+    return imageUtil.mapFrames(image, (data) => {
       const i = random();
       const flashIntensity = i < 0.9 ? 0 : i < 0.95 ? 1 : i < 0.98 ? 2 : 3;
 
-      return mapCoords(image.dimensions, (coord) => {
-        const src = getPixelFromSource(image.dimensions, data, coord);
+      return imageUtil.mapCoords(image.dimensions, (coord) => {
+        const src = imageUtil.getPixelFromSource(image.dimensions, data, coord);
 
-        if (isTransparent(src)) {
+        if (colorUtil.isTransparent(src)) {
           return lightningIntensities[flashIntensity];
         }
 

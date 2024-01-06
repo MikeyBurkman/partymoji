@@ -1,5 +1,5 @@
-import { ImagePicker } from '../components/ImagePicker';
-import { Image, ImageEffectResult, ParamFunction } from '../domain/types';
+import { ImagePicker } from '~/components/ImagePicker';
+import type { Image, ImageEffectResult, ParamFunction } from '~/domain/types';
 
 interface ImagePickerParamsProps {
   name: string;

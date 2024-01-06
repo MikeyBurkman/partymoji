@@ -1,8 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { isTransparent, shiftTowardsHue } from '../domain/utils/color';
-import { mapImage } from '../domain/utils/image';
-import { intParam } from '../params/intParam';
-import { sliderParam } from '../params/sliderParam';
+import { colorUtil, imageUtil } from '~/domain/utils';
+import { intParam, sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 // Creates a cool fractal-like effect. Should tweak this and understand it before releasing.
 
@@ -36,7 +34,7 @@ export const pinwheelParty = buildEffect({
       max: 10,
     }),
   ] as const,
-  fn: mapImage(
+  fn: imageUtil.mapImage(
     ({
       coord,
       dimensions,
@@ -48,7 +46,7 @@ export const pinwheelParty = buildEffect({
       const srcPixel = getSrcPixel(coord);
 
       // Make the transparent parts colorful
-      if (isTransparent(srcPixel)) {
+      if (colorUtil.isTransparent(srcPixel)) {
         return srcPixel;
       }
 
@@ -69,7 +67,7 @@ export const pinwheelParty = buildEffect({
         (pointAngle * ribbonArcDegrees + frameProgress * ribbonArcDegrees) %
         ribbonArcDegrees;
 
-      return shiftTowardsHue(srcPixel, newH, amount);
+      return colorUtil.shiftTowardsHue(srcPixel, newH, amount);
     }
   ),
 });

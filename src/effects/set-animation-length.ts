@@ -1,6 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { changeFrameCount } from '../domain/utils/image';
-import { sliderParam } from '../params/sliderParam';
+import { imageUtil } from '~/domain/utils';
+import { sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const setAnimationLength = buildEffect({
   name: 'Set Animation Length',
@@ -15,5 +15,5 @@ export const setAnimationLength = buildEffect({
     }),
   ] as const,
   fn: ({ image, parameters: [frameCount] }) =>
-    changeFrameCount(image, frameCount),
+    imageUtil.changeFrameCount(image, frameCount),
 });

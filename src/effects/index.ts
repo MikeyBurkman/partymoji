@@ -1,6 +1,6 @@
 import { pipe, reject, sortBy } from 'remeda';
-import { ParamFunction, Effect } from '../domain/types';
-import { assert } from '../domain/utils/misc';
+import type { ParamFunction, Effect } from '~/domain/types';
+import { miscUtil } from '~/domain/utils';
 
 import { adjustImage } from './adjust-image';
 import { backgroundColor } from './background-color';
@@ -119,6 +119,6 @@ export const effectByName = (
   name: string
 ): Effect<readonly ParamFunction<any>[]> => {
   const t = POSSIBLE_EFFECTS.find((t) => t.name === name);
-  assert(t, `Could not find matching effect: ${name}`);
+  miscUtil.assert(t, `Could not find matching effect: ${name}`);
   return t as any as Effect<readonly ParamFunction<any>[]>;
 };

@@ -1,16 +1,12 @@
 import { range } from 'remeda';
-import { buildEffect } from '../domain/types';
+import { canvasUtil, colorUtil, imageUtil } from '~/domain/utils';
 import {
-  applyCanvasFromFrame,
-  applyFilter,
-  combineImages,
-} from '../domain/utils/canvas';
-import { fromHexColor } from '../domain/utils/color';
-import { mapCoords, mapFrames } from '../domain/utils/image';
-import { colorPickerParam } from '../params/colorPickerParam';
-import { intParam } from '../params/intParam';
-import { sliderParam } from '../params/sliderParam';
-import { variableLengthParam } from '../params/variableLengthParam';
+  colorPickerParam,
+  intParam,
+  sliderParam,
+  variableLengthParam,
+} from '~/params';
+import { buildEffect } from './utils';
 
 const DEFAULT_COLORS = [
   '#FF0000',
@@ -21,7 +17,7 @@ const DEFAULT_COLORS = [
   '#00FFFF',
   '#0000FF',
   '#B400FF',
-].map(fromHexColor);
+].map(colorUtil.fromHexColor);
 
 export const radianceColors = buildEffect({
   name: 'Radiance Colors',
@@ -66,7 +62,7 @@ export const radianceColors = buildEffect({
     image,
     parameters: [groupCount, colors, offsetX, offsetY, opacity],
   }) => {
-    return mapFrames(image, (frame, frameIndex, frameCount) => {
+    return imageUtil.mapFrames(image, (frame, frameIndex, frameCount) => {
       const animationProgress = frameIndex / frameCount;
       const [width, height] = image.dimensions;
 
@@ -74,7 +70,7 @@ export const radianceColors = buildEffect({
       const centerX = width / 2;
       const centerY = height / 2;
 
-      const background = mapCoords(image.dimensions, ([x, y]) => {
+      const background = imageUtil.mapCoords(image.dimensions, ([x, y]) => {
         const xRelCenter = x - centerX - offsetX;
         const yRelCenter = y - centerY + offsetY;
 
@@ -99,13 +95,14 @@ export const radianceColors = buildEffect({
       const foreground =
         opacity === 100
           ? frame
-          : applyCanvasFromFrame({
+          : canvasUtil.applyCanvasFromFrame({
               dimensions: image.dimensions,
               frame,
-              preEffect: (canvasData) => applyFilter(canvasData, { opacity }),
+              preEffect: (canvasData) =>
+                canvasUtil.applyFilter(canvasData, { opacity }),
             });
 
-      return combineImages({
+      return canvasUtil.combineImages({
         dimensions: image.dimensions,
         background,
         foreground,

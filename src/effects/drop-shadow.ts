@@ -1,9 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { applyCanvasFromFrame, applyFilter } from '../domain/utils/canvas';
-import { mapFrames } from '../domain/utils/image';
-import { colorPickerParam } from '../params/colorPickerParam';
-import { intParam } from '../params/intParam';
-import { sliderParam } from '../params/sliderParam';
+import { canvasUtil, imageUtil } from '~/domain/utils';
+import { colorPickerParam, sliderParam, intParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const dropShadow = buildEffect({
   name: 'Drop Shadow',
@@ -30,12 +27,12 @@ export const dropShadow = buildEffect({
     }),
   ] as const,
   fn: ({ image, parameters: [offsetX, offsetY, blurRadius, color] }) =>
-    mapFrames(image, (frame, frameIndex, frameCount) =>
-      applyCanvasFromFrame({
+    imageUtil.mapFrames(image, (frame, frameIndex, frameCount) =>
+      canvasUtil.applyCanvasFromFrame({
         dimensions: image.dimensions,
         frame,
         preEffect: (canvasData) =>
-          applyFilter(canvasData, {
+          canvasUtil.applyFilter(canvasData, {
             dropShadow: {
               offsetX,
               offsetY,

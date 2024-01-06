@@ -1,10 +1,7 @@
 import { Button, Icon, Stack, Box, TextField } from '@material-ui/core';
 import React from 'react';
-import { getImageFromUrl } from '../domain/importImageFromUrl';
-import { ImageEffectResult } from '../domain/types';
-import { isUrl, blobOrFileToDataUrl } from '../domain/utils/misc';
-import { isPartiallyTransparent } from '../domain/utils/image';
-import { readGifFromFile, readImage } from '../domain/utils/imageImport';
+import { miscUtil, imageUtil, imageImportUtil } from '~/domain/utils';
+import type { ImageEffectResult } from '~/domain/types';
 import { Gif } from './Gif';
 
 const parseFileName = (s: string): string => {
@@ -47,30 +44,31 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
 
               if (text.startsWith('data:')) {
                 // Data URL
-                const image = await readImage(text);
+                const image = await imageImportUtil.readImage(text);
                 onChange(
                   {
                     gif: text,
                     image,
                     gifWithBackgroundColor: text,
-                    partiallyTransparent: isPartiallyTransparent(image),
+                    partiallyTransparent:
+                      imageUtil.isPartiallyTransparent(image),
                   },
                   'image'
                 );
                 return;
               }
 
-              if (!isUrl(text)) {
+              if (!miscUtil.isUrl(text)) {
                 return;
               }
-              const gif = await getImageFromUrl(text);
-              const image = await readImage(gif);
+              const gif = await imageImportUtil.getImageFromUrl(text);
+              const image = await imageImportUtil.readImage(gif);
               onChange(
                 {
                   gif,
                   image,
                   gifWithBackgroundColor: gif,
-                  partiallyTransparent: isPartiallyTransparent(image),
+                  partiallyTransparent: imageUtil.isPartiallyTransparent(image),
                 },
                 parseFileName(text)
               );
@@ -98,17 +96,17 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
             const file = files[0];
             if (file) {
               // Will be undefined if user clicked the cancel button
-              const gif = await blobOrFileToDataUrl(file);
+              const gif = await miscUtil.blobOrFileToDataUrl(file);
               // TODO refactor readGifFromeFile and readImage so this conditional isn't necessary
               const image = file.name.endsWith('.gif')
-                ? await readGifFromFile(file)
-                : await readImage(gif);
+                ? await imageImportUtil.readGifFromFile(file)
+                : await imageImportUtil.readImage(gif);
               onChange(
                 {
                   gif,
                   image,
                   gifWithBackgroundColor: gif,
-                  partiallyTransparent: isPartiallyTransparent(image),
+                  partiallyTransparent: imageUtil.isPartiallyTransparent(image),
                 },
                 parseFileName(file.name)
               );

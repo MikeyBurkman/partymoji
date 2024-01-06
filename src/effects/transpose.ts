@@ -1,6 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { mapImage } from '../domain/utils/image';
-import { intParam } from '../params/intParam';
+import { imageUtil } from '~/domain/utils';
+import { intParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const transpose = buildEffect({
   name: 'Transpose',
@@ -9,7 +9,8 @@ export const transpose = buildEffect({
     intParam({ name: 'X', defaultValue: 0 }),
     intParam({ name: 'Y', defaultValue: 0 }),
   ] as const,
-  fn: mapImage(({ coord: [x, y], getSrcPixel, parameters: [transX, transY] }) =>
-    getSrcPixel([x + transX, y + transY])
+  fn: imageUtil.mapImage(
+    ({ coord: [x, y], getSrcPixel, parameters: [transX, transY] }) =>
+      getSrcPixel([x + transX, y + transY])
   ),
 });

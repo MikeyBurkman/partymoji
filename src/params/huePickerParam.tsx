@@ -2,13 +2,10 @@ import { Stack, Typography } from '@material-ui/core';
 import * as convert from 'color-convert';
 import React from 'react';
 import { HuePicker } from 'react-color';
-import { HelpTooltip } from '../components/HelpTooltip';
-import {
-  ParamFnDefault,
-  ParamFunction,
-  toParamFunction,
-} from '../domain/types';
-import { toHexColor } from '../domain/utils/color';
+import { HelpTooltip } from '~/components/HelpTooltip';
+import type { ParamFnDefault, ParamFunction } from '~/domain/types';
+import { colorUtil } from '~/domain/utils';
+import { toParamFunction } from './utils';
 
 const HuePickerParam: React.FC<{
   name: string;
@@ -20,7 +17,7 @@ const HuePickerParam: React.FC<{
     () =>
       value === undefined
         ? undefined
-        : toHexColor([...convert.hsl.rgb([value, 100, 50]), 255]),
+        : colorUtil.toHexColor([...convert.hsl.rgb([value, 100, 50]), 255]),
     [value]
   );
   return (

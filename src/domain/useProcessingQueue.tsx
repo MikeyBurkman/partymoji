@@ -1,8 +1,8 @@
 import React from 'react';
-import { debugLog } from '../domain/env';
-import { computeGif } from '../domain/computeGifs';
-import { ImageEffectResult } from '../domain/types';
-import { RunArgs } from '../domain/run';
+import { debugLog } from '~/domain/env';
+import { computeGif } from '~/domain/computeGifs';
+import type { ImageEffectResult } from '~/domain/types';
+import { RunArgs } from '~/domain/run';
 
 const getRunId = () => Math.floor(Math.random() * 100000);
 

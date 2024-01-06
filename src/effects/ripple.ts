@@ -1,6 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { mapImageWithPrecompute } from '../domain/utils/image';
-import { sliderParam } from '../params/sliderParam';
+import { imageUtil } from '~/domain/utils';
+import { sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const ripple = buildEffect({
   name: 'Ripple',
@@ -22,7 +22,7 @@ export const ripple = buildEffect({
       description: 'How many ripples you want',
     }),
   ] as const,
-  fn: mapImageWithPrecompute(
+  fn: imageUtil.mapImageWithPrecompute(
     ({ animationProgress }) => ({
       shift: animationProgress * 2 * Math.PI,
     }),

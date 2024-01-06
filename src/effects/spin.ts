@@ -1,7 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { applyCanvasFromFrame, applyRotation } from '../domain/utils/canvas';
-import { mapFrames } from '../domain/utils/image';
-import { radioParam } from '../params/radioParam';
+import { canvasUtil, imageUtil } from '~/domain/utils';
+import { radioParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const spin = buildEffect({
   name: 'Spin',
@@ -17,13 +16,13 @@ export const spin = buildEffect({
     }),
   ] as const,
   fn: ({ image, parameters: [direction] }) =>
-    mapFrames(image, (frame, idx, frameCount) => {
+    imageUtil.mapFrames(image, (frame, idx, frameCount) => {
       const angle =
         (((direction === 'counter' ? 1 : -1) * idx) / frameCount) * 360;
-      return applyCanvasFromFrame({
+      return canvasUtil.applyCanvasFromFrame({
         dimensions: image.dimensions,
         frame,
-        preEffect: (canvasData) => applyRotation(canvasData, angle),
+        preEffect: (canvasData) => canvasUtil.applyRotation(canvasData, angle),
       });
     }),
 });

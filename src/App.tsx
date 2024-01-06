@@ -9,19 +9,21 @@ import {
 } from '@material-ui/core';
 import ScopedCssBaseline from '@material-ui/core/ScopedCssBaseline';
 
-import { Help } from './components/Help';
-import { ImagePicker } from './components/ImagePicker';
-import { ImageEffectList } from './components/ImageEffectList';
-import { computeGifsForState, getEffectsDiff } from './domain/computeGifs';
-import { AppState, AppStateEffect } from './domain/types';
-import { replaceIndex } from './domain/utils/misc';
-import { ENV, debugLog, IS_MOBILE } from './domain/env';
-import * as localStorage from './localStorage';
-import { sliderParam } from './params/sliderParam';
-import { POSSIBLE_EFFECTS } from './effects';
-import { AlertProvider, AlertSnackbar, useSetAlert } from './AlertContext';
-import { Icon } from './components/Icon';
-import { ProcessorQueueProvider } from './components/useProcessingQueue';
+import { Help } from '~/components/Help';
+import { ImagePicker } from '~/components/ImagePicker';
+import { ImageEffectList } from '~/components/ImageEffectList';
+import { Icon } from '~/components/Icon';
+
+import { computeGifsForState, getEffectsDiff } from '~/domain/computeGifs';
+import type { AppState, AppStateEffect } from '~/domain/types';
+import { miscUtil } from '~/domain/utils';
+import { ENV, debugLog, IS_MOBILE } from '~/domain/env';
+
+import * as localStorage from '~/localStorage';
+import { sliderParam } from '~/params/sliderParam';
+import { POSSIBLE_EFFECTS } from '~/effects';
+import { AlertProvider, AlertSnackbar, useSetAlert } from '~/AlertContext';
+import { ProcessorQueueProvider } from '~/domain/useProcessingQueue';
 
 // Number of millis to wait after a change before recomputing the gif
 const COMPUTE_DEBOUNCE_MILLIS = 1000;
@@ -166,7 +168,7 @@ const Inner: React.FC = () => {
           setState(
             (prevState) => ({
               ...prevState,
-              effects: replaceIndex(
+              effects: miscUtil.replaceIndex(
                 prevState.effects,
                 computeIdx,
                 (t): AppStateEffect => ({

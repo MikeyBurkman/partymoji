@@ -1,6 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { scaleImage as scaleImageUtil } from '../domain/utils/image';
-import { sliderParam } from '../params/sliderParam';
+import { imageUtil } from '~/domain/utils';
+import { sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const scaleImage = buildEffect({
   name: 'Scale Image',
@@ -15,5 +15,9 @@ export const scaleImage = buildEffect({
     }),
   ] as const,
   fn: ({ image, parameters: [scale] }) =>
-    scaleImageUtil({ image, horizontalScale: scale, verticalScale: scale }),
+    imageUtil.scaleImage({
+      image,
+      horizontalScale: scale,
+      verticalScale: scale,
+    }),
 });

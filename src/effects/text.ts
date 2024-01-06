@@ -1,11 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { applyCanvasFromFrame } from '../domain/utils/canvas';
-import { fromHexColor, toHexColor } from '../domain/utils/color';
-import { mapFrames } from '../domain/utils/image';
-import { colorPickerParam } from '../params/colorPickerParam';
-import { dropdownParam } from '../params/dropdownParam';
-import { intParam } from '../params/intParam';
-import { textParam } from '../params/textParam';
+import { canvasUtil, colorUtil, imageUtil } from '~/domain/utils';
+import { colorPickerParam, dropdownParam, intParam, textParam } from '~/params';
+import { buildEffect } from './utils';
 
 const FONTS = [
   'Arial',
@@ -48,17 +43,17 @@ export const text = buildEffect({
     }),
     colorPickerParam({
       name: 'Color',
-      defaultValue: fromHexColor('#000000'),
+      defaultValue: colorUtil.fromHexColor('#000000'),
     }),
   ] as const,
   fn: ({ image, parameters: [text, font, x, y, fontSize, color] }) =>
-    mapFrames(image, (frame) =>
-      applyCanvasFromFrame({
+    imageUtil.mapFrames(image, (frame) =>
+      canvasUtil.applyCanvasFromFrame({
         dimensions: image.dimensions,
         frame,
         postEffect: ({ ctx }) => {
           ctx.font = `${fontSize}px ${font}`;
-          ctx.fillStyle = toHexColor(color);
+          ctx.fillStyle = colorUtil.toHexColor(color);
           ctx.fillText(text, x, y);
         },
       })

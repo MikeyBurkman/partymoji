@@ -1,12 +1,7 @@
-import { buildEffect, Color, Coord, Image } from '../domain/types';
-import { TRANSPARENT_COLOR, colorDiff } from '../domain/utils/color';
-import {
-  duplicateImage,
-  getPixelFromSource,
-  setPixel,
-} from '../domain/utils/image';
-import { colorPickerParam } from '../params/colorPickerParam';
-import { sliderParam } from '../params/sliderParam';
+import type { Color, Coord, Image } from '~/domain/types';
+import { colorUtil, imageUtil } from '~/domain/utils';
+import { colorPickerParam, sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 // TODO
 export const fill = buildEffect({
@@ -27,7 +22,7 @@ export const fill = buildEffect({
     }),
   ] as const,
   fn: ({ image: oldImage, parameters: [colorToReplace, tolerance] }) => {
-    const image = duplicateImage(oldImage);
+    const image = imageUtil.duplicateImage(oldImage);
 
     for (
       let frameIndex = 0;
@@ -38,7 +33,7 @@ export const fill = buildEffect({
         image,
         frameIndex,
         colorToReplace,
-        newColor: TRANSPARENT_COLOR,
+        newColor: colorUtil.TRANSPARENT_COLOR,
         tolerance,
       });
     }
@@ -91,16 +86,16 @@ const floodFill = ({
       continue;
     }
 
-    const currColor = getPixelFromSource(
+    const currColor = imageUtil.getPixelFromSource(
       image.dimensions,
       image.frames[frameIndex],
       coord
     );
-    if (colorDiff(currColor, colorToReplace) * 100 > tolerance) {
+    if (colorUtil.colorDiff(currColor, colorToReplace) * 100 > tolerance) {
       continue;
     }
 
-    setPixel({
+    imageUtil.setPixel({
       image,
       frameIndex,
       color: newColor,

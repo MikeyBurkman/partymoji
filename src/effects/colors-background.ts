@@ -1,14 +1,6 @@
-import { buildEffect } from '../domain/types';
-import {
-  combineImages,
-  applyCanvasFromFrame,
-  applyFilter,
-} from '../domain/utils/canvas';
-import { fromHexColor } from '../domain/utils/color';
-import { mapCoords, mapFrames } from '../domain/utils/image';
-import { colorPickerParam } from '../params/colorPickerParam';
-import { sliderParam } from '../params/sliderParam';
-import { variableLengthParam } from '../params/variableLengthParam';
+import { canvasUtil, colorUtil, imageUtil } from '~/domain/utils';
+import { colorPickerParam, sliderParam, variableLengthParam } from '~/params';
+import { buildEffect } from './utils';
 
 const DEFAULT_COLORS = [
   '#FF8D8B',
@@ -21,7 +13,7 @@ const DEFAULT_COLORS = [
   '#FF68F7',
   '#FE6CB7',
   '#FF6968',
-].map(fromHexColor);
+].map(colorUtil.fromHexColor);
 
 export const colorsBackground = buildEffect({
   name: 'Colors Background',
@@ -46,22 +38,23 @@ export const colorsBackground = buildEffect({
     }),
   ] as const,
   fn: ({ image, parameters: [colors, opacity] }) =>
-    mapFrames(image, (frame, frameIndex, frameCount) => {
+    imageUtil.mapFrames(image, (frame, frameIndex, frameCount) => {
       const animationProgress = frameIndex / frameCount;
       const bgColor = colors[Math.floor(animationProgress * colors.length)];
 
       const foreground =
         opacity === 100
           ? frame
-          : applyCanvasFromFrame({
+          : canvasUtil.applyCanvasFromFrame({
               dimensions: image.dimensions,
               frame,
-              preEffect: (canvasData) => applyFilter(canvasData, { opacity }),
+              preEffect: (canvasData) =>
+                canvasUtil.applyFilter(canvasData, { opacity }),
             });
 
-      return combineImages({
+      return canvasUtil.combineImages({
         dimensions: image.dimensions,
-        background: mapCoords(image.dimensions, () => bgColor),
+        background: imageUtil.mapCoords(image.dimensions, () => bgColor),
         foreground,
       });
     }),

@@ -1,8 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { mapImageWithPrecompute } from '../domain/utils/image';
-import { bezierCurve, LINEAR_BEZIER } from '../domain/utils/misc';
-import { bezierParam } from '../params';
-import { intParam } from '../params/intParam';
+import { imageUtil, miscUtil } from '~/domain/utils';
+import { bezierParam, intParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const bounce = buildEffect({
   name: 'Bounce',
@@ -17,12 +15,12 @@ export const bounce = buildEffect({
     }),
     bezierParam({
       name: 'Easing',
-      defaultValue: LINEAR_BEZIER,
+      defaultValue: miscUtil.LINEAR_BEZIER,
     }),
   ] as const,
-  fn: mapImageWithPrecompute(
+  fn: imageUtil.mapImageWithPrecompute(
     ({ animationProgress, parameters: [height, easing] }) => {
-      const b = bezierCurve(easing, true)(animationProgress);
+      const b = miscUtil.bezierCurve(easing, true)(animationProgress);
       return {
         yOffset: Math.round(height * b),
       };

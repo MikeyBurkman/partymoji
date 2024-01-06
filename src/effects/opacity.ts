@@ -1,7 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { applyCanvasFromFrame, applyFilter } from '../domain/utils/canvas';
-import { mapFrames } from '../domain/utils/image';
-import { sliderParam } from '../params/sliderParam';
+import { canvasUtil, imageUtil } from '~/domain/utils';
+import { sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const opacity = buildEffect({
   name: 'Opacity',
@@ -19,11 +18,12 @@ export const opacity = buildEffect({
     }),
   ] as const,
   fn: ({ image, parameters: [amount] }) =>
-    mapFrames(image, (frame) =>
-      applyCanvasFromFrame({
+    imageUtil.mapFrames(image, (frame) =>
+      canvasUtil.applyCanvasFromFrame({
         dimensions: image.dimensions,
         frame,
-        preEffect: (canvasData) => applyFilter(canvasData, { opacity: amount }),
+        preEffect: (canvasData) =>
+          canvasUtil.applyFilter(canvasData, { opacity: amount }),
       })
     ),
 });

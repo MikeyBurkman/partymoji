@@ -1,13 +1,6 @@
-import { buildEffect } from '../domain/types';
-import {
-  applyCanvasFromFrame,
-  applyFilter,
-  combineImages,
-} from '../domain/utils/canvas';
-import { colorFromHue } from '../domain/utils/color';
-import { mapCoords, mapFrames } from '../domain/utils/image';
-import { intParam } from '../params/intParam';
-import { sliderParam } from '../params/sliderParam';
+import { canvasUtil, colorUtil, imageUtil } from '~/domain/utils';
+import { intParam, sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const radianceRainbowBackground = buildEffect({
   name: 'Radiance Rainbow Background',
@@ -38,7 +31,7 @@ export const radianceRainbowBackground = buildEffect({
     }),
   ] as const,
   fn: ({ image, parameters: [groupCount, offsetX, offsetY, opacity] }) =>
-    mapFrames(image, (frame, frameIndex, frameCount) => {
+    imageUtil.mapFrames(image, (frame, frameIndex, frameCount) => {
       const animationProgress = frameIndex / frameCount;
       const [width, height] = image.dimensions;
       const centerX = width / 2;
@@ -47,7 +40,7 @@ export const radianceRainbowBackground = buildEffect({
         (width / 2) * (width / 2) + (height / 2) * (height / 2)
       );
 
-      const background = mapCoords(image.dimensions, ([x, y]) => {
+      const background = imageUtil.mapCoords(image.dimensions, ([x, y]) => {
         const xRelCenter = x - centerX - offsetX;
         const yRelCenter = y - centerY + offsetY;
 
@@ -60,19 +53,20 @@ export const radianceRainbowBackground = buildEffect({
             360 * animationProgress) %
           360;
 
-        return colorFromHue(newH);
+        return colorUtil.colorFromHue(newH);
       });
 
       const foreground =
         opacity === 100
           ? frame
-          : applyCanvasFromFrame({
+          : canvasUtil.applyCanvasFromFrame({
               dimensions: image.dimensions,
               frame,
-              preEffect: (canvasData) => applyFilter(canvasData, { opacity }),
+              preEffect: (canvasData) =>
+                canvasUtil.applyFilter(canvasData, { opacity }),
             });
 
-      return combineImages({
+      return canvasUtil.combineImages({
         dimensions: image.dimensions,
         background,
         foreground,

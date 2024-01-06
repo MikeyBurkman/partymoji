@@ -1,18 +1,15 @@
 import React from 'react';
 import * as R from 'remeda';
 import { Box, Stack, Typography } from '@material-ui/core';
-import { HelpTooltip } from '../components/HelpTooltip';
-import {
+import { HelpTooltip } from '~/components/HelpTooltip';
+import type {
   Coord,
   ParamFnDefault,
   ParamFunction,
-  toParamFunction,
-} from '../domain/types';
-import { CanvasElement } from '../domain/utils/CanvasElement';
-import { useDebounce } from '../domain/utils/useDebounce';
-import { clamp, pointDistance } from '../domain/utils/misc';
-
-export type BezierTuple = [Coord, Coord];
+  BezierTuple,
+} from '~/domain/types';
+import { CanvasElement, useDebounce, miscUtil } from '~/domain/utils';
+import { toParamFunction } from './utils';
 
 const BezierParam: React.FC<{
   name: string;
@@ -47,7 +44,7 @@ const BezierParam: React.FC<{
     const distances = curValue.map((c, idx) => ({
       idx,
       coord: c,
-      distance: pointDistance(
+      distance: miscUtil.pointDistance(
         [c[0] * WIDTH, c[1] * HEIGHT],
         latestMouseLocation
       ),
@@ -103,8 +100,8 @@ const BezierParam: React.FC<{
       setLatestMouseLocation(c);
 
       const newCoord: Coord = [
-        clamp(c[0] / WIDTH, 0, WIDTH),
-        clamp(c[1] / HEIGHT, 0, HEIGHT),
+        miscUtil.clamp(c[0] / WIDTH, 0, WIDTH),
+        miscUtil.clamp(c[1] / HEIGHT, 0, HEIGHT),
       ];
 
       if (isDragging === 0) {

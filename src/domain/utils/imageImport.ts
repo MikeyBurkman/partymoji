@@ -1,7 +1,7 @@
 // @ts-ignore
 import getPixels from 'get-pixels';
 import { parseGIF, decompressFrames } from 'gifuct-js';
-import { Dimensions, FrameData, Image } from '../types';
+import type { Dimensions, FrameData, Image } from '~/domain/types';
 import { canvasToFrame, createCanvas } from './canvas';
 
 const toArrayBuffer = (file: File): Promise<ArrayBuffer> =>
@@ -92,3 +92,27 @@ export const readImage = (dataUrl: string): Promise<Image> =>
       }
     )
   );
+
+export const getImageFromUrl = async (url: string) => {
+  return new Promise<string>((resolve, reject) => {
+    const img = new Image();
+    img.setAttribute('crossOrigin', 'anonymous');
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        throw new Error('Canvas not supported');
+      }
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL());
+    };
+
+    img.onerror = () => {
+      reject(new Error('Error loading url'));
+    };
+
+    img.src = url;
+  });
+};

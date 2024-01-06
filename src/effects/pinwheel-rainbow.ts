@@ -1,9 +1,7 @@
-import { buildEffect, Coord } from '../domain/types';
-import { shiftTowardsHue } from '../domain/utils/color';
-import { calculateAngle } from '../domain/utils/misc';
-import { mapImageWithPrecompute } from '../domain/utils/image';
-import { intParam } from '../params/intParam';
-import { sliderParam } from '../params/sliderParam';
+import type { Coord } from '~/domain/types';
+import { colorUtil, miscUtil, imageUtil } from '~/domain/utils';
+import { intParam, sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const pinwheelRainbow = buildEffect({
   name: 'Pinwheel Rainbow',
@@ -34,7 +32,7 @@ export const pinwheelRainbow = buildEffect({
       defaultValue: 0,
     }),
   ] as const,
-  fn: mapImageWithPrecompute(
+  fn: imageUtil.mapImageWithPrecompute(
     ({
       dimensions: [width, height],
       parameters: [groupCount, amount, offsetX, offsetY],
@@ -51,10 +49,10 @@ export const pinwheelRainbow = buildEffect({
     }) => {
       const srcPixel = getSrcPixel(coord);
 
-      const pointAngle = calculateAngle(coord, center);
+      const pointAngle = miscUtil.calculateAngle(coord, center);
       const newH = (pointAngle * groupCount + animationProgress * 360) % 360;
 
-      return shiftTowardsHue(srcPixel, newH, strength);
+      return colorUtil.shiftTowardsHue(srcPixel, newH, strength);
     }
   ),
 });

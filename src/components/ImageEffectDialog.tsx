@@ -13,18 +13,18 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-import {
+import type {
   ParamFunction,
   Effect,
   EffectInput,
   ImageEffectResult,
-} from '../domain/types';
-import { replaceIndex } from '../domain/utils/misc';
-import { debugLog } from '../domain/env';
-import { effectByName } from '../effects';
+} from '~/domain/types';
+import { miscUtil } from '~/domain/utils';
+import { debugLog } from '~/domain/env';
+import { effectByName } from '~/effects';
 import { Gif } from './Gif';
-import { useProcessingQueue } from './useProcessingQueue';
 import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
+import { useProcessingQueue } from '~/domain/useProcessingQueue';
 
 interface Props {
   open: boolean;
@@ -199,7 +199,7 @@ export const ImageEffectDialog: React.FC<Props> = ({
                       setDirty(true);
                       setEditingEffect({
                         ...editingEffect,
-                        params: replaceIndex(
+                        params: miscUtil.replaceIndex(
                           editingEffect.params,
                           idx,
                           () => v

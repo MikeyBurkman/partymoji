@@ -1,12 +1,6 @@
-import { buildEffect } from '../domain/types';
-import {
-  applyCanvasFromFrame,
-  applyFilter,
-  combineImages,
-} from '../domain/utils/canvas';
-import { colorFromHue } from '../domain/utils/color';
-import { mapCoords, mapFrames } from '../domain/utils/image';
-import { sliderParam } from '../params/sliderParam';
+import { canvasUtil, colorUtil, imageUtil } from '~/domain/utils';
+import { sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const partyBackground = buildEffect({
   name: 'Party Background',
@@ -28,23 +22,24 @@ export const partyBackground = buildEffect({
     }),
   ] as const,
   fn: ({ image, parameters: [shiftSpeed, opacity] }) =>
-    mapFrames(image, (frame, frameIndex, frameCount) => {
+    imageUtil.mapFrames(image, (frame, frameIndex, frameCount) => {
       const animationProgress = frameIndex / frameCount;
       const newH = (animationProgress * shiftSpeed * 360) % 360;
-      const bgColor = colorFromHue(newH);
+      const bgColor = colorUtil.colorFromHue(newH);
 
       const foreground =
         opacity === 100
           ? frame
-          : applyCanvasFromFrame({
+          : canvasUtil.applyCanvasFromFrame({
               dimensions: image.dimensions,
               frame,
-              preEffect: (canvasData) => applyFilter(canvasData, { opacity }),
+              preEffect: (canvasData) =>
+                canvasUtil.applyFilter(canvasData, { opacity }),
             });
 
-      return combineImages({
+      return canvasUtil.combineImages({
         dimensions: image.dimensions,
-        background: mapCoords(image.dimensions, () => bgColor),
+        background: imageUtil.mapCoords(image.dimensions, () => bgColor),
         foreground,
       });
     }),

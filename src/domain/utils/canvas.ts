@@ -1,4 +1,4 @@
-import { CanvasData, Dimensions, FrameData, Color } from '../types';
+import type { CanvasData, Dimensions, FrameData, Color } from '~/domain/types';
 import { toHexColor } from './color';
 import { IS_WORKER } from './isWorker';
 import { assert } from './misc';

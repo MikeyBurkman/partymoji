@@ -1,14 +1,6 @@
-import { buildEffect } from '../domain/types';
-import {
-  fromHexColor,
-  isTransparent,
-  adjustBrightness,
-  getAveragePixelValue,
-} from '../domain/utils/color';
-import { mapImageWithPrecompute } from '../domain/utils/image';
-import { colorPickerParam } from '../params/colorPickerParam';
-import { sliderParam } from '../params/sliderParam';
-import { variableLengthParam } from '../params/variableLengthParam';
+import { colorUtil, imageUtil } from '~/domain/utils';
+import { colorPickerParam, sliderParam, variableLengthParam } from '~/params';
+import { buildEffect } from './utils';
 
 const DEFAULT_COLORS = [
   '#FF8D8B',
@@ -21,7 +13,7 @@ const DEFAULT_COLORS = [
   '#FF68F7',
   '#FE6CB7',
   '#FF6968',
-].map(fromHexColor);
+].map(colorUtil.fromHexColor);
 
 export const colors = buildEffect({
   name: 'Colors',
@@ -46,7 +38,7 @@ export const colors = buildEffect({
         }),
     }),
   ] as const,
-  fn: mapImageWithPrecompute(
+  fn: imageUtil.mapImageWithPrecompute(
     ({ animationProgress, parameters: [brightnessIncrease, colors] }) => ({
       brightnessIncrease,
       chosenColor: colors[Math.floor(animationProgress * colors.length)],
@@ -54,15 +46,15 @@ export const colors = buildEffect({
     ({ computed: { brightnessIncrease, chosenColor }, coord, getSrcPixel }) => {
       const srcPixel = getSrcPixel(coord);
 
-      if (isTransparent(srcPixel)) {
+      if (colorUtil.isTransparent(srcPixel)) {
         return [0, 0, 0, 0];
       }
 
       const brightnessAdjusted =
         brightnessIncrease > 0
-          ? adjustBrightness(srcPixel, brightnessIncrease)
+          ? colorUtil.adjustBrightness(srcPixel, brightnessIncrease)
           : srcPixel;
-      const gray = getAveragePixelValue(brightnessAdjusted);
+      const gray = colorUtil.getAveragePixelValue(brightnessAdjusted);
 
       return [
         (gray * chosenColor[0]) / 255,

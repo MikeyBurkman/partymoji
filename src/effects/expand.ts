@@ -1,8 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { mapImageWithPrecompute } from '../domain/utils/image';
-import { bezierCurve, LINEAR_BEZIER } from '../domain/utils/misc';
-import { bezierParam } from '../params';
-import { intParam } from '../params/intParam';
+import { imageUtil, miscUtil } from '~/domain/utils';
+import { bezierParam, intParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const expand = buildEffect({
   name: 'Expand',
@@ -17,16 +15,16 @@ export const expand = buildEffect({
     }),
     bezierParam({
       name: 'Easing',
-      defaultValue: LINEAR_BEZIER,
+      defaultValue: miscUtil.LINEAR_BEZIER,
     }),
   ] as const,
-  fn: mapImageWithPrecompute(
+  fn: imageUtil.mapImageWithPrecompute(
     ({
       dimensions: [width, height],
       animationProgress,
       parameters: [radius, easing],
     }) => ({
-      dist: bezierCurve(easing, true)(animationProgress) * radius,
+      dist: miscUtil.bezierCurve(easing, true)(animationProgress) * radius,
       centerX: width / 2,
       centerY: height / 2,
     }),

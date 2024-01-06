@@ -1,22 +1,18 @@
 import { Stack, Typography } from '@material-ui/core';
 import React from 'react';
 import { SketchPicker } from 'react-color';
-import { Expandable } from '../components/Expandable';
-import { HelpTooltip } from '../components/HelpTooltip';
-import {
-  Color,
-  ParamFnDefault,
-  ParamFunction,
-  toParamFunction,
-} from '../domain/types';
-import { fromHexColor, toHexColor } from '../domain/utils/color';
+import { Expandable } from '~/components/Expandable';
+import { HelpTooltip } from '~/components/HelpTooltip';
+import type { Color, ParamFnDefault, ParamFunction } from '~/domain/types';
+import { colorUtil } from '~/domain/utils';
+import { toParamFunction } from './utils';
 
 const ColorBox: React.FC<{ color: Color }> = ({ color }) => (
   <div
     style={{
       width: '1.5em',
       height: '1.5em',
-      backgroundColor: toHexColor(color),
+      backgroundColor: colorUtil.toHexColor(color),
     }}
   />
 );
@@ -40,9 +36,9 @@ const ColorPickerParam: React.FC<{
       <SketchPicker
         disableAlpha={true}
         presetColors={[]}
-        color={toHexColor(value)}
+        color={colorUtil.toHexColor(value)}
         onChangeComplete={(c) => {
-          onChange(fromHexColor(c.hex));
+          onChange(colorUtil.fromHexColor(c.hex));
         }}
       />
     </Expandable>

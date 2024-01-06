@@ -8,7 +8,7 @@ import SwiperClass from 'swiper/types/swiper-class';
 import 'swiper/swiper.min.css';
 import 'swiper/modules/navigation/navigation.min.css';
 
-import {
+import type {
   ParamFunction,
   Effect,
   AppStateEffect,
@@ -16,8 +16,8 @@ import {
   AppState,
   ImageEffectResult,
   EffectInput,
-} from '../domain/types';
-import { insertInto, replaceIndex } from '../domain/utils/misc';
+} from '~/domain/types';
+import { miscUtil } from '~/domain/utils';
 import { Gif } from './Gif';
 import { Icon, ClickableIcon } from './Icon';
 import { ImageEffectDialog } from './ImageEffectDialog';
@@ -239,7 +239,9 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
 
   const onAddAfter = (tIdx: number) => {
     const newIdx = tIdx + 1;
-    onEffectsChange(insertInto(currentEffects, newIdx, newDefaultEffect(tIdx)));
+    onEffectsChange(
+      miscUtil.insertInto(currentEffects, newIdx, newDefaultEffect(tIdx))
+    );
     setTimeout(() => swiper?.slideTo(newIdx), 50);
     setTimeout(
       () =>
@@ -254,7 +256,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
 
   const onAddBefore = (tIdx: number) => {
     onEffectsChange(
-      insertInto(currentEffects, tIdx, newDefaultEffect(tIdx - 1))
+      miscUtil.insertInto(currentEffects, tIdx, newDefaultEffect(tIdx - 1))
     );
     setTimeout(
       () =>
@@ -291,7 +293,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
           }
 
           onEffectsChange(
-            replaceIndex(currentEffects, effectDialogOpen.idx, () => ({
+            miscUtil.replaceIndex(currentEffects, effectDialogOpen.idx, () => ({
               effectName: newEffect.effectName,
               paramsValues: newEffect.params,
               state: computedImage

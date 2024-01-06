@@ -1,7 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { resizeImage as resizeImageUtil } from '../domain/utils/image';
-import { checkboxParam } from '../params/checkboxParam';
-import { intParam } from '../params/intParam';
+import { imageUtil } from '~/domain/utils';
+import { checkboxParam, intParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const resizeImage = buildEffect({
   name: 'Resize Image',
@@ -38,7 +37,7 @@ export const resizeImage = buildEffect({
       resizeToHeight === 0
         ? Math.ceil((oldHeight / oldWidth) * resizeToWidth)
         : resizeToHeight;
-    return resizeImageUtil({
+    return imageUtil.resizeImage({
       image,
       newWidth,
       newHeight,

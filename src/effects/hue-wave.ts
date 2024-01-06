@@ -1,7 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { shiftHue } from '../domain/utils/color';
-import { mapImageWithPrecompute } from '../domain/utils/image';
-import { sliderParam } from '../params/sliderParam';
+import { colorUtil, imageUtil } from '~/domain/utils';
+import { sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const hueWave = buildEffect({
   name: 'Hue Wave',
@@ -23,7 +22,7 @@ export const hueWave = buildEffect({
       description: 'How many waves you want',
     }),
   ] as const,
-  fn: mapImageWithPrecompute(
+  fn: imageUtil.mapImageWithPrecompute(
     ({ animationProgress }) => ({
       shift: -1 * animationProgress * 2 * Math.PI,
     }),
@@ -39,7 +38,7 @@ export const hueWave = buildEffect({
         amplitude * Math.sin((y / height) * period * Math.PI + shift)
       );
 
-      return shiftHue(getSrcPixel(coord), (amount / 100) * 360);
+      return colorUtil.shiftHue(getSrcPixel(coord), (amount / 100) * 360);
     }
   ),
 });

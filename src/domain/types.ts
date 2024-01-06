@@ -7,6 +7,8 @@ interface JsonMap {
 interface JsonArray extends Array<JsonPrimitive | JsonArray | JsonMap> {}
 export type JsonType = JsonPrimitive | JsonMap | JsonArray;
 
+export type BezierTuple = [Coord, Coord];
+
 /**
  * [R, G, B, A] in values 0 - 255 inclusive
  */
@@ -97,20 +99,11 @@ export type ParamFnDefault<T extends JsonType> =
   | ParamFunction<T>['defaultValue']
   | T;
 
-export const toParamFunction = <T extends JsonType>(
-  x: ParamFnDefault<T>
-): ParamFunction<T>['defaultValue'] => {
-  if (typeof x === 'function') {
-    return x;
-  }
-  return () => x;
-};
-
 export type EffectFn<Params> = (
   opts: EffectFnOpts<Params>
 ) => Image | Promise<Image>;
 
-type ParamType<Type> = Type extends ParamFunction<infer X> ? X : never;
+export type ParamType<Type> = Type extends ParamFunction<infer X> ? X : never;
 
 export interface Effect<T extends readonly ParamFunction<any>[]> {
   /** Name of the effect. Must be globally unique */
@@ -128,22 +121,6 @@ export interface EffectInput {
   effectName: string;
   params: any;
 }
-
-export const buildEffect = <T extends readonly ParamFunction<any>[]>(args: {
-  name: string;
-  params: T;
-  description: string;
-  secondaryDescription?: string;
-  fn: EffectFn<{ [P in keyof T]: ParamType<T[P]> }>;
-  disabled?: boolean;
-}): Effect<T> => ({
-  name: args.name,
-  params: args.params,
-  description: args.description,
-  secondaryDescription: args.secondaryDescription,
-  fn: args.fn,
-  disabled: args.disabled ?? false,
-});
 
 export interface AppStateEffect {
   effectName: string;

@@ -1,6 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { mapImageWithPrecompute } from '../domain/utils/image';
-import { intParam } from '../params/intParam';
+import { imageUtil } from '~/domain/utils';
+import { intParam } from '~/params';
+import { buildEffect } from './utils';
 
 // Probably still needs work -- the inner pixels get all funky still
 export const fisheye = buildEffect({
@@ -15,7 +15,7 @@ export const fisheye = buildEffect({
       min: 0,
     }),
   ] as const,
-  fn: mapImageWithPrecompute(
+  fn: imageUtil.mapImageWithPrecompute(
     ({
       animationProgress,
       dimensions: [width, height],

@@ -1,7 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { applyCanvasFromFrame, applyFilter } from '../domain/utils/canvas';
-import { mapFrames } from '../domain/utils/image';
-import { sliderParam } from '../params/sliderParam';
+import { canvasUtil, imageUtil } from '~/domain/utils';
+import { sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const party = buildEffect({
   name: 'Party',
@@ -16,12 +15,12 @@ export const party = buildEffect({
     }),
   ] as const,
   fn: ({ image, parameters: [speed] }) =>
-    mapFrames(image, (frame, frameIndex, frameCount) =>
-      applyCanvasFromFrame({
+    imageUtil.mapFrames(image, (frame, frameIndex, frameCount) =>
+      canvasUtil.applyCanvasFromFrame({
         dimensions: image.dimensions,
         frame,
         preEffect: (canvasData) =>
-          applyFilter(canvasData, {
+          canvasUtil.applyFilter(canvasData, {
             hueRotate: (frameIndex / frameCount) * 360 * speed,
           }),
       })

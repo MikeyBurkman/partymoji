@@ -1,13 +1,6 @@
-import { buildEffect } from '../domain/types';
-import {
-  applyCanvasFromFrame,
-  applyFilter,
-  combineImages,
-} from '../domain/utils/canvas';
-import { fromHexColor } from '../domain/utils/color';
-import { mapCoords, mapFrames } from '../domain/utils/image';
-import { colorPickerParam } from '../params/colorPickerParam';
-import { sliderParam } from '../params/sliderParam';
+import { canvasUtil, colorUtil, imageUtil } from '~/domain/utils';
+import { colorPickerParam, sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const backgroundColor = buildEffect({
   name: 'Background Color',
@@ -15,7 +8,7 @@ export const backgroundColor = buildEffect({
   params: [
     colorPickerParam({
       name: 'Color',
-      defaultValue: fromHexColor('#000000'),
+      defaultValue: colorUtil.fromHexColor('#000000'),
     }),
     sliderParam({
       name: 'Foreground Opacity',
@@ -25,19 +18,20 @@ export const backgroundColor = buildEffect({
     }),
   ] as const,
   fn: ({ image, parameters: [color, opacity] }) =>
-    mapFrames(image, (frame) => {
+    imageUtil.mapFrames(image, (frame) => {
       const foreground =
         opacity === 100
           ? frame
-          : applyCanvasFromFrame({
+          : canvasUtil.applyCanvasFromFrame({
               dimensions: image.dimensions,
               frame,
-              preEffect: (canvasData) => applyFilter(canvasData, { opacity }),
+              preEffect: (canvasData) =>
+                canvasUtil.applyFilter(canvasData, { opacity }),
             });
 
-      return combineImages({
+      return canvasUtil.combineImages({
         dimensions: image.dimensions,
-        background: mapCoords(image.dimensions, () => color),
+        background: imageUtil.mapCoords(image.dimensions, () => color),
         foreground,
       });
     }),

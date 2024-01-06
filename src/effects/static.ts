@@ -1,8 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { isTransparent } from '../domain/utils/color';
-import { mapImage } from '../domain/utils/image';
-import { radioParam } from '../params/radioParam';
-import { sliderParam } from '../params/sliderParam';
+import { colorUtil, imageUtil } from '~/domain/utils';
+import { radioParam, sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const staticc = buildEffect({
   name: 'Static',
@@ -31,12 +29,12 @@ export const staticc = buildEffect({
       max: 100,
       step: 5,
     }),
-  ],
-  fn: mapImage(
+  ] as const,
+  fn: imageUtil.mapImage(
     ({ coord, getSrcPixel, parameters: [type, strength], random }) => {
       const src = getSrcPixel(coord);
 
-      const isBackground = isTransparent(src);
+      const isBackground = colorUtil.isTransparent(src);
 
       if (type === 'foreground' ? isBackground : !isBackground) {
         return src;

@@ -16,16 +16,15 @@ https://mikeyburkman.github.io/partymoji/
 
 ### TODO
 
-1. Custom bezier library -> more points? Would be nice to have start and end points instead of always [0,0],[1,1]
-2. Add movement/scaling/rotation/drop-shaodw to text
-3. Use absolute import paths, IE `import foo from '~/domain/utils';`
-4. Show a warning when an effect expects multiple frames, but there is only one
-5. Optimize palette reduction effect. Probably makes sense to just set the number of colors max, which needs to be a power of 2 anyhow.
-6. Make importing from a url string work with the new gif reader
-7. Refactor imageImport to automatically handle gif vs other image types
+- Custom bezier library -> more points? Would be nice to have start and end points instead of always [0,0],[1,1]
+- Add movement/scaling/rotation/drop-shaodw to text
+- Show a warning when an effect expects multiple frames, but there is only one
+- Optimize palette reduction effect. Probably makes sense to just set the number of colors max, which needs to be a power of 2 anyhow.
+- Make importing from a url string work with the new gif reader
+- Refactor imageImport to automatically handle gif vs other image types
 
 ### Effect ideas
 
 - Spiraling out effect -- maybe applying opacity more as it progresses to the outer edge?
 - Sierpinski triangle effect
-- Give each pixel a randomized trajectory? (Maybe some sort of circular function that will ensure it returns to the starting point)
+- Give each pixel a randomized trajectory to give like a scatter effect? Maybe some sort of circular function that will ensure it returns to the starting point. Bezier curve to control the speed.

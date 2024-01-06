@@ -1,9 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { fromHexColor, colorDiff } from '../domain/utils/color';
-import { mapImage } from '../domain/utils/image';
-import { checkboxParam } from '../params/checkboxParam';
-import { colorPickerParam } from '../params/colorPickerParam';
-import { sliderParam } from '../params/sliderParam';
+import { colorUtil, imageUtil } from '~/domain/utils';
+import { checkboxParam, colorPickerParam, sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const transparency = buildEffect({
   name: 'Transparency',
@@ -17,7 +14,7 @@ export const transparency = buildEffect({
     }),
     colorPickerParam({
       name: 'Color',
-      defaultValue: fromHexColor('#000000'),
+      defaultValue: colorUtil.fromHexColor('#000000'),
     }),
     sliderParam({
       name: 'Tolerance',
@@ -28,7 +25,7 @@ export const transparency = buildEffect({
       max: 100,
     }),
   ] as const,
-  fn: mapImage(
+  fn: imageUtil.mapImage(
     ({
       coord,
       getSrcPixel,
@@ -36,7 +33,8 @@ export const transparency = buildEffect({
     }) => {
       const src = getSrcPixel(coord);
 
-      const withinTolerance = colorDiff(src, selectedColor) * 100 <= tolerance;
+      const withinTolerance =
+        colorUtil.colorDiff(src, selectedColor) * 100 <= tolerance;
 
       if (matchesTransparent ? withinTolerance : !withinTolerance) {
         return [src[0], src[1], src[2], 0];

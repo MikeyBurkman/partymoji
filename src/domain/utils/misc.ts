@@ -1,6 +1,5 @@
 import bezier from 'bezier-easing';
-import { Coord } from '../types';
-import { BezierTuple } from '../../params';
+import type { Coord, BezierTuple } from '~/domain/types';
 
 /**
  * Asserts that a given value is truthy. Uses TypeScript 3.7 assertion types.

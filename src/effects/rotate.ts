@@ -1,7 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { applyCanvasFromFrame, applyRotation } from '../domain/utils/canvas';
-import { mapFrames } from '../domain/utils/image';
-import { sliderParam } from '../params/sliderParam';
+import { canvasUtil, imageUtil } from '~/domain/utils';
+import { sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const rotate = buildEffect({
   name: 'Rotate',
@@ -18,11 +17,11 @@ export const rotate = buildEffect({
     }),
   ],
   fn: ({ image, parameters: [angle] }) =>
-    mapFrames(image, (frame) =>
-      applyCanvasFromFrame({
+    imageUtil.mapFrames(image, (frame) =>
+      canvasUtil.applyCanvasFromFrame({
         dimensions: image.dimensions,
         frame,
-        preEffect: (canvasData) => applyRotation(canvasData, angle),
+        preEffect: (canvasData) => canvasUtil.applyRotation(canvasData, angle),
       })
     ),
 });

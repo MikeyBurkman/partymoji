@@ -1,8 +1,6 @@
-import { buildEffect } from '../domain/types';
-import { shiftTowardsHue } from '../domain/utils/color';
-import { mapImageWithPrecompute } from '../domain/utils/image';
-import { intParam } from '../params/intParam';
-import { sliderParam } from '../params/sliderParam';
+import { colorUtil, imageUtil } from '~/domain/utils';
+import { intParam, sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const radianceRainbow = buildEffect({
   name: 'Radiance Rainbow',
@@ -33,7 +31,7 @@ export const radianceRainbow = buildEffect({
       defaultValue: 0,
     }),
   ] as const,
-  fn: mapImageWithPrecompute(
+  fn: imageUtil.mapImageWithPrecompute(
     ({ dimensions: [width, height] }) => ({
       centerX: width / 2,
       centerY: height / 2,
@@ -63,7 +61,7 @@ export const radianceRainbow = buildEffect({
           360 * animationProgress) %
         360;
 
-      return shiftTowardsHue(src, newH, strength);
+      return colorUtil.shiftTowardsHue(src, newH, strength);
     }
   ),
 });

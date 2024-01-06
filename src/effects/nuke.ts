@@ -1,12 +1,12 @@
 import * as convert from 'color-convert';
-import { buildEffect } from '../domain/types';
-import { mapImage } from '../domain/utils/image';
+import { imageUtil } from '~/domain/utils';
+import { buildEffect } from './utils';
 
 export const nuke = buildEffect({
   name: 'Nuke',
   description: 'Oh no...',
   params: [],
-  fn: mapImage(({ coord, getSrcPixel, animationProgress }) => {
+  fn: imageUtil.mapImage(({ coord, getSrcPixel, animationProgress }) => {
     const threshold = animationProgress * 100;
     const [r, g, b, a] = getSrcPixel(coord);
     const [h, s, l] = convert.rgb.hsl(r, g, b);

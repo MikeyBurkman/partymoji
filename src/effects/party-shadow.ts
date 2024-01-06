@@ -1,9 +1,7 @@
-import { Color, Dimensions, FrameData, buildEffect } from '../domain/types';
-import { applyCanvasFromFrame, applyFilter } from '../domain/utils/canvas';
-import { colorFromHue } from '../domain/utils/color';
-import { mapFrames } from '../domain/utils/image';
-import { intParam } from '../params/intParam';
-import { sliderParam } from '../params/sliderParam';
+import type { Color, Dimensions, FrameData } from '~/domain/types';
+import { canvasUtil, colorUtil, imageUtil } from '~/domain/utils';
+import { intParam, sliderParam } from '~/params';
+import { buildEffect } from './utils';
 
 export const partyShadow = buildEffect({
   name: 'Party Shadow',
@@ -32,13 +30,13 @@ export const partyShadow = buildEffect({
     }),
   ] as const,
   fn: ({ image, parameters: [layers, blurRadius, offsetX, offsetY] }) =>
-    mapFrames(image, (frame, frameIndex, frameCount) => {
+    imageUtil.mapFrames(image, (frame, frameIndex, frameCount) => {
       const animationProgress = frameIndex / frameCount;
       const colors: Color[] = [];
       const startHue = animationProgress * 360;
       const hueSize = 360 / layers;
       for (let i = 0; i < layers; i += 1) {
-        colors.push(colorFromHue((startHue - hueSize * i) % 360));
+        colors.push(colorUtil.colorFromHue((startHue - hueSize * i) % 360));
       }
 
       return applyShadows({
@@ -68,11 +66,11 @@ const applyShadows = ({
   blurRadius: number;
 }): FrameData => {
   const [color, ...rest] = colors;
-  const newFrame = applyCanvasFromFrame({
+  const newFrame = canvasUtil.applyCanvasFromFrame({
     dimensions,
     frame,
     preEffect: (canvasData) =>
-      applyFilter(canvasData, {
+      canvasUtil.applyFilter(canvasData, {
         dropShadow: {
           offsetX,
           offsetY,

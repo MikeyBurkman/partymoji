@@ -1,5 +1,5 @@
 import React from 'react';
-import { Coord } from '../../domain/types';
+import type { Coord } from '~/domain/types';
 
 export type BezierTuple = [Coord, Coord];
 

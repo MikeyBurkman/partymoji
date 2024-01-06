@@ -1,11 +1,12 @@
-import { buildEffect, Coord } from '../domain/types';
-import { mapImageWithPrecompute } from '../domain/utils/image';
+import type { Coord } from '~/domain/types';
+import { imageUtil } from '~/domain/utils';
+import { buildEffect } from './utils';
 
 export const roxbury = buildEffect({
   name: 'Roxbury',
   description: "Baby, don't hurt me",
   params: [],
-  fn: mapImageWithPrecompute(
+  fn: imageUtil.mapImageWithPrecompute(
     ({ dimensions: [width, height], animationProgress }) => {
       // 4 phases:
       //  0 -> freeze

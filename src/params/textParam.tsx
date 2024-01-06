@@ -1,11 +1,8 @@
 import { FormControl, Stack, TextField, Typography } from '@material-ui/core';
 import React from 'react';
-import { HelpTooltip } from '../components/HelpTooltip';
-import {
-  ParamFnDefault,
-  ParamFunction,
-  toParamFunction,
-} from '../domain/types';
+import { HelpTooltip } from '~/components/HelpTooltip';
+import type { ParamFnDefault, ParamFunction } from '~/domain/types';
+import { toParamFunction } from './utils';
 
 const TextParam: React.FC<{
   name: string;
