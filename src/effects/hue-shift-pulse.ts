@@ -1,7 +1,8 @@
 import { buildEffect } from '../domain/types';
 import { shiftTowardsHue } from '../domain/utils/color';
 import { mapImage } from '../domain/utils/image';
-import { huePickerParam } from '../params/huePickerParam';
+import { bezierCurve } from '../domain/utils/misc';
+import { huePickerParam, bezierParam } from '../params';
 
 export const hueShiftPulse = buildEffect({
   name: 'Hue Shift Pulse',
@@ -11,10 +12,23 @@ export const hueShiftPulse = buildEffect({
       name: 'Hue',
       defaultValue: 180,
     }),
-  ],
+    bezierParam({
+      name: 'Easing',
+      defaultValue: [
+        [0.25, 0.75],
+        [0.75, 0.25],
+      ],
+    }),
+  ] as const,
   fn: mapImage(
-    ({ coord, getSrcPixel, frameCount, frameIndex, parameters: [hue] }) => {
-      const amount = Math.abs(Math.sin(Math.PI * (frameIndex / frameCount)));
+    ({
+      coord,
+      getSrcPixel,
+      frameCount,
+      frameIndex,
+      parameters: [hue, easing],
+    }) => {
+      const amount = bezierCurve(easing, true)(frameIndex / frameCount);
       return shiftTowardsHue(getSrcPixel(coord), hue, amount * 360);
     }
   ),
