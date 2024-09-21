@@ -6,7 +6,7 @@ export const setAnimationLength = buildEffect({
   name: 'Set Animation Length',
   group: 'Animation',
   groupOrder: 999, // First thing
-  description: 'Change the length of the animation.',
+  description: 'Sets the length of the animation.',
   params: [
     sliderParam({
       name: 'Number of Frames',

@@ -128,7 +128,10 @@ export const ImageEffectDialog: React.FC<Props> = ({
       fps: currFps,
       randomSeed: currRandomSeed,
       image: initialImage.image,
-      effectInput: editingEffect,
+      effectInput: {
+        effectName: editingEffect.effect.name,
+        params: editingEffect.params,
+      },
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

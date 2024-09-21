@@ -2,14 +2,17 @@
 import gifEncoder from 'gif-encoder';
 import seedrandom from 'seedrandom';
 import { effectByName } from '~/effects';
-import { Color, Image, ImageEffectResult, EffectInput } from './types';
+import { Color, Image, ImageEffectResult } from './types';
 import { colorUtil, imageUtil, miscUtil } from '~/domain/utils';
 import { fakeTransparency } from '~/effects/fake-transparency';
 
 export interface RunArgs {
   randomSeed: string;
   image: Image;
-  effectInput: EffectInput;
+  effectInput: {
+    effectName: string;
+    params: any;
+  };
   fps: number;
 }
 
@@ -22,7 +25,8 @@ export const runEffects = async ({
 }: RunArgs): Promise<ImageEffectResult> => {
   const random = seedrandom(randomSeed);
 
-  const result = await effectInput.effect.fn({
+  const effect = effectByName(effectInput.effectName);
+  const result = await effect.fn({
     image,
     parameters: effectInput.params,
     random,
