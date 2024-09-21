@@ -7,6 +7,7 @@ import type {
   ParamFnDefault,
   ParamFunction,
   BezierTuple,
+  CanvasData,
 } from '~/domain/types';
 import { CanvasElement, useDebounce, miscUtil } from '~/domain/utils';
 import { toParamFunction } from './utils';
@@ -32,9 +33,10 @@ const BezierParam: React.FC<{
     0, 0,
   ]);
 
-  const [canvasCtx, setCanvasCtx] =
-    React.useState<CanvasRenderingContext2D | null>(null);
-  const onCanvasMount = React.useCallback((ctx: CanvasRenderingContext2D) => {
+  const [canvasCtx, setCanvasCtx] = React.useState<CanvasData['ctx'] | null>(
+    null
+  );
+  const onCanvasMount = React.useCallback(({ ctx }: CanvasData) => {
     setCanvasCtx(ctx);
   }, []);
 

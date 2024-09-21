@@ -1,5 +1,16 @@
 import React from 'react';
-import { Button, CircularProgress, Stack, Typography } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  Fab,
+  Stack,
+  Typography,
+  Icon as MuiIcon,
+  Tooltip,
+  Skeleton,
+} from '@material-ui/core';
 import { saveAs } from 'file-saver';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -22,6 +33,7 @@ import { Gif } from './Gif';
 import { Icon, ClickableIcon } from './Icon';
 import { ImageEffectDialog } from './ImageEffectDialog';
 import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
+import { ImageRow } from './V2/ImageRow';
 
 interface EffectListProps {
   appState: AppState;
@@ -71,11 +83,7 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
         >
           {effect.effectName}
         </Typography>
-        <ClickableIcon
-          tooltip="Delete effect"
-          name="delete"
-          onClick={onDelete}
-        />
+        <ClickableIcon label="Delete effect" name="delete" onClick={onDelete} />
       </Stack>
 
       {effect.state.status === 'done' ? (
@@ -95,25 +103,25 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
 
       <Stack direction="row" spacing={2} mt={4}>
         <ClickableIcon
-          tooltip="Add new effect before this"
+          label="Add new effect before this"
           name="add"
           onClick={onAddBefore}
         />
         <ClickableIcon
-          tooltip="Move effect left"
+          label="Move effect left"
           isDisabled={index <= 0}
           name="keyboard_double_arrow_left"
           onClick={onMoveBefore}
         />
-        <ClickableIcon tooltip="Edit effect" name="settings" onClick={onEdit} />
+        <ClickableIcon label="Edit effect" name="settings" onClick={onEdit} />
         <ClickableIcon
-          tooltip="Move effect right"
+          label="Move effect right"
           isDisabled={index >= totalEffects - 1}
           name="keyboard_double_arrow_right"
           onClick={onMoveAfter}
         />
         <ClickableIcon
-          tooltip="Add new effect after this"
+          label="Add new effect after this"
           name="add"
           onClick={onAddAfter}
         />
@@ -319,56 +327,102 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
         currRandomSeed="partymoji"
       />
       <Typography variant="h5">Image Effects</Typography>
-      <Stack direction="row">
-        <Swiper
+      <Box overflow={{}}>
+        <Divider>
+          <Button onClick={onAddNew}>Insert First Effect</Button>
+        </Divider>
+        {currentEffects.map((t, tIdx) => (
+          <Stack key={effectKey(t, tIdx)}>
+            <Typography variant="h6">{t.effectName}</Typography>
+            <Stack
+              direction="row"
+              maxWidth="md"
+              spacing={2}
+              sx={{ overflowX: 'scroll' }}
+            >
+              <Stack spacing={2} justifyContent="center">
+                <ClickableIcon
+                  label="Edit"
+                  name="settings"
+                  onClick={() =>
+                    setEffectDialogOpen({
+                      open: true,
+                      idx: tIdx,
+                      isNew: false,
+                    })
+                  }
+                />
+                <ClickableIcon
+                  label="Delete"
+                  name="delete"
+                  onClick={() => onDelete(tIdx)}
+                />
+              </Stack>
+              <ImageRow appStateEffect={t} />
+            </Stack>
+            <Divider sx={{ py: 4 }}>
+              <Button onClick={() => onAddAfter(tIdx)}>
+                {tIdx < currentEffects.length - 1
+                  ? 'Insert Effect Here'
+                  : 'Add Final Effect'}
+              </Button>
+            </Divider>
+          </Stack>
+        ))}
+
+        {/*<Swiper
           navigation
           modules={[Navigation, Controller]}
           controller={{ control: swiper }}
           onSwiper={setSwiper}
         >
           {currentEffects.map((t, tIdx) => (
-            <SwiperSlide key={effectKey(t, tIdx)}>
-              {tIdx + 1} of {currentEffects.length}
-              <ImageEffect
-                effect={t}
-                index={tIdx}
-                totalEffects={currentEffects.length}
-                fname={appState.fname}
-                onDelete={() => onDelete(tIdx)}
-                onEdit={() =>
-                  setEffectDialogOpen({
-                    open: true,
-                    idx: tIdx,
-                    isNew: false,
-                  })
-                }
-                onAddBefore={() => onAddBefore(tIdx)}
-                onAddAfter={() => onAddAfter(tIdx)}
-                onMoveBefore={() => onMoveBefore(tIdx)}
-                onMoveAfter={() => onMoveAfter(tIdx)}
-              />
-            </SwiperSlide>
+              <SwiperSlide key={effectKey(t, tIdx)}>
+                {tIdx + 1} of {currentEffects.length}
+                <ImageEffect
+                  effect={t}
+                  index={tIdx}
+                  totalEffects={currentEffects.length}
+                  fname={appState.fname}
+                  onDelete={() => onDelete(tIdx)}
+                  onEdit={() =>
+                    setEffectDialogOpen({
+                      open: true,
+                      idx: tIdx,
+                      isNew: false,
+                    })
+                  }
+                  onAddBefore={() => onAddBefore(tIdx)}
+                  onAddAfter={() => onAddAfter(tIdx)}
+                  onMoveBefore={() => onMoveBefore(tIdx)}
+                  onMoveAfter={() => onMoveAfter(tIdx)}
+                />
+              </SwiperSlide>
           ))}
-        </Swiper>
-      </Stack>
+        </Swiper> */}
+      </Box>
       {currentEffects.length === 0 && (
         <Button variant="outlined" fullWidth onClick={onAddNew}>
           Add First Effect
         </Button>
       )}
-      <Button
-        variant="contained"
-        disabled={finalGif == null}
-        onClick={() => {
-          if (!finalGif) {
-            return; // Button will be disabled
-          }
-          saveAs(finalGif, appState.fname || 'image.gif');
-        }}
-        startIcon={<Icon name="save_alt" />}
-      >
-        Save Gif
-      </Button>
+      {finalGif == null ? (
+        <Skeleton variant="rectangular" height={164} />
+      ) : (
+        <Stack alignItems="center" spacing={4}>
+          <Typography variant="h6">Final Result</Typography>
+          <Gif src={finalGif} alt={appState.fname || 'image.gif'} />
+          <Button
+            variant="contained"
+            onClick={() => {
+              saveAs(finalGif, appState.fname || 'image.gif');
+            }}
+            startIcon={<Icon name="save_alt" />}
+          >
+            Save Gif
+          </Button>
+        </Stack>
+      )}
     </Stack>
   );
 };
