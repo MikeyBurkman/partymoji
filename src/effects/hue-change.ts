@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const hueChange = buildEffect({
   name: 'Hue Change',
+  group: 'Colors',
   description: 'Change the hue of each pixel towards some other color',
   params: [
     huePickerParam({

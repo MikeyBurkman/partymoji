@@ -10,6 +10,7 @@ import {
   Divider,
   FormControl,
   Stack,
+  styled,
   TextField,
   Typography,
 } from '@material-ui/core';
@@ -21,10 +22,20 @@ import type {
 } from '~/domain/types';
 import { miscUtil } from '~/domain/utils';
 import { debugLog } from '~/domain/env';
-import { effectByName } from '~/effects';
 import { Gif } from './Gif';
 import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
 import { useProcessingQueue } from '~/domain/useProcessingQueue';
+
+const GroupHeader = styled('div')(({ theme }) => ({
+  position: 'sticky',
+  top: '-8px',
+  padding: '4px 10px',
+  backgroundColor: theme.palette.primary.contrastText,
+}));
+
+const GroupItems = styled('ul')({
+  padding: 0,
+});
 
 interface Props {
   open: boolean;
@@ -71,7 +82,7 @@ export const ImageEffectDialog: React.FC<Props> = ({
   React.useEffect(() => {
     if (currentEffect) {
       setEditingEffect({
-        effectName: currentEffect.effectName,
+        effect: currentEffect.effect,
         params: [...currentEffect.params], // Make a defensive copy so we can edit the params
       });
     }
@@ -133,8 +144,7 @@ export const ImageEffectDialog: React.FC<Props> = ({
     setDirty(false);
   };
 
-  const effect =
-    editingEffect == null ? undefined : effectByName(editingEffect.effectName);
+  const effect = editingEffect?.effect ?? undefined;
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open}>
@@ -145,25 +155,37 @@ export const ImageEffectDialog: React.FC<Props> = ({
               <FormControl fullWidth>
                 <Autocomplete
                   disableClearable
-                  value={editingEffect.effectName}
-                  options={possibleEffects.map((t) => t.name)}
-                  onChange={(event, newEffectName) => {
-                    const t = effectByName(newEffectName)!;
+                  value={editingEffect.effect}
+                  options={possibleEffects}
+                  groupBy={(e) => e.group}
+                  onChange={(_event, newEffect) => {
                     // Reset all the params when you select a new effect
                     setEditingEffect({
-                      effectName: t.name,
-                      params: t.params.map((p) =>
+                      effect: newEffect,
+                      params: newEffect.params.map((p: any) =>
                         p.defaultValue(initialImage?.image ?? undefined)
                       ),
                     });
                     setDirty(true);
                   }}
-                  renderOption={(props, option) => (
+                  getOptionLabel={(option) => option.name}
+                  renderGroup={(params) => (
+                    <li key={params.key}>
+                      <GroupHeader>
+                        <Typography variant="subtitle1">
+                          {params.group}
+                        </Typography>
+                        <Divider />
+                      </GroupHeader>
+                      <GroupItems>{params.children}</GroupItems>
+                    </li>
+                  )}
+                  renderOption={(props, effect) => (
                     <li {...props}>
                       <Stack marginLeft={2} marginRight={2}>
-                        <Typography variant="body1">{option}</Typography>
+                        <Typography variant="body2">{effect.name}</Typography>
                         <Typography variant="caption" marginLeft={2}>
-                          {effectByName(option).description}
+                          {effect.description}
                         </Typography>
                       </Stack>
                     </li>
@@ -209,7 +231,7 @@ export const ImageEffectDialog: React.FC<Props> = ({
                   });
                   return (
                     <React.Fragment
-                      key={`${editingEffect.effectName}-${param.name}`}
+                      key={`${editingEffect.effect.name}-${param.name}`}
                     >
                       {ele}
                     </React.Fragment>
@@ -223,7 +245,7 @@ export const ImageEffectDialog: React.FC<Props> = ({
                   <>
                     <Gif
                       src={image.results.gifWithBackgroundColor}
-                      alt={`effect-${editingEffect.effectName}`}
+                      alt={`effect-${editingEffect.effect.name}`}
                       dimensions={image.results.image.dimensions}
                     />
                     {image.results.partiallyTransparent ? (

@@ -6,6 +6,7 @@ import { buildEffect } from './utils';
 // TODO
 export const fill = buildEffect({
   disabled: true,
+  group: 'Image',
   name: 'Fill Transparent',
   description:
     'Makes transparent all pixels of similar color surrounding a point',

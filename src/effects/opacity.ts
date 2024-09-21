@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const opacity = buildEffect({
   name: 'Opacity',
+  group: 'Image',
   description: 'Sets the opacity of the image',
   secondaryDescription:
     'Because gifs do not support transparency, ' +

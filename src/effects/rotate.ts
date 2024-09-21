@@ -4,7 +4,8 @@ import { buildEffect } from './utils';
 
 export const rotate = buildEffect({
   name: 'Rotate',
-  description: 'Rotes the image to a given angle',
+  group: 'Transform',
+  description: 'Rotates the image to a given angle',
   params: [
     sliderParam({
       name: 'Angle',

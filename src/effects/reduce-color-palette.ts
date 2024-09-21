@@ -6,6 +6,7 @@ import { buildEffect } from './utils';
 
 export const reduceColorPalette = buildEffect({
   name: 'Reduce Color Palette',
+  group: 'Colors',
   description:
     'Reduce the number of unique colors in the gif, to reduce the file size.',
   secondaryDescription:

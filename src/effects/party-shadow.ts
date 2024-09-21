@@ -5,6 +5,7 @@ import { buildEffect } from './utils';
 
 export const partyShadow = buildEffect({
   name: 'Party Shadow',
+  group: 'Party',
   description: 'Apply a party shadow effect',
   params: [
     sliderParam({

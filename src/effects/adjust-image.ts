@@ -4,6 +4,8 @@ import { buildEffect } from './utils';
 
 export const adjustImage = buildEffect({
   name: 'Adjust Image',
+  group: 'Image',
+  groupOrder: 999,
   description: 'Change the dimensions, brightness, contrast etc.',
   params: [
     intParam({

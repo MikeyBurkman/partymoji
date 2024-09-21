@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const dropShadow = buildEffect({
   name: 'Drop Shadow',
+  group: 'Misc',
   description: 'Adds a drop shadow effect to the image',
   params: [
     intParam({

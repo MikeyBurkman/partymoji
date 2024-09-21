@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const ripple = buildEffect({
   name: 'Ripple',
+  group: 'Misc',
   description: 'Create a ripple effect, like water',
   params: [
     sliderParam({

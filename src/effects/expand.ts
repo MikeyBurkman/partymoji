@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const expand = buildEffect({
   name: 'Expand',
+  group: 'Transform',
   description: 'Make the image grow and shrink',
   params: [
     intParam({

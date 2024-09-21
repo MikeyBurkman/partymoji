@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const shake = buildEffect({
   name: 'Shake',
+  group: 'Misc',
   description: 'Make the image shake left and right',
   params: [
     floatParam({

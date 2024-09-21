@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const scaleImage = buildEffect({
   name: 'Scale Image',
+  group: 'Image',
   description: 'Scale the image without changing the dimensions',
   params: [
     sliderParam({

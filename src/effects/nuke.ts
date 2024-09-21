@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const nuke = buildEffect({
   name: 'Nuke',
+  group: 'Misc',
   description: 'Oh no...',
   params: [],
   fn: imageUtil.mapImage(({ coord, getSrcPixel, animationProgress }) => {

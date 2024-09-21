@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const staticc = buildEffect({
   name: 'Static',
+  group: 'Misc',
   description: 'Adds random static to each frame the image',
   params: [
     radioParam<'background' | 'foreground'>({

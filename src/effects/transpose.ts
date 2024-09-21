@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const transpose = buildEffect({
   name: 'Transpose',
+  group: 'Image',
   description: 'Move the image left or right, up or down',
   params: [
     intParam({ name: 'X', defaultValue: 0 }),

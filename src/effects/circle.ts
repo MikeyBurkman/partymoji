@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const circle = buildEffect({
   name: 'Circle',
+  group: 'Transform',
   description: 'Make the image move in a circular pattern',
   params: [
     intParam({

@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const partyBackground = buildEffect({
   name: 'Party Background',
+  group: 'Party',
   description:
     'Smoothly cycles through background colors over the course of the animation',
   params: [

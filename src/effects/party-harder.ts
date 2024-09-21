@@ -3,6 +3,7 @@ import { buildEffect } from './utils';
 
 export const partyHarder = buildEffect({
   name: 'Party Harder',
+  group: 'Party',
   description:
     'Shift the hue of each individual pixel over the course of the animation',
   params: [],

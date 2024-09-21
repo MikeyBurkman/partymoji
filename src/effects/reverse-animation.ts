@@ -3,6 +3,7 @@ import { buildEffect } from './utils';
 
 export const reverseAnimation = buildEffect({
   name: 'Reverse Animation',
+  group: 'Animation',
   description: 'Reverses the animation',
   params: [],
   fn: ({ image }) => ({

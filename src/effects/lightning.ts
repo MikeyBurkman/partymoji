@@ -13,6 +13,7 @@ const lightningIntensities: Color[] = [
 
 export const lightning = buildEffect({
   name: 'Lightning',
+  group: 'Misc',
   description: 'Make the background look like a thunderstorm',
   params: [
     textParam({

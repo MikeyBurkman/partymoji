@@ -3,6 +3,7 @@ import { runEffectsAsync } from './runAsync';
 import { AppState, Image, ImageEffectResult } from './types';
 import { ENV, debugLog, IS_MOBILE } from './env';
 import { miscUtil } from './utils';
+import { effectByName } from '~/effects';
 
 // OffscreenCanvas isn't supported by mobile browsers, so mobile will also run synchronously,
 //  which will force us to use regular canvas and not OffscreenCanvas.
@@ -44,7 +45,7 @@ export const computeGifsForState = async ({
       randomSeed: state.baseImage.gif,
       image,
       effectInput: {
-        effectName: effect.effectName,
+        effect: effectByName(effect.effectName),
         params: effect.paramsValues,
       },
       fps: state.fps,

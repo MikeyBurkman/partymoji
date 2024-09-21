@@ -16,6 +16,7 @@ const FONTS = [
 
 export const text = buildEffect({
   name: 'Text',
+  group: 'Image',
   description: 'Puts text on the image',
   params: [
     textParam({
