@@ -21,6 +21,7 @@ const DEFAULT_COLORS = [
 
 export const pinwheelColors = buildEffect({
   name: 'Pinwheel Colors',
+  group: 'Party',
   description: 'Create a background pinwheel of colors of your choosing',
   params: [
     sliderParam({

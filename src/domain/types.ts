@@ -105,6 +105,14 @@ export type EffectFn<Params> = (
 
 export type ParamType<Type> = Type extends ParamFunction<infer X> ? X : never;
 
+export type EffectGroup =
+  | 'Animation'
+  | 'Image'
+  | 'Party'
+  | 'Colors'
+  | 'Transform'
+  | 'Misc';
+
 export interface Effect<T extends readonly ParamFunction<any>[]> {
   /** Name of the effect. Must be globally unique */
   name: string;
@@ -115,10 +123,13 @@ export interface Effect<T extends readonly ParamFunction<any>[]> {
   secondaryDescription?: string;
   fn: EffectFn<{ [P in keyof T]: ParamType<T[P]> }>;
   disabled: boolean;
+  group: EffectGroup;
+  /** Set to a higher number to sort it top of the group */
+  groupOrder?: number;
 }
 
 export interface EffectInput {
-  effectName: string;
+  effect: Effect<any>;
   params: any;
 }
 

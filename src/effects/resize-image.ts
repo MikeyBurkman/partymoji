@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const resizeImage = buildEffect({
   name: 'Resize Image',
+  group: 'Image',
   description: 'Change the absolute dimensions of the image.',
   params: [
     intParam({

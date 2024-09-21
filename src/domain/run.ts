@@ -22,8 +22,7 @@ export const runEffects = async ({
 }: RunArgs): Promise<ImageEffectResult> => {
   const random = seedrandom(randomSeed);
 
-  const effect = effectByName(effectInput.effectName);
-  const result = await effect.fn({
+  const result = await effectInput.effect.fn({
     image,
     parameters: effectInput.params,
     random,

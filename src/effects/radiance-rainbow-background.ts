@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const radianceRainbowBackground = buildEffect({
   name: 'Radiance Rainbow Background',
+  group: 'Party',
   description: 'Radiate rainbow colors out in rings',
   params: [
     sliderParam({

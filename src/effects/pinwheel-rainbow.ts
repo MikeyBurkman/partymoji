@@ -5,6 +5,7 @@ import { buildEffect } from './utils';
 
 export const pinwheelRainbow = buildEffect({
   name: 'Pinwheel Rainbow',
+  group: 'Party',
   description: 'Make the image look like a pinwheel rainbow',
   params: [
     sliderParam({

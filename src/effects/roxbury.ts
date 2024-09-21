@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const roxbury = buildEffect({
   name: 'Roxbury',
+  group: 'Misc',
   description: "Baby, don't hurt me",
   params: [],
   fn: imageUtil.mapImageWithPrecompute(

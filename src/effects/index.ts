@@ -1,5 +1,5 @@
 import { pipe, reject, sortBy } from 'remeda';
-import type { ParamFunction, Effect } from '~/domain/types';
+import type { ParamFunction, Effect, EffectGroup } from '~/domain/types';
 import { miscUtil } from '~/domain/utils';
 
 import { adjustImage } from './adjust-image';
@@ -53,8 +53,20 @@ import { text } from './text';
 import { transparency } from './transparency';
 import { transpose } from './transpose';
 
-const otherEffects = pipe(
+// This array dictates the order of the groups.
+const GROUP_ORDERING: EffectGroup[] = [
+  'Animation',
+  'Image',
+  'Party',
+  'Transform',
+  'Colors',
+  'Misc',
+];
+
+export const POSSIBLE_EFFECTS = pipe(
   [
+    setAnimationLength,
+    adjustImage,
     backgroundColor,
     backgroundImage,
     blur,
@@ -104,16 +116,15 @@ const otherEffects = pipe(
     transparency,
     transpose,
   ],
-  sortBy((x) => x.name),
+  // Each effect needs to be ordered according to the group for the dropdown to work correctly.
+  // After that, we order within the group order, and then in alphabetical order
+  sortBy(
+    (x) => GROUP_ORDERING.indexOf(x.group),
+    (x) => -1 * (x.groupOrder ?? 0),
+    (x) => x.name
+  ),
   reject((x) => x.disabled)
 );
-
-export const POSSIBLE_EFFECTS = [
-  // The first one is the one that is automatically selected, so make sure this is at the top of the list
-  setAnimationLength,
-  adjustImage,
-  ...otherEffects,
-];
 
 export const effectByName = (
   name: string

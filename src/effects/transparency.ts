@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const transparency = buildEffect({
   name: 'Transparency',
+  group: 'Image',
   description: 'Set certain pixels to be transparent',
   params: [
     checkboxParam({

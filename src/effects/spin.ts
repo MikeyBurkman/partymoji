@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const spin = buildEffect({
   name: 'Spin',
+  group: 'Transform',
   description: 'Make the image rotate about the center point in an animation',
   params: [
     radioParam<'clockwise' | 'counter'>({

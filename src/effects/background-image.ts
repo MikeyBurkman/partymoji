@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const backgroundImage = buildEffect({
   name: 'Background Image',
+  group: 'Image',
   description: 'Select another image to be used as a background or foreground',
   secondaryDescription:
     'If the selected image is animated, this will speed up/slow down ' +

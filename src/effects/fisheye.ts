@@ -5,6 +5,7 @@ import { buildEffect } from './utils';
 // Probably still needs work -- the inner pixels get all funky still
 export const fisheye = buildEffect({
   name: 'Fisheye',
+  group: 'Misc',
   description: 'Make the image grow and shrink in a distorted fashion',
   params: [
     intParam({

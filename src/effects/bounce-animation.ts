@@ -3,6 +3,7 @@ import { buildEffect } from './utils';
 
 export const bounceAnimation = buildEffect({
   name: 'Bounce Animation',
+  group: 'Animation',
   description: 'When the animation finishes, it will be replayed in reverse',
   secondaryDescription: 'This doubles the number of animation frames.',
   params: [],

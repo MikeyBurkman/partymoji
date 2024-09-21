@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const repeatAnimation = buildEffect({
   name: 'Repeat Animation',
+  group: 'Animation',
   description: 'Repeats the current animation some number of times',
   secondaryDescription: 'This can greatly increase the final file size!',
   params: [

@@ -6,6 +6,7 @@ const MAX_GRID_SIZE = 64;
 
 export const grid = buildEffect({
   name: 'Grid',
+  group: 'Misc',
   description: 'Removes the color from all pixels not aligned with a grid',
   params: [
     sliderParam({

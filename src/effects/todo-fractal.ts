@@ -6,6 +6,8 @@ import { buildEffect } from './utils';
 
 export const pinwheelParty = buildEffect({
   name: 'Pinwheel Party',
+  group: 'Misc',
+  disabled: true,
   description: 'Create a pinwheel of party colors',
   params: [
     intParam({

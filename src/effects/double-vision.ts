@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const doubleVision = buildEffect({
   name: 'Double Vision',
+  group: 'Misc',
   description: 'See double',
   params: [
     floatParam({ name: 'Amplitude', defaultValue: 10, min: 0 }),

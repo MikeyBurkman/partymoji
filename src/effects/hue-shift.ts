@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const hueShift = buildEffect({
   name: 'Hue Shift',
+  group: 'Colors',
   description: 'Shift the hue of each pixel in the image by some amount',
   params: [
     sliderParam({

@@ -22,6 +22,7 @@ import { Gif } from './Gif';
 import { Icon, ClickableIcon } from './Icon';
 import { ImageEffectDialog } from './ImageEffectDialog';
 import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
+import { effectByName } from '~/effects';
 
 interface EffectListProps {
   appState: AppState;
@@ -171,7 +172,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
 
     const e = currentEffects[effectDialogOpen.idx];
     return {
-      effectName: e.effectName,
+      effect: effectByName(e.effectName),
       params: e.paramsValues,
     };
   }, [effectDialogOpen, currentEffects]);
@@ -294,7 +295,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
 
           onEffectsChange(
             miscUtil.replaceIndex(currentEffects, effectDialogOpen.idx, () => ({
-              effectName: newEffect.effectName,
+              effectName: newEffect.effect.name,
               paramsValues: newEffect.params,
               state: computedImage
                 ? { status: 'done', image: computedImage }

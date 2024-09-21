@@ -9,10 +9,12 @@ const COLORS = ['#111111', '#888888'];
 
 export const fakeTransparency = buildEffect({
   name: 'Fake Transparency',
+  group: 'Image',
   description:
     'This is just to display behind a picture when there are partially-transparent pixels,' +
     ' as GIFs do not support partial transparency',
   params: [] as const,
+  disabled: true,
   fn: ({ image }) => {
     const createBackground = () => {
       const canvas = canvasUtil.createCanvas(image.dimensions);

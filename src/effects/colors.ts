@@ -17,6 +17,7 @@ const DEFAULT_COLORS = [
 
 export const colors = buildEffect({
   name: 'Colors',
+  group: 'Colors',
   description: 'Make the image flash different colors of your choosing',
   secondaryDescription: 'Increase the brightness to increase the effect',
   params: [

@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const blur = buildEffect({
   name: 'Blur',
+  group: 'Transform',
   description: 'Blurs the image',
   params: [
     sliderParam({

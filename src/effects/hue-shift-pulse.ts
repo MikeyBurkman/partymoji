@@ -4,6 +4,7 @@ import { buildEffect } from './utils';
 
 export const hueShiftPulse = buildEffect({
   name: 'Hue Shift Pulse',
+  group: 'Colors',
   description: 'Shift the hue to the given value in a pulsating manner',
   params: [
     huePickerParam({
