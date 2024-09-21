@@ -7,6 +7,7 @@ export const repeatAnimation = buildEffect({
   group: 'Animation',
   description: 'Repeats the current animation some number of times',
   secondaryDescription: 'This can greatly increase the final file size!',
+  requiresAnimation: true,
   params: [
     sliderParam({
       name: 'Number of Repeats',

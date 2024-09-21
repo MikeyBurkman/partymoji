@@ -7,6 +7,7 @@ export const fade = buildEffect({
   name: 'Fade',
   group: 'Misc',
   description: 'Fades the image in or out',
+  requiresAnimation: true,
   params: [
     bezierParam({
       name: 'Curve',

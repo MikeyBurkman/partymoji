@@ -23,6 +23,7 @@ import { Icon, ClickableIcon } from './Icon';
 import { ImageEffectDialog } from './ImageEffectDialog';
 import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
 import { effectByName } from '~/effects';
+import { RequiresAnimationTooltip } from './RequiresAnimationTooltip';
 
 interface EffectListProps {
   appState: AppState;
@@ -62,16 +63,23 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
   return (
     <Stack alignItems="center" margin={2} justifyContent="space-evenly">
       <Stack direction="row" width="100%" minHeight="4rem">
-        <Typography
-          variant="subtitle1"
-          fontWeight="bold"
-          marginLeft={2}
-          marginBottom={1}
-          alignSelf="left"
-          width="95%"
-        >
-          {effect.effectName}
-        </Typography>
+        <Stack direction="row" spacing={4} px={1}>
+          {effectByName(effect.effectName).requiresAnimation &&
+          effect.state.status === 'done' &&
+          effect.state.image.image.frames.length <= 1 ? (
+            <RequiresAnimationTooltip />
+          ) : null}
+          <Typography
+            variant="subtitle1"
+            fontWeight="bold"
+            marginLeft={2}
+            marginBottom={1}
+            alignSelf="left"
+            width="95%"
+          >
+            {effect.effectName}
+          </Typography>
+        </Stack>
         <ClickableIcon
           tooltip="Delete effect"
           name="delete"

@@ -6,6 +6,7 @@ export const partyHarder = buildEffect({
   group: 'Party',
   description:
     'Shift the hue of each individual pixel over the course of the animation',
+  requiresAnimation: true,
   params: [],
   fn: imageUtil.mapImage(({ coord, getSrcPixel, animationProgress }) =>
     colorUtil.shiftHue(getSrcPixel(coord), animationProgress * 360)

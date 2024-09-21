@@ -15,6 +15,7 @@ export const lightning = buildEffect({
   name: 'Lightning',
   group: 'Misc',
   description: 'Make the background look like a thunderstorm',
+  requiresAnimation: true,
   params: [
     textParam({
       name: 'Random Seed',

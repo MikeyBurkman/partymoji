@@ -6,6 +6,7 @@ export const expand = buildEffect({
   name: 'Expand',
   group: 'Transform',
   description: 'Make the image grow and shrink',
+  requiresAnimation: true,
   params: [
     intParam({
       name: 'Radius',

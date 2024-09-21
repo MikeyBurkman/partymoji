@@ -7,6 +7,7 @@ export const pinwheelRainbow = buildEffect({
   name: 'Pinwheel Rainbow',
   group: 'Party',
   description: 'Make the image look like a pinwheel rainbow',
+  requiresAnimation: true,
   params: [
     sliderParam({
       name: 'Group Count',

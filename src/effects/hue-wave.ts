@@ -6,6 +6,7 @@ export const hueWave = buildEffect({
   name: 'Hue Wave',
   group: 'Colors',
   description: 'Shifts the hue of pixels in the image in a wave motion',
+  requiresAnimation: true,
   params: [
     sliderParam({
       name: 'Amplitude',

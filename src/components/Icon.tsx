@@ -1,6 +1,14 @@
 import React from 'react';
-import { Icon as MuiIcon, Tooltip } from '@material-ui/core';
+import {
+  Icon as MuiIcon,
+  styled,
+  Tooltip,
+  tooltipClasses,
+  TooltipProps,
+  IconProps as MuiIconProps,
+} from '@material-ui/core';
 
+// From https://mui.com/material-ui/material-icons/
 export type Icons =
   | 'add'
   | 'remove'
@@ -20,7 +28,20 @@ export type Icons =
   | 'priority_high'
   | 'list'
   | 'settings'
-  | 'save_alt';
+  | 'save_alt'
+  | 'warning';
+
+const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: '#f5f5f9',
+    color: 'rgba(0, 0, 0, 0.87)',
+    maxWidth: 220,
+    fontSize: theme.typography.pxToRem(12),
+    border: '1px solid #dadde9',
+  },
+}));
 
 export interface ClickableIconProps {
   name: Icons;
@@ -81,8 +102,25 @@ export const ClickableIcon: React.FC<ClickableIconProps> = ({
 
 export interface IconProps {
   name: Icons;
+  htmlTooltip?: boolean;
+  tooltip?: React.ReactNode;
+  color?: MuiIconProps['color'];
 }
 
-export const Icon: React.FC<IconProps> = ({ name }) => (
-  <MuiIcon>{name}</MuiIcon>
-);
+export const Icon: React.FC<IconProps> = ({
+  name,
+  tooltip,
+  htmlTooltip,
+  color,
+}) => {
+  const inner = <MuiIcon color={color}>{name}</MuiIcon>;
+  if (tooltip) {
+    return htmlTooltip ? (
+      <HtmlTooltip title={tooltip}>{inner}</HtmlTooltip>
+    ) : (
+      <Tooltip title={tooltip}>{inner}</Tooltip>
+    );
+  } else {
+    return inner;
+  }
+};

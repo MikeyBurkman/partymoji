@@ -7,6 +7,7 @@ export const pinwheelRainbowBackground = buildEffect({
   name: 'Pinwheel Rainbow Background',
   group: 'Party',
   description: 'Create a background pinwheel of rainbow colors',
+  requiresAnimation: true,
   params: [
     sliderParam({
       name: 'Group Count',

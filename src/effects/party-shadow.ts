@@ -7,6 +7,7 @@ export const partyShadow = buildEffect({
   name: 'Party Shadow',
   group: 'Party',
   description: 'Apply a party shadow effect',
+  requiresAnimation: true,
   params: [
     sliderParam({
       name: 'Layers',

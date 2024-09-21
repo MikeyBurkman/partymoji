@@ -6,6 +6,7 @@ export const party = buildEffect({
   name: 'Party',
   group: 'Party',
   description: 'Shift the hue of the image over the course of the animation',
+  requiresAnimation: true,
   params: [
     sliderParam({
       name: 'Shift Speed',

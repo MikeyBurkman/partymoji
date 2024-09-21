@@ -6,6 +6,7 @@ export const radianceRainbowBackground = buildEffect({
   name: 'Radiance Rainbow Background',
   group: 'Party',
   description: 'Radiate rainbow colors out in rings',
+  requiresAnimation: true,
   params: [
     sliderParam({
       name: 'Group Count',

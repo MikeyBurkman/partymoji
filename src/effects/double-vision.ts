@@ -6,6 +6,7 @@ export const doubleVision = buildEffect({
   name: 'Double Vision',
   group: 'Misc',
   description: 'See double',
+  requiresAnimation: true,
   params: [
     floatParam({ name: 'Amplitude', defaultValue: 10, min: 0 }),
   ] as const,

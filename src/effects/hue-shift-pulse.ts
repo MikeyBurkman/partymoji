@@ -6,6 +6,7 @@ export const hueShiftPulse = buildEffect({
   name: 'Hue Shift Pulse',
   group: 'Colors',
   description: 'Shift the hue to the given value in a pulsating manner',
+  requiresAnimation: true,
   params: [
     huePickerParam({
       name: 'Hue',

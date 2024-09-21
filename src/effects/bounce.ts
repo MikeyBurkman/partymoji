@@ -6,6 +6,7 @@ export const bounce = buildEffect({
   name: 'Bounce',
   group: 'Transform',
   description: 'Make the image bounce up and down',
+  requiresAnimation: true,
   params: [
     intParam({
       name: 'Bounce Height',
