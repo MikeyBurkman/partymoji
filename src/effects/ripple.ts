@@ -6,6 +6,7 @@ export const ripple = buildEffect({
   name: 'Ripple',
   group: 'Misc',
   description: 'Create a ripple effect, like water',
+  requiresAnimation: true,
   params: [
     sliderParam({
       name: 'Amplitude',

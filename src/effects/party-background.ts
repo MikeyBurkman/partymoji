@@ -7,6 +7,7 @@ export const partyBackground = buildEffect({
   group: 'Party',
   description:
     'Smoothly cycles through background colors over the course of the animation',
+  requiresAnimation: true,
   params: [
     sliderParam({
       name: 'Shift Speed',

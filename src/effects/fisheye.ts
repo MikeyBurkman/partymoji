@@ -7,6 +7,7 @@ export const fisheye = buildEffect({
   name: 'Fisheye',
   group: 'Misc',
   description: 'Make the image grow and shrink in a distorted fashion',
+  requiresAnimation: true,
   params: [
     intParam({
       name: 'Radius',

@@ -10,6 +10,7 @@ import {
   Icon as MuiIcon,
   Tooltip,
   Skeleton,
+  Paper,
 } from '@material-ui/core';
 import { saveAs } from 'file-saver';
 
@@ -35,6 +36,7 @@ import { Icon, ClickableIcon } from './Icon';
 import { ImageEffectDialog } from './ImageEffectDialog';
 import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
 import { ImageRow } from './V2/ImageRow';
+import { RequiresAnimationTooltip } from './RequiresAnimationTooltip';
 
 interface EffectListProps {
   appState: AppState;
@@ -84,6 +86,24 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
         >
           {effect.effectName}
         </Typography>
+        <ClickableIcon label="Delete effect" name="delete" onClick={onDelete} />
+        <Stack direction="row" spacing={4} px={1}>
+          {effectByName(effect.effectName).requiresAnimation &&
+          effect.state.status === 'done' &&
+          effect.state.image.image.frames.length <= 1 ? (
+            <RequiresAnimationTooltip />
+          ) : null}
+          <Typography
+            variant="subtitle1"
+            fontWeight="bold"
+            marginLeft={2}
+            marginBottom={1}
+            alignSelf="left"
+            width="95%"
+          >
+            {effect.effectName}
+          </Typography>
+        </Stack>
         <ClickableIcon label="Delete effect" name="delete" onClick={onDelete} />
       </Stack>
 
@@ -292,7 +312,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
   }, [currentEffects]);
 
   return (
-    <Stack spacing={4}>
+    <Stack>
       <ImageEffectDialog
         open={effectDialogOpen.open}
         possibleEffects={possibleEffects}
@@ -327,45 +347,53 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
         currFps={appState.fps}
         currRandomSeed="partymoji"
       />
-      <Typography variant="h5">Image Effects</Typography>
-      <Box overflow={{}}>
-        <Divider>
-          <Button onClick={onAddNew}>Insert First Effect</Button>
+      <Box>
+        <Divider sx={{ pb: 4 }}>
+          <Button startIcon={<Icon name="add" />} onClick={onAddNew} name="add">
+            Insert First Effect
+          </Button>
         </Divider>
         {currentEffects.map((t, tIdx) => (
           <Stack key={effectKey(t, tIdx)}>
-            <Typography variant="h6">{t.effectName}</Typography>
-            <Stack
-              direction="row"
-              maxWidth="md"
-              spacing={2}
-              sx={{ overflowX: 'scroll' }}
-            >
-              <Stack spacing={2} justifyContent="center">
-                <ClickableIcon
-                  label="Edit"
-                  name="settings"
-                  onClick={() =>
-                    setEffectDialogOpen({
-                      open: true,
-                      idx: tIdx,
-                      isNew: false,
-                    })
-                  }
-                />
-                <ClickableIcon
-                  label="Delete"
-                  name="delete"
-                  onClick={() => onDelete(tIdx)}
-                />
+            <Paper style={{ padding: 8 }} elevation={4}>
+              <Stack alignItems="center" spacing={2}>
+                <Typography variant="h6">{t.effectName}</Typography>
+                <Stack
+                  direction="row"
+                  maxWidth="md"
+                  spacing={2}
+                  sx={{ overflowX: 'scroll' }}
+                >
+                  <Stack spacing={2} justifyContent="center">
+                    <ClickableIcon
+                      label="Edit"
+                      name="settings"
+                      onClick={() =>
+                        setEffectDialogOpen({
+                          open: true,
+                          idx: tIdx,
+                          isNew: false,
+                        })
+                      }
+                    />
+                    <ClickableIcon
+                      label="Delete"
+                      name="delete"
+                      onClick={() => onDelete(tIdx)}
+                    />
+                  </Stack>
+                  <ImageRow appStateEffect={t} />
+                </Stack>
               </Stack>
-              <ImageRow appStateEffect={t} />
-            </Stack>
+            </Paper>
             <Divider sx={{ py: 4 }}>
-              <Button onClick={() => onAddAfter(tIdx)}>
+              <Button
+                onClick={() => onAddAfter(tIdx)}
+                startIcon={<Icon name="add" />}
+              >
                 {tIdx < currentEffects.length - 1
                   ? 'Insert Effect Here'
-                  : 'Add Final Effect'}
+                  : 'Add New Effect'}
               </Button>
             </Divider>
           </Stack>
@@ -402,27 +430,22 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
           ))}
         </Swiper> */}
       </Box>
-      {currentEffects.length === 0 && (
-        <Button variant="outlined" fullWidth onClick={onAddNew}>
-          Add First Effect
-        </Button>
-      )}
-      {finalGif == null ? (
-        <Skeleton variant="rectangular" height={164} />
-      ) : (
-        <Stack alignItems="center" spacing={4}>
-          <Typography variant="h6">Final Result</Typography>
-          <Gif src={finalGif} alt={appState.fname || 'image.gif'} />
-          <Button
-            variant="contained"
-            onClick={() => {
-              saveAs(finalGif, appState.fname || 'image.gif');
-            }}
-            startIcon={<Icon name="save_alt" />}
-          >
-            Save Gif
-          </Button>
-        </Stack>
+      {finalGif != null && (
+        <Paper style={{ padding: 8 }} elevation={4}>
+          <Stack alignItems="center" spacing={2}>
+            <Typography variant="h6">Final Result</Typography>
+            <Gif src={finalGif} alt={appState.fname || 'image.gif'} />
+            <Button
+              variant="contained"
+              onClick={() => {
+                saveAs(finalGif, appState.fname || 'image.gif');
+              }}
+              startIcon={<Icon name="save_alt" />}
+            >
+              Save Gif
+            </Button>
+          </Stack>
+        </Paper>
       )}
     </Stack>
   );

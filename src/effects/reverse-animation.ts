@@ -5,6 +5,7 @@ export const reverseAnimation = buildEffect({
   name: 'Reverse Animation',
   group: 'Animation',
   description: 'Reverses the animation',
+  requiresAnimation: true,
   params: [],
   fn: ({ image }) => ({
     dimensions: image.dimensions,

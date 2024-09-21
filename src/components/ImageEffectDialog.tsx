@@ -25,6 +25,7 @@ import { debugLog } from '~/domain/env';
 import { Gif } from './Gif';
 import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
 import { useProcessingQueue } from '~/domain/useProcessingQueue';
+import { RequiresAnimationTooltip } from './RequiresAnimationTooltip';
 
 const GroupHeader = styled('div')(({ theme }) => ({
   position: 'sticky',
@@ -202,16 +203,23 @@ export const ImageEffectDialog: React.FC<Props> = ({
           </DialogTitle>
           <DialogContent>
             <Stack divider={<Divider />} spacing={2}>
-              <Typography variant="body2">
-                {effect.description}
-                <div>
-                  {effect.secondaryDescription && (
-                    <Typography variant="caption" marginLeft={2}>
-                      {effect.secondaryDescription}
-                    </Typography>
-                  )}
-                </div>
-              </Typography>
+              <Stack direction="row" spacing={4}>
+                <Typography variant="body2">
+                  {effect.description}
+                  <div>
+                    {effect.secondaryDescription && (
+                      <Typography variant="caption" marginLeft={2}>
+                        {effect.secondaryDescription}
+                      </Typography>
+                    )}
+                  </div>
+                </Typography>
+                {effect.requiresAnimation &&
+                !image.computing &&
+                image.results.image.frames.length <= 1 ? (
+                  <RequiresAnimationTooltip />
+                ) : null}
+              </Stack>
 
               {effect.params.map(
                 // Create elements for each of the parameters for the selectect effect.

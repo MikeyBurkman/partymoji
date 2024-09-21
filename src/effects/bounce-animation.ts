@@ -6,6 +6,7 @@ export const bounceAnimation = buildEffect({
   group: 'Animation',
   description: 'When the animation finishes, it will be replayed in reverse',
   secondaryDescription: 'This doubles the number of animation frames.',
+  requiresAnimation: true,
   params: [],
   fn: ({ image }) => ({
     dimensions: image.dimensions,

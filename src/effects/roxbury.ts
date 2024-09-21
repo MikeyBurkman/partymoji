@@ -6,6 +6,7 @@ export const roxbury = buildEffect({
   name: 'Roxbury',
   group: 'Misc',
   description: "Baby, don't hurt me",
+  requiresAnimation: true,
   params: [],
   fn: imageUtil.mapImageWithPrecompute(
     ({ dimensions: [width, height], animationProgress }) => {

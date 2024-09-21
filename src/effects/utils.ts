@@ -15,6 +15,7 @@ export const buildEffect = <T extends readonly ParamFunction<any>[]>(args: {
   fn: EffectFn<{ [P in keyof T]: ParamType<T[P]> }>;
   disabled?: boolean;
   groupOrder?: number;
+  requiresAnimation?: true;
 }): Effect<T> => ({
   name: args.name,
   group: args.group,
@@ -24,4 +25,5 @@ export const buildEffect = <T extends readonly ParamFunction<any>[]>(args: {
   fn: args.fn,
   disabled: args.disabled ?? false,
   groupOrder: args.groupOrder,
+  requiresAnimation: args.requiresAnimation,
 });

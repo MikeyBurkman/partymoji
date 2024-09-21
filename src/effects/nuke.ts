@@ -6,6 +6,7 @@ export const nuke = buildEffect({
   name: 'Nuke',
   group: 'Misc',
   description: 'Oh no...',
+  requiresAnimation: true,
   params: [],
   fn: imageUtil.mapImage(({ coord, getSrcPixel, animationProgress }) => {
     const threshold = animationProgress * 100;

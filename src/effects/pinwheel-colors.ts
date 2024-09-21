@@ -23,6 +23,7 @@ export const pinwheelColors = buildEffect({
   name: 'Pinwheel Colors',
   group: 'Party',
   description: 'Create a background pinwheel of colors of your choosing',
+  requiresAnimation: true,
   params: [
     sliderParam({
       name: 'Group Count',

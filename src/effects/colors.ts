@@ -20,6 +20,7 @@ export const colors = buildEffect({
   group: 'Colors',
   description: 'Make the image flash different colors of your choosing',
   secondaryDescription: 'Increase the brightness to increase the effect',
+  requiresAnimation: true,
   params: [
     sliderParam({
       name: 'Brightness Increase',

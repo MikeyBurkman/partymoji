@@ -126,6 +126,8 @@ export interface Effect<T extends readonly ParamFunction<any>[]> {
   group: EffectGroup;
   /** Set to a higher number to sort it top of the group */
   groupOrder?: number;
+  /** Indicates that this effect requires multiple animation frames to do anything */
+  requiresAnimation?: true;
 }
 
 export interface EffectInput {

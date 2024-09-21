@@ -7,7 +7,8 @@ export const slowAnimation = buildEffect({
   name: 'Slow Animation',
   group: 'Animation',
   description: 'Attempts to slow the animation by adding intermediate frames',
-  secondaryDescription: 'This will make the final filze size larger',
+  secondaryDescription: 'This will make the final file size larger',
+  requiresAnimation: true,
   params: [
     radioParam<'basic' | 'smooth'>({
       name: 'Interpolation Type',

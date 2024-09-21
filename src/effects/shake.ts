@@ -6,6 +6,7 @@ export const shake = buildEffect({
   name: 'Shake',
   group: 'Misc',
   description: 'Make the image shake left and right',
+  requiresAnimation: true,
   params: [
     floatParam({
       name: 'Amplitude',

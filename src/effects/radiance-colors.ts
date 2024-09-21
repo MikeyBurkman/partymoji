@@ -23,6 +23,7 @@ export const radianceColors = buildEffect({
   name: 'Radiance Colors',
   group: 'Party',
   description: 'Radiate background colors of your choosing out in rings',
+  requiresAnimation: true,
   params: [
     sliderParam({
       name: 'Group Count',
