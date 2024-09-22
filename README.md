@@ -18,7 +18,7 @@ https://mikeyburkman.github.io/partymoji/
 
 - Custom bezier library -> more points? Would be nice to have start and end points instead of always [0,0],[1,1]
 - Add movement/scaling/rotation/drop-shaodw to text
-- Show a warning when an effect expects multiple frames, but there is only one
+- Bezier param does not detect mobile taps, only mouse clicks
 - Optimize palette reduction effect. Probably makes sense to just set the number of colors max, which needs to be a power of 2 anyhow.
 - Make importing from a url string work with the new gif reader
 - Refactor imageImport to automatically handle gif vs other image types

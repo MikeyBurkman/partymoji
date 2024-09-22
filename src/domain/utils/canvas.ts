@@ -244,8 +244,8 @@ export const applyRotation = (
 };
 
 /**
- * Rotates a canvas a number of degrees.
- * 0 degrees points to the right, 90 degrees points up.
+ * Scales the canvas a given amount for the x and or y axis.
+ * A scale of 1 leaves the image unchanged.
  */
 export const applyScale = (
   canvas: CanvasData,

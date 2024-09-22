@@ -267,7 +267,8 @@ const Inner: React.FC = () => {
               <Stack spacing={3}>
                 <Typography variant="h5">Clear Effects</Typography>
                 <Typography variant="body1">
-                  Clicking this button will clear all effects for the image
+                  <Icon name="warning" color="warning" /> Clicking this button
+                  will clear all effects for the image
                 </Typography>
                 <Button
                   startIcon={<Icon name="clear" />}
