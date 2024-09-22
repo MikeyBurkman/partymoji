@@ -2,7 +2,7 @@
 
 ## App for Creating Animated Gifs
 
-![Hello-Rainbox](./hellmo-rainbow.gif 'Hellmo Rainbow')
+![Hello-Rainbow](./hellmo-rainbow.gif 'Hellmo Rainbow')
 
 ### Use it
 

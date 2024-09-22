@@ -9,6 +9,7 @@ import {
 } from '@material-ui/core';
 import { saveAs } from 'file-saver';
 
+import { IS_MOBILE } from '~/domain/env';
 import type {
   ParamFunction,
   Effect,
@@ -117,9 +118,9 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
           </Stack>
           <Stack
             direction="row"
-            maxWidth="md"
+            maxWidth={IS_MOBILE ? '300px' : 'md'}
             spacing={2}
-            sx={{ overflowX: 'scroll' }}
+            sx={{ overflowX: 'auto' }}
           >
             <Stack spacing={2} justifyContent="center">
               <ClickableIcon label="Edit" name="settings" onClick={onEdit} />

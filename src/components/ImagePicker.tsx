@@ -4,6 +4,9 @@ import { miscUtil, imageUtil, imageImportUtil } from '~/domain/utils';
 import type { ImageEffectResult } from '~/domain/types';
 import { Gif } from './Gif';
 
+// I'm on the fence about whether this is worth keeping.
+const URL_UPLOAD_ENABLED = false;
+
 const parseFileName = (s: string): string => {
   const parts = s.split('/'); // For URLs
   const name = parts[parts.length - 1];
@@ -29,56 +32,61 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
 }) => {
   const [error, setError] = React.useState<string | undefined>();
   return (
-    <Stack spacing={2}>
-      <Stack direction="row">
-        <TextField
-          label="URL"
-          variant="outlined"
-          fullWidth
-          error={!!error}
-          helperText={error ?? 'Only supports static images'}
-          onBlur={async (e) => {
-            const text = e.target.value;
-            try {
-              setError(undefined);
+    <Stack spacing={2} alignItems="center">
+      {URL_UPLOAD_ENABLED && (
+        <>
+          <Stack direction="row">
+            <TextField
+              label="URL"
+              variant="outlined"
+              fullWidth
+              error={!!error}
+              helperText={error ?? 'Only supports static images'}
+              onBlur={async (e) => {
+                const text = e.target.value;
+                try {
+                  setError(undefined);
 
-              if (text.startsWith('data:')) {
-                // Data URL
-                const image = await imageImportUtil.readImage(text);
-                onChange(
-                  {
-                    gif: text,
-                    image,
-                    gifWithBackgroundColor: text,
-                    partiallyTransparent:
-                      imageUtil.isPartiallyTransparent(image),
-                  },
-                  'image'
-                );
-                return;
-              }
+                  if (text.startsWith('data:')) {
+                    // Data URL
+                    const image = await imageImportUtil.readImage(text);
+                    onChange(
+                      {
+                        gif: text,
+                        image,
+                        gifWithBackgroundColor: text,
+                        partiallyTransparent:
+                          imageUtil.isPartiallyTransparent(image),
+                      },
+                      'image'
+                    );
+                    return;
+                  }
 
-              if (!miscUtil.isUrl(text)) {
-                return;
-              }
-              const gif = await imageImportUtil.getImageFromUrl(text);
-              const image = await imageImportUtil.readImage(gif);
-              onChange(
-                {
-                  gif,
-                  image,
-                  gifWithBackgroundColor: gif,
-                  partiallyTransparent: imageUtil.isPartiallyTransparent(image),
-                },
-                parseFileName(text)
-              );
-            } catch {
-              setError('Error importing url');
-            }
-          }}
-        />
-      </Stack>
-      <Box>OR</Box>
+                  if (!miscUtil.isUrl(text)) {
+                    return;
+                  }
+                  const gif = await imageImportUtil.getImageFromUrl(text);
+                  const image = await imageImportUtil.readImage(gif);
+                  onChange(
+                    {
+                      gif,
+                      image,
+                      gifWithBackgroundColor: gif,
+                      partiallyTransparent:
+                        imageUtil.isPartiallyTransparent(image),
+                    },
+                    parseFileName(text)
+                  );
+                } catch {
+                  setError('Error importing url');
+                }
+              }}
+            />
+          </Stack>
+          <Box>OR</Box>
+        </>
+      )}
       <Button
         startIcon={<Icon>image</Icon>}
         sx={{ maxWidth: '300px' }}

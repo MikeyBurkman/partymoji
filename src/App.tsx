@@ -189,11 +189,12 @@ const Inner: React.FC = () => {
   return (
     <>
       <ScopedCssBaseline />
-      <Container maxWidth="md">
+      <Container maxWidth={IS_MOBILE ? 'sm' : 'md'}>
         <Stack
           spacing={4}
           justifyContent="space-evenly"
           alignItems="center"
+          width={IS_MOBILE ? 'sm' : undefined}
           divider={<Divider />}
         >
           <Typography variant="h2" pt={4}>
@@ -233,19 +234,17 @@ const Inner: React.FC = () => {
                     );
                   }}
                 />
-                <div>
-                  {fpsParam.fn({
-                    value: state.fps,
-                    onChange: (fps) =>
-                      setState(
-                        (prevState) => ({
-                          ...prevState,
-                          fps,
-                        }),
-                        { compute: 'later' }
-                      ),
-                  })}
-                </div>
+                {fpsParam.fn({
+                  value: state.fps,
+                  onChange: (fps) =>
+                    setState(
+                      (prevState) => ({
+                        ...prevState,
+                        fps,
+                      }),
+                      { compute: 'later' }
+                    ),
+                })}
               </Stack>
             </Section>
             {state.baseImage != null && (
@@ -308,13 +307,17 @@ const Inner: React.FC = () => {
         </Stack>
       </Container>
 
-      <AlertSnackbar />
+      <Stack pt={8}>
+        <AlertSnackbar />
+      </Stack>
     </>
   );
 };
 
 const Section: React.FC = ({ children }) => (
-  <Paper style={{ padding: 16 }}>{children}</Paper>
+  <Paper style={{ padding: 16, maxWidth: IS_MOBILE ? '300px' : undefined }}>
+    {children}
+  </Paper>
 );
 
 // Icons at https://fonts.google.com/icons?selected=Material+Icons
