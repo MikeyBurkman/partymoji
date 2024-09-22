@@ -1,5 +1,3 @@
-// import { Icon, Tooltip } from '@material-ui/core';
-
 import { Stack, Typography } from '@material-ui/core';
 import { Icon } from './Icon';
 

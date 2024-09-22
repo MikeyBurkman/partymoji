@@ -4,6 +4,7 @@ import {
   Stack,
   Typography,
   Divider,
+  Checkbox,
 } from '@material-ui/core';
 import { AppStateEffect, ImageEffectResult } from '~/domain/types';
 import { Gif } from './Gif';
@@ -23,18 +24,20 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
   const { frames, dimensions } = image;
   const [width, height] = dimensions;
 
-  const { eleWidth, eleHeight, hScale, vScale } = (() => {
+  const [showTransparency, setShowTransparency] = React.useState(true);
+
+  const { eleWidth, eleHeight, hScale, vScale } = React.useMemo(() => {
     const aspectRatio = height / width;
 
     let eleWidth = MAX_SIZE;
     let eleHeight = MAX_SIZE;
 
     if (width > height) {
-      // If width is bigger, then limit by width
-      eleWidth = aspectRatio * MAX_SIZE;
+      // If width is bigger, then keep the width at MAX and scale the height down
+      eleHeight = Math.floor(aspectRatio * MAX_SIZE);
     } else {
-      // Else, limit by height
-      eleHeight = (1 / aspectRatio) * MAX_SIZE;
+      // Else scale the width down
+      eleWidth = Math.floor(aspectRatio * MAX_SIZE);
     }
 
     return {
@@ -43,12 +46,15 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
       hScale: eleWidth / width,
       vScale: eleHeight / height,
     };
-  })();
+  }, [height, width]);
 
   const renderedFrames = React.useMemo(
     () =>
       frames.map((frame, idx) => (
-        <Stack alignItems="center">
+        <Stack
+          alignItems="center"
+          key={`${result.gif.substring(0, 16)}-${idx}`}
+        >
           <Typography variant="caption">Frame {idx + 1}</Typography>
           <CanvasElement
             key={idx}
@@ -64,7 +70,7 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
           />
         </Stack>
       )),
-    [dimensions, eleHeight, eleWidth, frames, hScale, vScale]
+    [dimensions, eleHeight, eleWidth, frames, hScale, result.gif, vScale]
   );
 
   return (
@@ -82,7 +88,26 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
             <BackgroundPreviewTooltip />
           </>
         ) : (
-          <Gif src={result.gif} dimensions={dimensions} alt={effectName} />
+          <Stack spacing={1}>
+            <Gif
+              src={
+                showTransparency && result.gifWithBackgroundColor
+                  ? result.gifWithBackgroundColor
+                  : result.gif
+              }
+              dimensions={dimensions}
+              alt={effectName}
+            />
+            {result.gifWithBackgroundColor != null && (
+              <Stack direction="row">
+                <Typography variant="caption">Show Transparency</Typography>
+                <Checkbox
+                  checked={showTransparency}
+                  onChange={(e) => setShowTransparency(e.target.checked)}
+                />
+              </Stack>
+            )}
+          </Stack>
         )}
       </Stack>
       <Divider orientation="vertical" />

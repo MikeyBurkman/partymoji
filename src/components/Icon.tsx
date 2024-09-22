@@ -24,6 +24,7 @@ export type Icons =
   | 'arrow_circle_left'
   | 'keyboard_double_arrow_right'
   | 'keyboard_double_arrow_left'
+  | 'info'
   | 'edit'
   | 'image'
   | 'priority_high'

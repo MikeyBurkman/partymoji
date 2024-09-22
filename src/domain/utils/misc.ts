@@ -28,9 +28,11 @@ export const replaceIndex = <T>(
 ): T[] => arr.map((x, i) => (index === i ? newValueFn(x) : x));
 
 /** Returns a new array with the element at the index removed */
-export const removeIndex = <T>(arr: T[], index: number): T[] => [
-  ...arr.filter((_t, idx) => index !== idx),
-];
+export const removeIndex = <T>(arr: T[], index: number): T[] =>
+  arr.filter((_t, idx) => {
+    console.log('Removing', { index, idx });
+    return index !== idx;
+  });
 
 /**
  * Returns a new array with the new item inserted into the given index.

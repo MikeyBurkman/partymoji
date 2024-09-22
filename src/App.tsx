@@ -248,46 +248,50 @@ const Inner: React.FC = () => {
                 </div>
               </Stack>
             </Section>
-            <Section>
-              <ImageEffectList
-                appState={state}
-                possibleEffects={POSSIBLE_EFFECTS}
-                onEffectsChange={(effects) =>
-                  setState(
-                    (prevState) => ({
-                      ...prevState,
-                      effects,
-                    }),
-                    { compute: 'now' }
-                  )
-                }
-              />
-            </Section>
-            <Section>
-              <Stack spacing={3}>
-                <Typography variant="h5">Clear Effects</Typography>
-                <Typography variant="body1">
-                  <Icon name="warning" color="warning" /> Clicking this button
-                  will clear all effects for the image
-                </Typography>
-                <Button
-                  startIcon={<Icon name="clear" />}
-                  sx={{ maxWidth: '300px' }}
-                  variant="contained"
-                  color="warning"
-                  onClick={() => {
-                    const newState: AppState = {
-                      ...DEFAULT_STATE,
-                      baseImage: state.baseImage,
-                    };
-                    setStateRaw(newState);
-                    localStorage.saveAppState(newState);
-                  }}
-                >
-                  Clear Effects
-                </Button>
-              </Stack>
-            </Section>
+            {state.baseImage != null && (
+              <>
+                <Section>
+                  <ImageEffectList
+                    appState={state}
+                    possibleEffects={POSSIBLE_EFFECTS}
+                    onEffectsChange={(effects) =>
+                      setState(
+                        (prevState) => ({
+                          ...prevState,
+                          effects,
+                        }),
+                        { compute: 'now' }
+                      )
+                    }
+                  />
+                </Section>
+                <Section>
+                  <Stack spacing={3}>
+                    <Typography variant="h5">Clear Effects</Typography>
+                    <Typography variant="body1">
+                      <Icon name="warning" color="warning" /> Clicking this
+                      button will clear all effects for the image
+                    </Typography>
+                    <Button
+                      startIcon={<Icon name="clear" />}
+                      sx={{ maxWidth: '300px' }}
+                      variant="contained"
+                      color="warning"
+                      onClick={() => {
+                        const newState: AppState = {
+                          ...DEFAULT_STATE,
+                          baseImage: state.baseImage,
+                        };
+                        setStateRaw(newState);
+                        localStorage.saveAppState(newState);
+                      }}
+                    >
+                      Clear Effects
+                    </Button>
+                  </Stack>
+                </Section>
+              </>
+            )}
             <a
               href="https://github.com/MikeyBurkman/partymoji"
               target="_blank"

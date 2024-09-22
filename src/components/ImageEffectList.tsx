@@ -24,7 +24,6 @@ import { Gif } from './Gif';
 import { Icon, ClickableIcon } from './Icon';
 import { ImageEffectDialog } from './ImageEffectDialog';
 import { ImageRow } from './ImageRow';
-import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
 import { RequiresAnimationTooltip } from './RequiresAnimationTooltip';
 
 type EffectEditDialogState =
@@ -197,16 +196,20 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
       effectName: possibleEffects[0].name,
       paramsValues: possibleEffects[0].params.map((p: ParamFunction<any>) => {
         let image: Image | undefined = undefined;
-        const previousEffect = currentEffects[tIdx];
-        if (previousEffect?.state.status === 'done') {
-          image = previousEffect.state.image.image;
+        if (tIdx === 0) {
+          image = appState.baseImage?.image;
+        } else {
+          const previousEffect = currentEffects[tIdx];
+          if (previousEffect?.state.status === 'done') {
+            image = previousEffect.state.image.image;
+          }
         }
 
         return p.defaultValue(image);
       }),
       state: { status: 'init' },
     }),
-    [currentEffects, possibleEffects]
+    [appState, currentEffects, possibleEffects]
   );
 
   // const onMoveBefore = (idx: number) => {
@@ -252,7 +255,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
           idx: 0,
           isNew: true,
         }),
-      1
+      2
     );
   }, [currentEffects, newDefaultEffect, onEffectsChange]);
 
@@ -300,10 +303,10 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
     if (effectEditDialogState.open && effectEditDialogState.isNew) {
       // They pressed cancel on a new effect, so just remove the one we added.
       onEffectsChange(
-        miscUtil.removeIndex(currentEffects, effectEditDialogState.idx - 1)
+        miscUtil.removeIndex(currentEffects, effectEditDialogState.idx)
       );
-      setEffectEditDialogState({ open: false });
     }
+    setEffectEditDialogState({ open: false });
   }, [currentEffects, effectEditDialogState, onEffectsChange]);
 
   const onSaveGif = React.useCallback(() => {
