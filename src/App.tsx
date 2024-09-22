@@ -189,18 +189,17 @@ const Inner: React.FC = () => {
   return (
     <>
       <ScopedCssBaseline />
-      <Container maxWidth="sm">
+      <Container maxWidth="md">
         <Stack
           spacing={4}
           justifyContent="space-evenly"
           alignItems="center"
-          width="sm"
           divider={<Divider />}
         >
           <Typography variant="h2" pt={4}>
             Partymoji
           </Typography>
-          <Stack spacing={4} divider={<Divider />} alignItems="center">
+          <Stack spacing={4} divider={<Divider />}>
             <Section>
               <Help />
             </Section>
@@ -234,7 +233,7 @@ const Inner: React.FC = () => {
                     );
                   }}
                 />
-                <div style={{ maxWidth: '300px' }}>
+                <div>
                   {fpsParam.fn({
                     value: state.fps,
                     onChange: (fps) =>
@@ -249,45 +248,50 @@ const Inner: React.FC = () => {
                 </div>
               </Stack>
             </Section>
-            <Section>
-              <ImageEffectList
-                appState={state}
-                possibleEffects={POSSIBLE_EFFECTS}
-                onEffectsChange={(effects) =>
-                  setState(
-                    (prevState) => ({
-                      ...prevState,
-                      effects,
-                    }),
-                    { compute: 'now' }
-                  )
-                }
-              />
-            </Section>
-            <Section>
-              <Stack spacing={3}>
-                <Typography variant="h5">Clear Effects</Typography>
-                <Typography variant="body1">
-                  Clicking this button will clear all effects for the image
-                </Typography>
-                <Button
-                  startIcon={<Icon name="clear" />}
-                  sx={{ maxWidth: '300px' }}
-                  variant="contained"
-                  color="warning"
-                  onClick={() => {
-                    const newState: AppState = {
-                      ...DEFAULT_STATE,
-                      baseImage: state.baseImage,
-                    };
-                    setStateRaw(newState);
-                    localStorage.saveAppState(newState);
-                  }}
-                >
-                  Clear Effects
-                </Button>
-              </Stack>
-            </Section>
+            {state.baseImage != null && (
+              <>
+                <Section>
+                  <ImageEffectList
+                    appState={state}
+                    possibleEffects={POSSIBLE_EFFECTS}
+                    onEffectsChange={(effects) =>
+                      setState(
+                        (prevState) => ({
+                          ...prevState,
+                          effects,
+                        }),
+                        { compute: 'now' }
+                      )
+                    }
+                  />
+                </Section>
+                <Section>
+                  <Stack spacing={3}>
+                    <Typography variant="h5">Clear Effects</Typography>
+                    <Typography variant="body1">
+                      <Icon name="warning" color="warning" /> Clicking this
+                      button will clear all effects for the image
+                    </Typography>
+                    <Button
+                      startIcon={<Icon name="clear" />}
+                      sx={{ maxWidth: '300px' }}
+                      variant="contained"
+                      color="warning"
+                      onClick={() => {
+                        const newState: AppState = {
+                          ...DEFAULT_STATE,
+                          baseImage: state.baseImage,
+                        };
+                        setStateRaw(newState);
+                        localStorage.saveAppState(newState);
+                      }}
+                    >
+                      Clear Effects
+                    </Button>
+                  </Stack>
+                </Section>
+              </>
+            )}
             <a
               href="https://github.com/MikeyBurkman/partymoji"
               target="_blank"
@@ -310,9 +314,7 @@ const Inner: React.FC = () => {
 };
 
 const Section: React.FC = ({ children }) => (
-  <Paper style={{ padding: 16 }} sx={{ width: 300 }}>
-    {children}
-  </Paper>
+  <Paper style={{ padding: 16 }}>{children}</Paper>
 );
 
 // Icons at https://fonts.google.com/icons?selected=Material+Icons

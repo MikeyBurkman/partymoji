@@ -1,12 +1,13 @@
 import React from 'react';
-import { Button, CircularProgress, Stack, Typography } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Divider,
+  Stack,
+  Typography,
+  Paper,
+} from '@material-ui/core';
 import { saveAs } from 'file-saver';
-
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Controller } from 'swiper';
-import SwiperClass from 'swiper/types/swiper-class';
-import 'swiper/swiper.min.css';
-import 'swiper/modules/navigation/navigation.min.css';
 
 import type {
   ParamFunction,
@@ -18,12 +19,16 @@ import type {
   EffectInput,
 } from '~/domain/types';
 import { miscUtil } from '~/domain/utils';
+import { effectByName } from '~/effects';
 import { Gif } from './Gif';
 import { Icon, ClickableIcon } from './Icon';
 import { ImageEffectDialog } from './ImageEffectDialog';
-import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
-import { effectByName } from '~/effects';
+import { ImageRow } from './ImageRow';
 import { RequiresAnimationTooltip } from './RequiresAnimationTooltip';
+
+type EffectEditDialogState =
+  | { open: false }
+  | { open: true; idx: number; isNew: boolean };
 
 interface EffectListProps {
   appState: AppState;
@@ -33,100 +38,104 @@ interface EffectListProps {
 
 const effectKey = (t: AppStateEffect, idx: number): string =>
   `${t.effectName}-${idx}-${
-    t.state.status === 'done' ? t.state.image.gif.substring(0, 10) : 'pending'
+    t.state.status === 'done' ? t.state.image.gif.substring(0, 16) : 'pending'
   }`;
 
 interface ImageEffectProps {
   effect: AppStateEffect;
   index: number;
-  totalEffects: number;
-  fname?: string;
-  onDelete: () => void;
-  onEdit: () => void;
-  onMoveBefore: () => void;
-  onMoveAfter: () => void;
-  onAddBefore: () => void;
-  onAddAfter: () => void;
+  currentEffects: AppStateEffect[];
+  setEffectEditDialogState: (state: EffectEditDialogState) => void;
+  onEffectsChange: EffectListProps['onEffectsChange'];
+  newDefaultEffect: (index: number) => AppStateEffect;
 }
 
 export const ImageEffect: React.FC<ImageEffectProps> = ({
   effect,
   index,
-  totalEffects,
-  onEdit,
-  onDelete,
-  onMoveBefore,
-  onMoveAfter,
-  onAddBefore,
-  onAddAfter,
+  currentEffects,
+  setEffectEditDialogState,
+  onEffectsChange,
+  newDefaultEffect,
 }) => {
+  const onEdit = React.useCallback(() => {
+    setEffectEditDialogState({
+      open: true,
+      idx: index,
+      isNew: false,
+    });
+  }, [index, setEffectEditDialogState]);
+
+  const onDelete = React.useCallback(() => {
+    onEffectsChange(miscUtil.removeIndex(currentEffects, index));
+  }, [currentEffects, index, onEffectsChange]);
+
+  const onAddAfter = React.useCallback(() => {
+    const newIdx = index + 1;
+    onEffectsChange(
+      miscUtil.insertInto(currentEffects, newIdx, newDefaultEffect(index))
+    );
+    setTimeout(
+      () =>
+        setEffectEditDialogState({
+          open: true,
+          idx: newIdx,
+          isNew: true,
+        }),
+      2
+    );
+  }, [
+    currentEffects,
+    index,
+    newDefaultEffect,
+    onEffectsChange,
+    setEffectEditDialogState,
+  ]);
+
+  const requiresAnimation = React.useMemo(() => {
+    if (effect.state.status !== 'done') {
+      return null;
+    }
+
+    const e = effectByName(effect.effectName);
+    if (e.requiresAnimation && effect.state.image.image.frames.length <= 1) {
+      return <RequiresAnimationTooltip />;
+    }
+
+    return null;
+  }, [effect]);
+
   return (
-    <Stack alignItems="center" margin={2} justifyContent="space-evenly">
-      <Stack direction="row" width="100%" minHeight="4rem">
-        <Stack direction="row" spacing={4} px={1}>
-          {effectByName(effect.effectName).requiresAnimation &&
-          effect.state.status === 'done' &&
-          effect.state.image.image.frames.length <= 1 ? (
-            <RequiresAnimationTooltip />
-          ) : null}
-          <Typography
-            variant="subtitle1"
-            fontWeight="bold"
-            marginLeft={2}
-            marginBottom={1}
-            alignSelf="left"
-            width="95%"
+    <Stack>
+      <Paper style={{ padding: 8 }} elevation={4}>
+        <Stack alignItems="center" spacing={2}>
+          <Stack direction="row" spacing={2}>
+            <Typography variant="h6">
+              #{index + 1}: {effect.effectName}
+            </Typography>
+            {requiresAnimation}
+          </Stack>
+          <Stack
+            direction="row"
+            maxWidth="md"
+            spacing={2}
+            sx={{ overflowX: 'scroll' }}
           >
-            {effect.effectName}
-          </Typography>
+            <Stack spacing={2} justifyContent="center">
+              <ClickableIcon label="Edit" name="settings" onClick={onEdit} />
+              <ClickableIcon label="Delete" name="delete" onClick={onDelete} />
+            </Stack>
+            <ImageRow appStateEffect={effect} />
+          </Stack>
         </Stack>
-        <ClickableIcon
-          tooltip="Delete effect"
-          name="delete"
-          onClick={onDelete}
-        />
-      </Stack>
-
-      {effect.state.status === 'done' ? (
-        <Stack sx={{ width: 250, paddingLeft: 3.5 }}>
-          <Gif
-            src={effect.state.image.gifWithBackgroundColor}
-            alt={`${effect.effectName}-${index}`}
-            dimensions={effect.state.image.image.dimensions}
-          />
-          {effect.state.image.partiallyTransparent ? (
-            <BackgroundPreviewTooltip />
-          ) : null}
-        </Stack>
-      ) : (
-        <CircularProgress size={100} />
-      )}
-
-      <Stack direction="row" spacing={2} mt={4}>
-        <ClickableIcon
-          tooltip="Add new effect before this"
-          name="add"
-          onClick={onAddBefore}
-        />
-        <ClickableIcon
-          tooltip="Move effect left"
-          isDisabled={index <= 0}
-          name="keyboard_double_arrow_left"
-          onClick={onMoveBefore}
-        />
-        <ClickableIcon tooltip="Edit effect" name="settings" onClick={onEdit} />
-        <ClickableIcon
-          tooltip="Move effect right"
-          isDisabled={index >= totalEffects - 1}
-          name="keyboard_double_arrow_right"
-          onClick={onMoveAfter}
-        />
-        <ClickableIcon
-          tooltip="Add new effect after this"
-          name="add"
-          onClick={onAddAfter}
-        />
-      </Stack>
+      </Paper>
+      <Divider sx={{ py: 4 }}>
+        <Button onClick={onAddAfter} startIcon={<Icon name="add" />}>
+          {index < currentEffects.length - 1
+            ? 'Insert Effect Here'
+            : 'Add New Effect'}
+        </Button>
+      </Divider>
     </Stack>
   );
 };
@@ -137,11 +146,8 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
   onEffectsChange,
 }) => {
   const currentEffects = appState.effects;
-  const [effectDialogOpen, setEffectDialogOpen] = React.useState<
-    { open: false } | { open: true; idx: number; isNew: boolean }
-  >({ open: false });
-
-  const [swiper, setSwiper] = React.useState<SwiperClass | undefined>();
+  const [effectEditDialogState, setEffectEditDialogState] =
+    React.useState<EffectEditDialogState>({ open: false });
 
   const [baseImage, setBaseImage] = React.useState<
     ImageEffectResult | undefined
@@ -159,11 +165,11 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
   const dialogInitialImage = React.useMemo(():
     | ImageEffectResult
     | undefined => {
-    if (!effectDialogOpen.open) {
+    if (!effectEditDialogState.open) {
       return undefined;
     }
 
-    const prevEffect = currentEffects[effectDialogOpen.idx - 1];
+    const prevEffect = currentEffects[effectEditDialogState.idx - 1];
     if (prevEffect) {
       return prevEffect.state.status === 'done'
         ? prevEffect.state.image
@@ -171,112 +177,87 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
     }
 
     return appState.baseImage;
-  }, [appState, currentEffects, effectDialogOpen]);
+  }, [appState, currentEffects, effectEditDialogState]);
 
   const currentEffect = React.useMemo((): EffectInput | undefined => {
-    if (!effectDialogOpen.open) {
+    if (!effectEditDialogState.open) {
       return undefined;
     }
 
-    const e = currentEffects[effectDialogOpen.idx];
+    const e = currentEffects[effectEditDialogState.idx];
     return {
       effect: effectByName(e.effectName),
       params: e.paramsValues,
     };
-  }, [effectDialogOpen, currentEffects]);
+  }, [effectEditDialogState, currentEffects]);
 
-  const newDefaultEffect = (tIdx: number): AppStateEffect => ({
-    effectName: possibleEffects[0].name,
-    paramsValues: possibleEffects[0].params.map((p: ParamFunction<any>) => {
-      let image: Image | undefined = undefined;
-      const previousEffect = currentEffects[tIdx];
-      if (previousEffect?.state.status === 'done') {
-        image = previousEffect.state.image.image;
-      }
+  const newDefaultEffect = React.useCallback(
+    (tIdx: number): AppStateEffect => ({
+      effectName: possibleEffects[0].name,
+      paramsValues: possibleEffects[0].params.map((p: ParamFunction<any>) => {
+        let image: Image | undefined = undefined;
+        if (tIdx === 0) {
+          image = appState.baseImage?.image;
+        } else {
+          const previousEffect = currentEffects[tIdx];
+          if (previousEffect?.state.status === 'done') {
+            image = previousEffect.state.image.image;
+          }
+        }
 
-      return p.defaultValue(image);
+        return p.defaultValue(image);
+      }),
+      state: { status: 'init' },
     }),
-    state: { status: 'init' },
-  });
+    [appState, currentEffects, possibleEffects]
+  );
 
-  const onDelete = (idx: number) =>
-    onEffectsChange(currentEffects.filter((nextT, newIdx) => newIdx !== idx));
+  // const onMoveBefore = (idx: number) => {
+  //   onEffectsChange(
+  //     currentEffects.map((nextT, newIdx) => {
+  //       if (newIdx === idx - 1) {
+  //         // This is the next item in the list
+  //         return currentEffects[newIdx + 1];
+  //       } else if (idx === newIdx) {
+  //         // This is the previous item
+  //         return currentEffects[idx - 1];
+  //       } else {
+  //         return nextT;
+  //       }
+  //     })
+  //   );
+  // };
 
-  const onMoveBefore = (idx: number) => {
+  // const onMoveAfter = (idx: number) => {
+  //   onEffectsChange(
+  //     currentEffects.map((nextT, newIdx) => {
+  //       if (newIdx === idx + 1) {
+  //         // This is the previous item in the list
+  //         return currentEffects[newIdx - 1];
+  //       } else if (idx === newIdx) {
+  //         // This is the next item
+  //         return currentEffects[idx + 1];
+  //       } else {
+  //         return nextT;
+  //       }
+  //     })
+  //   );
+  // };
+
+  const onAddNew = React.useCallback(() => {
     onEffectsChange(
-      currentEffects.map((nextT, newIdx) => {
-        if (newIdx === idx - 1) {
-          // This is the next item in the list
-          return currentEffects[newIdx + 1];
-        } else if (idx === newIdx) {
-          // This is the previous item
-          return currentEffects[idx - 1];
-        } else {
-          return nextT;
-        }
-      })
+      miscUtil.insertInto(currentEffects, 0, newDefaultEffect(0))
     );
-    setTimeout(() => swiper?.slideTo(idx - 1), 50);
-  };
-
-  const onMoveAfter = (idx: number) => {
-    onEffectsChange(
-      currentEffects.map((nextT, newIdx) => {
-        if (newIdx === idx + 1) {
-          // This is the previous item in the list
-          return currentEffects[newIdx - 1];
-        } else if (idx === newIdx) {
-          // This is the next item
-          return currentEffects[idx + 1];
-        } else {
-          return nextT;
-        }
-      })
-    );
-    setTimeout(() => swiper?.slideTo(idx + 1), 50);
-  };
-
-  const onAddNew = () => {
-    onEffectsChange([newDefaultEffect(0)]);
-    setTimeout(() => swiper?.slideTo(0), 50);
-    setEffectDialogOpen({
-      open: true,
-      idx: 0,
-      isNew: true,
-    });
-  };
-
-  const onAddAfter = (tIdx: number) => {
-    const newIdx = tIdx + 1;
-    onEffectsChange(
-      miscUtil.insertInto(currentEffects, newIdx, newDefaultEffect(tIdx))
-    );
-    setTimeout(() => swiper?.slideTo(newIdx), 50);
     setTimeout(
       () =>
-        setEffectDialogOpen({
+        setEffectEditDialogState({
           open: true,
-          idx: newIdx,
+          idx: 0,
           isNew: true,
         }),
       2
     );
-  };
-
-  const onAddBefore = (tIdx: number) => {
-    onEffectsChange(
-      miscUtil.insertInto(currentEffects, tIdx, newDefaultEffect(tIdx - 1))
-    );
-    setTimeout(
-      () =>
-        setEffectDialogOpen({
-          open: true,
-          idx: tIdx,
-          isNew: true,
-        }),
-      2
-    );
-  };
+  }, [currentEffects, newDefaultEffect, onEffectsChange]);
 
   const finalGif = React.useMemo((): string | undefined => {
     const lastEffect = currentEffects[currentEffects.length - 1];
@@ -291,93 +272,108 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
     return lastEffect.state.image.gif;
   }, [currentEffects]);
 
+  const dialogOnChangeEffect = React.useCallback(
+    (
+      newEffect: EffectInput,
+      computedImage: ImageEffectResult | undefined
+    ): void => {
+      if (!effectEditDialogState.open) {
+        return;
+      }
+
+      onEffectsChange(
+        miscUtil.replaceIndex(
+          currentEffects,
+          effectEditDialogState.idx,
+          () => ({
+            effectName: newEffect.effect.name,
+            paramsValues: newEffect.params,
+            state: computedImage
+              ? { status: 'done', image: computedImage }
+              : { status: 'init' },
+          })
+        )
+      );
+      setEffectEditDialogState({ open: false });
+    },
+    [currentEffects, effectEditDialogState, onEffectsChange]
+  );
+
+  const dialogOnCancel = React.useCallback(() => {
+    if (effectEditDialogState.open && effectEditDialogState.isNew) {
+      // They pressed cancel on a new effect, so just remove the one we added.
+      onEffectsChange(
+        miscUtil.removeIndex(currentEffects, effectEditDialogState.idx)
+      );
+    }
+    setEffectEditDialogState({ open: false });
+  }, [currentEffects, effectEditDialogState, onEffectsChange]);
+
+  const onSaveGif = React.useCallback(() => {
+    if (finalGif != null) {
+      saveAs(finalGif, appState.fname || 'image.gif');
+    }
+  }, [finalGif, appState]);
+
+  // Hide this effect index, as it's a new effect
+  const hiddenIdx = React.useMemo(() => {
+    if (!effectEditDialogState.open) {
+      return Number.MAX_SAFE_INTEGER;
+    }
+
+    return effectEditDialogState.isNew
+      ? effectEditDialogState.idx
+      : Number.MAX_SAFE_INTEGER;
+  }, [effectEditDialogState]);
+
   return (
-    <Stack spacing={4}>
+    <Stack>
       <ImageEffectDialog
-        open={effectDialogOpen.open}
+        open={effectEditDialogState.open}
         possibleEffects={possibleEffects}
-        onChangeEffect={(newEffect, computedImage) => {
-          if (!effectDialogOpen.open) {
-            return;
-          }
-
-          onEffectsChange(
-            miscUtil.replaceIndex(currentEffects, effectDialogOpen.idx, () => ({
-              effectName: newEffect.effect.name,
-              paramsValues: newEffect.params,
-              state: computedImage
-                ? { status: 'done', image: computedImage }
-                : { status: 'init' },
-            }))
-          );
-          setEffectDialogOpen({ open: false });
-        }}
-        onCancel={() => {
-          // Assumed to be open at this point
-          if (effectDialogOpen.open && effectDialogOpen.isNew) {
-            // They pressed cancel on a new effect, so just remove this one.
-            // (It's assumed to be the last effect in the chain
-            onEffectsChange(currentEffects.slice(0, currentEffects.length - 1));
-          }
-
-          setEffectDialogOpen({ open: false });
-        }}
+        onChangeEffect={dialogOnChangeEffect}
+        onCancel={dialogOnCancel}
         initialImage={dialogInitialImage}
         currentEffect={currentEffect}
         currFps={appState.fps}
         currRandomSeed="partymoji"
       />
-      <Typography variant="h5">Image Effects</Typography>
-      <Stack direction="row">
-        <Swiper
-          navigation
-          modules={[Navigation, Controller]}
-          controller={{ control: swiper }}
-          onSwiper={setSwiper}
-        >
-          {currentEffects.map((t, tIdx) => (
-            <SwiperSlide key={effectKey(t, tIdx)}>
-              {tIdx + 1} of {currentEffects.length}
+      <Box>
+        <Divider sx={{ pb: 4 }}>
+          <Button startIcon={<Icon name="add" />} onClick={onAddNew} name="add">
+            Insert First Effect
+          </Button>
+        </Divider>
+        {currentEffects.map(
+          (t, tIdx) =>
+            tIdx !== hiddenIdx && (
               <ImageEffect
-                effect={t}
+                key={effectKey(t, tIdx)}
                 index={tIdx}
-                totalEffects={currentEffects.length}
-                fname={appState.fname}
-                onDelete={() => onDelete(tIdx)}
-                onEdit={() =>
-                  setEffectDialogOpen({
-                    open: true,
-                    idx: tIdx,
-                    isNew: false,
-                  })
-                }
-                onAddBefore={() => onAddBefore(tIdx)}
-                onAddAfter={() => onAddAfter(tIdx)}
-                onMoveBefore={() => onMoveBefore(tIdx)}
-                onMoveAfter={() => onMoveAfter(tIdx)}
+                currentEffects={currentEffects}
+                effect={t}
+                setEffectEditDialogState={setEffectEditDialogState}
+                onEffectsChange={onEffectsChange}
+                newDefaultEffect={newDefaultEffect}
               />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </Stack>
-      {currentEffects.length === 0 && (
-        <Button variant="outlined" fullWidth onClick={onAddNew}>
-          Add First Effect
-        </Button>
+            )
+        )}
+      </Box>
+      {finalGif != null && (
+        <Paper style={{ padding: 8 }} elevation={4}>
+          <Stack alignItems="center" spacing={2}>
+            <Typography variant="h6">Final Result</Typography>
+            <Gif src={finalGif} alt={appState.fname || 'image.gif'} />
+            <Button
+              variant="contained"
+              onClick={onSaveGif}
+              startIcon={<Icon name="save_alt" />}
+            >
+              Save Gif
+            </Button>
+          </Stack>
+        </Paper>
       )}
-      <Button
-        variant="contained"
-        disabled={finalGif == null}
-        onClick={() => {
-          if (!finalGif) {
-            return; // Button will be disabled
-          }
-          saveAs(finalGif, appState.fname || 'image.gif');
-        }}
-        startIcon={<Icon name="save_alt" />}
-      >
-        Save Gif
-      </Button>
     </Stack>
   );
 };

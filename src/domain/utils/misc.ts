@@ -7,7 +7,7 @@ import type { Coord, BezierTuple } from '~/domain/types';
  * @example
  * ```ts
  * const foo: string|undefined = getSomeData();
- * asert(foo, 'foo must be defined');
+ * assert(foo, 'foo must be defined');
  * console.log(foo.length); // OK
  * ```
  */
@@ -26,6 +26,13 @@ export const replaceIndex = <T>(
   index: number,
   newValueFn: (oldValue: T) => T
 ): T[] => arr.map((x, i) => (index === i ? newValueFn(x) : x));
+
+/** Returns a new array with the element at the index removed */
+export const removeIndex = <T>(arr: T[], index: number): T[] =>
+  arr.filter((_t, idx) => {
+    console.log('Removing', { index, idx });
+    return index !== idx;
+  });
 
 /**
  * Returns a new array with the new item inserted into the given index.

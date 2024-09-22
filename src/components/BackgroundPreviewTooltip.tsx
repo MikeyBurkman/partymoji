@@ -1,10 +1,28 @@
-import { HelpTooltip } from './HelpTooltip';
+import { Stack, Typography } from '@material-ui/core';
+import { Icon } from './Icon';
 
-const TOOLTIP = [
-  'The resulting image contains partial transparency, which gifs do not handle.',
-  'A fake background has been applied to preview the gif better.',
-].join(' ');
+const TooltipInner: React.FC = () => (
+  <Stack spacing={1}>
+    <Typography>This resulting image contains partial transparency</Typography>
+    <Typography variant="caption">
+      Gifs do not handle partial transparency, so a fake background has been
+      applied to the preview.
+    </Typography>
+    <Typography variant="caption">
+      Be sure to add some effect after this that affects the "background", or
+      else anything that is partially transparent will be made either fully
+      transparent, or fully opaque.
+    </Typography>
+  </Stack>
+);
 
 export const BackgroundPreviewTooltip: React.FC = () => {
-  return <HelpTooltip description={TOOLTIP} />;
+  return (
+    <Icon
+      name="info"
+      color="secondary"
+      tooltip={<TooltipInner />}
+      htmlTooltip
+    />
+  );
 };

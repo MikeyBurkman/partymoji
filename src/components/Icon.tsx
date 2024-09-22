@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Fab,
   Icon as MuiIcon,
   styled,
   Tooltip,
@@ -23,6 +24,7 @@ export type Icons =
   | 'arrow_circle_left'
   | 'keyboard_double_arrow_right'
   | 'keyboard_double_arrow_left'
+  | 'info'
   | 'edit'
   | 'image'
   | 'priority_high'
@@ -47,57 +49,43 @@ export interface ClickableIconProps {
   name: Icons;
   onClick?: () => void;
   isDisabled?: boolean;
-  tooltip?: string;
+  label: string;
 }
 
 export const ClickableIcon: React.FC<ClickableIconProps> = ({
   name,
   onClick,
   isDisabled,
-  tooltip,
+  label,
 }) => {
   const [hover, setHover] = React.useState(false);
+
   const onMouseEnter = React.useCallback(() => {
     if (onClick) {
       setHover(true);
     }
   }, [onClick]);
+
   const onMouseLeave = React.useCallback(() => {
     if (onClick) {
       setHover(false);
     }
   }, [onClick]);
-  const onClickAction = React.useCallback(() => {
-    if (isDisabled === true) {
-      return;
-    }
-    onClick?.();
-  }, [onClick, isDisabled]);
 
-  const color = React.useMemo(() => {
-    if (isDisabled) {
-      return 'disabled';
-    }
-    return hover ? 'secondary' : 'primary';
-  }, [isDisabled, hover]);
-
-  const icon = (
-    <MuiIcon
-      onClick={onClickAction}
+  return (
+    <Fab
+      variant="extended"
+      size="small"
+      disabled={isDisabled}
+      onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      color={color}
-      style={{ cursor: isDisabled ? undefined : 'pointer' }}
+      color={hover ? 'secondary' : 'primary'}
     >
-      {name}
-    </MuiIcon>
+      <MuiIcon sx={{ mr: 1 }}>{name}</MuiIcon>
+      {label}
+    </Fab>
   );
-
-  if (tooltip) {
-    return <Tooltip title={tooltip}>{icon}</Tooltip>;
-  }
-
-  return icon;
 };
 
 export interface IconProps {

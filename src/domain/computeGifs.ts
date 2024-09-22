@@ -38,8 +38,6 @@ export const computeGifsForState = async ({
   }
 
   for (let i = startEffectIndex; i < state.effects.length; i += 1) {
-    const start = Date.now();
-
     const effect = state.effects[i];
 
     const result = await computeGif({
@@ -50,14 +48,6 @@ export const computeGifsForState = async ({
         params: effect.paramsValues,
       },
       fps: state.fps,
-    });
-
-    // Google analytics
-    ga('send', {
-      hitType: 'timing',
-      timingCategory: 'computeStep',
-      timingVar: effect.effectName,
-      timingValue: Math.ceil((Date.now() - start) / 1000),
     });
 
     image = result.image;

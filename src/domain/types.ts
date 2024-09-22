@@ -74,18 +74,18 @@ export interface EffectFnOpts<Params> {
   parameters: Params;
 }
 
-export interface Parameter<T extends JsonType> {
+export interface Parameter<T> {
   name: string;
   defaultValue: T;
   ele: JSX.Element;
 }
 
-export interface Params<T extends JsonType> {
+export interface Params<T> {
   value: T;
   onChange: (v: T) => void;
 }
 
-export type ParamFunction<T extends JsonType> = {
+export type ParamFunction<T> = {
   name: string;
   /**
    * If the previous image is done computing, it will be given to this function.
@@ -95,9 +95,7 @@ export type ParamFunction<T extends JsonType> = {
   fn: (params: Params<T>) => JSX.Element;
 };
 
-export type ParamFnDefault<T extends JsonType> =
-  | ParamFunction<T>['defaultValue']
-  | T;
+export type ParamFnDefault<T> = ParamFunction<T>['defaultValue'] | T;
 
 export type EffectFn<Params> = (
   opts: EffectFnOpts<Params>
@@ -155,12 +153,20 @@ export interface AppState {
   fps: number;
 }
 
-export interface ImageEffectResult {
+export type ImageEffectResult = {
   gif: string;
   image: Image;
-  gifWithBackgroundColor: string;
-  partiallyTransparent: boolean;
-}
+} & (
+  | {
+      partiallyTransparent: true;
+      gifWithBackgroundColor: string;
+    }
+  | {
+      partiallyTransparent: false;
+      /** Will be null if there's no transparency to this image */
+      gifWithBackgroundColor: string | undefined;
+    }
+);
 
 export type AsyncRunMessage = {
   status: 'complete';

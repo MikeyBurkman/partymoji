@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Coord } from '~/domain/types';
+import type { CanvasData, Coord } from '~/domain/types';
 
 export type BezierTuple = [Coord, Coord];
 
@@ -7,7 +7,7 @@ export interface CavasElementProps {
   width: number;
   height: number;
   cursorIsPointer?: boolean;
-  onCanvasMount: (context: CanvasRenderingContext2D) => void;
+  onCanvasMount: (canvasData: CanvasData) => void;
   onMouseDown?: (coord: Coord) => void;
   onMouseMove?: (coord: Coord) => void;
   onMouseUp?: (coord: Coord) => void;
@@ -27,26 +27,24 @@ export const CanvasElement: React.FC<CavasElementProps> = ({
   const ref = React.useRef<HTMLCanvasElement>(null);
   const isMounted = React.useRef(false);
 
-  const canvas = ref.current;
-
   React.useEffect(() => {
-    if (canvas && !isMounted.current) {
-      const ctx = canvas.getContext('2d');
+    if (ref.current && !isMounted.current) {
+      const ctx = ref.current.getContext('2d');
       if (ctx != null) {
-        onCanvasMount(ctx);
+        onCanvasMount({ canvas: ref.current, ctx });
         isMounted.current = true;
       }
     }
-  }, [canvas, isMounted, onCanvasMount]);
+  }, [isMounted, onCanvasMount]);
 
   const onEvent =
     (callback: undefined | ((c: Coord) => void)) =>
     (evt: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
-      if (!canvas || !callback) {
+      if (!ref.current || !callback) {
         return;
       }
 
-      const rect = canvas.getBoundingClientRect();
+      const rect = ref.current.getBoundingClientRect();
       const x = evt.clientX - rect.left;
       const y = evt.clientY - rect.top;
       setTimeout(() => callback([x, y]), 0);

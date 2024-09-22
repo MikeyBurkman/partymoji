@@ -39,6 +39,22 @@ export const frameToCanvas = ({
   return { canvas, ctx };
 };
 
+/**
+ * Draws a frame onto the canvas.
+ * This respects transforms applied to the canvas, such as scaling.
+ */
+export const drawImageOnCanvas = ({
+  ctx,
+  dimensions,
+  frame,
+}: {
+  ctx: OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D;
+  dimensions: Dimensions;
+  frame: FrameData;
+}): void => {
+  ctx.drawImage(frameToCanvas({ dimensions, frame }).canvas, 0, 0);
+};
+
 /** Convert a CanvasData into a FrameData */
 export const canvasToFrame = (canvasData: CanvasData): FrameData => {
   const imageData = canvasData.ctx.getImageData(
@@ -224,5 +240,17 @@ export const applyRotation = (
     horizontalTranslation: -offsetX,
     verticalTranslation: -offsetY,
   });
+  return canvas;
+};
+
+/**
+ * Scales the canvas a given amount for the x and or y axis.
+ * A scale of 1 leaves the image unchanged.
+ */
+export const applyScale = (
+  canvas: CanvasData,
+  [x, y]: [number, number]
+): CanvasData => {
+  canvas.ctx.scale(x, y);
   return canvas;
 };

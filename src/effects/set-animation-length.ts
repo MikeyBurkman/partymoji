@@ -6,12 +6,15 @@ export const setAnimationLength = buildEffect({
   name: 'Set Animation Length',
   group: 'Animation',
   groupOrder: 999, // First thing
-  description: 'Change the length of the animation.',
+  description: 'Sets the length of the animation.',
   params: [
     sliderParam({
       name: 'Number of Frames',
       description: 'Set how many frames of animation there will be.',
-      defaultValue: (image) => (image ? image.frames.length : 1),
+      defaultValue: (image) => {
+        console.log('IMAGE', image);
+        return image ? image.frames.length : 1;
+      },
       min: 1,
       max: 60,
     }),

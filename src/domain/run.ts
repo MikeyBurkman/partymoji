@@ -44,26 +44,47 @@ export const runEffects = async ({
     fps,
   });
 
-  const resultWithBG = hasPartialTransparency
-    ? await fakeTransparency.fn({
-        image: result,
-        parameters: [],
-        random,
-      })
-    : null;
+  if (hasPartialTransparency) {
+    const resultWithBG = await fakeTransparency.fn({
+      image: result,
+      parameters: [],
+      random,
+    });
 
-  return {
-    gif,
-    image: result,
-    gifWithBackgroundColor: resultWithBG
-      ? await createGif({
-          image: resultWithBG,
-          transparentColor: undefined,
-          fps,
-        })
-      : gif,
-    partiallyTransparent: hasPartialTransparency,
-  };
+    return {
+      gif,
+      image: result,
+      partiallyTransparent: true,
+      gifWithBackgroundColor: await createGif({
+        image: resultWithBG,
+        transparentColor: undefined,
+        fps,
+      }),
+    };
+  } else {
+    const resultWithBG =
+      transparentColor == null
+        ? undefined
+        : await fakeTransparency.fn({
+            image: result,
+            parameters: [],
+            random,
+          });
+
+    return {
+      gif,
+      image: result,
+      partiallyTransparent: false,
+      gifWithBackgroundColor:
+        resultWithBG == null
+          ? undefined
+          : await createGif({
+              image: resultWithBG,
+              transparentColor: undefined,
+              fps,
+            }),
+    };
+  }
 };
 
 /**
@@ -144,10 +165,15 @@ const createGif = async ({
 const getTransparentColor = (
   image: Image,
   random: seedrandom.prng
-): {
-  transparentColor: Color | undefined;
-  hasPartialTransparency: boolean;
-} => {
+):
+  | {
+      hasPartialTransparency: true;
+      transparentColor: Color;
+    }
+  | {
+      hasPartialTransparency: false;
+      transparentColor: Color | undefined;
+    } => {
   let hasTransparent = false;
   const seenPixels = new Set<string>();
   const [width, height] = image.dimensions;

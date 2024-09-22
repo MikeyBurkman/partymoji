@@ -255,7 +255,10 @@ export const ImageEffectDialog: React.FC<Props> = ({
                 ) : (
                   <>
                     <Gif
-                      src={image.results.gifWithBackgroundColor}
+                      src={
+                        image.results.gifWithBackgroundColor ??
+                        image.results.gif
+                      }
                       alt={`effect-${editingEffect.effect.name}`}
                       dimensions={image.results.image.dimensions}
                     />

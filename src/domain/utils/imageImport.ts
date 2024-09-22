@@ -14,7 +14,7 @@ const toArrayBuffer = (file: File): Promise<ArrayBuffer> =>
 // Only works for gifs
 export const readGifFromFile = async (file: File): Promise<Image> => {
   const buffer = await toArrayBuffer(file);
-  const gif = await parseGIF(buffer);
+  const gif = parseGIF(buffer);
 
   const dimensions: Dimensions = [gif.lsd.width, gif.lsd.height];
   const finalCanvas = createCanvas(dimensions);
