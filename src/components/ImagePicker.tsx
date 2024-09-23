@@ -30,7 +30,7 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
           variant="outlined"
           fullWidth
           error={!!error}
-          helperText={error ?? 'Only supports static images'}
+          helperText={error}
           onBlur={async (e) => {
             const text = e.target.value;
             try {
