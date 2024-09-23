@@ -6,7 +6,7 @@ import { miscUtil } from './utils';
 
 // OffscreenCanvas isn't supported by mobile browsers, so mobile will also run synchronously,
 //  which will force us to use regular canvas and not OffscreenCanvas.
-// Also, we can't get web workers working with the dev build, so awalsy use the synchrounous
+// Also, we can't get web workers working with the dev build, so always use the synchronous
 //  version if not a prod build.
 export const computeGif =
   IS_MOBILE || ENV === 'DEV' ? runEffects : runEffectsAsync;

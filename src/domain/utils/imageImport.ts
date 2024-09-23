@@ -4,7 +4,6 @@ import { parseGIF, decompressFrames } from 'gifuct-js';
 import type { Dimensions, FrameData, Image } from '~/domain/types';
 import { canvasToFrame, createCanvas } from './canvas';
 import * as miscUtil from './misc';
-import { debugLog } from '../env';
 
 const toArrayBuffer = (file: File): Promise<ArrayBuffer> =>
   new Promise<ArrayBuffer>((resolve) => {
@@ -96,12 +95,6 @@ export const readImage = async (
   }
 
   const isGif = file.name.endsWith('.gif');
-
-  debugLog('Reading file', {
-    isFile: typeof file !== 'string',
-    fname: typeof file === 'string' ? 'N/A' : file.name,
-    isGif,
-  });
 
   if (isGif) {
     const { image, fps } = await readGifFromFile(file);
