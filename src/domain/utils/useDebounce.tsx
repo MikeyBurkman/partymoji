@@ -26,5 +26,10 @@ export function useDebounce<T>({
     [debounceMillis, onChange]
   );
 
+  React.useEffect(() => {
+    // Listen to external changes to value
+    setV(value);
+  }, [value]);
+
   return [v, onValueChange];
 }

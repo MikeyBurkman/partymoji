@@ -24,19 +24,24 @@ export const getStoredAppState = async (): Promise<AppState | undefined> => {
         const state = savedState as SerializedAppState;
         // Need to re-hydrate the baseImage's image data, as we don't save that to local storage
         let hydratedBaseImage: ImageEffectResult | undefined = undefined;
+        let imageFps = 20;
         if (typeof state.baseImage === 'string') {
           if (state.baseImage.startsWith('data:image/gif')) {
             const blob = miscUtil.dataURItoBlob(state.baseImage);
             const f = new File([blob], state.fname!); // Can't have a baseImage without a filename
-            const image = await imageImportUtil.readGifFromFile(f);
+            const { image, fps } = await imageImportUtil.readImage(f);
             hydratedBaseImage = {
               gif: state.baseImage,
               gifWithBackgroundColor: state.baseImage,
               image,
               partiallyTransparent: false,
             };
+            imageFps = fps;
           } else {
-            const image = await imageImportUtil.readImage(savedState.baseImage);
+            // Non-gif
+            const { image } = await imageImportUtil.readImage(
+              savedState.baseImage
+            );
             hydratedBaseImage = {
               gif: state.baseImage,
               gifWithBackgroundColor: state.baseImage,
@@ -48,6 +53,7 @@ export const getStoredAppState = async (): Promise<AppState | undefined> => {
         return {
           ...state,
           baseImage: hydratedBaseImage,
+          fps: imageFps,
         };
       }
     }

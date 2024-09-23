@@ -12,7 +12,6 @@ export const setAnimationLength = buildEffect({
       name: 'Number of Frames',
       description: 'Set how many frames of animation there will be.',
       defaultValue: (image) => {
-        console.log('IMAGE', image);
         return image ? image.frames.length : 1;
       },
       min: 1,

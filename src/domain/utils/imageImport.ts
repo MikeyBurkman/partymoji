@@ -3,6 +3,8 @@ import getPixels from 'get-pixels';
 import { parseGIF, decompressFrames } from 'gifuct-js';
 import type { Dimensions, FrameData, Image } from '~/domain/types';
 import { canvasToFrame, createCanvas } from './canvas';
+import * as miscUtil from './misc';
+import { debugLog } from '../env';
 
 const toArrayBuffer = (file: File): Promise<ArrayBuffer> =>
   new Promise<ArrayBuffer>((resolve) => {
@@ -11,20 +13,31 @@ const toArrayBuffer = (file: File): Promise<ArrayBuffer> =>
     reader.readAsArrayBuffer(file);
   });
 
-// Only works for gifs
-export const readGifFromFile = async (file: File): Promise<Image> => {
+const readGifFromFile = async (
+  file: File
+): Promise<{ image: Image; fps: number }> => {
   const buffer = await toArrayBuffer(file);
   const gif = parseGIF(buffer);
 
   const dimensions: Dimensions = [gif.lsd.width, gif.lsd.height];
   const finalCanvas = createCanvas(dimensions);
 
-  let needsDisposal = false;
+  const frameDelays: number[] = [];
+
   const frames = decompressFrames(gif, true).map(
     (parsedFrame): Uint8ClampedArray => {
-      if (needsDisposal) {
+      const delay = parsedFrame.delay;
+      if (typeof delay === 'number' && delay > 0) {
+        // Some gifs have undefined frame delays, despite the typings saying otherwise
+        frameDelays.push(delay);
+      }
+
+      // Disposal Type explanation https://www.matthewflickinger.com/lab/whatsinagif/animation_and_transparency.asp
+      // 0 = Not animated, so it doesn't matter
+      // 1 = Draw this frame onto the previous frame
+      // 2 = Draw onto a blank frame
+      if (parsedFrame.disposalType === 2) {
         finalCanvas.ctx.clearRect(0, 0, dimensions[0], dimensions[1]);
-        needsDisposal = false;
       }
 
       const frameDims: Dimensions = [
@@ -48,15 +61,58 @@ export const readGifFromFile = async (file: File): Promise<Image> => {
     }
   );
 
+  const averageDelay =
+    frameDelays.reduce((acc, val) => acc + val, 0) / frameDelays.length;
+
+  const fps = Math.ceil(1000 / averageDelay);
+
   return {
-    dimensions,
-    frames,
+    image: { dimensions, frames },
+    fps,
   };
 };
 
-// NOTE: This does not handle some gifs correctly. Use readGifFromFile instead.
-export const readImage = (dataUrl: string): Promise<Image> =>
-  new Promise<Image>((res, rej) =>
+interface ReadResult {
+  image: Image;
+  dataUrl: string;
+  fps: number;
+}
+
+export const readImage = async (
+  fileOrDataUrl: File | string
+): Promise<ReadResult> => {
+  let dataUrl: string;
+  let file: File;
+  if (typeof fileOrDataUrl === 'string') {
+    const fileType = getFileType(fileOrDataUrl);
+    file = dataUrlToFile({
+      dataUrl: fileOrDataUrl,
+      fname: `image.${fileType ?? 'gif'}`,
+    });
+    dataUrl = fileOrDataUrl;
+  } else {
+    file = fileOrDataUrl;
+    dataUrl = await miscUtil.blobOrFileToDataUrl(file);
+  }
+
+  const isGif = file.name.endsWith('.gif');
+
+  debugLog('Reading file', {
+    isFile: typeof file !== 'string',
+    fname: typeof file === 'string' ? 'N/A' : file.name,
+    isGif,
+  });
+
+  if (isGif) {
+    const { image, fps } = await readGifFromFile(file);
+    return {
+      dataUrl,
+      image,
+      fps,
+    };
+  }
+
+  const image = await new Promise<Image>((res, rej) =>
     getPixels(
       dataUrl,
       (err: Error, results: { shape: number[]; data: FrameData }) => {
@@ -93,26 +149,43 @@ export const readImage = (dataUrl: string): Promise<Image> =>
     )
   );
 
-export const getImageFromUrl = async (url: string) => {
-  return new Promise<string>((resolve, reject) => {
-    const img = new Image();
-    img.setAttribute('crossOrigin', 'anonymous');
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        throw new Error('Canvas not supported');
-      }
-      ctx.drawImage(img, 0, 0);
-      resolve(canvas.toDataURL());
-    };
-
-    img.onerror = () => {
-      reject(new Error('Error loading url'));
-    };
-
-    img.src = url;
-  });
+  return {
+    image,
+    dataUrl,
+    fps: 1,
+  };
 };
+
+export const getImageFromUrl = async (url: string): Promise<string> => {
+  const res = await fetch(url);
+  const contentType = res.headers.get('content-type');
+  if (!contentType) {
+    throw new Error('Unable to determine content type');
+  }
+
+  const arrayBuffer = await res.arrayBuffer();
+  const base64String = btoa(
+    new Uint8Array(arrayBuffer).reduce(
+      (data, byte) => data + String.fromCharCode(byte),
+      ''
+    )
+  );
+
+  return `data:${contentType};base64,${base64String}`;
+};
+
+function dataUrlToFile({
+  dataUrl,
+  fname,
+}: {
+  dataUrl: string;
+  fname: string;
+}): File {
+  const blob = miscUtil.dataURItoBlob(dataUrl);
+  return new File([blob], fname);
+}
+
+function getFileType(dataUrl: string): string | undefined {
+  const matched = dataUrl.match(/^data:image\/(\w+);/);
+  return matched?.[1];
+}

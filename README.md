@@ -20,8 +20,6 @@ https://mikeyburkman.github.io/partymoji/
 - Add movement/scaling/rotation/drop-shadow to text
 - Bezier param does not detect mobile taps, only mouse clicks
 - Optimize palette reduction effect. Probably makes sense to just set the number of colors max, which needs to be a power of 2 anyhow.
-- Make importing from a url string work with the new gif reader
-- Refactor imageImport to automatically handle gif vs other image types
 - Show tool tip in more places, that open help dialogs, instead of one big help section
 - Exponential scale on sliders -- allows for a large max while being precise on lower values
 

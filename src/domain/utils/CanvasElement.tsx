@@ -3,7 +3,7 @@ import type { CanvasData, Coord } from '~/domain/types';
 
 export type BezierTuple = [Coord, Coord];
 
-export interface CavasElementProps {
+export interface CanvasElementProps {
   width: number;
   height: number;
   cursorIsPointer?: boolean;
@@ -14,15 +14,15 @@ export interface CavasElementProps {
   onMouseLeave?: (coord: Coord) => void;
 }
 
-export const CanvasElement: React.FC<CavasElementProps> = ({
+export const CanvasElement: React.FC<CanvasElementProps> = ({
   width,
   height,
   cursorIsPointer,
   onCanvasMount,
-  onMouseDown,
-  onMouseUp,
-  onMouseMove,
-  onMouseLeave,
+  onMouseDown: onMouseDownEvt,
+  onMouseUp: onMouseUpEvt,
+  onMouseMove: onMouseMoveEvt,
+  onMouseLeave: onMouseLeaveEvt,
 }) => {
   const ref = React.useRef<HTMLCanvasElement>(null);
   const isMounted = React.useRef(false);
@@ -58,15 +58,32 @@ export const CanvasElement: React.FC<CavasElementProps> = ({
     }
   }, [cursorIsPointer]);
 
+  const onMouseDown = React.useCallback(
+    () => onEvent(onMouseDownEvt),
+    [onMouseDownEvt]
+  );
+  const onMouseUp = React.useCallback(
+    () => onEvent(onMouseUpEvt),
+    [onMouseUpEvt]
+  );
+  const onMouseMove = React.useCallback(
+    () => onEvent(onMouseMoveEvt),
+    [onMouseMoveEvt]
+  );
+  const onMouseLeave = React.useCallback(
+    () => onEvent(onMouseLeaveEvt),
+    [onMouseLeaveEvt]
+  );
+
   return (
     <canvas
       ref={ref}
       width={width}
       height={height}
-      onMouseDown={onEvent(onMouseDown)}
-      onMouseUp={onEvent(onMouseUp)}
-      onMouseMove={onEvent(onMouseMove)}
-      onMouseLeave={onEvent(onMouseLeave)}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
       style={style}
     ></canvas>
   );

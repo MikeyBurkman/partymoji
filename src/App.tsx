@@ -210,7 +210,7 @@ const Inner: React.FC = () => {
                 <ImagePicker
                   name="Upload a source image"
                   currentImage={state.baseImage}
-                  onChange={(baseImage, fname) => {
+                  onChange={(baseImage, fname, fps) => {
                     if (IS_MOBILE) {
                       const [width, height] = baseImage.image.dimensions;
                       if (width > 512 || height > 512) {
@@ -229,6 +229,7 @@ const Inner: React.FC = () => {
                         ...prevState,
                         baseImage,
                         fname,
+                        fps,
                       }),
                       { compute: 'now' }
                     );
