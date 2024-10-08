@@ -90,6 +90,13 @@ export const shiftHue = ([r, g, b, a]: Color, amount: number): Color => {
   return [newR, newG, newB, a];
 };
 
+// Amount: 0 - 100
+export const setBrightness = ([r, g, b, a]: Color, amount: number): Color => {
+  const [h, s] = convert.rgb.hsl([r, g, b]);
+  const [newR, newG, newB] = convert.hsl.rgb([h, s, amount]);
+  return [newR, newG, newB, a];
+};
+
 /**
  * Turn a hue value (0 - 360) into a Color
  */
@@ -141,4 +148,26 @@ export const colorDiff = (c1: Color, c2: Color): number => {
   const gComponent = 4 * deltaGreen * deltaGreen;
   // 765 = ~ difference between black and white pixels
   return Math.sqrt(rComponent + bComponent + gComponent) / 765;
+};
+
+/**
+ * Returns a color between c1 and c2.
+ * Amount is between 0 and 1.
+ * An amount of 0 will return c1, and amount of 1 will return c2.
+ */
+export const linearInterpolation = ({
+  c1: [r1, g1, b1],
+  c2: [r2, g2, b2],
+  amount,
+}: {
+  c1: Color;
+  c2: Color;
+  amount: number;
+}): Color => {
+  return [
+    Math.floor((1 - amount) * r1 + amount * r2),
+    Math.floor((1 - amount) * g1 + amount * g2),
+    Math.floor((1 - amount) * b1 + amount * b2),
+    255,
+  ];
 };

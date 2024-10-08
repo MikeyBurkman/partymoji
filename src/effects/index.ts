@@ -9,10 +9,12 @@ import { blur } from './blur';
 import { bounce } from './bounce';
 import { bounceAnimation } from './bounce-animation';
 import { circle } from './circle';
+import { colorPalette } from './color-palette';
 import { colors } from './colors';
 import { colorsBackground } from './colors-background';
 import { doubleVision } from './double-vision';
 import { dropShadow } from './drop-shadow';
+import { dualHue } from './dual-hue';
 import { expand } from './expand';
 import { fade } from './fade';
 import { fill } from './fill';
@@ -50,6 +52,7 @@ import { slowAnimation } from './slow-animation';
 import { spin } from './spin';
 import { staticc } from './static';
 import { text } from './text';
+import { trails } from './trails';
 import { transparency } from './transparency';
 import { transpose } from './transpose';
 
@@ -73,10 +76,12 @@ export const POSSIBLE_EFFECTS = pipe(
     bounce,
     bounceAnimation,
     circle,
+    colorPalette,
     colors,
     colorsBackground,
     doubleVision,
     dropShadow,
+    dualHue,
     expand,
     fade,
     fill,
@@ -113,6 +118,7 @@ export const POSSIBLE_EFFECTS = pipe(
     spin,
     staticc,
     text,
+    trails,
     transparency,
     transpose,
   ],

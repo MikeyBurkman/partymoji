@@ -39,6 +39,17 @@ export const frameToCanvas = ({
   return { canvas, ctx };
 };
 
+/** Convert a CanvasData into a FrameData */
+export const canvasToFrame = (canvasData: CanvasData): FrameData => {
+  const imageData = canvasData.ctx.getImageData(
+    0,
+    0,
+    canvasData.canvas.width,
+    canvasData.canvas.height
+  );
+  return imageData.data;
+};
+
 /**
  * Draws a frame onto the canvas.
  * This respects transforms applied to the canvas, such as scaling.
@@ -55,20 +66,9 @@ export const drawImageOnCanvas = ({
   ctx.drawImage(frameToCanvas({ dimensions, frame }).canvas, 0, 0);
 };
 
-/** Convert a CanvasData into a FrameData */
-export const canvasToFrame = (canvasData: CanvasData): FrameData => {
-  const imageData = canvasData.ctx.getImageData(
-    0,
-    0,
-    canvasData.canvas.width,
-    canvasData.canvas.height
-  );
-  return imageData.data;
-};
-
 /**
  * Allows you to apply a JS Canvas to an image.
- * Use the `preEffect` and `postEffect` functions to maniuplate the image
+ * Use the `preEffect` and `postEffect` functions to manipulate the image
  *  both before and after drawing the image to the canvas.
  */
 export const applyCanvasFromFrame = ({
@@ -143,7 +143,7 @@ export const applyFilter = (
     sepia,
     dropShadow,
   }: {
-    /** # pixels */
+    /** Number of pixels */
     blur?: number;
     /** [0, 100) percent */
     opacity?: number;

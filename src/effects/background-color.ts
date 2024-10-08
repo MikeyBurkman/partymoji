@@ -5,7 +5,7 @@ import { buildEffect } from './utils';
 export const backgroundColor = buildEffect({
   name: 'Background Color',
   group: 'Colors',
-  description: 'Change all transparent pixles to the given color',
+  description: 'Change all transparent pixels to the given color',
   params: [
     colorPickerParam({
       name: 'Color',

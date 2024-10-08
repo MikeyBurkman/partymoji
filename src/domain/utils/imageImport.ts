@@ -145,7 +145,7 @@ export const readImage = async (
   return {
     image,
     dataUrl,
-    fps: 1,
+    fps: 20, // Default FPS
   };
 };
 

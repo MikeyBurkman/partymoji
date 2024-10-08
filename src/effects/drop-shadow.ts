@@ -28,7 +28,7 @@ export const dropShadow = buildEffect({
     }),
   ] as const,
   fn: ({ image, parameters: [offsetX, offsetY, blurRadius, color] }) =>
-    imageUtil.mapFrames(image, (frame, frameIndex, frameCount) =>
+    imageUtil.mapFrames(image, (frame) =>
       canvasUtil.applyCanvasFromFrame({
         dimensions: image.dimensions,
         frame,
