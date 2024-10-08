@@ -58,19 +58,16 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
     }
   }, [cursorIsPointer]);
 
-  const onMouseDown = React.useCallback(
+  const onMouseDown = React.useMemo(
     () => onEvent(onMouseDownEvt),
     [onMouseDownEvt]
   );
-  const onMouseUp = React.useCallback(
-    () => onEvent(onMouseUpEvt),
-    [onMouseUpEvt]
-  );
-  const onMouseMove = React.useCallback(
+  const onMouseUp = React.useMemo(() => onEvent(onMouseUpEvt), [onMouseUpEvt]);
+  const onMouseMove = React.useMemo(
     () => onEvent(onMouseMoveEvt),
     [onMouseMoveEvt]
   );
-  const onMouseLeave = React.useCallback(
+  const onMouseLeave = React.useMemo(
     () => onEvent(onMouseLeaveEvt),
     [onMouseLeaveEvt]
   );
