@@ -88,7 +88,7 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
             <BackgroundPreviewTooltip />
           </>
         ) : (
-          <Stack spacing={1}>
+          <Stack spacing={1} pb={2}>
             <Gif
               src={
                 showTransparency && result.gifWithBackgroundColor

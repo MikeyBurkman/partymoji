@@ -9,6 +9,7 @@ import { blur } from './blur';
 import { bounce } from './bounce';
 import { bounceAnimation } from './bounce-animation';
 import { circle } from './circle';
+import { changingFocus } from './changing-focus';
 import { colorPalette } from './color-palette';
 import { colors } from './colors';
 import { colorsBackground } from './colors-background';
@@ -76,6 +77,7 @@ export const POSSIBLE_EFFECTS = pipe(
     bounce,
     bounceAnimation,
     circle,
+    changingFocus,
     colorPalette,
     colors,
     colorsBackground,
