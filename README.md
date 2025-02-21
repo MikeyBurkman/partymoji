@@ -16,15 +16,23 @@ https://mikeyburkman.github.io/partymoji/
 
 ### TODO
 
-- Custom bezier library -> more points? Would be nice to have start and end points instead of always [0,0],[1,1]
-- Add movement/scaling/rotation/drop-shadow to text
+- Custom bezier library -> more points?
+  - Would be nice to have start and end points instead of always [0,0],[1,1]. For instance, support curves that start or end at [0,0.5]
 - Bezier param does not detect mobile taps, only mouse clicks
-- Optimize palette reduction effect. Probably makes sense to just set the number of colors max, which needs to be a power of 2 anyhow.
+- Greatly optimize palette reduction effect.
+  - Probably also makes sense to just set the number of colors max, which needs to be a power of 2.
 - Show tool tip in more places, that open help dialogs, instead of one big help section
-- Exponential scale on sliders -- allows for a large max while being precise on lower values
+- Alter how sliders how to allow for larger ranges
+  - Maybe make them exponential -- lower values on the slider are easier to select, but as you move the slider right, it starts skipping values. (Lower values typically require more precision.)
+  - Could also try increasing/decreasing the slider value based on how fast the cursor is moving?
+- Rewrite (over time) the UI using styled-components, not Material UI, so we have more control over things
+- Write a gif encoder in Rust/web assembly, so creating gifs is a lot faster
+  - Ideally the gif encoder is a separate open source project that this app merely uses.
+  - Extra credit - GIFs can be greatly optimized by having subsequent animation frames only overwrite part of the image. Would be really cool to figure out how to do that ourselves.
 
 ### Effect ideas
 
+- Add movement/scaling/rotation/drop-shadow to text
 - Spiraling out effect -- maybe applying opacity more as it progresses to the outer edge?
 - Sierpinski triangle effect
 - Give each pixel a randomized trajectory to give like a scatter effect? Maybe some sort of circular function that will ensure it returns to the starting point. Bezier curve to control the speed.
