@@ -8,7 +8,9 @@
   "scripts": {
     "tsc": "tsc",
     "start": "cross-env REACT_APP_ENV=DEV node scripts/start.js",
-    "start:prod": "pnpm run build && sed -i '' 's/\\/partymoji//g' ./docs/index.html && npx http-serve ./docs -a localhost -p 3000 -o",
+    "start:prod": "pnpm run build && pnpm run update-index && pnpm run serve-docs",
+    "update-index": "npx replace-in-file '/\\/partymoji/g' '' ./docs/index.html",
+    "serve-docs": "npx http-serve ./docs -a localhost -p 3000 -o",
     "build": "cross-env REACT_APP_ENV=PROD NODE_OPTIONS=--openssl-legacy-provider node scripts/build.js",
     "pretty": "prettier --write \"**/*.{js,md,ts,html,tsx,json}\"",
     "prepare": "husky install",
