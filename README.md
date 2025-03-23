@@ -10,9 +10,9 @@ https://mikeyburkman.github.io/partymoji/
 
 ### Develop it locally
 
-1. `yarn` to install dependencies
-2. `yarn start` to run a local debug version at `http://localhost:3000/partymoji`
-3. `yarn test-prod` to run a prod build at `http://localhost:3000`
+1. `pnpm i` to install dependencies
+2. `pnpm run start` to run a local debug version at `http://localhost:3000/partymoji`
+3. `pnpm run test-prod` to run a prod build at `http://localhost:3000`
 
 ### TODO
 

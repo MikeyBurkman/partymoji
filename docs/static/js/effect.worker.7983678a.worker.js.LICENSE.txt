@@ -29,7 +29,7 @@ object-assign
 
 /*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 
-/** @license Material-UI v5.0.0-beta.4
+/** @license Material-UI v5.0.0-beta.5
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.

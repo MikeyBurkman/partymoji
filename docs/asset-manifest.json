@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.js": "/partymoji/static/js/main.bd063208.chunk.js",
-    "main.js.map": "/partymoji/static/js/main.bd063208.chunk.js.map",
-    "runtime-main.js": "/partymoji/static/js/runtime-main.39af959e.js",
-    "runtime-main.js.map": "/partymoji/static/js/runtime-main.39af959e.js.map",
-    "static/js/2.583b7aee.chunk.js": "/partymoji/static/js/2.583b7aee.chunk.js",
-    "static/js/2.583b7aee.chunk.js.map": "/partymoji/static/js/2.583b7aee.chunk.js.map",
+    "main.js": "/partymoji/static/js/main.8ccc0e5e.chunk.js",
+    "main.js.map": "/partymoji/static/js/main.8ccc0e5e.chunk.js.map",
+    "runtime-main.js": "/partymoji/static/js/runtime-main.1c3594fe.js",
+    "runtime-main.js.map": "/partymoji/static/js/runtime-main.1c3594fe.js.map",
+    "static/js/2.0235669a.chunk.js": "/partymoji/static/js/2.0235669a.chunk.js",
+    "static/js/2.0235669a.chunk.js.map": "/partymoji/static/js/2.0235669a.chunk.js.map",
     "index.html": "/partymoji/index.html",
-    "static/js/2.583b7aee.chunk.js.LICENSE.txt": "/partymoji/static/js/2.583b7aee.chunk.js.LICENSE.txt",
-    "static/js/effect.worker.4579f38d.worker.js": "/partymoji/static/js/effect.worker.4579f38d.worker.js",
-    "static/js/effect.worker.4579f38d.worker.js.LICENSE.txt": "/partymoji/static/js/effect.worker.4579f38d.worker.js.LICENSE.txt",
-    "static/js/effect.worker.4579f38d.worker.js.map": "/partymoji/static/js/effect.worker.4579f38d.worker.js.map"
+    "static/js/2.0235669a.chunk.js.LICENSE.txt": "/partymoji/static/js/2.0235669a.chunk.js.LICENSE.txt",
+    "static/js/effect.worker.7983678a.worker.js": "/partymoji/static/js/effect.worker.7983678a.worker.js",
+    "static/js/effect.worker.7983678a.worker.js.LICENSE.txt": "/partymoji/static/js/effect.worker.7983678a.worker.js.LICENSE.txt",
+    "static/js/effect.worker.7983678a.worker.js.map": "/partymoji/static/js/effect.worker.7983678a.worker.js.map"
   },
   "entrypoints": [
-    "static/js/runtime-main.39af959e.js",
-    "static/js/2.583b7aee.chunk.js",
-    "static/js/main.bd063208.chunk.js"
+    "static/js/runtime-main.1c3594fe.js",
+    "static/js/2.0235669a.chunk.js",
+    "static/js/main.8ccc0e5e.chunk.js"
   ]
 }
