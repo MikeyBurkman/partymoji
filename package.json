@@ -9,12 +9,12 @@
     "tsc": "tsc",
     "start": "REACT_APP_ENV=DEV NODE_OPTIONS=--openssl-legacy-provider node scripts/start.js",
     "start:prod": "pnpm run build && pnpm run update-index && pnpm run serve-docs",
-    "update-index": "npx replace-in-file '/\\/partymoji/g' '' ./docs/index.html",
-    "serve-docs": "npx http-serve ./docs -a localhost -p 3000 -o",
+    "update-index": "npx --yes replace-in-file '/\\/partymoji/g' '' ./docs/index.html",
+    "serve-docs": "npx --yes http-serve ./docs -a localhost -p 3000 -o",
     "build": "REACT_APP_ENV=PROD NODE_OPTIONS=--openssl-legacy-provider node scripts/build.js",
     "pretty": "prettier --write \"**/*.{js,md,ts,html,tsx,json}\"",
     "prepare": "husky install",
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx --yes only-allow pnpm"
   },
   "dependencies": {
     "@babel/core": "^7.12.3",
