@@ -1,6 +1,7 @@
 import { Stack, Typography } from '@material-ui/core';
 import React from 'react';
 import { SketchPicker } from 'react-color';
+// import { ColorPicker, ColorService, IColor, useColor } from 'react-color-palette';
 import { Expandable } from '~/components/Expandable';
 import { HelpTooltip } from '~/components/HelpTooltip';
 import type { Color, ParamFnDefault, ParamFunction } from '~/domain/types';
@@ -23,6 +24,13 @@ const ColorPickerParam: React.FC<{
   description?: string;
   onChange: (v: Color) => void;
 }> = ({ name, value, description, onChange }) => {
+  // const hex = colorUtil.toHexColor(value);
+  // const [color, setColor] = useColor(hex);
+
+  // const onColorChange = (color: IColor) => {
+  //   setColor(color);
+  //   onChange(colorUtil.fromHexColor(color.hex));
+  // };
   return (
     <Expandable
       mainEle={
@@ -39,8 +47,11 @@ const ColorPickerParam: React.FC<{
         color={colorUtil.toHexColor(value)}
         onChangeComplete={(c) => {
           onChange(colorUtil.fromHexColor(c.hex));
+          // setColor(ColorService.convert('hex', c.hex));
         }}
       />
+
+      {/* <ColorPicker color={color} onChange={onColorChange} /> */}
     </Expandable>
   );
 };
