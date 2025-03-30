@@ -25,6 +25,7 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
   const [width, height] = dimensions;
 
   const [showTransparency, setShowTransparency] = React.useState(true);
+  const [showBorder, setShowBorder] = React.useState(true);
 
   const { eleWidth, eleHeight, hScale, vScale } = React.useMemo(() => {
     const aspectRatio = height / width;
@@ -60,6 +61,7 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
             key={idx}
             width={eleWidth}
             height={eleHeight}
+            showBorder={showBorder}
             onCanvasMount={(canvasData) => {
               applyTransform(canvasData, {
                 horizontalScale: hScale,
@@ -70,7 +72,7 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
           />
         </Stack>
       )),
-    [dimensions, eleHeight, eleWidth, frames, hScale, result.gif, vScale]
+    [dimensions, eleHeight, eleWidth, frames, hScale, result.gif, showBorder, vScale]
   );
 
   return (
@@ -107,6 +109,13 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
                 />
               </Stack>
             )}
+            <Stack direction="row">
+              <Typography variant="caption">Show Frame Border</Typography>
+              <Checkbox
+                checked={showBorder}
+                onChange={(e) => setShowBorder(e.target.checked)}
+              />
+            </Stack>
           </Stack>
         )}
       </Stack>

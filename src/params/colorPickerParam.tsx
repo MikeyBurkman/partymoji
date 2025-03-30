@@ -1,12 +1,13 @@
 import { Stack, Typography } from '@material-ui/core';
 import React from 'react';
-import { SketchPicker } from 'react-color';
-// import { ColorPicker, ColorService, IColor, useColor } from 'react-color-palette';
+import ColorPicker, { useColorPicker } from 'react-best-gradient-color-picker';
 import { Expandable } from '~/components/Expandable';
 import { HelpTooltip } from '~/components/HelpTooltip';
 import type { Color, ParamFnDefault, ParamFunction } from '~/domain/types';
 import { colorUtil } from '~/domain/utils';
 import { toParamFunction } from './utils';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
 const ColorBox: React.FC<{ color: Color }> = ({ color }) => (
   <div
@@ -24,13 +25,22 @@ const ColorPickerParam: React.FC<{
   description?: string;
   onChange: (v: Color) => void;
 }> = ({ name, value, description, onChange }) => {
-  // const hex = colorUtil.toHexColor(value);
-  // const [color, setColor] = useColor(hex);
+  const [rgbColor, setRgbColor] = useState(
+    `rgb(${value[0]}, ${value[1]}, ${value[2]})`
+  );
+  const { rgbaArr } = useColorPicker(rgbColor, setRgbColor);
 
-  // const onColorChange = (color: IColor) => {
-  //   setColor(color);
-  //   onChange(colorUtil.fromHexColor(color.hex));
-  // };
+  useEffect(() => {
+    console.log(`Comparing ${rgbaArr} with ${value}`);
+    if (
+      rgbaArr.length === value.length &&
+      !rgbaArr.every((val, index) => val === value[index])
+    ) {
+      console.info('Updating color picker value');
+      onChange(rgbaArr as Color);
+    }
+  }, [value, onChange, rgbaArr]);
+
   return (
     <Expandable
       mainEle={
@@ -41,17 +51,18 @@ const ColorPickerParam: React.FC<{
         </Stack>
       }
     >
-      <SketchPicker
-        disableAlpha={true}
-        presetColors={[]}
-        color={colorUtil.toHexColor(value)}
-        onChangeComplete={(c) => {
-          onChange(colorUtil.fromHexColor(c.hex));
-          // setColor(ColorService.convert('hex', c.hex));
-        }}
+      <ColorPicker
+        value={rgbColor}
+        onChange={setRgbColor}
+        hideColorTypeBtns={true}
+        hideOpacity={true}
+        hidePresets={true}
+        hideEyeDrop={true}
+        hideAdvancedSliders={true}
+        hideGradientType={true}
+        hideControls={true}
+        hideColorGuide={true}
       />
-
-      {/* <ColorPicker color={color} onChange={onColorChange} /> */}
     </Expandable>
   );
 };
