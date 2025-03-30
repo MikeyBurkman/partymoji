@@ -7,7 +7,6 @@ export interface CanvasElementProps {
   width: number;
   height: number;
   cursorIsPointer?: boolean;
-  showBorder?: boolean;
   onCanvasMount: (canvasData: CanvasData) => void;
   onMouseDown?: (coord: Coord) => void;
   onMouseMove?: (coord: Coord) => void;
@@ -18,7 +17,6 @@ export interface CanvasElementProps {
 export const CanvasElement: React.FC<CanvasElementProps> = ({
   width,
   height,
-  showBorder,
   cursorIsPointer,
   onCanvasMount,
   onMouseDown: onMouseDownEvt,
@@ -37,10 +35,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
         isMounted.current = true;
       }
     }
-    if (ref.current) {
-      ref.current.style.border = showBorder ? '2px solid black' : 'unset';
-    }
-  }, [isMounted, onCanvasMount, showBorder]);
+  }, [isMounted, onCanvasMount]);
 
   const onEvent =
     (callback: undefined | ((c: Coord) => void)) =>

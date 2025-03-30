@@ -57,22 +57,32 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
           key={`${result.gif.substring(0, 16)}-${idx}`}
         >
           <Typography variant="caption">Frame {idx + 1}</Typography>
-          <CanvasElement
-            key={idx}
-            width={eleWidth}
-            height={eleHeight}
-            showBorder={showBorder}
-            onCanvasMount={(canvasData) => {
-              applyTransform(canvasData, {
-                horizontalScale: hScale,
-                verticalScale: vScale,
-              });
-              drawImageOnCanvas({ ctx: canvasData.ctx, dimensions, frame });
-            }}
-          />
+          <div style={showBorder ? { border: '2px solid black' } : {}}>
+            <CanvasElement
+              key={idx}
+              width={eleWidth}
+              height={eleHeight}
+              onCanvasMount={(canvasData) => {
+                applyTransform(canvasData, {
+                  horizontalScale: hScale,
+                  verticalScale: vScale,
+                });
+                drawImageOnCanvas({ ctx: canvasData.ctx, dimensions, frame });
+              }}
+            />
+          </div>
         </Stack>
       )),
-    [dimensions, eleHeight, eleWidth, frames, hScale, result.gif, showBorder, vScale]
+    [
+      dimensions,
+      eleHeight,
+      eleWidth,
+      frames,
+      hScale,
+      result.gif,
+      showBorder,
+      vScale,
+    ]
   );
 
   return (
