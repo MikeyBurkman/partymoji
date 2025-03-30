@@ -31,12 +31,11 @@ const ColorPickerParam: React.FC<{
   const { rgbaArr } = useColorPicker(rgbColor, setRgbColor);
 
   useEffect(() => {
-    console.log(`Comparing ${rgbaArr} with ${value}`);
     if (
       rgbaArr.length === value.length &&
       !rgbaArr.every((val, index) => val === value[index])
     ) {
-      console.info('Updating color picker value');
+      console.info('Updating color picker value to ', rgbaArr);
       onChange(rgbaArr as Color);
     }
   }, [value, onChange, rgbaArr]);
