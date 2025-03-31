@@ -12,7 +12,7 @@ https://mikeyburkman.github.io/partymoji/
 
 1. `pnpm i` to install dependencies
 2. `pnpm dev` to run a local debug version at `http://localhost:5173/partymoji`
-3. `pnpm start:prod` to run a prod build at `http://localhost:4173`
+3. `pnpm build && pnpm preview` to run a prod build at `http://localhost:4173`
 
 ### TODO
 
