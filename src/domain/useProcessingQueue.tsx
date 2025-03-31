@@ -2,19 +2,22 @@ import React from 'react';
 import { debugLog } from '~/domain/env';
 import { computeGif } from '~/domain/computeGifs';
 import type { ImageEffectResult } from '~/domain/types';
-import { RunArgs } from '~/domain/run';
+import { RunArgs } from './RunArgs';
 
 const getRunId = () => Math.floor(Math.random() * 100000);
 
 interface ContextProps {
-  latestRunIdRef: React.MutableRefObject<number>;
+  latestRunIdRef: React.RefObject<number>;
 }
 
 const ProcessorQueueContext = React.createContext<ContextProps>({
+  // eslint-disable-next-line
   latestRunIdRef: null as any, // Will be set immediately in the provider
 });
 
-export const ProcessorQueueProvider: React.FC = ({ children }) => {
+export const ProcessorQueueProvider: React.FC<{
+  children?: React.ReactNode;
+}> = ({ children }) => {
   const latestRunIdRef = React.useRef(0);
 
   return (
@@ -50,7 +53,7 @@ export function useProcessingQueue({
         debugLog('Throwing away an old compute');
       }
     },
-    [onComplete, latestRunIdRef]
+    [onComplete, latestRunIdRef],
   );
 
   return React.useCallback(
@@ -58,10 +61,12 @@ export function useProcessingQueue({
       const runId = getRunId();
       debugLog('Computing: ', { runId, args });
       latestRunIdRef.current = runId;
-      computeGif(args)
-        .then((results) => onFinish(runId, results))
+      void computeGif(args)
+        .then((results) => {
+          onFinish(runId, results);
+        })
         .catch(onError);
     },
-    [onError, onFinish, latestRunIdRef]
+    [onError, onFinish, latestRunIdRef],
   );
 }

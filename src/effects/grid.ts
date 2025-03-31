@@ -48,7 +48,7 @@ export const grid = buildEffect({
       }
 
       return isOnGrid ? p : colorUtil.adjustSaturation(p, -100);
-    }
+    },
   ),
 });
 

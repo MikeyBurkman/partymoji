@@ -1,5 +1,5 @@
 import React from 'react';
-import { Checkbox, Stack, Typography } from '@material-ui/core';
+import { Checkbox, Stack, Typography } from '@mui/material';
 import { HelpTooltip } from '~/components/HelpTooltip';
 import type { ParamFnDefault, ParamFunction } from '~/domain/types';
 import { toParamFunction } from './utils';

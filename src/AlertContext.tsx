@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, AlertColor, Snackbar } from '@material-ui/core';
+import { Alert, AlertColor, Snackbar } from '@mui/material';
 
 export type AlertValue = { message: string; severity: AlertColor } | null;
 
@@ -15,7 +15,9 @@ export const alertContext = React.createContext<AlertContext>({
   },
 });
 
-export const AlertProvider: React.FC = ({ children }) => {
+export const AlertProvider: React.FC<{ children?: React.ReactNode }> = ({
+  children,
+}) => {
   const [alertValue, setAlertValue] = React.useState<AlertValue>(null);
 
   return (
@@ -32,7 +34,12 @@ export const AlertSnackbar: React.FC = () => {
   return (
     <Snackbar open={alert != null}>
       {alert == null ? undefined : (
-        <Alert severity={alert.severity} onClose={() => setAlert(null)}>
+        <Alert
+          severity={alert.severity}
+          onClose={() => {
+            setAlert(null);
+          }}
+        >
           {alert.message}
         </Alert>
       )}

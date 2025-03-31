@@ -21,6 +21,6 @@ export const blur = buildEffect({
         frame,
         preEffect: (canvasData) =>
           canvasUtil.applyFilter(canvasData, { blur: amount }),
-      })
+      }),
     ),
 });

@@ -22,7 +22,7 @@ export const computeGifsForState = async ({
 }): Promise<void> => {
   miscUtil.assert(
     state.baseImage,
-    'No source image, this button should be disabled!'
+    'No source image, this button should be disabled!',
   );
 
   let image: Image;
@@ -32,7 +32,7 @@ export const computeGifsForState = async ({
     const prevEffectState = state.effects[startEffectIndex - 1].state;
     miscUtil.assert(
       prevEffectState.status === 'done',
-      'We should not be starting with this effect if the previous is not done computing'
+      'We should not be starting with this effect if the previous is not done computing',
     );
     image = prevEffectState.image.image;
   }

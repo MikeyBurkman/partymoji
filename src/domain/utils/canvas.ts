@@ -45,7 +45,7 @@ export const canvasToFrame = (canvasData: CanvasData): FrameData => {
     0,
     0,
     canvasData.canvas.width,
-    canvasData.canvas.height
+    canvasData.canvas.height,
   );
   return imageData.data;
 };
@@ -164,7 +164,7 @@ export const applyFilter = (
       /** Positive number, defaults to 0 */
       blurRadius?: number;
     };
-  }
+  },
 ): CanvasData => {
   const shadow = dropShadow
     ? [
@@ -207,7 +207,7 @@ export const applyTransform = (
     verticalSkew?: number;
     horizontalTranslation?: number;
     verticalTranslation?: number;
-  }
+  },
 ): CanvasData => {
   canvas.ctx.transform(
     horizontalScale ?? 1,
@@ -215,7 +215,7 @@ export const applyTransform = (
     horizontalSkew ?? 0,
     verticalScale ?? 1,
     horizontalTranslation ?? 0,
-    verticalTranslation ?? 0
+    verticalTranslation ?? 0,
   );
   return canvas;
 };
@@ -226,7 +226,7 @@ export const applyTransform = (
  */
 export const applyRotation = (
   canvas: CanvasData,
-  degrees: number
+  degrees: number,
 ): CanvasData => {
   const offsetX = canvas.canvas.width / 2;
   const offsetY = canvas.canvas.height / 2;
@@ -249,7 +249,7 @@ export const applyRotation = (
  */
 export const applyScale = (
   canvas: CanvasData,
-  [x, y]: [number, number]
+  [x, y]: [number, number],
 ): CanvasData => {
   canvas.ctx.scale(x, y);
   return canvas;

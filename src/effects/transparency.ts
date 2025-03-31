@@ -41,6 +41,6 @@ export const transparency = buildEffect({
         return [src[0], src[1], src[2], 0];
       }
       return src;
-    }
+    },
   ),
 });

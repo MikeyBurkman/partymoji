@@ -31,17 +31,17 @@ export const reduceColorPalette = buildEffect({
           const px = imageUtil.getPixelFromSource(
             image.dimensions,
             frame,
-            coord
+            coord,
           );
           allColorsSet.add(colorUtil.toHexColor(px));
           return colorUtil.TRANSPARENT_COLOR; // Not actually used, just makes TS happy
-        })
+        }),
       );
 
       const allColors = Array.from(allColorsSet).map(colorUtil.fromHexColor);
       const numColors = Math.max(
         Math.floor((allColors.length * (100 - percentReduction)) / 100),
-        1
+        1,
       );
 
       // Create a mapping of each unique color to the list of colors are the closest to it.
@@ -59,7 +59,7 @@ export const reduceColorPalette = buildEffect({
         let closestColorIdx = 0;
         let closetsColorDist = colorUtil.colorDiff(
           allColors[i],
-          allColors[closestColorIdx]
+          allColors[closestColorIdx],
         );
         // Find the other color that is closest to this one
         for (let k = 0; k < allColors.length; k += 1) {
@@ -86,9 +86,9 @@ export const reduceColorPalette = buildEffect({
       const px = getSrcPixel(coord);
       // Find the color in the palette this one is closest to
       const closestColor = minBy(colorPalette, (top) =>
-        colorUtil.colorDiff(top, px)
-      )!;
-      return closestColor;
-    }
+        colorUtil.colorDiff(top, px),
+      );
+      return closestColor ?? [0, 0, 0, 0]; // Should never happen, but just in case
+    },
   ),
 });

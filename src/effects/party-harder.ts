@@ -9,6 +9,6 @@ export const partyHarder = buildEffect({
   requiresAnimation: true,
   params: [],
   fn: imageUtil.mapImage(({ coord, getSrcPixel, animationProgress }) =>
-    colorUtil.shiftHue(getSrcPixel(coord), animationProgress * 360)
+    colorUtil.shiftHue(getSrcPixel(coord), animationProgress * 360),
   ),
 });

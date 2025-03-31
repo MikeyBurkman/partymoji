@@ -18,10 +18,10 @@ export const shake = buildEffect({
   fn: imageUtil.mapImageWithPrecompute(
     ({ animationProgress, parameters: [amplitude] }) => ({
       xOffset: Math.round(
-        amplitude * Math.cos(animationProgress * 2 * Math.PI)
+        amplitude * Math.cos(animationProgress * 2 * Math.PI),
       ),
     }),
     ({ computed: { xOffset }, coord: [x, y], getSrcPixel }) =>
-      getSrcPixel([x + xOffset, y])
+      getSrcPixel([x + xOffset, y]),
   ),
 });

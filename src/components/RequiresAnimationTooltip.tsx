@@ -1,4 +1,4 @@
-import { Stack, Typography } from '@material-ui/core';
+import { Stack, Typography } from '@mui/material';
 import { Icon } from './Icon';
 
 const TooltipInner: React.FC = () => (
@@ -17,7 +17,7 @@ const TooltipInner: React.FC = () => (
 export const RequiresAnimationTooltip: React.FC = () => {
   return (
     <Icon
-      name="warning"
+      name="Warning"
       color="warning"
       tooltip={<TooltipInner />}
       htmlTooltip

@@ -1,4 +1,4 @@
-import * as convert from 'color-convert';
+import convert from 'color-convert';
 import { imageUtil } from '~/domain/utils';
 import { buildEffect } from './utils';
 

@@ -1,4 +1,4 @@
-import { Stack, Typography } from '@material-ui/core';
+import { Stack, Typography } from '@mui/material';
 import React from 'react';
 import ColorPicker from 'react-best-gradient-color-picker';
 import { HelpTooltip } from '~/components/HelpTooltip';

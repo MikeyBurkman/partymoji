@@ -102,7 +102,7 @@ export const adjustImage = buildEffect({
             saturation: saturation + 100,
             sepia: sepia,
           }),
-      })
+      }),
     );
 
     // If the image will be made bigger, we'll run that after adjusting the brightness/contrast

@@ -1,4 +1,4 @@
-import { Icon, Tooltip } from '@material-ui/core';
+import { Icon, Tooltip } from '@mui/material';
 import React from 'react';
 
 interface TooltipProps {

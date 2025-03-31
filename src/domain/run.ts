@@ -1,20 +1,10 @@
-// @ts-ignore
-import gifEncoder from 'gif-encoder';
+import GIFEncoder from 'gif-encoder';
 import seedrandom from 'seedrandom';
 import { effectByName } from '~/effects';
 import { Color, Image, ImageEffectResult } from './types';
 import { colorUtil, imageUtil, miscUtil } from '~/domain/utils';
 import { fakeTransparency } from '~/effects/fake-transparency';
-
-export interface RunArgs {
-  randomSeed: string;
-  image: Image;
-  effectInput: {
-    effectName: string;
-    params: any;
-  };
-  fps: number;
-}
+import { RunArgs } from './RunArgs';
 
 // Returns a list of gif data URLs, for each effect
 export const runEffects = async ({
@@ -28,13 +18,14 @@ export const runEffects = async ({
   const effect = effectByName(effectInput.effectName);
   const result = await effect.fn({
     image,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     parameters: effectInput.params,
     random,
   });
 
   const { transparentColor, hasPartialTransparency } = getTransparentColor(
     result,
-    random
+    random,
   );
 
   const gif = await createGif({
@@ -93,7 +84,7 @@ export const runEffects = async ({
  */
 const encodeTransparency = (
   image: Image,
-  transparentColor: Color | undefined
+  transparentColor: Color | undefined,
 ): Image => {
   const newFrames = image.frames.map((frame) => {
     const img = new Uint8ClampedArray(frame.length);
@@ -131,7 +122,7 @@ const createGif = async ({
 }): Promise<string> =>
   new Promise<string>((resolve) => {
     const [width, height] = image.dimensions;
-    const gif = new gifEncoder(width, height);
+    const gif: GIFEncoder = new GIFEncoder(width, height);
 
     gif.setFrameRate(fps);
     gif.setRepeat(0); // Loop indefinitely
@@ -142,17 +133,16 @@ const createGif = async ({
     if (transparentColor) {
       // Need to convert '#RRGGBB' to '0xRRGGBB'
       const hexColor = colorUtil.toHexColor(transparentColor).slice(1);
-      gif.setTransparent(`0x${hexColor}`);
+      gif.setTransparent(Number(`0x${hexColor}`));
     }
 
-    let data: any[] = [];
-    gif.on('data', (chunk: any) => {
+    const data: Buffer[] = [];
+    gif.on('data', (chunk: Buffer) => {
       data.push(chunk);
     });
-    gif.on('end', async () => {
+    gif.once('end', () => {
       const blob = new Blob(data, { type: 'image/gif' });
-      const dataUrl = await miscUtil.blobOrFileToDataUrl(blob);
-      resolve(dataUrl);
+      void miscUtil.blobOrFileToDataUrl(blob).then(resolve);
     });
 
     image.frames.forEach((f) => {
@@ -164,7 +154,7 @@ const createGif = async ({
 
 const getTransparentColor = (
   image: Image,
-  random: seedrandom.prng
+  random: seedrandom.PRNG,
 ):
   | {
       hasPartialTransparency: true;
@@ -203,6 +193,7 @@ const getTransparentColor = (
     }
   });
   return {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- MIKE - hasTransparent is always falsy!!
     transparentColor: hasTransparent
       ? colorUtil.fromHexColor(attempt)
       : undefined,
@@ -211,9 +202,9 @@ const getTransparentColor = (
 };
 
 const findRandomColorNotInSet = (
-  random: seedrandom.prng,
+  random: seedrandom.PRNG,
   set: Set<string>,
-  attempts = 0
+  attempts = 0,
 ): string => {
   const col = colorUtil.toHexColor(colorUtil.randomColor(random));
   if (attempts > 2000) {

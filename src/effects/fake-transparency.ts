@@ -30,7 +30,7 @@ export const fakeTransparency = buildEffect({
             i * blockWidth,
             j * blockHeight,
             (i + 1) * blockWidth,
-            (j + 1) * blockHeight
+            (j + 1) * blockHeight,
           );
         }
       }
@@ -42,7 +42,7 @@ export const fakeTransparency = buildEffect({
         dimensions: image.dimensions,
         background: createBackground(),
         foreground: imageData,
-      })
+      }),
     );
   },
 });

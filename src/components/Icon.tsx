@@ -1,37 +1,25 @@
 import React from 'react';
 import {
   Fab,
-  Icon as MuiIcon,
   styled,
   Tooltip,
   tooltipClasses,
   TooltipProps,
   IconProps as MuiIconProps,
-} from '@material-ui/core';
+  SxProps,
+} from '@mui/material';
+import * as MuiIcons from '@mui/icons-material';
+export type IconNames = keyof typeof MuiIcons;
 
-// From https://mui.com/material-ui/material-icons/
-export type Icons =
-  | 'add'
-  | 'remove'
-  | 'clear'
-  | 'circle'
-  | 'delete'
-  | 'arrow_upward'
-  | 'arrow_downward'
-  | 'arrow_right'
-  | 'arrow_left'
-  | 'arrow_circle_right'
-  | 'arrow_circle_left'
-  | 'keyboard_double_arrow_right'
-  | 'keyboard_double_arrow_left'
-  | 'info'
-  | 'edit'
-  | 'image'
-  | 'priority_high'
-  | 'list'
-  | 'settings'
-  | 'save_alt'
-  | 'warning';
+const MuiIcon: React.FC<{
+  name: IconNames;
+  color?: string;
+  sx?: SxProps;
+}> = ({ name, color, sx }) => {
+  const IconComponent = MuiIcons[name];
+
+  return <IconComponent htmlColor={color} sx={sx} />;
+};
 
 const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -46,7 +34,7 @@ const HtmlTooltip = styled(({ className, ...props }: TooltipProps) => (
 }));
 
 export interface ClickableIconProps {
-  name: Icons;
+  name: IconNames;
   onClick?: () => void;
   isDisabled?: boolean;
   label: string;
@@ -82,14 +70,14 @@ export const ClickableIcon: React.FC<ClickableIconProps> = ({
       onMouseLeave={onMouseLeave}
       color={hover ? 'secondary' : 'primary'}
     >
-      <MuiIcon sx={{ mr: 1 }}>{name}</MuiIcon>
+      <MuiIcon name={name} sx={{ mr: 1 }} />
       {label}
     </Fab>
   );
 };
 
 export interface IconProps {
-  name: Icons;
+  name: IconNames;
   htmlTooltip?: boolean;
   tooltip?: React.ReactNode;
   color?: MuiIconProps['color'];
@@ -101,7 +89,7 @@ export const Icon: React.FC<IconProps> = ({
   htmlTooltip,
   color,
 }) => {
-  const inner = <MuiIcon color={color}>{name}</MuiIcon>;
+  const inner = <MuiIcon name={name} color={color} />;
   if (tooltip) {
     return htmlTooltip ? (
       <HtmlTooltip title={tooltip}>{inner}</HtmlTooltip>

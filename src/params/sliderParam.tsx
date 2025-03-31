@@ -1,4 +1,4 @@
-import { Slider, Stack, Typography } from '@material-ui/core';
+import { Slider, Stack, Typography } from '@mui/material';
 import React from 'react';
 import { HelpTooltip } from '~/components/HelpTooltip';
 import type { ParamFnDefault, ParamFunction } from '~/domain/types';
@@ -39,8 +39,8 @@ const SliderParam: React.FC<{
           getAriaValueText={(x) => x.toString()}
           min={min}
           max={max}
-          onChange={(e, value) => {
-            setVal(value as number);
+          onChange={(_e, value) => {
+            setVal(value);
           }}
         />
         <Typography variant="body2">{val}</Typography>

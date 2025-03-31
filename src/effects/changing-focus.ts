@@ -30,10 +30,10 @@ export const changingFocus = buildEffect({
         preEffect: (canvasData) => {
           const progress = frameIndex / (frameCount - 1);
           const blur = Math.round(
-            miscUtil.bezierCurve(curve, true)(progress) * (amount / 10)
+            miscUtil.bezierCurve(curve, true)(progress) * (amount / 10),
           );
           return canvasUtil.applyFilter(canvasData, { blur });
         },
-      })
+      }),
     ),
 });

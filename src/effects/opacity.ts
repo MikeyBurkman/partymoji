@@ -25,6 +25,6 @@ export const opacity = buildEffect({
         frame,
         preEffect: (canvasData) =>
           canvasUtil.applyFilter(canvasData, { opacity: amount }),
-      })
+      }),
     ),
 });

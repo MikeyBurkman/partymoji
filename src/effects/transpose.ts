@@ -12,6 +12,6 @@ export const transpose = buildEffect({
   ] as const,
   fn: imageUtil.mapImage(
     ({ coord: [x, y], getSrcPixel, parameters: [transX, transY] }) =>
-      getSrcPixel([x + transX, y + transY])
+      getSrcPixel([x + transX, y + transY]),
   ),
 });

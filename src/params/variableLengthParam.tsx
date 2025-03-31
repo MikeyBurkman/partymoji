@@ -5,7 +5,7 @@ import {
   Paper,
   Stack,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import React from 'react';
 import { HelpTooltip } from '~/components/HelpTooltip';
 import type { JsonType, ParamFnDefault, ParamFunction } from '~/domain/types';
@@ -31,7 +31,7 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
   onChange,
 }) => {
   const [params, setParams] = React.useState<ParamState[]>(
-    value.map((v) => ({ param: createNewParam(), pValue: v }))
+    value.map((v) => ({ param: createNewParam(), pValue: v })),
   );
   return (
     <Paper>
@@ -62,7 +62,7 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
             <Stack direction="row" key={`${name}-${idx}`}>
               <IconButton
                 onClick={() => {
-                  const newParams = params.filter((x, i) => i !== idx);
+                  const newParams = params.filter((_x, i) => i !== idx);
                   setParams(newParams);
                   onChange(newParams.map((n) => n.pValue));
                 }}

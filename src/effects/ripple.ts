@@ -36,10 +36,10 @@ export const ripple = buildEffect({
       getSrcPixel,
     }) => {
       const offset = Math.round(
-        amplitude * Math.sin((y / height) * period * Math.PI + shift)
+        amplitude * Math.sin((y / height) * period * Math.PI + shift),
       );
 
       return getSrcPixel([x + offset, y]);
-    }
+    },
   ),
 });

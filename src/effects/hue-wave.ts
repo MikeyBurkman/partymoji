@@ -37,10 +37,10 @@ export const hueWave = buildEffect({
     }) => {
       const [, y] = coord;
       const amount = Math.round(
-        amplitude * Math.sin((y / height) * period * Math.PI + shift)
+        amplitude * Math.sin((y / height) * period * Math.PI + shift),
       );
 
       return colorUtil.shiftHue(getSrcPixel(coord), (amount / 100) * 360);
-    }
+    },
   ),
 });

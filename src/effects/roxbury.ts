@@ -24,10 +24,10 @@ export const roxbury = buildEffect({
         phase === 0
           ? 0
           : phase === 1
-          ? phaseIdx * maxAngle // Rotate clockwise
-          : phase === 2
-          ? maxAngle // Freeze!
-          : (1 - phaseIdx) * maxAngle; // Rotate counter-clockwise
+            ? phaseIdx * maxAngle // Rotate clockwise
+            : phase === 2
+              ? maxAngle // Freeze!
+              : (1 - phaseIdx) * maxAngle; // Rotate counter-clockwise
 
       return {
         angle,
@@ -51,6 +51,6 @@ export const roxbury = buildEffect({
       ];
 
       return getSrcPixel(newCoord);
-    }
+    },
   ),
 });

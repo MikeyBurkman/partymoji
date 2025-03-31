@@ -1,8 +1,9 @@
-import { Button, Icon, Stack, Typography } from '@material-ui/core';
+import { Button, Icon, Stack, Typography } from '@mui/material';
 import React, { ErrorInfo } from 'react';
 
 interface Props {
   onClearLocalStorage: () => void;
+  children?: React.ReactNode;
 }
 
 interface State {

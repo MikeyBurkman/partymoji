@@ -43,6 +43,6 @@ export const expand = buildEffect({
       const xOffset = Math.floor(dist * xRatio);
       const yOffset = Math.round(dist * yRatio);
       return getSrcPixel([x - xOffset, y - yOffset]);
-    }
+    },
   ),
 });

@@ -12,7 +12,7 @@ export const bounceAnimation = buildEffect({
     dimensions: image.dimensions,
     frames: concat(
       image.frames,
-      pipe(image.frames, drop(1), reverse(), drop(1))
+      pipe(image.frames, drop(1), reverse(), drop(1)),
     ),
   }),
 });

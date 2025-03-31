@@ -90,7 +90,7 @@ const floodFill = ({
     const currColor = imageUtil.getPixelFromSource(
       image.dimensions,
       image.frames[frameIndex],
-      coord
+      coord,
     );
     if (colorUtil.colorDiff(currColor, colorToReplace) * 100 > tolerance) {
       continue;

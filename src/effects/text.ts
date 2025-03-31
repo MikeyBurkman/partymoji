@@ -57,6 +57,6 @@ export const text = buildEffect({
           ctx.fillStyle = colorUtil.toHexColor(color);
           ctx.fillText(text, x, y);
         },
-      })
+      }),
     ),
 });

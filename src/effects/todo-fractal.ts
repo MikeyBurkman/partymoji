@@ -70,6 +70,6 @@ export const pinwheelParty = buildEffect({
         ribbonArcDegrees;
 
       return colorUtil.shiftTowardsHue(srcPixel, newH, amount);
-    }
+    },
   ),
 });

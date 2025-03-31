@@ -51,7 +51,7 @@ export const backgroundImage = buildEffect({
       });
 
       const otherImageFrameIndex = Math.floor(
-        animationProgress * otherImage.frames.length
+        animationProgress * otherImage.frames.length,
       );
       const otherFrameCanvas = canvasUtil.frameToCanvas({
         dimensions: otherImage.dimensions,

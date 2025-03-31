@@ -23,6 +23,6 @@ export const rotate = buildEffect({
         dimensions: image.dimensions,
         frame,
         preEffect: (canvasData) => canvasUtil.applyRotation(canvasData, angle),
-      })
+      }),
     ),
 });

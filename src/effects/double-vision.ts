@@ -17,6 +17,6 @@ export const doubleVision = buildEffect({
     ({ computed: { xOffset }, coord: [x, y], getSrcPixel }) => {
       const dir = x % 2 === 0 ? -1 : 1;
       return getSrcPixel([x + Math.round(dir * xOffset), y]);
-    }
+    },
   ),
 });

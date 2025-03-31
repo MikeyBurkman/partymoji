@@ -36,6 +36,6 @@ export const mirror = buildEffect({
             verticalTranslation:
               direction === 'vertical' ? image.dimensions[1] : 0,
           }),
-      })
+      }),
     ),
 });

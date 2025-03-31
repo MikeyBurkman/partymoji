@@ -25,6 +25,6 @@ export const party = buildEffect({
           canvasUtil.applyFilter(canvasData, {
             hueRotate: (frameIndex / frameCount) * 360 * speed,
           }),
-      })
+      }),
     ),
 });

@@ -5,7 +5,7 @@ import {
   Typography,
   Divider,
   Checkbox,
-} from '@material-ui/core';
+} from '@mui/material';
 import { AppStateEffect, ImageEffectResult } from '~/domain/types';
 import { Gif } from './Gif';
 import { CanvasElement } from '~/domain/utils';
@@ -82,7 +82,7 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
       result.gif,
       showBorder,
       vScale,
-    ]
+    ],
   );
 
   return (

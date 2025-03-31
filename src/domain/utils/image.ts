@@ -25,7 +25,7 @@ import {
 export const getPixelFromSource = (
   dimensions: Dimensions,
   image: FrameData,
-  coord: Coord
+  coord: Coord,
 ): Color => {
   const [width, height] = dimensions;
   const [x, y] = coord;
@@ -45,8 +45,8 @@ export const mapFrames = (
   cb: (
     imageData: FrameData,
     frameIndex: number,
-    frameCount: number
-  ) => FrameData
+    frameCount: number,
+  ) => FrameData,
 ): Image => ({
   dimensions: image.dimensions,
   frames: image.frames.map((frame, idx) => cb(frame, idx, image.frames.length)),
@@ -57,7 +57,7 @@ export const mapFrames = (
  */
 export const mapCoords = (
   dimensions: Dimensions,
-  cb: (coord: Coord) => Color
+  cb: (coord: Coord) => Color,
 ): FrameData => {
   const [width, height] = dimensions;
   const transformedImageData = new Uint8ClampedArray(width * height * 4);
@@ -90,7 +90,7 @@ export const mapImage = <T>(
     /** Between 0 and 1 */
     animationProgress: number;
     getSrcPixel: (coord: Coord) => Color;
-  }) => Color
+  }) => Color,
 ): EffectFn<T> => {
   return ({ image, random, parameters }: EffectFnOpts<T>) =>
     mapFrames(image, (imageData, frameIndex, frameCount) =>
@@ -106,8 +106,8 @@ export const mapImage = <T>(
           animationProgress: frameIndex / frameCount,
           getSrcPixel: (c: Coord) =>
             getPixelFromSource(image.dimensions, imageData, c),
-        })
-      )
+        }),
+      ),
     );
 };
 
@@ -140,7 +140,7 @@ export const mapImageWithPrecompute = <T, R>(
     /** Between 0 and 1 */
     animationProgress: number;
     getSrcPixel: (coord: Coord) => Color;
-  }) => Color
+  }) => Color,
 ): EffectFn<T> => {
   return ({ image, random, parameters }: EffectFnOpts<T>) =>
     mapFrames(image, (imageData, frameIndex, frameCount) => {
@@ -168,7 +168,7 @@ export const mapImageWithPrecompute = <T, R>(
           animationProgress,
           getSrcPixel: (c: Coord) =>
             getPixelFromSource(image.dimensions, imageData, c),
-        })
+        }),
       );
     });
 };
@@ -206,7 +206,7 @@ export const scaleImage = ({
           horizontalTranslation: -offsetX,
           verticalTranslation: -offsetY,
         }),
-    })
+    }),
   );
 };
 
@@ -244,7 +244,7 @@ export const resizeImage = ({
         offsetX,
         offsetY,
         image.dimensions[0],
-        image.dimensions[1]
+        image.dimensions[1],
       );
     }
 
@@ -264,7 +264,7 @@ export const createNewImage = (args: {
   dimensions: args.dimensions,
   frames: range(0, args.frameCount).map(
     // 4 == bytes used per color (RGBA)
-    () => new Uint8ClampedArray(args.dimensions[0] * args.dimensions[1] * 4)
+    () => new Uint8ClampedArray(args.dimensions[0] * args.dimensions[1] * 4),
   ),
 });
 
@@ -281,7 +281,7 @@ export const getPixel = (args: {
   getPixelFromSource(
     args.image.dimensions,
     args.image.frames[args.frameIndex],
-    args.coord
+    args.coord,
   );
 
 export const setPixel = (args: {
@@ -293,7 +293,7 @@ export const setPixel = (args: {
   const idx = getImageIndex(
     args.image.dimensions,
     args.coord[0],
-    args.coord[1]
+    args.coord[1],
   );
   const frame = args.image.frames[args.frameIndex];
   frame[idx] = args.color[0];

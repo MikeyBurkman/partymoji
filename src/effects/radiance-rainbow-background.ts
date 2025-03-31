@@ -39,7 +39,7 @@ export const radianceRainbowBackground = buildEffect({
       const centerX = width / 2;
       const centerY = height / 2;
       const maxDist = Math.sqrt(
-        (width / 2) * (width / 2) + (height / 2) * (height / 2)
+        (width / 2) * (width / 2) + (height / 2) * (height / 2),
       );
 
       const background = imageUtil.mapCoords(image.dimensions, ([x, y]) => {
@@ -47,7 +47,7 @@ export const radianceRainbowBackground = buildEffect({
         const yRelCenter = y - centerY + offsetY;
 
         const distFromCenter = Math.sqrt(
-          yRelCenter * yRelCenter + xRelCenter * xRelCenter
+          yRelCenter * yRelCenter + xRelCenter * xRelCenter,
         );
 
         const newH =

@@ -64,6 +64,6 @@ export const colors = buildEffect({
         (gray * chosenColor[2]) / 255,
         255,
       ];
-    }
+    },
   ),
 });

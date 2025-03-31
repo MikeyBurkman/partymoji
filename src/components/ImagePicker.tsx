@@ -1,8 +1,9 @@
-import { Button, Icon, Stack, Box, TextField } from '@material-ui/core';
+import { Button, Stack, Box, TextField } from '@mui/material';
 import React from 'react';
 import { miscUtil, imageUtil, imageImportUtil } from '~/domain/utils';
 import type { ImageEffectResult } from '~/domain/types';
 import { Gif } from './Gif';
+import { Icon } from './Icon';
 
 const parseFileName = (s: string): string => {
   const parts = s.split('/'); // For URLs
@@ -48,7 +49,7 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
                       imageUtil.isPartiallyTransparent(image),
                   },
                   'image',
-                  fps
+                  fps,
                 );
                 return;
               }
@@ -67,7 +68,7 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
                   partiallyTransparent: imageUtil.isPartiallyTransparent(image),
                 },
                 parseFileName(text),
-                fps
+                fps,
               );
             } catch (err) {
               console.error('Error importing url', err);
@@ -78,7 +79,7 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
       </Stack>
       <Box>OR</Box>
       <Button
-        startIcon={<Icon>image</Icon>}
+        startIcon={<Icon name="Image"></Icon>}
         sx={{ maxWidth: '300px' }}
         variant="contained"
         component="label"
@@ -93,9 +94,8 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
             const files = Array.from(event.target.files ?? []);
             const file = files[0];
             if (file) {
-              const { dataUrl, image, fps } = await imageImportUtil.readImage(
-                file
-              );
+              const { dataUrl, image, fps } =
+                await imageImportUtil.readImage(file);
               onChange(
                 {
                   gif: dataUrl,
@@ -104,7 +104,7 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
                   partiallyTransparent: imageUtil.isPartiallyTransparent(image),
                 },
                 parseFileName(file.name),
-                fps
+                fps,
               );
             }
           }}

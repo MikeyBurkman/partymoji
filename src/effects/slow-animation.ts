@@ -45,12 +45,12 @@ export const slowAnimation = buildEffect({
         const [r1, g1, b1, a1] = imageUtil.getPixelFromSource(
           image.dimensions,
           image.frames[ogFrameIdx],
-          coord
+          coord,
         );
         const [r2, g2, b2, a2] = imageUtil.getPixelFromSource(
           image.dimensions,
           image.frames[ogFrameIdx + 1],
-          coord
+          coord,
         );
         return [(r1 + r2) / 2, (g1 + g2) / 2, (b1 + b2) / 2, (a1 + a2) / 2];
       });

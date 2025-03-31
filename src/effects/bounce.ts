@@ -28,6 +28,6 @@ export const bounce = buildEffect({
       };
     },
     ({ computed: { yOffset }, coord: [x, y], getSrcPixel }) =>
-      getSrcPixel([x, y + yOffset])
+      getSrcPixel([x, y + yOffset]),
   ),
 });
