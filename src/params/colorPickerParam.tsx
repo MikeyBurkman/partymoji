@@ -6,8 +6,6 @@ import { HelpTooltip } from '~/components/HelpTooltip';
 import type { Color, ParamFnDefault, ParamFunction } from '~/domain/types';
 import { colorUtil } from '~/domain/utils';
 import { toParamFunction } from './utils';
-import { useState } from 'react';
-import { useEffect } from 'react';
 
 const ColorBox: React.FC<{ color: Color }> = ({ color }) => (
   <div
@@ -25,12 +23,12 @@ const ColorPickerParam: React.FC<{
   description?: string;
   onChange: (v: Color) => void;
 }> = ({ name, value, description, onChange }) => {
-  const [rgbColor, setRgbColor] = useState(
+  const [rgbColor, setRgbColor] = React.useState(
     `rgb(${value[0]}, ${value[1]}, ${value[2]})`
   );
   const { rgbaArr } = useColorPicker(rgbColor, setRgbColor);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const [r, g, b] = rgbaArr;
     if (r !== value[0] || g !== value[1] || b !== value[2]) {
       onChange([r, g, b, 255]);
