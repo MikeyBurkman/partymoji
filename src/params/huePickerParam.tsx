@@ -1,7 +1,6 @@
 import { Stack, Typography } from '@material-ui/core';
-import * as convert from 'color-convert';
-import React, { useEffect } from 'react';
-import ColorPicker, { useColorPicker } from 'react-best-gradient-color-picker';
+import React from 'react';
+import ColorPicker from 'react-best-gradient-color-picker';
 import { HelpTooltip } from '~/components/HelpTooltip';
 import type { ParamFnDefault, ParamFunction } from '~/domain/types';
 import { colorUtil } from '~/domain/utils';
@@ -13,19 +12,19 @@ const HuePickerParam: React.FC<{
   description?: string;
   onChange: (v: number) => void;
 }> = ({ name, value, description, onChange }) => {
-  const hexColor = React.useMemo(
-    () => colorUtil.toHexColor([...convert.hsl.rgb([value, 100, 50]), 255]),
-    [value]
-  );
-  const [rgbColor, setRgbColor] = React.useState(hexColor);
-  const { hslArr } = useColorPicker(rgbColor, setRgbColor);
+  const rgbColor = React.useMemo(() => {
+    const color = colorUtil.colorFromHue(value);
+    return `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+  }, [value]);
 
-  useEffect(() => {
-    const [h] = hslArr;
-    if (h !== value) {
-      onChange(h);
-    }
-  }, [value, onChange, hslArr]);
+  const setRgbColor = React.useCallback(
+    (rgb: string) => {
+      const [r, g, b] = colorUtil.rgbaStringToColor(rgb);
+      const hue = colorUtil.hueFromColor([r, g, b, 255]);
+      onChange(hue);
+    },
+    [onChange]
+  );
 
   return (
     <Stack spacing={1}>
@@ -34,18 +33,18 @@ const HuePickerParam: React.FC<{
         <HelpTooltip description={description} />
       </Stack>
       <ColorPicker
-        value={hexColor}
+        value={rgbColor}
         onChange={setRgbColor}
-        hideColorTypeBtns={true}
-        hideOpacity={true}
-        hidePresets={true}
-        hideEyeDrop={true}
-        hideAdvancedSliders={true}
-        hideGradientType={true}
-        hideControls={true}
-        hideColorGuide={true}
-        hideInputs={true}
-        hidePickerSquare={true}
+        hideColorTypeBtns
+        hideOpacity
+        hidePresets
+        hideEyeDrop
+        hideAdvancedSliders
+        hideGradientType
+        hideControls
+        hideColorGuide
+        hideInputs
+        hidePickerSquare
       />
     </Stack>
   );

@@ -1,6 +1,6 @@
 import { Stack, Typography } from '@material-ui/core';
 import React from 'react';
-import ColorPicker, { useColorPicker } from 'react-best-gradient-color-picker';
+import ColorPicker from 'react-best-gradient-color-picker';
 import { Expandable } from '~/components/Expandable';
 import { HelpTooltip } from '~/components/HelpTooltip';
 import type { Color, ParamFnDefault, ParamFunction } from '~/domain/types';
@@ -23,17 +23,17 @@ const ColorPickerParam: React.FC<{
   description?: string;
   onChange: (v: Color) => void;
 }> = ({ name, value, description, onChange }) => {
-  const [rgbColor, setRgbColor] = React.useState(
-    `rgb(${value[0]}, ${value[1]}, ${value[2]})`
+  const rgbColor = React.useMemo(
+    () => `rgb(${value[0]}, ${value[1]}, ${value[2]})`,
+    [value]
   );
-  const { rgbaArr } = useColorPicker(rgbColor, setRgbColor);
 
-  React.useEffect(() => {
-    const [r, g, b] = rgbaArr;
-    if (r !== value[0] || g !== value[1] || b !== value[2]) {
-      onChange([r, g, b, 255]);
-    }
-  }, [value, onChange, rgbaArr]);
+  const setRgbColor = React.useCallback(
+    (rgb: string) => {
+      onChange(colorUtil.rgbaStringToColor(rgb));
+    },
+    [onChange]
+  );
 
   return (
     <Expandable
@@ -41,21 +41,20 @@ const ColorPickerParam: React.FC<{
         <Stack direction="row" spacing={4}>
           <Typography variant="body2">{name}</Typography>
           <HelpTooltip description={description} />
-          {value && <ColorBox color={value} />}
+          <ColorBox color={value} />
         </Stack>
       }
     >
       <ColorPicker
         value={rgbColor}
         onChange={setRgbColor}
-        hideColorTypeBtns={true}
-        hideOpacity={true}
-        hidePresets={true}
-        hideEyeDrop={true}
-        hideAdvancedSliders={true}
-        hideGradientType={true}
-        hideControls={true}
-        hideColorGuide={true}
+        hideColorTypeBtns
+        hideOpacity
+        hidePresets
+        hideAdvancedSliders
+        hideGradientType
+        hideControls
+        hideColorGuide
       />
     </Expandable>
   );
