@@ -171,3 +171,23 @@ export const linearInterpolation = ({
     255,
   ];
 };
+
+/**
+ * Turn Color into a hue value (0 - 360)
+ */
+export const hueFromColor = (color: Color): number =>
+  convert.rgb.hsl([color[0], color[1], color[2]])[0];
+
+/**
+ * Converts a string in the format 'rgb(221, 17, 17)' or 'rgba(170, 5, 228, 1)' into a Color
+ */
+export const rgbaStringToColor = (rgba: string): Color => {
+  const match = rgba.match(
+    /rgba?\(([0-9]+),\s*([0-9]+),\s*([0-9]+)(,\s*([0-9]+))?\)/
+  );
+  if (!match) {
+    throw new Error(`Could not match rgb string ${rgba}`);
+  }
+  const [, r, g, b, , a] = match;
+  return [Number(r), Number(g), Number(b), a ? Number(a) * 255 : 255];
+};

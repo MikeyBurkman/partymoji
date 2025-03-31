@@ -1,7 +1,6 @@
 import { Stack, Typography } from '@material-ui/core';
-import * as convert from 'color-convert';
 import React from 'react';
-import { HuePicker } from 'react-color';
+import ColorPicker from 'react-best-gradient-color-picker';
 import { HelpTooltip } from '~/components/HelpTooltip';
 import type { ParamFnDefault, ParamFunction } from '~/domain/types';
 import { colorUtil } from '~/domain/utils';
@@ -9,27 +8,43 @@ import { toParamFunction } from './utils';
 
 const HuePickerParam: React.FC<{
   name: string;
-  value?: number;
+  value: number;
   description?: string;
   onChange: (v: number) => void;
 }> = ({ name, value, description, onChange }) => {
-  const hexColor = React.useMemo(
-    () =>
-      value === undefined
-        ? undefined
-        : colorUtil.toHexColor([...convert.hsl.rgb([value, 100, 50]), 255]),
-    [value]
+  const rgbColor = React.useMemo(() => {
+    const color = colorUtil.colorFromHue(value);
+    return `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+  }, [value]);
+
+  const setRgbColor = React.useCallback(
+    (rgb: string) => {
+      const [r, g, b] = colorUtil.rgbaStringToColor(rgb);
+      const hue = colorUtil.hueFromColor([r, g, b, 255]);
+      onChange(hue);
+    },
+    [onChange]
   );
+
   return (
     <Stack spacing={1}>
       <Stack direction="row" spacing={1}>
         <Typography variant="body2">{name}</Typography>
         <HelpTooltip description={description} />
       </Stack>
-      <HuePicker
-        color={hexColor}
-        // HSL is in [0-360, 0-100, 0-100]
-        onChangeComplete={({ hsl }) => onChange(hsl.h)}
+      <ColorPicker
+        value={rgbColor}
+        onChange={setRgbColor}
+        hideColorTypeBtns
+        hideOpacity
+        hidePresets
+        hideEyeDrop
+        hideAdvancedSliders
+        hideGradientType
+        hideControls
+        hideColorGuide
+        hideInputs
+        hidePickerSquare
       />
     </Stack>
   );

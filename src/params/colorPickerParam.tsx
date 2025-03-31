@@ -1,6 +1,6 @@
 import { Stack, Typography } from '@material-ui/core';
 import React from 'react';
-import { SketchPicker } from 'react-color';
+import ColorPicker from 'react-best-gradient-color-picker';
 import { Expandable } from '~/components/Expandable';
 import { HelpTooltip } from '~/components/HelpTooltip';
 import type { Color, ParamFnDefault, ParamFunction } from '~/domain/types';
@@ -23,23 +23,38 @@ const ColorPickerParam: React.FC<{
   description?: string;
   onChange: (v: Color) => void;
 }> = ({ name, value, description, onChange }) => {
+  const rgbColor = React.useMemo(
+    () => `rgb(${value[0]}, ${value[1]}, ${value[2]})`,
+    [value]
+  );
+
+  const setRgbColor = React.useCallback(
+    (rgb: string) => {
+      onChange(colorUtil.rgbaStringToColor(rgb));
+    },
+    [onChange]
+  );
+
   return (
     <Expandable
       mainEle={
         <Stack direction="row" spacing={4}>
           <Typography variant="body2">{name}</Typography>
           <HelpTooltip description={description} />
-          {value && <ColorBox color={value} />}
+          <ColorBox color={value} />
         </Stack>
       }
     >
-      <SketchPicker
-        disableAlpha={true}
-        presetColors={[]}
-        color={colorUtil.toHexColor(value)}
-        onChangeComplete={(c) => {
-          onChange(colorUtil.fromHexColor(c.hex));
-        }}
+      <ColorPicker
+        value={rgbColor}
+        onChange={setRgbColor}
+        hideColorTypeBtns
+        hideOpacity
+        hidePresets
+        hideAdvancedSliders
+        hideGradientType
+        hideControls
+        hideColorGuide
       />
     </Expandable>
   );
