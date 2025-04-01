@@ -1,7 +1,7 @@
 import { runEffects } from './run';
 import { runEffectsAsync } from './runAsync';
 import { AppState, Image, ImageEffectResult } from './types';
-import { ENV, debugLog, IS_MOBILE } from './env';
+import { IS_DEV, debugLog, IS_MOBILE } from './env';
 import { miscUtil } from './utils';
 
 // OffscreenCanvas isn't supported by mobile browsers, so mobile will also run synchronously,
@@ -9,7 +9,7 @@ import { miscUtil } from './utils';
 // Also, we can't get web workers working with the dev build, so always use the synchronous
 //  version if not a prod build.
 export const computeGif =
-  IS_MOBILE || ENV === 'DEV' ? runEffects : runEffectsAsync;
+  IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync;
 
 export const computeGifsForState = async ({
   state,

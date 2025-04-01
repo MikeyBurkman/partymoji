@@ -17,7 +17,7 @@ import { Icon } from '~/components/Icon';
 import { computeGifsForState, getEffectsDiff } from '~/domain/computeGifs';
 import type { AppState, AppStateEffect } from '~/domain/types';
 import { miscUtil } from '~/domain/utils';
-import { ENV, debugLog, IS_MOBILE } from '~/domain/env';
+import { debugLog, IS_MOBILE, IS_DEV } from '~/domain/env';
 
 import * as localStorage from '~/localStorage';
 import { sliderParam } from '~/params/sliderParam';
@@ -93,7 +93,7 @@ const Inner: React.FC = () => {
         const newState = fn(oldState);
         localStorage.saveAppState(newState);
 
-        if (ENV === 'DEV') {
+        if (IS_DEV) {
           // eslint-disable-next-line
           (window as any).STATE = newState;
         }
