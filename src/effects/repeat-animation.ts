@@ -19,7 +19,7 @@ export const repeatAnimation = buildEffect({
   fn: ({ image, parameters: [numRepeats] }) => ({
     dimensions: image.dimensions,
     frames: range(0, image.frames.length * (numRepeats + 1)).map(
-      (i) => image.frames[i % image.frames.length]
+      (i) => image.frames[i % image.frames.length],
     ),
   }),
 });

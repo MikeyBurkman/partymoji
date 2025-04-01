@@ -13,7 +13,7 @@ import {
   styled,
   TextField,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import type {
   ParamFunction,
   Effect,
@@ -47,7 +47,7 @@ interface Props {
   currRandomSeed: string;
   onChangeEffect: (
     effect: EffectInput,
-    computedImage: ImageEffectResult | undefined
+    computedImage: ImageEffectResult | undefined,
   ) => void;
   onCancel: () => void;
 }
@@ -167,7 +167,7 @@ export const ImageEffectDialog: React.FC<Props> = ({
                     setEditingEffect({
                       effect: newEffect,
                       params: newEffect.params.map((p: any) =>
-                        p.defaultValue(initialImage?.image ?? undefined)
+                        p.defaultValue(initialImage?.image ?? undefined),
                       ),
                     });
                     setDirty(true);
@@ -235,7 +235,7 @@ export const ImageEffectDialog: React.FC<Props> = ({
                         params: miscUtil.replaceIndex(
                           editingEffect.params,
                           idx,
-                          () => v
+                          () => v,
                         ),
                       });
                     },
@@ -247,7 +247,7 @@ export const ImageEffectDialog: React.FC<Props> = ({
                       {ele}
                     </React.Fragment>
                   );
-                }
+                },
               )}
               <Stack sx={{ height: 300 }}>
                 {image.computing ? (

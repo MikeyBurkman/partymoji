@@ -1,7 +1,7 @@
 import { runEffects } from './run';
 import { runEffectsAsync } from './runAsync';
 import { AppState, Image, ImageEffectResult } from './types';
-import { ENV, debugLog, IS_MOBILE } from './env';
+import { IS_DEV, debugLog, IS_MOBILE } from './env';
 import { miscUtil } from './utils';
 
 // OffscreenCanvas isn't supported by mobile browsers, so mobile will also run synchronously,
@@ -9,7 +9,7 @@ import { miscUtil } from './utils';
 // Also, we can't get web workers working with the dev build, so always use the synchronous
 //  version if not a prod build.
 export const computeGif =
-  IS_MOBILE || ENV === 'DEV' ? runEffects : runEffectsAsync;
+  IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync;
 
 export const computeGifsForState = async ({
   state,
@@ -22,7 +22,7 @@ export const computeGifsForState = async ({
 }): Promise<void> => {
   miscUtil.assert(
     state.baseImage,
-    'No source image, this button should be disabled!'
+    'No source image, this button should be disabled!',
   );
 
   let image: Image;
@@ -32,7 +32,7 @@ export const computeGifsForState = async ({
     const prevEffectState = state.effects[startEffectIndex - 1].state;
     miscUtil.assert(
       prevEffectState.status === 'done',
-      'We should not be starting with this effect if the previous is not done computing'
+      'We should not be starting with this effect if the previous is not done computing',
     );
     image = prevEffectState.image.image;
   }

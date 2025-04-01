@@ -77,10 +77,10 @@ export const radianceColors = buildEffect({
         const yRelCenter = y - centerY + offsetY;
 
         const maxDist = Math.sqrt(
-          (width / 2) * (width / 2) + (height / 2) * (height / 2)
+          (width / 2) * (width / 2) + (height / 2) * (height / 2),
         );
         const distFromCenter = Math.sqrt(
-          yRelCenter * yRelCenter + xRelCenter * xRelCenter
+          yRelCenter * yRelCenter + xRelCenter * xRelCenter,
         );
 
         const colorIdx =

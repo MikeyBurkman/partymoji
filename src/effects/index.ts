@@ -1,4 +1,4 @@
-import { pipe, reject, sortBy } from 'remeda';
+import { reject, pipe, sortBy } from 'remeda';
 import type { ParamFunction, Effect, EffectGroup } from '~/domain/types';
 import { miscUtil } from '~/domain/utils';
 
@@ -129,15 +129,15 @@ export const POSSIBLE_EFFECTS = pipe(
   sortBy(
     (x) => GROUP_ORDERING.indexOf(x.group),
     (x) => -1 * (x.groupOrder ?? 0),
-    (x) => x.name
+    (x) => x.name,
   ),
-  reject((x) => x.disabled)
+  reject((x) => x.disabled),
 );
 
 export const effectByName = (
-  name: string
-): Effect<readonly ParamFunction<any>[]> => {
+  name: string,
+): Effect<readonly ParamFunction<unknown>[]> => {
   const t = POSSIBLE_EFFECTS.find((t) => t.name === name);
   miscUtil.assert(t, `Could not find matching effect: ${name}`);
-  return t as any as Effect<readonly ParamFunction<any>[]>;
+  return t as unknown as Effect<readonly ParamFunction<unknown>[]>;
 };

@@ -1,17 +1,16 @@
-import { RunArgs } from './run';
-// @ts-ignore
-import RunEffectWorker from './effect.worker';
+import { RunArgs } from './RunArgs';
+import RunEffectWorker from './effect.worker?worker';
 import { AsyncRunMessage, ImageEffectResult } from './types';
 
 interface Computation {
   resolve: (result: ImageEffectResult) => void;
-  reject: (err: any) => void;
+  reject: (err: unknown) => void;
 }
 
 // The order of computations is not guaranteed, so add each computation to a map
 const computationMap = new Map<string, Computation>();
 
-const handleError = (computationId: string) => (error: any) => {
+const handleError = (computationId: string) => (error: unknown) => {
   const computation = computationMap.get(computationId);
   if (!computation) {
     return;
@@ -33,7 +32,9 @@ export const runEffectsAsync = (args: RunArgs) =>
   new Promise<ImageEffectResult>((resolve, reject) => {
     const worker = new RunEffectWorker();
 
-    const computationId = `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+    const computationId = `${Date.now().toString()}-${Math.floor(
+      Math.random() * 100000,
+    ).toString()}`;
     computationMap.set(computationId, {
       resolve,
       reject,
@@ -45,6 +46,7 @@ export const runEffectsAsync = (args: RunArgs) =>
     worker.onmessage = (message: { data: AsyncRunMessage }) => {
       // See effect.worker.ts for what messages look like
       const data = message.data;
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- MIKE - status is hardcoded to 'complete'
       if (data.status === 'complete') {
         handleSuccess(computationId, data.result);
       }

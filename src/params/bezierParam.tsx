@@ -1,6 +1,6 @@
 import React from 'react';
 import * as R from 'remeda';
-import { Box, Stack, Typography } from '@material-ui/core';
+import { Box, Stack, Typography } from '@mui/material';
 import { HelpTooltip } from '~/components/HelpTooltip';
 import type {
   Coord,
@@ -34,7 +34,7 @@ const BezierParam: React.FC<{
   ]);
 
   const [canvasCtx, setCanvasCtx] = React.useState<CanvasData['ctx'] | null>(
-    null
+    null,
   );
   const onCanvasMount = React.useCallback(({ ctx }: CanvasData) => {
     setCanvasCtx(ctx);
@@ -48,7 +48,7 @@ const BezierParam: React.FC<{
       coord: c,
       distance: miscUtil.pointDistance(
         [c[0] * WIDTH, c[1] * HEIGHT],
-        latestMouseLocation
+        latestMouseLocation,
       ),
     }));
 
@@ -84,7 +84,7 @@ const BezierParam: React.FC<{
       curValue[1][0] * WIDTH,
       curValue[1][1] * HEIGHT,
       WIDTH,
-      HEIGHT
+      HEIGHT,
     );
     canvasCtx.stroke();
   }, [curValue, canvasCtx]);
@@ -112,7 +112,7 @@ const BezierParam: React.FC<{
         setCurValue([curValue[0], newCoord]);
       }
     },
-    [isDragging, curValue, setCurValue]
+    [isDragging, curValue, setCurValue],
   );
 
   return (

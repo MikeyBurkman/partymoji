@@ -22,6 +22,6 @@ export const circle = buildEffect({
       yOffset: Math.round(radius * Math.cos(-2 * Math.PI * animationProgress)),
     }),
     ({ computed: { xOffset, yOffset }, coord: [x, y], getSrcPixel }) =>
-      getSrcPixel([x + xOffset, y + yOffset])
+      getSrcPixel([x + xOffset, y + yOffset]),
   ),
 });

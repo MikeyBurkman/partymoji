@@ -1,10 +1,11 @@
+import { JSX } from 'react';
 import seedrandom from 'seedrandom';
 
 type JsonPrimitive = string | number | boolean | Uint8ClampedArray | null;
 interface JsonMap {
   [member: string]: JsonPrimitive | JsonArray | JsonMap;
 }
-interface JsonArray extends Array<JsonPrimitive | JsonArray | JsonMap> {}
+type JsonArray = Array<JsonPrimitive | JsonArray | JsonMap>;
 export type JsonType = JsonPrimitive | JsonMap | JsonArray;
 
 export type BezierTuple = [Coord, Coord];
@@ -55,7 +56,7 @@ export type Image = {
   frames: FrameData[];
 };
 
-export type Random = seedrandom.prng;
+export type Random = seedrandom.PRNG;
 
 export interface EffectFnOpts<Params> {
   /**
@@ -98,7 +99,7 @@ export type ParamFunction<T> = {
 export type ParamFnDefault<T> = ParamFunction<T>['defaultValue'] | T;
 
 export type EffectFn<Params> = (
-  opts: EffectFnOpts<Params>
+  opts: EffectFnOpts<Params>,
 ) => Image | Promise<Image>;
 
 export type ParamType<Type> = Type extends ParamFunction<infer X> ? X : never;
@@ -111,6 +112,7 @@ export type EffectGroup =
   | 'Transform'
   | 'Misc';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface Effect<T extends readonly ParamFunction<any>[]> {
   /** Name of the effect. Must be globally unique */
   name: string;
@@ -129,12 +131,15 @@ export interface Effect<T extends readonly ParamFunction<any>[]> {
 }
 
 export interface EffectInput {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   effect: Effect<any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params: any;
 }
 
 export interface AppStateEffect {
   effectName: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   paramsValues: any[];
   state:
     | { status: 'init' }

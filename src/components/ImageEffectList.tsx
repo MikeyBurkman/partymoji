@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Button,
-  Divider,
-  Stack,
-  Typography,
-  Paper,
-} from '@material-ui/core';
+import { Box, Button, Divider, Stack, Typography, Paper } from '@mui/material';
 import { saveAs } from 'file-saver';
 
 import { IS_MOBILE } from '~/domain/env';
@@ -74,7 +67,7 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
   const onAddAfter = React.useCallback(() => {
     const newIdx = index + 1;
     onEffectsChange(
-      miscUtil.insertInto(currentEffects, newIdx, newDefaultEffect(index))
+      miscUtil.insertInto(currentEffects, newIdx, newDefaultEffect(index)),
     );
     setTimeout(
       () =>
@@ -83,7 +76,7 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
           idx: newIdx,
           isNew: true,
         }),
-      2
+      2,
     );
   }, [
     currentEffects,
@@ -123,15 +116,15 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
             sx={{ overflowX: 'auto' }}
           >
             <Stack spacing={2} justifyContent="center">
-              <ClickableIcon label="Edit" name="settings" onClick={onEdit} />
-              <ClickableIcon label="Delete" name="delete" onClick={onDelete} />
+              <ClickableIcon label="Edit" name="Settings" onClick={onEdit} />
+              <ClickableIcon label="Delete" name="Delete" onClick={onDelete} />
             </Stack>
             <ImageRow appStateEffect={effect} />
           </Stack>
         </Stack>
       </Paper>
       <Divider sx={{ py: 4 }}>
-        <Button onClick={onAddAfter} startIcon={<Icon name="add" />}>
+        <Button onClick={onAddAfter} startIcon={<Icon name="Add" />}>
           {index < currentEffects.length - 1
             ? 'Insert Effect Here'
             : 'Add New Effect'}
@@ -210,7 +203,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
       }),
       state: { status: 'init' },
     }),
-    [appState, currentEffects, possibleEffects]
+    [appState, currentEffects, possibleEffects],
   );
 
   // const onMoveBefore = (idx: number) => {
@@ -247,7 +240,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
 
   const onAddNew = React.useCallback(() => {
     onEffectsChange(
-      miscUtil.insertInto(currentEffects, 0, newDefaultEffect(0))
+      miscUtil.insertInto(currentEffects, 0, newDefaultEffect(0)),
     );
     setTimeout(
       () =>
@@ -256,7 +249,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
           idx: 0,
           isNew: true,
         }),
-      2
+      2,
     );
   }, [currentEffects, newDefaultEffect, onEffectsChange]);
 
@@ -276,7 +269,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
   const dialogOnChangeEffect = React.useCallback(
     (
       newEffect: EffectInput,
-      computedImage: ImageEffectResult | undefined
+      computedImage: ImageEffectResult | undefined,
     ): void => {
       if (!effectEditDialogState.open) {
         return;
@@ -292,19 +285,19 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
             state: computedImage
               ? { status: 'done', image: computedImage }
               : { status: 'init' },
-          })
-        )
+          }),
+        ),
       );
       setEffectEditDialogState({ open: false });
     },
-    [currentEffects, effectEditDialogState, onEffectsChange]
+    [currentEffects, effectEditDialogState, onEffectsChange],
   );
 
   const dialogOnCancel = React.useCallback(() => {
     if (effectEditDialogState.open && effectEditDialogState.isNew) {
       // They pressed cancel on a new effect, so just remove the one we added.
       onEffectsChange(
-        miscUtil.removeIndex(currentEffects, effectEditDialogState.idx)
+        miscUtil.removeIndex(currentEffects, effectEditDialogState.idx),
       );
     }
     setEffectEditDialogState({ open: false });
@@ -341,7 +334,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
       />
       <Box>
         <Divider sx={{ pb: 4 }}>
-          <Button startIcon={<Icon name="add" />} onClick={onAddNew} name="add">
+          <Button startIcon={<Icon name="Add" />} onClick={onAddNew} name="add">
             Insert First Effect
           </Button>
         </Divider>
@@ -357,7 +350,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
                 onEffectsChange={onEffectsChange}
                 newDefaultEffect={newDefaultEffect}
               />
-            )
+            ),
         )}
       </Box>
       {finalGif != null && (
@@ -368,7 +361,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
             <Button
               variant="contained"
               onClick={onSaveGif}
-              startIcon={<Icon name="save_alt" />}
+              startIcon={<Icon name="SaveAlt" />}
             >
               Save Gif
             </Button>

@@ -25,6 +25,6 @@ export const hueShift = buildEffect({
           canvasUtil.applyFilter(canvasData, {
             hueRotate: amount * 3.6,
           }),
-      })
+      }),
     ),
 });

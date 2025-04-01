@@ -7,8 +7,8 @@ const NUM_DEFAULT_COLORS = 6;
 const DEFAULT_COLORS = range(0, NUM_DEFAULT_COLORS).map((v) =>
   colorUtil.setBrightness(
     colorUtil.fromHexColor('#98651B'),
-    (1 - v / NUM_DEFAULT_COLORS) * 100
-  )
+    (1 - v / NUM_DEFAULT_COLORS) * 100,
+  ),
 );
 
 export const colorPalette = buildEffect({

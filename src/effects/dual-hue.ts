@@ -26,6 +26,6 @@ export const dualHue = buildEffect({
 
       const amount = colorUtil.getAveragePixelValue(src) / 256;
       return colorUtil.linearInterpolation({ c1: color1, c2: color2, amount });
-    }
+    },
   ),
 });

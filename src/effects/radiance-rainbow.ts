@@ -38,7 +38,7 @@ export const radianceRainbow = buildEffect({
       centerX: width / 2,
       centerY: height / 2,
       maxDist: Math.sqrt(
-        (width / 2) * (width / 2) + (height / 2) * (height / 2)
+        (width / 2) * (width / 2) + (height / 2) * (height / 2),
       ),
     }),
     ({
@@ -55,7 +55,7 @@ export const radianceRainbow = buildEffect({
       const yRelCenter = y - centerY + offsetY;
 
       const distFromCenter = Math.sqrt(
-        yRelCenter * yRelCenter + xRelCenter * xRelCenter
+        yRelCenter * yRelCenter + xRelCenter * xRelCenter,
       );
 
       const newH =
@@ -64,6 +64,6 @@ export const radianceRainbow = buildEffect({
         360;
 
       return colorUtil.shiftTowardsHue(src, newH, strength);
-    }
+    },
   ),
 });

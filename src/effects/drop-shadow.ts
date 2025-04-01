@@ -41,6 +41,6 @@ export const dropShadow = buildEffect({
               color,
             },
           }),
-      })
+      }),
     ),
 });

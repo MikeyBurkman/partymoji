@@ -35,10 +35,7 @@ export const pinwheelRainbow = buildEffect({
     }),
   ] as const,
   fn: imageUtil.mapImageWithPrecompute(
-    ({
-      dimensions: [width, height],
-      parameters: [groupCount, amount, offsetX, offsetY],
-    }) => {
+    ({ dimensions: [width, height], parameters: [, , offsetX, offsetY] }) => {
       const center: Coord = [width / 2 + offsetX, height / 2 - offsetY];
       return { center };
     },
@@ -55,6 +52,6 @@ export const pinwheelRainbow = buildEffect({
       const newH = (pointAngle * groupCount + animationProgress * 360) % 360;
 
       return colorUtil.shiftTowardsHue(srcPixel, newH, strength);
-    }
+    },
   ),
 });

@@ -1,7 +1,6 @@
-// @ts-ignore
 import getPixels from 'get-pixels';
 import { parseGIF, decompressFrames } from 'gifuct-js';
-import type { Dimensions, FrameData, Image } from '~/domain/types';
+import type { Dimensions, Image } from '~/domain/types';
 import { canvasToFrame, createCanvas } from './canvas';
 import * as miscUtil from './misc';
 
@@ -13,7 +12,7 @@ const toArrayBuffer = (file: File): Promise<ArrayBuffer> =>
   });
 
 const readGifFromFile = async (
-  file: File
+  file: File,
 ): Promise<{ image: Image; fps: number }> => {
   const buffer = await toArrayBuffer(file);
   const gif = parseGIF(buffer);
@@ -53,11 +52,11 @@ const readGifFromFile = async (
       finalCanvas.ctx.drawImage(
         patch.canvas,
         parsedFrame.dims.left,
-        parsedFrame.dims.top
+        parsedFrame.dims.top,
       );
 
       return canvasToFrame(finalCanvas);
-    }
+    },
   );
 
   const averageDelay =
@@ -78,7 +77,7 @@ interface ReadResult {
 }
 
 export const readImage = async (
-  fileOrDataUrl: File | string
+  fileOrDataUrl: File | string,
 ): Promise<ReadResult> => {
   let dataUrl: string;
   let file: File;
@@ -108,7 +107,7 @@ export const readImage = async (
   const image = await new Promise<Image>((res, rej) =>
     getPixels(
       dataUrl,
-      (err: Error, results: { shape: number[]; data: FrameData }) => {
+      (err: Error | null, results: { shape: number[]; data: Uint8Array }) => {
         if (err) {
           return rej(err);
         }
@@ -129,7 +128,7 @@ export const readImage = async (
         for (let i = 0; i < numFrames; i += 1) {
           const frame = results.data.subarray(
             i * sliceSize,
-            (i + 1) * sliceSize
+            (i + 1) * sliceSize,
           );
           // Contrary to the TS types, the result of subarray returns a regular Uint8Array, NOT a clamped one!
           frames.push(Uint8ClampedArray.from(frame));
@@ -138,8 +137,8 @@ export const readImage = async (
           frames,
           dimensions: [width, height],
         });
-      }
-    )
+      },
+    ),
   );
 
   return {
@@ -160,8 +159,8 @@ export const getImageFromUrl = async (url: string): Promise<string> => {
   const base64String = btoa(
     new Uint8Array(arrayBuffer).reduce(
       (data, byte) => data + String.fromCharCode(byte),
-      ''
-    )
+      '',
+    ),
   );
 
   return `data:${contentType};base64,${base64String}`;

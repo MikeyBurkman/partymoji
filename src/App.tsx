@@ -6,8 +6,8 @@ import {
   Paper,
   Stack,
   Typography,
-} from '@material-ui/core';
-import ScopedCssBaseline from '@material-ui/core/ScopedCssBaseline';
+} from '@mui/material';
+import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 
 import { Help } from '~/components/Help';
 import { ImagePicker } from '~/components/ImagePicker';
@@ -17,7 +17,7 @@ import { Icon } from '~/components/Icon';
 import { computeGifsForState, getEffectsDiff } from '~/domain/computeGifs';
 import type { AppState, AppStateEffect } from '~/domain/types';
 import { miscUtil } from '~/domain/utils';
-import { ENV, debugLog, IS_MOBILE } from '~/domain/env';
+import { debugLog, IS_MOBILE, IS_DEV } from '~/domain/env';
 
 import * as localStorage from '~/localStorage';
 import { sliderParam } from '~/params/sliderParam';
@@ -53,7 +53,7 @@ const Inner: React.FC = () => {
     { compute: true; startIndex: number } | { compute: false }
   >({ compute: false });
   const [computeTimer, setComputeTimer] = React.useState<null | NodeJS.Timeout>(
-    null
+    null,
   );
 
   const setAlert = useSetAlert();
@@ -69,7 +69,7 @@ const Inner: React.FC = () => {
   }, [setAlert]);
 
   React.useEffect(() => {
-    (async () => {
+    void (async () => {
       // If we have local storage state on startup, then reload that
       const stored = await localStorage.getStoredAppState();
       if (stored) {
@@ -87,13 +87,14 @@ const Inner: React.FC = () => {
   const setState = React.useCallback(
     (
       fn: (oldState: AppState) => AppState,
-      { compute }: { compute: 'no' | 'now' | 'later' }
+      { compute }: { compute: 'no' | 'now' | 'later' },
     ) => {
       setStateRaw((oldState) => {
         const newState = fn(oldState);
         localStorage.saveAppState(newState);
 
-        if (ENV === 'DEV') {
+        if (IS_DEV) {
+          // eslint-disable-next-line
           (window as any).STATE = newState;
         }
 
@@ -122,7 +123,7 @@ const Inner: React.FC = () => {
                     compute: true,
                     startIndex: effectsDiff.index,
                   });
-                }, COMPUTE_DEBOUNCE_MILLIS)
+                }, COMPUTE_DEBOUNCE_MILLIS),
               );
             }
           }
@@ -132,19 +133,19 @@ const Inner: React.FC = () => {
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [],
   );
 
   React.useEffect(() => {
     debugLog('UseEffect, doCompute', doCompute);
-    if (doCompute.compute === false) {
+    if (!doCompute.compute) {
       return;
     }
 
     // TODO What happens if new changes come in while we're already computing?
     // Need to throw away previous results and calculate new ones.
     setDoCompute({ compute: false });
-    (async () => {
+    void (async () => {
       setState(
         (prevState) => ({
           ...prevState,
@@ -159,7 +160,7 @@ const Inner: React.FC = () => {
             }
           }),
         }),
-        { compute: 'no' }
+        { compute: 'no' },
       );
       // TODO error handling
       await computeGifsForState({
@@ -174,10 +175,10 @@ const Inner: React.FC = () => {
                 (t): AppStateEffect => ({
                   ...t,
                   state: { status: 'done', image },
-                })
+                }),
               ),
             }),
-            { compute: 'no' }
+            { compute: 'no' },
           );
         },
         startEffectIndex: doCompute.startIndex,
@@ -231,20 +232,21 @@ const Inner: React.FC = () => {
                         fname,
                         fps,
                       }),
-                      { compute: 'now' }
+                      { compute: 'now' },
                     );
                   }}
                 />
                 {fpsParam.fn({
                   value: state.fps,
-                  onChange: (fps) =>
+                  onChange: (fps) => {
                     setState(
                       (prevState) => ({
                         ...prevState,
                         fps,
                       }),
-                      { compute: 'later' }
-                    ),
+                      { compute: 'later' },
+                    );
+                  },
                 })}
               </Stack>
             </Section>
@@ -254,26 +256,26 @@ const Inner: React.FC = () => {
                   <ImageEffectList
                     appState={state}
                     possibleEffects={POSSIBLE_EFFECTS}
-                    onEffectsChange={(effects) =>
+                    onEffectsChange={(effects) => {
                       setState(
                         (prevState) => ({
                           ...prevState,
                           effects,
                         }),
-                        { compute: 'now' }
-                      )
-                    }
+                        { compute: 'now' },
+                      );
+                    }}
                   />
                 </Section>
                 <Section>
                   <Stack spacing={3}>
                     <Typography variant="h5">Clear Effects</Typography>
                     <Typography variant="body1">
-                      <Icon name="warning" color="warning" /> Clicking this
+                      <Icon name="Warning" color="warning" /> Clicking this
                       button will clear all effects for the image
                     </Typography>
                     <Button
-                      startIcon={<Icon name="clear" />}
+                      startIcon={<Icon name="Clear" />}
                       sx={{ maxWidth: '300px' }}
                       variant="contained"
                       color="warning"
@@ -315,7 +317,7 @@ const Inner: React.FC = () => {
   );
 };
 
-const Section: React.FC = ({ children }) => (
+const Section: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
   <Paper style={{ padding: 16, maxWidth: IS_MOBILE ? '300px' : undefined }}>
     {children}
   </Paper>

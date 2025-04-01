@@ -30,9 +30,9 @@ export const hueShiftPulse = buildEffect({
     }) => {
       const amount = miscUtil.bezierCurve(
         easing,
-        true
+        true,
       )(frameIndex / frameCount);
       return colorUtil.shiftTowardsHue(getSrcPixel(coord), hue, amount * 360);
-    }
+    },
   ),
 });

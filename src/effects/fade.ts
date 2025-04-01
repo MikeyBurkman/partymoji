@@ -30,7 +30,7 @@ export const fade = buildEffect({
               curve,
             }),
           }),
-      })
+      }),
     ),
 });
 

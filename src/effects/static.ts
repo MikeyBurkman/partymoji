@@ -52,6 +52,6 @@ export const staticc = buildEffect({
       const grey = Math.ceil(random() * 255);
 
       return isStatic ? [grey, grey, grey, src[3]] : src;
-    }
+    },
   ),
 });

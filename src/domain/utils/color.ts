@@ -1,6 +1,7 @@
-import * as convert from 'color-convert';
+import convert from 'color-convert';
 import type { Color } from '~/domain/types';
 import { clamp, weightedValue } from './misc';
+import seedrandom from 'seedrandom';
 
 /**
  * Converts a Pixel into a hex string like '#00FF00'
@@ -15,9 +16,9 @@ export const toHexColor = ([r, g, b]: Color) => {
 };
 
 export const fromHexColor = (hex: string): Color => [
-  parseInt(hex.toUpperCase().substr(1, 2), 16),
-  parseInt(hex.toUpperCase().substr(3, 2), 16),
-  parseInt(hex.toUpperCase().substr(5, 2), 16),
+  parseInt(hex.toUpperCase().substring(1, 3), 16),
+  parseInt(hex.toUpperCase().substring(3, 5), 16),
+  parseInt(hex.toUpperCase().substring(5, 8), 16),
   255,
 ];
 
@@ -37,7 +38,7 @@ export const isTransparent = (pixel: Color) => pixel[3] < 64;
 export const isPartiallyTransparent = (pixel: Color) =>
   !isTransparent(pixel) && pixel[3] < 128;
 
-export const randomColor = (random: seedrandom.prng): Color => [
+export const randomColor = (random: seedrandom.PRNG): Color => [
   Math.floor(random.int32() * 256),
   Math.floor(random.int32() * 256),
   Math.floor(random.int32() * 256),

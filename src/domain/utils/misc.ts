@@ -13,7 +13,7 @@ import type { Coord, BezierTuple } from '~/domain/types';
  */
 export function assert(
   condition: unknown,
-  message = 'Unexpected falsy value'
+  message = 'Unexpected falsy value',
 ): asserts condition {
   if (!condition) {
     throw new Error(`AssertionFailure: ${message}`);
@@ -24,7 +24,7 @@ export function assert(
 export const replaceIndex = <T>(
   arr: T[],
   index: number,
-  newValueFn: (oldValue: T) => T
+  newValueFn: (oldValue: T) => T,
 ): T[] => arr.map((x, i) => (index === i ? newValueFn(x) : x));
 
 /** Returns a new array with the element at the index removed */
@@ -45,7 +45,7 @@ export const insertInto = <T>(arr: T[], index: number, newValue: T): T[] => {
 
 export const isUrl = (s: string): boolean =>
   /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(
-    s
+    s,
   );
 
 export const copyToClipboard = (s: string): Promise<void> =>

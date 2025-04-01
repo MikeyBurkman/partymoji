@@ -12,7 +12,7 @@ export function useDebounce<T>({
   onChange,
 }: Props<T>): [T, (newT: T) => void] {
   const [v, setV] = React.useState<T>(value);
-  const debounceRef = React.useRef<NodeJS.Timeout>();
+  const debounceRef = React.useRef<NodeJS.Timeout>(null);
   const onValueChange = React.useCallback(
     (newV: T) => {
       setV(newV);
@@ -23,7 +23,7 @@ export function useDebounce<T>({
         onChange(newV);
       }, debounceMillis ?? 200);
     },
-    [debounceMillis, onChange]
+    [debounceMillis, onChange],
   );
 
   React.useEffect(() => {

@@ -1,4 +1,4 @@
-import { Divider, Icon, Stack, Typography } from '@material-ui/core';
+import { Divider, Icon, Stack, Typography } from '@mui/material';
 import React from 'react';
 import { Expandable } from './Expandable';
 
@@ -136,21 +136,27 @@ export const Help: React.FC = () => (
   </Expandable>
 );
 
-const Group: React.FC = ({ children }) => <Stack spacing={2}>{children}</Stack>;
+const Group: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
+  <Stack spacing={2}>{children}</Stack>
+);
 
-const Section: React.FC = ({ children }) => (
+const Section: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
   <Stack width="sm" spacing={1}>
     {children}
   </Stack>
 );
 
-const SectionHeader: React.FC = ({ children }) => (
+const SectionHeader: React.FC<{ children?: React.ReactNode }> = ({
+  children,
+}) => (
   <Typography variant="body1" paddingLeft="0.5rem">
     {children}
   </Typography>
 );
 
-const SectionText: React.FC = ({ children }) => (
+const SectionText: React.FC<{ children?: React.ReactNode }> = ({
+  children,
+}) => (
   <Typography variant="body2" paddingLeft="1.0rem">
     <Icon sx={{ fontSize: 8, marginRight: 1 }}>circle</Icon> {children}
   </Typography>

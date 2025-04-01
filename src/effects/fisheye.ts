@@ -36,6 +36,6 @@ export const fisheye = buildEffect({
       const xOffset = Math.round(dist * Math.cos(angle));
       const yOffset = Math.round(dist * Math.sin(angle));
       return getSrcPixel([x + xOffset, y + yOffset]);
-    }
+    },
   ),
 });

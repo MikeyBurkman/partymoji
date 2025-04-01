@@ -22,6 +22,6 @@ export const hueChange = buildEffect({
   ] as const,
   fn: imageUtil.mapImage(
     ({ coord, getSrcPixel, parameters: [newHue, amount] }) =>
-      colorUtil.shiftTowardsHue(getSrcPixel(coord), newHue, amount)
+      colorUtil.shiftTowardsHue(getSrcPixel(coord), newHue, amount),
   ),
 });

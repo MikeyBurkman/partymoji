@@ -4,7 +4,7 @@ import {
   Select,
   Stack,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import React from 'react';
 import { HelpTooltip } from '~/components/HelpTooltip';
 import type { ParamFnDefault, ParamFunction } from '~/domain/types';
