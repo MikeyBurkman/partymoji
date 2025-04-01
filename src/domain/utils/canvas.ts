@@ -171,7 +171,7 @@ export const applyFilter = (
         `${dropShadow.offsetX}px`,
         `${dropShadow.offsetY}px`,
         `${dropShadow.blurRadius ?? 0}px`,
-        `${toHexColor(dropShadow.color)}`,
+        toHexColor(dropShadow.color),
       ].join(' ')
     : null;
 

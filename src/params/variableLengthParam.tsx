@@ -1,15 +1,9 @@
-import {
-  Button,
-  Icon,
-  IconButton,
-  Paper,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Button, IconButton, Paper, Stack, Typography } from '@mui/material';
 import React from 'react';
-import { HelpTooltip } from '~/components/HelpTooltip';
+import { Tooltip } from '~/components/Tooltip';
 import type { JsonType, ParamFnDefault, ParamFunction } from '~/domain/types';
 import { toParamFunction } from './utils';
+import { Icon } from '~/components/Icon';
 
 interface VariableLengthProps<T extends JsonType> {
   name: string;
@@ -20,7 +14,10 @@ interface VariableLengthProps<T extends JsonType> {
   onChange: (v: T) => void;
 }
 
-type ParamState = { param: ParamFunction<any>; pValue: any };
+interface ParamState {
+  param: ParamFunction<any>;
+  pValue: any;
+}
 
 const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
   name,
@@ -38,7 +35,7 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
       <Stack spacing={1}>
         <Stack direction="row" spacing={1}>
           <Typography variant="body2">{name}</Typography>
-          <HelpTooltip description={description} />
+          <Tooltip kind="help" description={description} />
         </Stack>
         {params.map(({ param, pValue }, idx) => {
           const ele = param.fn({
@@ -73,7 +70,7 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
                       : undefined,
                 }}
               >
-                <Icon>delete</Icon>
+                <Icon name="Delete" />
               </IconButton>
               {ele}
             </Stack>

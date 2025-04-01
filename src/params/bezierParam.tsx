@@ -1,7 +1,7 @@
 import React from 'react';
 import * as R from 'remeda';
 import { Box, Stack, Typography } from '@mui/material';
-import { HelpTooltip } from '~/components/HelpTooltip';
+import { Tooltip } from '~/components/Tooltip';
 import type {
   Coord,
   ParamFnDefault,
@@ -122,7 +122,7 @@ const BezierParam: React.FC<{
           {name}
         </Typography>
         <span style={{ paddingTop: '0.5rem' }}>
-          <HelpTooltip description={description} />
+          <Tooltip kind="help" description={description} />
         </span>
         <Box border={1}>
           <CanvasElement

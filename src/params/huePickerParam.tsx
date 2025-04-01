@@ -1,7 +1,7 @@
 import { Stack, Typography } from '@mui/material';
 import React from 'react';
 import ColorPicker from 'react-best-gradient-color-picker';
-import { HelpTooltip } from '~/components/HelpTooltip';
+import { Tooltip } from '~/components/Tooltip';
 import type { ParamFnDefault, ParamFunction } from '~/domain/types';
 import { colorUtil } from '~/domain/utils';
 import { toParamFunction } from './utils';
@@ -30,7 +30,7 @@ const HuePickerParam: React.FC<{
     <Stack spacing={1}>
       <Stack direction="row" spacing={1}>
         <Typography variant="body2">{name}</Typography>
-        <HelpTooltip description={description} />
+        <Tooltip kind="help" description={description} />
       </Stack>
       <ColorPicker
         value={rgbColor}

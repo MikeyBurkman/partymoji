@@ -51,10 +51,10 @@ export type FrameData = Uint8ClampedArray;
  * Each frame represents one frame in the animation -- if `frames` has length 4, then
  *  it means that there are 4 animation frames in the image.
  */
-export type Image = {
+export interface Image {
   dimensions: Dimensions;
   frames: FrameData[];
-};
+}
 
 export type Random = seedrandom.PRNG;
 
@@ -86,7 +86,7 @@ export interface Params<T> {
   onChange: (v: T) => void;
 }
 
-export type ParamFunction<T> = {
+export interface ParamFunction<T> {
   name: string;
   /**
    * If the previous image is done computing, it will be given to this function.
@@ -94,7 +94,7 @@ export type ParamFunction<T> = {
    */
   defaultValue: (image?: Image) => T;
   fn: (params: Params<T>) => JSX.Element;
-};
+}
 
 export type ParamFnDefault<T> = ParamFunction<T>['defaultValue'] | T;
 
@@ -173,10 +173,10 @@ export type ImageEffectResult = {
     }
 );
 
-export type AsyncRunMessage = {
+export interface AsyncRunMessage {
   status: 'complete';
   result: ImageEffectResult;
-};
+}
 
 export interface CanvasData {
   canvas: OffscreenCanvas | HTMLCanvasElement;

@@ -1,6 +1,6 @@
 import { Slider, Stack, Typography } from '@mui/material';
 import React from 'react';
-import { HelpTooltip } from '~/components/HelpTooltip';
+import { Tooltip } from '~/components/Tooltip';
 import type { ParamFnDefault, ParamFunction } from '~/domain/types';
 import { useDebounce } from '~/domain/utils/useDebounce';
 import { toParamFunction } from './utils';
@@ -24,7 +24,7 @@ const SliderParam: React.FC<{
     <Stack spacing={1}>
       <Stack direction="row" spacing={1}>
         <Typography variant="body2">{name}</Typography>
-        <HelpTooltip description={description} />
+        <Tooltip kind="help" description={description} />
       </Stack>
       <Stack
         direction="row"

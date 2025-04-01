@@ -38,8 +38,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
   }, [isMounted, onCanvasMount]);
 
   const onEvent =
-    (callback: undefined | ((c: Coord) => void)) =>
-    (evt: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+    (callback: undefined | ((c: Coord) => void)) => (evt: React.MouseEvent) => {
       if (!ref.current || !callback) {
         return;
       }

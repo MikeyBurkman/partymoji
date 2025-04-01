@@ -183,8 +183,8 @@ export const hueFromColor = (color: Color): number =>
  * Converts a string in the format 'rgb(221, 17, 17)' or 'rgba(170, 5, 228, 1)' into a Color
  */
 export const rgbaStringToColor = (rgba: string): Color => {
-  const match = rgba.match(
-    /rgba?\(([0-9]+),\s*([0-9]+),\s*([0-9]+)(,\s*([0-9]+))?\)/
+  const match = /rgba?\(([0-9]+),\s*([0-9]+),\s*([0-9]+)(,\s*([0-9]+))?\)/.exec(
+    rgba
   );
   if (!match) {
     throw new Error(`Could not match rgb string ${rgba}`);

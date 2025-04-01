@@ -1,6 +1,6 @@
 import React from 'react';
 import { Checkbox, Stack, Typography } from '@mui/material';
-import { HelpTooltip } from '~/components/HelpTooltip';
+import { Tooltip } from '~/components/Tooltip';
 import type { ParamFnDefault, ParamFunction } from '~/domain/types';
 import { toParamFunction } from './utils';
 
@@ -17,7 +17,7 @@ const CheckboxParam: React.FC<{
           {name}
         </Typography>
         <span style={{ paddingTop: '0.5rem' }}>
-          <HelpTooltip description={description} />
+          <Tooltip kind="help" description={description} />
         </span>
         <Checkbox
           aria-label={name}

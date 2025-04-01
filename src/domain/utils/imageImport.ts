@@ -178,6 +178,6 @@ function dataUrlToFile({
 }
 
 function getFileType(dataUrl: string): string | undefined {
-  const matched = dataUrl.match(/^data:image\/(\w+);/);
+  const matched = /^data:image\/(\w+);/.exec(dataUrl);
   return matched?.[1];
 }

@@ -1,5 +1,5 @@
 import { Stack, Typography } from '@mui/material';
-import { Icon } from './Icon';
+import { Tooltip } from './Tooltip';
 
 const TooltipInner: React.FC = () => (
   <Stack spacing={1}>
@@ -15,12 +15,5 @@ const TooltipInner: React.FC = () => (
 );
 
 export const RequiresAnimationTooltip: React.FC = () => {
-  return (
-    <Icon
-      name="Warning"
-      color="warning"
-      tooltip={<TooltipInner />}
-      htmlTooltip
-    />
-  );
+  return <Tooltip kind="warning" description={<TooltipInner />} />;
 };
