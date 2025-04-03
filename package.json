@@ -8,8 +8,12 @@
     "url": "https://github.com/MikeyBurkman/partymoji"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "pnpm build:wasm && vite",
     "build": "tsc -b && vite build && pnpm copy-docs",
+    "build:wasm": "wasm-pack build wasm/gif_encoder --target web --dev",
+    "build:wasm:release": "wasm-pack build wasm/gif_encoder --target web --release",
+    "build:all": "pnpm build:wasm && pnpm build",
+    "build:all:release": "pnpm build && pnpm build:wasm:release", 
     "lint": "tsc && eslint .",
     "preview": "vite preview",
     "copy-docs": "rimraf docs && cp -R dist docs",

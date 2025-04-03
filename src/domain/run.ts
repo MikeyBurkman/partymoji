@@ -5,6 +5,9 @@ import { Color, Image, ImageEffectResult } from './types';
 import { colorUtil, imageUtil, miscUtil } from '~/domain/utils';
 import { fakeTransparency } from '~/effects/fake-transparency';
 import { RunArgs } from './RunArgs';
+import { wasmCreateGif } from './wasmGifEncoder';
+
+const useWasm = false;
 
 // Returns a list of gif data URLs, for each effect
 export const runEffects = async ({
@@ -28,12 +31,23 @@ export const runEffects = async ({
     random,
   );
 
-  const gif = await createGif({
-    // Transform any of our transparent pixels to what our gif understands to be transparent
-    image: encodeTransparency(result, transparentColor),
-    transparentColor,
-    fps,
-  });
+  let gif: string;
+  if (useWasm) {
+    gif = await wasmCreateGif({
+
+      // Transform any of our transparent pixels to what our gif understands to be transparent
+      image: encodeTransparency(result, transparentColor),
+      transparentColor,
+      fps,
+    });
+  }
+  else {
+    gif = await createGif({
+      image: encodeTransparency(result, transparentColor),
+      transparentColor,
+      fps,
+    });
+  }
 
   if (hasPartialTransparency) {
     const resultWithBG = await fakeTransparency.fn({
@@ -57,10 +71,10 @@ export const runEffects = async ({
       transparentColor == null
         ? undefined
         : await fakeTransparency.fn({
-            image: result,
-            parameters: [],
-            random,
-          });
+          image: result,
+          parameters: [],
+          random,
+        });
 
     return {
       gif,
@@ -70,10 +84,10 @@ export const runEffects = async ({
         resultWithBG == null
           ? undefined
           : await createGif({
-              image: resultWithBG,
-              transparentColor: undefined,
-              fps,
-            }),
+            image: resultWithBG,
+            transparentColor: undefined,
+            fps,
+          }),
     };
   }
 };
@@ -157,13 +171,13 @@ const getTransparentColor = (
   random: seedrandom.PRNG,
 ):
   | {
-      hasPartialTransparency: true;
-      transparentColor: Color;
-    }
+    hasPartialTransparency: true;
+    transparentColor: Color;
+  }
   | {
-      hasPartialTransparency: false;
-      transparentColor: Color | undefined;
-    } => {
+    hasPartialTransparency: false;
+    transparentColor: Color | undefined;
+  } => {
   let hasTransparent = false;
   const seenPixels = new Set<string>();
   const [width, height] = image.dimensions;

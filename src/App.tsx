@@ -323,8 +323,6 @@ const Section: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
   </Paper>
 );
 
-// Icons at https://fonts.google.com/icons?selected=Material+Icons
-
 export const App: React.FC = () => {
   return (
     <ProcessorQueueProvider>
