@@ -7,7 +7,7 @@ import { fakeTransparency } from '~/effects/fake-transparency';
 import { RunArgs } from './RunArgs';
 import { wasmCreateGif } from './wasmGifEncoder';
 
-const useWasm = false;
+const useWasm = true;
 
 // Returns a list of gif data URLs, for each effect
 export const runEffects = async ({
