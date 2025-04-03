@@ -8,6 +8,7 @@ repository = "https://github.com/MikeyBurkman/partymoji/wasm/gif_encoder"
 
 [dependencies]
 base64 = "0.22.1"
+console_error_panic_hook = "0.1.7"
 gif_encoder = { path = "../gif_encoder" }
 js-sys = "0.3.77"
 wasm-bindgen = "0.2.100"
