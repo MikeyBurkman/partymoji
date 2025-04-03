@@ -1,22 +1,6 @@
 import { Color, Image } from './types';
-import init, { create_gif, create_gif_with_transparency } from "~wasm/gif_encoder/pkg";
-import { miscUtil } from './utils';
+import { create_gif_data_url } from "gif_encoder_wasm";
 
-let isInitialized = false;
-
-const initWasm = async () => {
-    if (isInitialized) {
-        return;
-    }
-
-    console.info('Initializing WASM');
-    await init().then(() => {
-        console.info('WASM initialized');
-        isInitialized = true;
-    }).catch((err) => {
-        console.error('WASM initialization failed', err);
-    });
-};
 
 export const wasmCreateGif = async ({
     image,
@@ -28,7 +12,8 @@ export const wasmCreateGif = async ({
     fps: number;
 }): Promise<string> => {
     console.info('Creating GIF with WASM');
-    return initWasm().then(() => {
+    return new Promise<string>((resolve) => {
+
         const [width, height] = image.dimensions;
 
         const flattenedFrames = new Uint8Array(
@@ -40,17 +25,11 @@ export const wasmCreateGif = async ({
             offset += frame.length;
         }
 
-        let array: Uint8Array;
+        const url = create_gif_data_url(width, height, flattenedFrames, fps, transparentColor && new Uint8Array(transparentColor));
 
-        // if (transparentColor) {
-        //     array = create_gif_with_transparency(width, height, flattenedFrames, fps, new Uint8Array(transparentColor));
-        // }
-        // else {
-            array = create_gif(width, height, flattenedFrames, fps);
-        // }
+        console.warn('URL:', url);
 
-        const blob = new Blob([array], { type: 'image/gif' });
-        return miscUtil.blobOrFileToDataUrl(blob);
+        resolve(url);
     });
     // TODO: Catch and do it in JS?
 }

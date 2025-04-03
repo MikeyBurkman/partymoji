@@ -10,10 +10,10 @@
   "scripts": {
     "dev": "pnpm build:wasm && vite",
     "build": "tsc -b && vite build && pnpm copy-docs",
-    "build:wasm": "wasm-pack build wasm/gif_encoder --target web --dev",
-    "build:wasm:release": "wasm-pack build wasm/gif_encoder --target web --release",
+    "build:wasm": "wasm-pack build gif/gif_encoder_wasm --target bundler --dev",
+    "build:wasm:release": "wasm-pack build gif/gif_encoder_wasm --target bundler --release",
     "build:all": "pnpm build:wasm && pnpm build",
-    "build:all:release": "pnpm build && pnpm build:wasm:release", 
+    "build:all:release": "pnpm build && pnpm build:wasm:release",
     "lint": "tsc && eslint .",
     "preview": "vite preview",
     "copy-docs": "rimraf docs && cp -R dist docs",
@@ -33,13 +33,15 @@
     "file-saver": "^2.0.5",
     "get-pixels": "^3.3.3",
     "gif-encoder": "^0.7.2",
+    "gif_encoder_wasm": "link:gif/gif_encoder_wasm/pkg",
     "gifuct-js": "^2.1.2",
     "mobile-detect": "^1.4.5",
     "react": "^19.0.0",
     "react-best-gradient-color-picker": "^3.0.14",
     "react-dom": "^19.0.0",
     "remeda": "^0.0.30",
-    "seedrandom": "^3.0.5"
+    "seedrandom": "^3.0.5",
+    "vite-plugin-wasm": "^3.4.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

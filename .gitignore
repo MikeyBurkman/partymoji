@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 # for now.. will add build output later
-wasm/**/target
+gif/**/target

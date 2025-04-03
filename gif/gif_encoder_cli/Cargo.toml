@@ -1,0 +1,8 @@
+[package]
+name = "gif_encoder_cli"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+gif_encoder = { path = "../gif_encoder" }
+anyhow = { workspace = true }

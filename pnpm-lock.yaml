@@ -44,6 +44,9 @@ importers:
       gif-encoder:
         specifier: ^0.7.2
         version: 0.7.2
+      gif_encoder_wasm:
+        specifier: link:gif/gif_encoder_wasm/pkg
+        version: link:gif/gif_encoder_wasm/pkg
       gifuct-js:
         specifier: ^2.1.2
         version: 2.1.2
@@ -65,6 +68,9 @@ importers:
       seedrandom:
         specifier: ^3.0.5
         version: 3.0.5
+      vite-plugin-wasm:
+        specifier: ^3.4.1
+        version: 3.4.1(vite@6.2.4(terser@5.39.0))
     devDependencies:
       '@eslint/js':
         specifier: ^9.21.0
@@ -2256,6 +2262,11 @@ packages:
     resolution: {integrity: sha512-4n+Ys+2bKHQohPBKigFlndwWQ5fFKwaGY6muNDMTb0fSQLyBzS+jjUNRZG9sKF0S/Go4ApG6LFnUGopjkILg3w==}
     peerDependencies:
       vite: ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0
+
+  vite-plugin-wasm@3.4.1:
+    resolution: {integrity: sha512-ja3nSo2UCkVeitltJGkS3pfQHAanHv/DqGatdI39ja6McgABlpsZ5hVgl6wuR8Qx5etY3T5qgDQhOWzc5RReZA==}
+    peerDependencies:
+      vite: ^2 || ^3 || ^4 || ^5 || ^6
 
   vite-tsconfig-paths@5.1.4:
     resolution: {integrity: sha512-cYj0LRuLV2c2sMqhqhGpaO3LretdtMn/BVX4cPLanIZuwwrkVl+lK84E/miEXkCHWXuq65rhNN4rXsBcOB3S4w==}
@@ -4683,6 +4694,10 @@ snapshots:
       vite: 6.2.4(terser@5.39.0)
     transitivePeerDependencies:
       - rollup
+
+  vite-plugin-wasm@3.4.1(vite@6.2.4(terser@5.39.0)):
+    dependencies:
+      vite: 6.2.4(terser@5.39.0)
 
   vite-tsconfig-paths@5.1.4(typescript@5.7.3)(vite@6.2.4(terser@5.39.0)):
     dependencies:

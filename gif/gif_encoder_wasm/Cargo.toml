@@ -1,5 +1,5 @@
 [package]
-name = "gif_encoder"
+name = "gif_encoder_wasm"
 version = "0.1.0"
 edition = "2024"
 description = "GIF encoder for the partymoji app"
@@ -7,7 +7,8 @@ license = "MIT"
 repository = "https://github.com/MikeyBurkman/partymoji/wasm/gif_encoder"
 
 [dependencies]
-image = { version = "0.25.6", default-features = false, features = ["gif"] }
+base64 = "0.22.1"
+gif_encoder = { path = "../gif_encoder" }
 js-sys = "0.3.77"
 wasm-bindgen = "0.2.100"
 
@@ -16,12 +17,4 @@ crate-type = ["cdylib"]
 
 [dependencies.web-sys]
 version = "0.3"
-features = [
-    'Document',
-    'Element',
-    'HtmlElement',
-    'HtmlImageElement',
-    'HtmlCanvasElement',
-    'Window',
-    'CanvasRenderingContext2d',
-]
+features = ['Blob', 'Url']
