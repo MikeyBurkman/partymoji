@@ -39,26 +39,34 @@ fn main() {
 
     // Measure the execution time of the create_gif function
     let start = Instant::now();
-    let gif_data =
-        gif_encoder::gif::create_gif(width as i32, height as i32, frames, fps, transparent_color).unwrap();
+    let gif_result =
+        gif_encoder::gif::create_gif(width as i32, height as i32, frames, fps, transparent_color);
     let duration = start.elapsed();
 
     println!("create_gif executed in: {:?}", duration);
 
-    // Save the GIF to a file (optional)
-    std::fs::write("output.gif", gif_data.clone()).expect("Failed to write GIF");
+    match gif_result {
+        Ok(data) => {
+            // Save the GIF to a file (optional)
+            std::fs::write("output.gif", data.clone()).expect("Failed to write GIF");
 
-    // Encode the GIF data as Base64 using the new Engine API
-    let base64_encoded = BASE64_STANDARD.encode(&gif_data); // Clone gif_data here
+            // Encode the GIF data as Base64 using the new Engine API
+            let base64_encoded = BASE64_STANDARD.encode(&data); // Clone gif_data here
 
-    let mut clipboard: ClipboardContext =
-        ClipboardProvider::new().expect("Failed to access clipboard");
-    // Create the data URL
-    let data_url = format!("data:image/gif;base64,{}", base64_encoded);
+            let mut clipboard: ClipboardContext =
+                ClipboardProvider::new().expect("Failed to access clipboard");
+            // Create the data URL
+            let data_url = format!("data:image/gif;base64,{}", base64_encoded);
 
-    clipboard
-        .set_contents(data_url.clone())
-        .expect("Failed to copy to clipboard");
+            clipboard
+                .set_contents(data_url.clone())
+                .expect("Failed to copy to clipboard");
 
-    println!("Data URL copied to clipboard!");
+            println!("Data URL copied to clipboard!");
+        }
+        Err(e) => {
+            eprintln!("Error creating GIF: {:?}", e);
+            return;
+        }
+    }
 }

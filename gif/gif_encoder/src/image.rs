@@ -13,7 +13,9 @@ pub fn create_gif(
     let mut buffer = Cursor::new(Vec::new());
     {
         let mut encoder = GifEncoder::new_with_speed(&mut buffer, fps);
-        encoder.set_repeat(Repeat::Infinite).unwrap();
+        encoder
+            .set_repeat(Repeat::Infinite)
+            .map_err(|e| GifCreationError::EncodingError(e.to_string()))?;
 
         let frame_size = (width * height * 4) as usize;
         let frame_count = frames.len() / frame_size;
@@ -35,8 +37,16 @@ pub fn create_gif(
                 }
             }
 
-            let image = RgbaImage::from_raw(width as u32, height as u32, frame_pixels).unwrap();
-            encoder.encode_frame(image::Frame::new(image)).unwrap();
+            let image = RgbaImage::from_raw(width as u32, height as u32, frame_pixels).ok_or_else(
+                || {
+                    GifCreationError::InvalidImageData(
+                        "Invalid image dimensions or data".to_string(),
+                    )
+                },
+            )?;
+            encoder
+                .encode_frame(image::Frame::new(image))
+                .map_err(|e| GifCreationError::EncodingError(e.to_string()))?;
         }
     }
     Ok(buffer.into_inner())
