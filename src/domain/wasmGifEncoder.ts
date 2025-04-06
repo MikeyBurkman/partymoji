@@ -1,7 +1,6 @@
 import { Color, Image } from './types';
 import { create_gif_data_url } from "gif_encoder_wasm";
 
-
 export const wasmCreateGif = async ({
     image,
     transparentColor,
@@ -24,6 +23,8 @@ export const wasmCreateGif = async ({
             flattenedFrames.set(frame, offset);
             offset += frame.length;
         }
+
+        console.info(' Calling WASM with width: ', width, 'height: ', height, 'transparentColor: ', transparentColor, 'fps: ', fps);
 
         const url = create_gif_data_url(width, height, flattenedFrames, fps, transparentColor && new Uint8Array(transparentColor));
 

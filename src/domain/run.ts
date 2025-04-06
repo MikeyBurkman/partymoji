@@ -7,14 +7,13 @@ import { fakeTransparency } from '~/effects/fake-transparency';
 import { RunArgs } from './RunArgs';
 import { wasmCreateGif } from './wasmGifEncoder';
 
-const useWasm = true;
-
 // Returns a list of gif data URLs, for each effect
 export const runEffects = async ({
   image,
   effectInput,
   randomSeed,
   fps,
+  useWasm
 }: RunArgs): Promise<ImageEffectResult> => {
   const random = seedrandom(randomSeed);
 
@@ -32,22 +31,23 @@ export const runEffects = async ({
   );
 
   let gif: string;
+  const startTime = performance.now();
   if (useWasm) {
     gif = await wasmCreateGif({
-
       // Transform any of our transparent pixels to what our gif understands to be transparent
       image: encodeTransparency(result, transparentColor),
       transparentColor,
       fps,
     });
-  }
-  else {
+  } else {
     gif = await createGif({
       image: encodeTransparency(result, transparentColor),
       transparentColor,
       fps,
     });
   }
+  const endTime = performance.now();
+  console.log(`GIF creation took ${endTime - startTime} milliseconds.`);
 
   if (hasPartialTransparency) {
     const resultWithBG = await fakeTransparency.fn({
@@ -100,6 +100,9 @@ const encodeTransparency = (
   image: Image,
   transparentColor: Color | undefined,
 ): Image => {
+  if (!transparentColor) {
+    return image;
+  }
   const newFrames = image.frames.map((frame) => {
     const img = new Uint8ClampedArray(frame.length);
     for (let i = 0; i < frame.length; i += 4) {
