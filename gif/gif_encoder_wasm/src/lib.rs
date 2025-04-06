@@ -44,7 +44,7 @@ pub fn create_gif_data_url(
 
     // Create a GIF with optional transparency
     let gif_data =
-        gif_encoder::image::create_gif(width, height, frames_vec, fps, transparent_color_option);
+        gif_encoder::image::create_gif(width, height, frames_vec, fps, transparent_color_option).unwrap();
 
     // Encode the GIF data as Base64 using the new Engine API
     let base64_encoded = BASE64_STANDARD.encode(&gif_data);

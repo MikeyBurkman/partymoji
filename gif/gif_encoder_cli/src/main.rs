@@ -40,7 +40,7 @@ fn main() {
     // Measure the execution time of the create_gif function
     let start = Instant::now();
     let gif_data =
-        gif_encoder::gif::create_gif(width as i32, height as i32, frames, fps, transparent_color);
+        gif_encoder::gif::create_gif(width as i32, height as i32, frames, fps, transparent_color).unwrap();
     let duration = start.elapsed();
 
     println!("create_gif executed in: {:?}", duration);

@@ -1,5 +1,6 @@
+use crate::GifCreationError;
+use image::RgbaImage;
 use image::codecs::gif::{GifEncoder, Repeat};
-use image::{Rgba, RgbaImage};
 use std::io::Cursor;
 
 pub fn create_gif(
@@ -8,7 +9,7 @@ pub fn create_gif(
     frames: Vec<u8>,
     fps: i32,
     transparent_color: Option<[u8; 4]>,
-) -> Vec<u8> {
+) -> Result<Vec<u8>, GifCreationError> {
     let mut buffer = Cursor::new(Vec::new());
     {
         let mut encoder = GifEncoder::new_with_speed(&mut buffer, fps);
@@ -17,37 +18,26 @@ pub fn create_gif(
         let frame_size = (width * height * 4) as usize;
         let frame_count = frames.len() / frame_size;
 
-        let mut image = RgbaImage::new(width as u32, height as u32);
+        // convert transparent to an Option<u32> to speed up comparison
+        let transparent = transparent_color.map(|c| u32::from_le_bytes([c[0], c[1], c[2], c[3]]));
 
         for frame_index in 0..frame_count {
             let frame_base = frame_index * frame_size;
 
-            for y in 0..height {
-                let mut row_base = frame_base + (y * width * 4) as usize;
-                for x in 0..width {
-                    let r = frames[row_base];
-                    let g = frames[row_base + 1];
-                    let b = frames[row_base + 2];
-                    let a = frames[row_base + 3];
+            let mut frame_pixels = frames[frame_base..frame_base + frame_size].to_vec();
 
-                    if let Some(transparent) = transparent_color {
-                        if [r, g, b, a] == transparent {
-                            image.put_pixel(x as u32, y as u32, Rgba([0, 0, 0, 0]));
-                        } else {
-                            image.put_pixel(x as u32, y as u32, Rgba([r, g, b, a]));
-                        }
-                    } else {
-                        image.put_pixel(x as u32, y as u32, Rgba([r, g, b, a]));
+            if let Some(transparent) = transparent {
+                for chunk in frame_pixels.chunks_exact_mut(4) {
+                    let pixel = u32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]);
+                    if pixel == transparent {
+                        chunk.copy_from_slice(&[0, 0, 0, 0]);
                     }
-
-                    row_base += 4;
                 }
             }
 
-            encoder
-                .encode_frame(image::Frame::new(image.clone()))
-                .unwrap();
+            let image = RgbaImage::from_raw(width as u32, height as u32, frame_pixels).unwrap();
+            encoder.encode_frame(image::Frame::new(image)).unwrap();
         }
     }
-    buffer.into_inner()
+    Ok(buffer.into_inner())
 }

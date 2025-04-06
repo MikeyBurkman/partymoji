@@ -1,3 +1,4 @@
+use crate::GifCreationError;
 use gif::{Encoder, Frame, Repeat};
 use std::collections::HashMap;
 use std::io::Cursor;
@@ -8,7 +9,7 @@ pub fn create_gif(
     frames: Vec<u8>,
     fps: i32,
     transparent_color: Option<[u8; 4]>,
-) -> Vec<u8> {
+) -> Result<Vec<u8>, GifCreationError> {
     let mut buffer = Cursor::new(Vec::new());
 
     {
@@ -86,5 +87,5 @@ pub fn create_gif(
         }
     } // The encoder is dropped here, releasing the borrow on `buffer`
 
-    buffer.into_inner()
+    Ok(buffer.into_inner())
 }
