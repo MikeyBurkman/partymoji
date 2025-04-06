@@ -24,6 +24,16 @@ pub fn create_gif(
         let mut palette_map = HashMap::new();
         let mut next_color_index = 0;
 
+        let mut transparent_color_arr: [u8; 4] = [0; 4];
+        let mut transparent_index: Option<u8> = None;
+        if let Some(transparent) = transparent_color {
+            // Add the transparent color to the palette
+            palette[0..3].copy_from_slice(&transparent[0..3]);
+            next_color_index += 1;
+            transparent_color_arr = transparent;
+            transparent_index = Some(0);
+        }
+
         for frame_index in 0..frame_count {
             let frame_base = frame_index * frame_size;
             let mut indexed_pixels = Vec::with_capacity((width * height) as usize);
@@ -32,27 +42,22 @@ pub fn create_gif(
                 for x in 0..width {
                     let pixel_index = frame_base + ((y * width + x) * 4) as usize;
 
-                    let r = frames[pixel_index];
-                    let g = frames[pixel_index + 1];
-                    let b = frames[pixel_index + 2];
-                    let a = frames[pixel_index + 3];
+                    let pixel_color = frames[pixel_index..pixel_index + 4].iter().as_slice();
 
                     // Handle transparency
-                    if let Some(transparent) = transparent_color {
-                        if [r, g, b, a] == transparent {
+                    if transparent_index.is_some() {
+                        if pixel_color == transparent_color_arr {
                             indexed_pixels.push(0); // Transparent index
                             continue;
                         }
                     }
 
                     // Map the color to an index in the palette
-                    let color = (r, g, b);
+                    let color = (pixel_color[0], pixel_color[1], pixel_color[2]);
                     let color_index = *palette_map.entry(color).or_insert_with(|| {
                         let index = next_color_index;
                         if index < 256 {
-                            palette[index * 3] = r;
-                            palette[index * 3 + 1] = g;
-                            palette[index * 3 + 2] = b;
+                            palette[index * 3..index * 3 + 3].copy_from_slice(&pixel_color[0..3]);
                             next_color_index += 1;
                             index
                         } else {
@@ -69,10 +74,11 @@ pub fn create_gif(
                 width as u16,
                 height as u16,
                 indexed_pixels,
-                Some(0), // Index 0 is reserved for transparency
+                transparent_index,
             );
             frame.delay = (100 / fps) as u16; // Frame delay in hundredths of a second
 
+            // TODO: Didn't Mike say something about changing pallette per frame?
             frame.palette = Some(palette.clone());
 
             // Add the frame to the GIF
