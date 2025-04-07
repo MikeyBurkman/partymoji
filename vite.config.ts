@@ -9,4 +9,5 @@ export default defineConfig({
   worker: {
     plugins: () => [tsconfigPaths(), nodePolyfills()],
   },
+  base: '/partymoji',
 });
