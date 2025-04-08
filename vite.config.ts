@@ -12,4 +12,5 @@ export default defineConfig({
     format: 'es',
     plugins: () => [tsconfigPaths(), nodePolyfills(), wasm(), topLevelAwait()],
   },
+  base: '/partymoji',
 });
