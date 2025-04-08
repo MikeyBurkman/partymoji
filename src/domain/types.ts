@@ -156,6 +156,7 @@ export interface AppState {
   fname?: string;
   effects: AppStateEffect[];
   fps: number;
+  useWasm: boolean;
 }
 
 export type ImageEffectResult = {

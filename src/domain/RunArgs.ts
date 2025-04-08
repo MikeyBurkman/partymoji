@@ -9,4 +9,5 @@ export interface RunArgs {
     params: any;
   };
   fps: number;
+  useWasm: boolean;
 }
