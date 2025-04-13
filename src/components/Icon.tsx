@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Fab,
-  IconProps as MuiIconProps,
-  SxProps,
-  SvgIcon,
-} from '@mui/material';
+import { Fab, IconProps as MuiIconProps, SxProps } from '@mui/material';
 import {
   Add,
   Clear,
@@ -17,36 +12,19 @@ import {
   Warning,
 } from '@mui/icons-material';
 
-export type IconName =
-  | 'Add'
-  | 'Clear'
-  | 'Delete'
-  | 'Image'
-  | 'PriorityHigh'
-  | 'Remove'
-  | 'SaveAlt'
-  | 'Settings'
-  | 'Warning';
-
-const iconNameMap: { [key in IconName]: typeof SvgIcon } = {
-  Add: Add,
-  Clear: Clear,
-  Delete: Delete,
-  Image: Image,
-  PriorityHigh: PriorityHigh,
-  Remove: Remove,
-  SaveAlt: SaveAlt,
-  Settings: Settings,
-  Warning: Warning,
+const iconImports = {
+  Add,
+  Clear,
+  Delete,
+  Image,
+  PriorityHigh,
+  Remove,
+  SaveAlt,
+  Settings,
+  Warning,
 };
 
-const MuiIconByName = (name: IconName) => {
-  const IconComponent = iconNameMap[name];
-  if (!IconComponent) {
-    throw new Error(`Icon ${name} not found`);
-  }
-  return IconComponent;
-};
+export type IconName = keyof typeof iconImports;
 
 export interface ClickableIconProps {
   name: IconName;
@@ -98,6 +76,6 @@ export interface IconProps {
 }
 
 export const Icon: React.FC<IconProps> = ({ name, color, sx }) => {
-  const IconComponent = MuiIconByName(name);
+  const IconComponent = iconImports[name];
   return <IconComponent htmlColor={color} sx={sx} />;
 };
