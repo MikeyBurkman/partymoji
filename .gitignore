@@ -23,5 +23,4 @@ dist-ssr
 *.sln
 *.sw?
 
-# for now.. will add build output later
 gif/**/target
