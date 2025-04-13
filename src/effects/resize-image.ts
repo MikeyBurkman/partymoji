@@ -1,6 +1,7 @@
 import { imageUtil } from '~/domain/utils';
 import { checkboxParam, intParam } from '~/params';
 import { buildEffect } from './utils';
+import { logger } from '~/domain/logger';
 
 export const resizeImage = buildEffect({
   name: 'Resize Image',
@@ -29,6 +30,9 @@ export const resizeImage = buildEffect({
     }),
   ] as const,
   fn: ({ image, parameters: [resizeToWidth, resizeToHeight, keepScale] }) => {
+    logger.info(
+      `Resizing image from ${image.dimensions[0]}x${image.dimensions[1]} to ${resizeToWidth}x${resizeToHeight} with keepScale=${keepScale}`,
+    );
     const [oldWidth, oldHeight] = image.dimensions;
     const newWidth =
       resizeToWidth === 0

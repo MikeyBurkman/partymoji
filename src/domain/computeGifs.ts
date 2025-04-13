@@ -1,7 +1,9 @@
 import { runEffects } from './run';
 import { runEffectsAsync } from './runAsync';
 import { AppState, Image, ImageEffectResult } from './types';
-import { IS_DEV, debugLog, IS_MOBILE } from './env';
+import { IS_DEV } from './modes';
+import { IS_MOBILE } from './isMobile';
+import { logger } from './logger';
 import { miscUtil } from './utils';
 
 // OffscreenCanvas isn't supported by mobile browsers, so mobile will also run synchronously,
@@ -69,7 +71,7 @@ export const getEffectsDiff = ({
     currState.baseImage !== prevState.baseImage ||
     currState.useWasm !== prevState.useWasm
   ) {
-    debugLog('FPS, useWasm, or base image is different');
+    logger.debug('FPS, useWasm, or base image is different');
     return { diff: true, index: 0 };
   }
 
@@ -81,17 +83,17 @@ export const getEffectsDiff = ({
     const currE = currEffects[i];
     const prevE = prevEffects[i];
     if (!prevE) {
-      debugLog('No prevE, index ', i);
+      logger.debug('No prevE, index ', i);
       return { diff: true, index: i };
     }
 
     if (prevE.state.status !== 'done') {
-      debugLog('PrevE not done ', i);
+      logger.debug('PrevE not done ', i);
       return { diff: true, index: i };
     }
 
     if (currE.effectName !== prevE.effectName) {
-      debugLog('Different effect name ', i);
+      logger.debug('Different effect name ', i);
       return { diff: true, index: i };
     }
 
@@ -100,12 +102,12 @@ export const getEffectsDiff = ({
       const currEParam = currE.paramsValues[ei];
       const prevEP = prevE.paramsValues[ei];
       if (JSON.stringify(currEParam) !== JSON.stringify(prevEP)) {
-        debugLog('Param different', i, ei);
+        logger.debug('Param different', i, ei);
         return { diff: true, index: i };
       }
     }
   }
 
-  debugLog('No diff');
+  logger.debug('No diff');
   return { diff: false };
 };

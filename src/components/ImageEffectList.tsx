@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Button, Divider, Stack, Typography, Paper } from '@mui/material';
 import { saveAs } from 'file-saver';
 
-import { IS_MOBILE } from '~/domain/env';
+import { IS_MOBILE } from '~/domain/isMobile';
 import type {
   ParamFunction,
   Effect,

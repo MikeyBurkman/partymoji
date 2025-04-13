@@ -6,6 +6,7 @@ import { colorUtil, imageUtil, miscUtil } from '~/domain/utils';
 import { fakeTransparency } from '~/effects/fake-transparency';
 import { RunArgs } from './RunArgs';
 import { wasmCreateGif } from './wasmGifEncoder';
+import { logger } from './logger';
 
 // Returns a list of gif data URLs, for each effect
 export const runEffects = async ({
@@ -17,6 +18,8 @@ export const runEffects = async ({
 }: RunArgs): Promise<ImageEffectResult> => {
   const random = seedrandom(randomSeed);
 
+  logger.info('Running effect, name:', effectInput.effectName, 'params:', effectInput.params, 'useWasm:', useWasm);
+  
   const effect = effectByName(effectInput.effectName);
   const result = await effect.fn({
     image,
@@ -135,6 +138,9 @@ const createGif = async ({
   fps: number;
   useWasm: boolean;
 }): Promise<string> => {
+
+  logger.debug('Creating GIF with dimensions:', image.dimensions, 'fps:', fps, 'useWasm:', useWasm);
+  
   if (useWasm) {
     return wasmCreateGif({
       image,

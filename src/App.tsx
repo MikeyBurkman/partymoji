@@ -19,7 +19,9 @@ import { Icon } from '~/components/Icon';
 import { computeGifsForState, getEffectsDiff } from '~/domain/computeGifs';
 import type { AppState, AppStateEffect } from '~/domain/types';
 import { miscUtil } from '~/domain/utils';
-import { debugLog, IS_MOBILE, IS_DEV } from '~/domain/env';
+import { IS_DEV } from '~/domain/modes';
+import { IS_MOBILE } from './domain/isMobile';
+import { logger } from './domain/logger';
 
 import * as localStorage from '~/localStorage';
 import { sliderParam } from '~/params/sliderParam';
@@ -139,7 +141,7 @@ const Inner: React.FC = () => {
   );
 
   React.useEffect(() => {
-    debugLog('UseEffect, doCompute', doCompute);
+    logger.debug('UseEffect, doCompute', doCompute);
     if (!doCompute.compute) {
       return;
     }

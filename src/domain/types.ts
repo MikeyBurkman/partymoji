@@ -137,17 +137,16 @@ export interface EffectInput {
   params: any;
 }
 
+export interface AppStateEffectDoneState {
+  status: 'done';
+  image: ImageEffectResult;
+}
+
 export interface AppStateEffect {
   effectName: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   paramsValues: any[];
-  state:
-    | { status: 'init' }
-    | { status: 'computing' }
-    | {
-        status: 'done';
-        image: ImageEffectResult;
-      };
+  state: { status: 'init' } | { status: 'computing' } | AppStateEffectDoneState;
 }
 
 export interface AppState {
@@ -174,9 +173,12 @@ export type ImageEffectResult = {
     }
 );
 
-export interface AsyncRunMessage {
+export type AsyncRunMessage = {
   status: 'complete';
   result: ImageEffectResult;
+} | {
+  status: 'error';
+  error: unknown;
 }
 
 export interface CanvasData {
