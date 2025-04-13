@@ -8,8 +8,7 @@ import { miscUtil } from './utils';
 //  which will force us to use regular canvas and not OffscreenCanvas.
 // Also, we can't get web workers working with the dev build, so always use the synchronous
 //  version if not a prod build.
-export const computeGif =
-  IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync;
+export const computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync;
 
 export const computeGifsForState = async ({
   state,
@@ -67,7 +66,7 @@ export const getEffectsDiff = ({
 }): { diff: true; index: number } | { diff: false } => {
   if (
     currState.fps !== prevState.fps ||
-    currState.baseImage !== prevState.baseImage || 
+    currState.baseImage !== prevState.baseImage ||
     currState.useWasm !== prevState.useWasm
   ) {
     debugLog('FPS, useWasm, or base image is different');

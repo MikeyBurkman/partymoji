@@ -18,13 +18,16 @@ pub fn create_gif_data_url(
     fps: i32,
     transparent_color: Option<Uint8Array>,
 ) -> String {
-    console::info_1(&format!(
-        "WASM: create_gif_data_url called, width: {}, height: {}, fps: {}, frames length: {}",
-        width,
-        height,
-        fps,
-        frames.length()
-    ).into());
+    console::info_1(
+        &format!(
+            "WASM: create_gif_data_url called, width: {}, height: {}, fps: {}, frames length: {}",
+            width,
+            height,
+            fps,
+            frames.length()
+        )
+        .into(),
+    );
 
     // Start timing
     let start_time = web_sys::window()
@@ -44,7 +47,8 @@ pub fn create_gif_data_url(
 
     // Create a GIF with optional transparency
     let gif_data =
-        gif_encoder::image::create_gif(width, height, frames_vec, fps, transparent_color_option).unwrap();
+        gif_encoder::image::create_gif(width, height, frames_vec, fps, transparent_color_option)
+            .unwrap();
 
     // Encode the GIF data as Base64 using the new Engine API
     let base64_encoded = BASE64_STANDARD.encode(&gif_data);
@@ -60,10 +64,13 @@ pub fn create_gif_data_url(
         .now();
 
     // Log the elapsed time
-    console::info_1(&format!(
-        "WASM: GIF creation and encoding took {} ms",
-        end_time - start_time
-    ).into());
+    console::info_1(
+        &format!(
+            "WASM: GIF creation and encoding took {} ms",
+            end_time - start_time
+        )
+        .into(),
+    );
     // Return the data URL as a String
     data_url
 }

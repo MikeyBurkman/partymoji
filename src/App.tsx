@@ -47,7 +47,7 @@ const DEFAULT_STATE: AppState = {
   effects: [],
   baseImage: undefined,
   fps: DEFAULT_FPS,
-  useWasm: false
+  useWasm: false,
 };
 
 const Inner: React.FC = () => {
@@ -255,7 +255,15 @@ const Inner: React.FC = () => {
                   control={
                     <Checkbox
                       checked={state.useWasm}
-                      onChange={(event) => setState(prevState => ({ ...prevState, useWasm: event.target.checked }), { compute: 'now' })}
+                      onChange={(event) =>
+                        setState(
+                          (prevState) => ({
+                            ...prevState,
+                            useWasm: event.target.checked,
+                          }),
+                          { compute: 'now' },
+                        )
+                      }
                       color="primary"
                     />
                   }

@@ -25,14 +25,14 @@ const ColorPickerParam: React.FC<{
 }> = ({ name, value, description, onChange }) => {
   const rgbColor = React.useMemo(
     () => `rgb(${value[0]}, ${value[1]}, ${value[2]})`,
-    [value]
+    [value],
   );
 
   const setRgbColor = React.useCallback(
     (rgb: string) => {
       onChange(colorUtil.rgbaStringToColor(rgb));
     },
-    [onChange]
+    [onChange],
   );
 
   return (

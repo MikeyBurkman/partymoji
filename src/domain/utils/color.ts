@@ -65,7 +65,7 @@ export const TRANSPARENT_COLOR: Color = [0, 0, 0, 0];
 export const shiftTowardsHue = (
   [r, g, b, a]: Color,
   hue: number,
-  amount: number
+  amount: number,
 ): Color => {
   const [, s, l] = convert.rgb.hsl([r, g, b]);
   const [newR, newG, newB] = convert.hsl.rgb([
@@ -184,7 +184,7 @@ export const hueFromColor = (color: Color): number =>
  */
 export const rgbaStringToColor = (rgba: string): Color => {
   const match = /rgba?\(([0-9]+),\s*([0-9]+),\s*([0-9]+)(,\s*([0-9]+))?\)/.exec(
-    rgba
+    rgba,
   );
   if (!match) {
     throw new Error(`Could not match rgb string ${rgba}`);

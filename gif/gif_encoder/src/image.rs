@@ -10,9 +10,10 @@ pub fn create_gif(
     fps: i32,
     transparent_color: Option<[u8; 4]>,
 ) -> Result<Vec<u8>, GifCreationError> {
+    let frame_delay = image::Delay::from_numer_denom_ms(1000, fps as u32);
     let mut buffer = Cursor::new(Vec::new());
     {
-        let mut encoder = GifEncoder::new_with_speed(&mut buffer, fps);
+        let mut encoder = GifEncoder::new_with_speed(&mut buffer, 20);
         encoder
             .set_repeat(Repeat::Infinite)
             .map_err(|e| GifCreationError::EncodingError(e.to_string()))?;
@@ -44,8 +45,9 @@ pub fn create_gif(
                     )
                 },
             )?;
+            let frame = image::Frame::from_parts(image, 0, 0, frame_delay);
             encoder
-                .encode_frame(image::Frame::new(image))
+                .encode_frame(frame)
                 .map_err(|e| GifCreationError::EncodingError(e.to_string()))?;
         }
     }
