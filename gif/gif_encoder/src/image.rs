@@ -10,16 +10,16 @@ pub fn create_gif(
     fps: i32,
     transparent_color: Option<[u8; 4]>,
 ) -> Result<Vec<u8>, GifCreationError> {
-    let frame_delay = image::Delay::from_numer_denom_ms(1000, fps as u32);
     let mut buffer = Cursor::new(Vec::new());
     {
         let mut encoder = GifEncoder::new_with_speed(&mut buffer, 20);
         encoder
-            .set_repeat(Repeat::Infinite)
-            .map_err(|e| GifCreationError::EncodingError(e.to_string()))?;
-
+        .set_repeat(Repeat::Infinite)
+        .map_err(|e| GifCreationError::EncodingError(e.to_string()))?;
+        
         let frame_size = (width * height * 4) as usize;
         let frame_count = frames.len() / frame_size;
+        let frame_delay = image::Delay::from_numer_denom_ms(1000, fps as u32);
 
         // convert transparent to an Option<u32> to speed up comparison
         let transparent = transparent_color.map(|c| u32::from_le_bytes([c[0], c[1], c[2], c[3]]));
