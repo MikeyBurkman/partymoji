@@ -46258,7 +46258,7 @@ export default theme;`;
             locales: R
         })));
     }
-    const iconNameMap = {
+    const iconImports = {
         Add,
         Clear,
         Delete,
@@ -46268,12 +46268,8 @@ export default theme;`;
         SaveAlt,
         Settings,
         Warning
-    }, MuiIconByName = (t)=>{
-        const n = iconNameMap[t];
-        if (!n) throw new Error(`Icon ${t} not found`);
-        return n;
     }, Icon = ({ name: t, color: n, sx: o })=>{
-        const s = MuiIconByName(t);
+        const s = iconImports[t];
         return jsxRuntimeExports.jsx(s, {
             htmlColor: n,
             sx: o
