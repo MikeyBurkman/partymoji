@@ -1,0 +1,17 @@
+[workspace]
+members = ["gif_encoder", "gif_encoder_cli", "gif_encoder_wasm"]
+resolver = "2"
+
+[workspace.package]
+homepage = "https://mikeyburkman.github.io/partymoji/"
+repository = "https://github.com/MikeyBurkman/partymoji"
+authors = ["Tom McKearney <tommck@gmail.com>"]
+edition = "2024"
+license = "MIT"
+
+[workspace.dependencies]
+anyhow = "1.0.75"
+thiserror = "1.0.50"
+
+[profile.release]
+lto = true

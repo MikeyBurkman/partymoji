@@ -23,7 +23,7 @@ const HuePickerParam: React.FC<{
       const hue = colorUtil.hueFromColor([r, g, b, 255]);
       onChange(hue);
     },
-    [onChange]
+    [onChange],
   );
 
   return (

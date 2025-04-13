@@ -6,6 +6,8 @@ import {
   Paper,
   Stack,
   Typography,
+  Checkbox,
+  FormControlLabel,
 } from '@mui/material';
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 
@@ -30,7 +32,7 @@ const COMPUTE_DEBOUNCE_MILLIS = 1000;
 
 // Increase this by 1 when there's a breaking change to the app state.
 // Don't change this unless we have to!
-const CURRENT_APP_STATE_VERSION = 7;
+const CURRENT_APP_STATE_VERSION = 8;
 
 const DEFAULT_FPS = 20;
 const fpsParam = sliderParam({
@@ -45,6 +47,7 @@ const DEFAULT_STATE: AppState = {
   effects: [],
   baseImage: undefined,
   fps: DEFAULT_FPS,
+  useWasm: false,
 };
 
 const Inner: React.FC = () => {
@@ -55,7 +58,6 @@ const Inner: React.FC = () => {
   const [computeTimer, setComputeTimer] = React.useState<null | NodeJS.Timeout>(
     null,
   );
-
   const setAlert = useSetAlert();
 
   React.useEffect(() => {
@@ -248,6 +250,25 @@ const Inner: React.FC = () => {
                     );
                   },
                 })}
+                {/* Add the checkbox here */}
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={state.useWasm}
+                      onChange={(event) =>
+                        setState(
+                          (prevState) => ({
+                            ...prevState,
+                            useWasm: event.target.checked,
+                          }),
+                          { compute: 'now' },
+                        )
+                      }
+                      color="primary"
+                    />
+                  }
+                  label="Use WASM for rendering"
+                />
               </Stack>
             </Section>
             {state.baseImage != null && (
@@ -322,8 +343,6 @@ const Section: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
     {children}
   </Paper>
 );
-
-// Icons at https://fonts.google.com/icons?selected=Material+Icons
 
 export const App: React.FC = () => {
   return (

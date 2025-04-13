@@ -45,6 +45,7 @@ interface Props {
   possibleEffects: Effect<any>[];
   currFps: number;
   currRandomSeed: string;
+  currUseWasm: boolean;
   onChangeEffect: (
     effect: EffectInput,
     computedImage: ImageEffectResult | undefined,
@@ -59,6 +60,7 @@ export const ImageEffectDialog: React.FC<Props> = ({
   possibleEffects,
   currFps,
   currRandomSeed,
+  currUseWasm,
   onChangeEffect,
   onCancel,
 }) => {
@@ -133,6 +135,7 @@ export const ImageEffectDialog: React.FC<Props> = ({
         effectName: editingEffect.effect.name,
         params: editingEffect.params,
       },
+      useWasm: currUseWasm,
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

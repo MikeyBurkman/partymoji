@@ -5,6 +5,7 @@ import { Color, Image, ImageEffectResult } from './types';
 import { colorUtil, imageUtil, miscUtil } from '~/domain/utils';
 import { fakeTransparency } from '~/effects/fake-transparency';
 import { RunArgs } from './RunArgs';
+import { wasmCreateGif } from './wasmGifEncoder';
 
 // Returns a list of gif data URLs, for each effect
 export const runEffects = async ({
@@ -12,6 +13,7 @@ export const runEffects = async ({
   effectInput,
   randomSeed,
   fps,
+  useWasm,
 }: RunArgs): Promise<ImageEffectResult> => {
   const random = seedrandom(randomSeed);
 
@@ -28,12 +30,18 @@ export const runEffects = async ({
     random,
   );
 
+  const startTime = performance.now();
+
   const gif = await createGif({
     // Transform any of our transparent pixels to what our gif understands to be transparent
     image: encodeTransparency(result, transparentColor),
     transparentColor,
     fps,
+    useWasm,
   });
+
+  const endTime = performance.now();
+  console.log(`GIF creation took ${endTime - startTime} milliseconds.`);
 
   if (hasPartialTransparency) {
     const resultWithBG = await fakeTransparency.fn({
@@ -50,6 +58,7 @@ export const runEffects = async ({
         image: resultWithBG,
         transparentColor: undefined,
         fps,
+        useWasm,
       }),
     };
   } else {
@@ -73,6 +82,7 @@ export const runEffects = async ({
               image: resultWithBG,
               transparentColor: undefined,
               fps,
+              useWasm,
             }),
     };
   }
@@ -86,10 +96,13 @@ const encodeTransparency = (
   image: Image,
   transparentColor: Color | undefined,
 ): Image => {
+  if (!transparentColor) {
+    return image;
+  }
   const newFrames = image.frames.map((frame) => {
     const img = new Uint8ClampedArray(frame.length);
     for (let i = 0; i < frame.length; i += 4) {
-      if (transparentColor && frame[i + 3] < 128) {
+      if (frame[i + 3] < 128) {
         // Anything more than halfway transparent is considered transparent
         img[i] = transparentColor[0];
         img[i + 1] = transparentColor[1];
@@ -115,12 +128,22 @@ const createGif = async ({
   image,
   transparentColor,
   fps,
+  useWasm,
 }: {
   image: Image;
   transparentColor: Color | undefined;
   fps: number;
-}): Promise<string> =>
-  new Promise<string>((resolve) => {
+  useWasm: boolean;
+}): Promise<string> => {
+  if (useWasm) {
+    return wasmCreateGif({
+      image,
+      transparentColor,
+      fps,
+    });
+  }
+
+  return new Promise<string>((resolve) => {
     const [width, height] = image.dimensions;
     const gif: GIFEncoder = new GIFEncoder(width, height);
 
@@ -151,6 +174,7 @@ const createGif = async ({
 
     gif.finish();
   });
+};
 
 const getTransparentColor = (
   image: Image,
