@@ -18,7 +18,8 @@
     "preview": "vite preview",
     "copy-docs": "rimraf docs && cp -R dist docs",
     "pretty": "prettier --write \"**/*.{js,md,ts,html,tsx,json}\"",
-    "preinstall": "npx --yes only-allow pnpm"
+    "preinstall": "npx --yes only-allow pnpm",
+    "prepare": "husky"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
