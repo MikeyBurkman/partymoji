@@ -141,6 +141,7 @@ interface ImageRowProps {
 
 export const ImageRow: React.FC<ImageRowProps> = ({ appStateEffect }) => {
   if (appStateEffect.state.status !== 'done') {
+    debugger;
     return <CircularProgress />;
   }
 
