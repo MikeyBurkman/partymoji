@@ -6,3 +6,4 @@ export * as imageImportUtil from './imageImport';
 export * from './isWorker';
 export * as miscUtil from './misc';
 export * from './useDebounce';
+export * from './promiseWithoutResult';

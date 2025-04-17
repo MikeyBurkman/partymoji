@@ -26,7 +26,7 @@ type EffectEditDialogState =
 
 interface EffectListProps {
   appState: AppState;
-  possibleEffects: Effect<any>[];
+  possibleEffects: Array<Effect<any>>;
   onEffectsChange: (t: AppStateEffect[]) => void;
 }
 
@@ -71,11 +71,11 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
     );
     setTimeout(
       () =>
-        setEffectEditDialogState({
+        { setEffectEditDialogState({
           open: true,
           idx: newIdx,
           isNew: true,
-        }),
+        }); },
       2,
     );
   }, [
@@ -164,6 +164,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
     }
 
     const prevEffect = currentEffects[effectEditDialogState.idx - 1];
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- invalid linting error
     if (prevEffect) {
       return prevEffect.state.status === 'done'
         ? prevEffect.state.image
@@ -194,7 +195,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
           image = appState.baseImage?.image;
         } else {
           const previousEffect = currentEffects[tIdx];
-          if (previousEffect?.state.status === 'done') {
+          if (previousEffect.state.status === 'done') {
             image = previousEffect.state.image.image;
           }
         }
@@ -206,55 +207,24 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
     [appState, currentEffects, possibleEffects],
   );
 
-  // const onMoveBefore = (idx: number) => {
-  //   onEffectsChange(
-  //     currentEffects.map((nextT, newIdx) => {
-  //       if (newIdx === idx - 1) {
-  //         // This is the next item in the list
-  //         return currentEffects[newIdx + 1];
-  //       } else if (idx === newIdx) {
-  //         // This is the previous item
-  //         return currentEffects[idx - 1];
-  //       } else {
-  //         return nextT;
-  //       }
-  //     })
-  //   );
-  // };
-
-  // const onMoveAfter = (idx: number) => {
-  //   onEffectsChange(
-  //     currentEffects.map((nextT, newIdx) => {
-  //       if (newIdx === idx + 1) {
-  //         // This is the previous item in the list
-  //         return currentEffects[newIdx - 1];
-  //       } else if (idx === newIdx) {
-  //         // This is the next item
-  //         return currentEffects[idx + 1];
-  //       } else {
-  //         return nextT;
-  //       }
-  //     })
-  //   );
-  // };
-
   const onAddNew = React.useCallback(() => {
     onEffectsChange(
       miscUtil.insertInto(currentEffects, 0, newDefaultEffect(0)),
     );
     setTimeout(
       () =>
-        setEffectEditDialogState({
+        { setEffectEditDialogState({
           open: true,
           idx: 0,
           isNew: true,
-        }),
+        }); },
       2,
     );
   }, [currentEffects, newDefaultEffect, onEffectsChange]);
 
   const finalGif = React.useMemo((): string | undefined => {
     const lastEffect = currentEffects[currentEffects.length - 1];
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- invalid linting error
     if (!lastEffect) {
       return undefined;
     }
@@ -305,7 +275,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
 
   const onSaveGif = React.useCallback(() => {
     if (finalGif != null) {
-      saveAs(finalGif, appState.fname || 'image.gif');
+      saveAs(finalGif, appState.fname ?? 'image.gif');
     }
   }, [finalGif, appState]);
 
@@ -358,7 +328,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
         <Paper style={{ padding: 8 }} elevation={4}>
           <Stack alignItems="center" spacing={2}>
             <Typography variant="h6">Final Result</Typography>
-            <Gif src={finalGif} alt={appState.fname || 'image.gif'} />
+            <Gif src={finalGif} alt={appState.fname ?? 'image.gif'} />
             <Button
               variant="contained"
               onClick={onSaveGif}

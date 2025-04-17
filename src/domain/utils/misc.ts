@@ -129,6 +129,6 @@ export const dataURItoBlob = (dataURI: string): Blob => {
 export const blobOrFileToDataUrl = (file: File | Blob) =>
   new Promise<string>((resolve) => {
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
+    reader.onload = () => { resolve(reader.result as string); };
     reader.readAsDataURL(file);
   });

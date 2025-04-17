@@ -136,8 +136,8 @@ export const POSSIBLE_EFFECTS = pipe(
 
 export const effectByName = (
   name: string,
-): Effect<readonly ParamFunction<unknown>[]> => {
+): Effect<ReadonlyArray<ParamFunction<unknown>>> => {
   const t = POSSIBLE_EFFECTS.find((t) => t.name === name);
   miscUtil.assert(t, `Could not find matching effect: ${name}`);
-  return t as unknown as Effect<readonly ParamFunction<unknown>[]>;
+  return t as unknown as Effect<ReadonlyArray<ParamFunction<unknown>>>;
 };

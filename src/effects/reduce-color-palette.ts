@@ -49,7 +49,7 @@ export const reduceColorPalette = buildEffect({
       // Lastly, we'll replace every pixel with the color that it reduces to.
 
       // colorMap[i].numClosestColors is the number of colors closest to allColors[i]
-      const colorMap: { color: Color; numClosestColors: number }[] =
+      const colorMap: Array<{ color: Color; numClosestColors: number }> =
         allColors.map((c) => ({
           color: c,
           numClosestColors: 0,

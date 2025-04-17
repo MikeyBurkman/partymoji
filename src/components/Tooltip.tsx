@@ -4,6 +4,7 @@ import {
   Tooltip as MuiTooltip,
   tooltipClasses,
   TooltipProps as MuiTooltipProps,
+  SvgIcon,
 } from '@mui/material';
 import { Help, Info, Warning } from '@mui/icons-material';
 
@@ -34,18 +35,25 @@ const ICON_COMPONENT_MAP = {
   help: Help,
   info: Info,
   warning: Warning,
-} satisfies Record<Kind, any>;
+} satisfies Record<Kind, typeof SvgIcon>;
 
 export const Tooltip: React.FC<TooltipProps> = ({ kind, description }) => {
   if (!description) {
     return null;
   }
 
-  const Component = typeof description == 'string' ? HtmlTooltip : MuiTooltip;
   const InnerIcon = ICON_COMPONENT_MAP[kind];
+  // If the description is a string, use HtmlTooltip, otherwise use MuiTooltip
+  if (typeof description == 'string') {
+    return (
+      <HtmlTooltip title={description}>
+        <InnerIcon htmlColor={COLOR_MAP[kind]} />
+      </HtmlTooltip>
+    );
+  }
   return (
-    <Component title={description as any}>
+    <MuiTooltip title={description}>
       <InnerIcon htmlColor={COLOR_MAP[kind]} />
-    </Component>
+    </MuiTooltip>
   );
 };

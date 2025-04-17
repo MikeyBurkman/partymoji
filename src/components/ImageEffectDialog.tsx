@@ -24,7 +24,7 @@ import { miscUtil } from '~/domain/utils';
 import { debugLog } from '~/domain/env';
 import { Gif } from './Gif';
 import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
-import { useProcessingQueue } from '~/domain/useProcessingQueue';
+import { useProcessingQueue } from '~/context/ProcessingQueue/useProcessingQueue';
 import { RequiresAnimationTooltip } from './RequiresAnimationTooltip';
 
 const GroupHeader = styled('div')(({ theme }) => ({
@@ -42,7 +42,7 @@ interface Props {
   open: boolean;
   initialImage: ImageEffectResult | undefined;
   currentEffect: EffectInput | undefined;
-  possibleEffects: Effect<any>[];
+  possibleEffects: Array<Effect<any>>;
   currFps: number;
   currRandomSeed: string;
   currUseWasm: boolean;

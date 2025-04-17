@@ -113,7 +113,7 @@ export type EffectGroup =
   | 'Misc';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface Effect<T extends readonly ParamFunction<any>[]> {
+export interface Effect<T extends ReadonlyArray<ParamFunction<any>>> {
   /** Name of the effect. Must be globally unique */
   name: string;
   params: T;

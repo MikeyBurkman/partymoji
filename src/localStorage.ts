@@ -5,11 +5,11 @@ const LOCAL_STORAGE_KEY = 'partymoji-state';
 
 interface SerializedAppState {
   baseImage: string | undefined;
-  effects: {
+  effects: Array<{
     effectName: string;
     paramsValues: unknown[];
     state: { status: 'init' };
-  }[];
+  }>;
   version: number;
   fname?: string | undefined;
   fps: number;

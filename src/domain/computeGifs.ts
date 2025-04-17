@@ -80,6 +80,7 @@ export const getEffectsDiff = ({
   for (let i = 0; i < currEffects.length; i += 1) {
     const currE = currEffects[i];
     const prevE = prevEffects[i];
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- invalid linting error
     if (!prevE) {
       debugLog('No prevE, index ', i);
       return { diff: true, index: i };

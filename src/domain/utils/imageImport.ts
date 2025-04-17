@@ -7,7 +7,9 @@ import * as miscUtil from './misc';
 const toArrayBuffer = (file: File): Promise<ArrayBuffer> =>
   new Promise<ArrayBuffer>((resolve) => {
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as ArrayBuffer);
+    reader.onload = () => {
+      resolve(reader.result as ArrayBuffer);
+    };
     reader.readAsArrayBuffer(file);
   });
 
@@ -104,21 +106,23 @@ export const readImage = async (
     };
   }
 
-  const image = await new Promise<Image>((res, rej) =>
+  const image = await new Promise<Image>((res, rej) => {
     getPixels(
       dataUrl,
       (err: Error | null, results: { shape: number[]; data: Uint8Array }) => {
         if (err) {
-          return rej(err);
+          rej(err);
+          return;
         }
 
         if (results.shape.length === 3) {
           const [width, height] = results.shape;
           // Single frame
-          return res({
+          res({
             frames: [Uint8ClampedArray.from(results.data)],
             dimensions: [width, height],
           });
+          return;
         }
 
         // Multiple frames, need to slice up the image data into numFrames slices
@@ -133,13 +137,13 @@ export const readImage = async (
           // Contrary to the TS types, the result of subarray returns a regular Uint8Array, NOT a clamped one!
           frames.push(Uint8ClampedArray.from(frame));
         }
-        return res({
+        res({
           frames,
           dimensions: [width, height],
         });
       },
-    ),
-  );
+    );
+  });
 
   return {
     image,

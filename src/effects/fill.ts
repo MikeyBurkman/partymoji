@@ -75,6 +75,7 @@ const floodFill = ({
   };
 
   while (stack.length > 0) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const coord = stack.pop()!;
     const [x, y] = coord;
     if (

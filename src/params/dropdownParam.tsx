@@ -12,7 +12,7 @@ import { toParamFunction } from './utils';
 
 const DropdownParam: React.FC<{
   name: string;
-  options: readonly { name: string; value: string }[];
+  options: ReadonlyArray<{ name: string; value: string }>;
   value?: any;
   description?: string;
   onChange: (v: string) => void;
@@ -27,7 +27,9 @@ const DropdownParam: React.FC<{
         <Select
           autoWidth
           value={value}
-          onChange={(event) => onChange(event.target.value as string)}
+          onChange={(event) => {
+            onChange(event.target.value as string);
+          }}
         >
           {options.map((t) => (
             <MenuItem key={t.value} value={t.value}>
@@ -42,7 +44,7 @@ const DropdownParam: React.FC<{
 
 export function dropdownParam<T extends string>(args: {
   name: string;
-  options: readonly { name: string; value: T }[];
+  options: ReadonlyArray<{ name: string; value: T }>;
   description?: string;
   defaultValue: ParamFnDefault<T>;
 }): ParamFunction<T> {
@@ -56,7 +58,7 @@ export function dropdownParam<T extends string>(args: {
           value={params.value}
           options={args.options}
           description={args.description}
-          onChange={params.onChange as any}
+          onChange={params.onChange as (v: string) => void}
         />
       );
     },
