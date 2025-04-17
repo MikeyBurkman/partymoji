@@ -1,5 +1,4 @@
 import { RunArgs } from './RunArgs';
-import RunEffectWorker from './effect.worker?worker';
 import { AsyncRunMessage, ImageEffectResult } from './types';
 
 interface Computation {
@@ -19,19 +18,17 @@ const handleError = (computationId: string) => (error: unknown) => {
   computationMap.delete(computationId);
 };
 
-const handleSuccess = (computationId: string, result: ImageEffectResult) => {
+const handleSuccess = (computationId: string) => (msg: AsyncRunMessage) => {
   const computation = computationMap.get(computationId);
   if (!computation) {
     return;
   }
-  computation.resolve(result);
+  computation.resolve(msg.result);
   computationMap.delete(computationId);
 };
 
-export const runEffectsAsync = (args: RunArgs) =>
-  new Promise<ImageEffectResult>((resolve, reject) => {
-    const worker = new RunEffectWorker();
-
+export const runEffectsAsync = async (args: RunArgs) => {
+  return new Promise<ImageEffectResult>((resolve, reject) => {
     const computationId = `${Date.now().toString()}-${Math.floor(
       Math.random() * 100000,
     ).toString()}`;
@@ -40,17 +37,13 @@ export const runEffectsAsync = (args: RunArgs) =>
       reject,
     });
 
-    worker.addEventListener('error', handleError(computationId));
-    worker.addEventListener('messageerror', handleError(computationId));
+    const worker = new ComlinkWorker<typeof import('./effect.worker')>(
+      new URL('./effect.worker', import.meta.url),
+    );
 
-    worker.onmessage = (message: { data: AsyncRunMessage }) => {
-      // See effect.worker.ts for what messages look like
-      const data = message.data;
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- MIKE - status is hardcoded to 'complete'
-      if (data.status === 'complete') {
-        handleSuccess(computationId, data.result);
-      }
-    };
-
-    worker.postMessage(args);
+    worker
+      .runEffectRPC(args)
+      .then(handleSuccess(computationId))
+      .catch(handleError(computationId));
   });
+};

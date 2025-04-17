@@ -5,7 +5,7 @@ import { Color, Image, ImageEffectResult } from './types';
 import { colorUtil, imageUtil, miscUtil } from '~/domain/utils';
 import { fakeTransparency } from '~/effects/fake-transparency';
 import { RunArgs } from './RunArgs';
-import { wasmCreateGif } from './wasmGifEncoder';
+// import { wasmCreateGif } from './wasmGifEncoder';
 
 // Returns a list of gif data URLs, for each effect
 export const runEffects = async ({
@@ -136,11 +136,7 @@ const createGif = async ({
   useWasm: boolean;
 }): Promise<string> => {
   if (useWasm) {
-    return wasmCreateGif({
-      image,
-      transparentColor,
-      fps,
-    });
+    console.log('Use wasm nah bro');
   }
 
   return new Promise<string>((resolve) => {

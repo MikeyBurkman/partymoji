@@ -2,14 +2,12 @@ import { runEffects } from './run';
 import { RunArgs } from './RunArgs';
 import { AsyncRunMessage } from './types';
 
-const ctx: Worker = self as any;
+export async function runEffectRPC(args: RunArgs): Promise<AsyncRunMessage> {
+  console.log('MESSAGE', args);
 
-ctx.addEventListener('message', async (event: MessageEvent<RunArgs>) => {
-  const result = await runEffects(event.data);
-
-  const message: AsyncRunMessage = {
+  const result = await runEffects(args);
+  return {
     status: 'complete',
     result,
   };
-  ctx.postMessage(message);
-});
+}
