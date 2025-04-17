@@ -1,10 +1,33 @@
 import React from 'react';
 import { Fab, IconProps as MuiIconProps, SxProps } from '@mui/material';
-import * as MuiIcons from '@mui/icons-material';
-export type IconNames = keyof typeof MuiIcons;
+import {
+  Add,
+  Clear,
+  Delete,
+  Image,
+  PriorityHigh,
+  Remove,
+  SaveAlt,
+  Settings,
+  Warning,
+} from '@mui/icons-material';
+
+const iconImports = {
+  Add,
+  Clear,
+  Delete,
+  Image,
+  PriorityHigh,
+  Remove,
+  SaveAlt,
+  Settings,
+  Warning,
+};
+
+export type IconName = keyof typeof iconImports;
 
 export interface ClickableIconProps {
-  name: IconNames;
+  name: IconName;
   onClick?: () => void;
   isDisabled?: boolean;
   label: string;
@@ -47,12 +70,12 @@ export const ClickableIcon: React.FC<ClickableIconProps> = ({
 };
 
 export interface IconProps {
-  name: IconNames;
+  name: IconName;
   color?: MuiIconProps['color'];
   sx?: SxProps;
 }
 
 export const Icon: React.FC<IconProps> = ({ name, color, sx }) => {
-  const IconComponent = MuiIcons[name];
+  const IconComponent = iconImports[name];
   return <IconComponent htmlColor={color} sx={sx} />;
 };
