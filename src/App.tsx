@@ -26,8 +26,12 @@ import { logger } from './domain/logger';
 import * as localStorage from '~/localStorage';
 import { sliderParam } from '~/params/sliderParam';
 import { POSSIBLE_EFFECTS } from '~/effects';
-import { AlertProvider, AlertSnackbar, useSetAlert } from '~/AlertContext';
-import { ProcessorQueueProvider } from '~/domain/useProcessingQueue';
+import {
+  AlertProvider,
+  AlertSnackbar,
+  useSetAlert,
+} from './context/AlertContext';
+import { ProcessorQueueProvider } from './context/ProcessingQueue';
 
 // Number of millis to wait after a change before recomputing the gif
 const COMPUTE_DEBOUNCE_MILLIS = 1000;
@@ -257,15 +261,15 @@ const Inner: React.FC = () => {
                   control={
                     <Checkbox
                       checked={state.useWasm}
-                      onChange={(event) =>
+                      onChange={(event) => {
                         setState(
                           (prevState) => ({
                             ...prevState,
                             useWasm: event.target.checked,
                           }),
                           { compute: 'now' },
-                        )
-                      }
+                        );
+                      }}
                       color="primary"
                     />
                   }

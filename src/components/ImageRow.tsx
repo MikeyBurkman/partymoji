@@ -116,7 +116,7 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
                 <Typography variant="caption">Show Transparency</Typography>
                 <Checkbox
                   checked={showTransparency}
-                  onChange={(e) => setShowTransparency(e.target.checked)}
+                  onChange={(e) => { setShowTransparency(e.target.checked); }}
                 />
               </Stack>
             )}
@@ -124,7 +124,7 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
               <Typography variant="caption">Show Frame Border</Typography>
               <Checkbox
                 checked={showBorder}
-                onChange={(e) => setShowBorder(e.target.checked)}
+                onChange={(e) => { setShowBorder(e.target.checked); }}
               />
             </Stack>
           </Stack>
@@ -142,8 +142,8 @@ interface ImageRowProps {
 
 export const ImageRow: React.FC<ImageRowProps> = ({ appStateEffect }) => {
   if (appStateEffect.state.status !== 'done') {
-    // debugger;
     logger.debug('ImageRow - status = ', appStateEffect.state.status);
+    debugger;
     return <CircularProgress />;
   }
 

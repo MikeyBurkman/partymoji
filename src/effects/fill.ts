@@ -66,7 +66,7 @@ const floodFill = ({
       has: ([x, y]: Coord) => set.has(`${x}-${y}`),
     };
   })();
-  const stack: Coord[] = [[0, image.dimensions[1] - 1]]; // Bottom right pixel
+  const stack: Array<Coord> = [[0, image.dimensions[1] - 1]]; // Bottom right pixel
   const push = (coord: Coord) => {
     if (!visited.has(coord)) {
       visited.add(coord);
@@ -75,6 +75,7 @@ const floodFill = ({
   };
 
   while (stack.length > 0) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const coord = stack.pop()!;
     const [x, y] = coord;
     if (

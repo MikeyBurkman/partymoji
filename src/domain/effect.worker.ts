@@ -1,30 +1,9 @@
 import { logger } from './logger';
 import { runEffects } from './run';
 import { RunArgs } from './RunArgs';
-import { AsyncRunMessage } from './types';
+import { ImageEffectResult } from './types';
 
-const ctx: Worker = self as any;
-
-ctx.addEventListener('message', async (event: MessageEvent<RunArgs>) => {
-  try {
-    logger.info('Received message from main thread:', event.data);
-    const result = await runEffects(event.data);
-
-    const message: AsyncRunMessage = {
-      status: 'complete',
-      result,
-    };
-
-    logger.info('Sending message to main thread:', message);
-    ctx.postMessage(message);
-  } catch (error) {
-    logger.error('Error in worker:', error);
-    const message: AsyncRunMessage = {
-      status: 'error',
-      error,
-    };
-
-    logger.info('Sending error message to main thread:', message);
-    ctx.postMessage(message);
-  }
-});
+export async function runEffectRPC(args: RunArgs): Promise<ImageEffectResult> {
+  logger.info('Received message from main thread:', args);
+  return await runEffects(args);
+}

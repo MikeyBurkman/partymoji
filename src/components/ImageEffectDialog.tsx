@@ -14,17 +14,12 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import type {
-  ParamFunction,
-  Effect,
-  EffectInput,
-  ImageEffectResult,
-} from '~/domain/types';
+import type { EffectInput, ImageEffectResult, AnyEffect } from '~/domain/types';
 import { miscUtil } from '~/domain/utils';
 import { logger } from '~/domain/logger';
 import { Gif } from './Gif';
 import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
-import { useProcessingQueue } from '~/domain/useProcessingQueue';
+import { useProcessingQueue } from '~/context/ProcessingQueue/useProcessingQueue';
 import { RequiresAnimationTooltip } from './RequiresAnimationTooltip';
 
 const GroupHeader = styled('div')(({ theme }) => ({
@@ -42,7 +37,7 @@ interface Props {
   open: boolean;
   initialImage: ImageEffectResult | undefined;
   currentEffect: EffectInput | undefined;
-  possibleEffects: Effect<any>[];
+  possibleEffects: Array<AnyEffect>;
   currFps: number;
   currRandomSeed: string;
   currUseWasm: boolean;
@@ -169,7 +164,7 @@ export const ImageEffectDialog: React.FC<Props> = ({
                     // Reset all the params when you select a new effect
                     setEditingEffect({
                       effect: newEffect,
-                      params: newEffect.params.map((p: any) =>
+                      params: newEffect.params.map((p) =>
                         p.defaultValue(initialImage?.image ?? undefined),
                       ),
                     });
@@ -228,7 +223,7 @@ export const ImageEffectDialog: React.FC<Props> = ({
                 // Create elements for each of the parameters for the selectect effect.
                 // Each of these would get an onChange event so we know when the user has
                 //  selected a value.
-                (param: ParamFunction<any>, idx: number) => {
+                (param, idx: number) => {
                   const ele = param.fn({
                     value: editingEffect.params[idx],
                     onChange: (v) => {

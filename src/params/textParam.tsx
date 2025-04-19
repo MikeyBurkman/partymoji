@@ -21,7 +21,7 @@ const TextParam: React.FC<{
       <FormControl>
         <TextField
           value={val}
-          onChange={(e) => setVal(e.target.value)}
+          onChange={(e) => { setVal(e.target.value); }}
           onBlur={() => {
             if (val.length > 0) {
               onChange(val);

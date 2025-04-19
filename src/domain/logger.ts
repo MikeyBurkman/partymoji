@@ -1,4 +1,5 @@
-const logLevel = import.meta.env.VITE_LOG_LEVEL || 'debug';
+const logLevel: string =
+  (import.meta.env.VITE_LOG_LEVEL as string | undefined) ?? 'debug';
 const logLevels = ['error', 'warn', 'info', 'debug'];
 
 console.info('Log level:', logLevel);

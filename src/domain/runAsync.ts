@@ -1,6 +1,6 @@
 import { RunArgs } from './RunArgs';
 import { logger } from './logger';
-import { AsyncRunMessage, ImageEffectResult } from './types';
+import { ImageEffectResult } from './types';
 
 interface Computation {
   resolve: (result: ImageEffectResult) => void;
@@ -19,20 +19,30 @@ const handleError = (computationId: string) => (error: unknown) => {
   computationMap.delete(computationId);
 };
 
-const handleSuccess = (computationId: string, result: ImageEffectResult) => {
-  const computation = computationMap.get(computationId);
-  if (!computation) {
-    return;
-  }
-  computation.resolve(result);
-  computationMap.delete(computationId);
-};
+const handleSuccess =
+  (computationId: string) => (result: ImageEffectResult) => {
+    const computation = computationMap.get(computationId);
+    if (!computation) {
+      return;
+    }
+    computation.resolve(result);
+    computationMap.delete(computationId);
+  };
 
-export const runEffectsAsync = (args: RunArgs) =>
-  new Promise<ImageEffectResult>((resolve, reject) => {
-    const worker = new Worker(new URL('./effect.worker', import.meta.url), {
-      type: 'module',
+export const runEffectsAsync = async (args: RunArgs) => {
+  return new Promise<ImageEffectResult>((resolve, reject) => {
+    const computationId = `${Date.now().toString()}-${Math.floor(
+      Math.random() * 100000,
+    ).toString()}`;
+    computationMap.set(computationId, {
+      resolve,
+      reject,
     });
+
+    const worker = new ComlinkWorker<typeof import('./effect.worker')>(
+      new URL('./effect.worker', import.meta.url),
+    );
+
     // const worker = new RunEffectWorker();
     logger.info(
       'Running effect ASYNC, name:',
@@ -45,30 +55,8 @@ export const runEffectsAsync = (args: RunArgs) =>
       worker,
     );
 
-    const computationId = `${Date.now().toString()}-${Math.floor(
-      Math.random() * 100000,
-    ).toString()}`;
-    computationMap.set(computationId, {
-      resolve,
-      reject,
-    });
-
-    worker.addEventListener('error', handleError(computationId));
-    worker.addEventListener('messageerror', handleError(computationId));
-
-    worker.addEventListener('message', (message: { data: AsyncRunMessage }) => {
-      logger.debug('Received message from worker:', message);
-      // See effect.worker.ts for what messages look like
-      const data = message.data;
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- MIKE - status is hardcoded to 'complete'
-      if (data.status === 'complete') {
-        handleSuccess(computationId, data.result);
-      } else {
-        logger.error('Worker error:', data.error);
-        handleError(computationId)(data.error);
-      }
-    });
-
-    logger.info('Sending message to worker:', args);
-    worker.postMessage(args);
+    worker
+      .runEffectRPC(args)
+      .then(handleSuccess(computationId), handleError(computationId));
   });
+};

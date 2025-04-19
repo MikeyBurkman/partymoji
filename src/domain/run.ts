@@ -5,8 +5,8 @@ import { Color, Image, ImageEffectResult } from './types';
 import { colorUtil, imageUtil, miscUtil } from '~/domain/utils';
 import { fakeTransparency } from '~/effects/fake-transparency';
 import { RunArgs } from './RunArgs';
-import { wasmCreateGif } from './wasmGifEncoder';
 import { logger } from './logger';
+// import { wasmCreateGif } from './wasmGifEncoder';
 
 // Returns a list of gif data URLs, for each effect
 export const runEffects = async ({
@@ -23,7 +23,6 @@ export const runEffects = async ({
   const effect = effectByName(effectInput.effectName);
   const result = await effect.fn({
     image,
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     parameters: effectInput.params,
     random,
   });
@@ -80,7 +79,7 @@ export const runEffects = async ({
       partiallyTransparent: false,
       gifWithBackgroundColor:
         resultWithBG == null
-          ? undefined
+          ? null
           : await createGif({
               image: resultWithBG,
               transparentColor: undefined,
@@ -142,11 +141,12 @@ const createGif = async ({
   logger.debug('Creating GIF with dimensions:', image.dimensions, 'fps:', fps, 'useWasm:', useWasm);
   
   if (useWasm) {
-    return wasmCreateGif({
-      image,
-      transparentColor,
-      fps,
-    });
+    logger.warn('Temporarly not using wasm while we fix it');
+    // return wasmCreateGif({
+    //   image,
+    //   transparentColor,
+    //   fps,
+    // });
   }
 
   return new Promise<string>((resolve) => {
@@ -165,7 +165,7 @@ const createGif = async ({
       gif.setTransparent(Number(`0x${hexColor}`));
     }
 
-    const data: Buffer[] = [];
+    const data: Array<Buffer> = [];
     gif.on('data', (chunk: Buffer) => {
       data.push(chunk);
     });

@@ -1,31 +1,11 @@
 import React from 'react';
-import { logger } from './logger';
 import { computeGif } from '~/domain/computeGifs';
+import { RunArgs } from '~/domain/RunArgs';
 import type { ImageEffectResult } from '~/domain/types';
-import { RunArgs } from './RunArgs';
+import { ProcessorQueueContext } from './ProcessorQueueContext';
+import { logger } from '~/domain/logger';
 
 const getRunId = () => Math.floor(Math.random() * 100000);
-
-interface ContextProps {
-  latestRunIdRef: React.RefObject<number>;
-}
-
-const ProcessorQueueContext = React.createContext<ContextProps>({
-  // eslint-disable-next-line
-  latestRunIdRef: null as any, // Will be set immediately in the provider
-});
-
-export const ProcessorQueueProvider: React.FC<{
-  children?: React.ReactNode;
-}> = ({ children }) => {
-  const latestRunIdRef = React.useRef(0);
-
-  return (
-    <ProcessorQueueContext.Provider value={{ latestRunIdRef }}>
-      {children}
-    </ProcessorQueueContext.Provider>
-  );
-};
 
 /**
  * Computes an asynchronous, calling the given callback when finished.
@@ -34,6 +14,7 @@ export const ProcessorQueueProvider: React.FC<{
  *  result for the previous compute will be thrown away. The callback will
  *  only be called a single time. Think of it like a debounce.
  */
+
 export function useProcessingQueue({
   onComplete,
   onError,
@@ -41,7 +22,7 @@ export function useProcessingQueue({
   onComplete: (results: ImageEffectResult) => void;
   onError?: (error: Error) => void;
 }) {
-  const { latestRunIdRef } = React.useContext(ProcessorQueueContext);
+  const { latestRunIdRef } = React.use(ProcessorQueueContext);
 
   const onFinish = React.useCallback(
     (runId: number, results: ImageEffectResult) => {
