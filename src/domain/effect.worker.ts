@@ -4,6 +4,6 @@ import { RunArgs } from './RunArgs';
 import { ImageEffectResult } from './types';
 
 export async function runEffectRPC(args: RunArgs): Promise<ImageEffectResult> {
-  logger.info('Received message from main thread:', args);
+  logger.debug('Received message from main thread:', args);
   return await runEffects(args);
 }

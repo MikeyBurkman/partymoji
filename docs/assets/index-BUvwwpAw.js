@@ -19061,17 +19061,13 @@ function useDebounce({ value: t2, debounceMillis: n, onChange: o }) {
     c(t2);
   }, [t2]), [s, p];
 }
-const IS_DEV = false, logLevel = "info", logLevels = ["error", "warn", "info", "debug"];
-console.info("Log level:", logLevel);
-const logLevelIndex = logLevels.indexOf(logLevel), logger = { error: (...t2) => {
-  logLevelIndex >= logLevels.indexOf("error") && console.error(...t2);
-}, warn: (...t2) => {
-  logLevelIndex >= logLevels.indexOf("warn") && console.warn(...t2);
-}, info: (...t2) => {
-  logLevelIndex >= logLevels.indexOf("info") && console.info(...t2);
-}, debug: (...t2) => {
-  logLevelIndex >= logLevels.indexOf("debug") && console.debug(...t2);
-} }, MAX_SIZE$1 = 220, calculateDimensions = (t2) => {
+const IS_DEV = false, LOG_LEVELS = ["error", "warn", "info", "debug"], logLevel = "info", logLevelIndex = LOG_LEVELS.indexOf(logLevel);
+function buildLogger(t2) {
+  return logLevelIndex >= LOG_LEVELS.indexOf(t2) ? (...n) => {
+    console[t2](...n);
+  } : () => null;
+}
+const logger = LOG_LEVELS.reduce((t2, n) => (t2[n] = buildLogger(n), t2), {}), MAX_SIZE$1 = 220, calculateDimensions = (t2) => {
   if (t2 == null) return { maxWidth: `${MAX_SIZE$1}px`, maxHeight: `${MAX_SIZE$1}px`, width: 128 };
   const [n, o] = t2, s = o / n;
   if (n > o) {
@@ -31577,7 +31573,6 @@ const seedrandom = getDefaultExportFromCjs$1(seedrandomExports), lightningIntens
   const s = n(t2);
   return minBy(o, (l) => colorDiff(l, s)) ?? [0, 0, 0, 0];
 }) }), repeatAnimation = buildEffect({ name: "Repeat Animation", group: "Animation", description: "Repeats the current animation some number of times", secondaryDescription: "This can greatly increase the final file size!", requiresAnimation: true, params: [sliderParam({ name: "Number of Repeats", defaultValue: 1, min: 1, max: 50 })], fn: ({ image: t2, parameters: [n] }) => ({ dimensions: t2.dimensions, frames: range$1(0, t2.frames.length * (n + 1)).map((o) => t2.frames[o % t2.frames.length]) }) }), resizeImage = buildEffect({ name: "Resize Image", group: "Image", description: "Change the absolute dimensions of the image.", params: [intParam({ name: "Width", description: "Set to 0 when height is set to non-zero to keep the same aspect ratio", defaultValue: (t2) => t2 ? t2.dimensions[0] : 0, min: 0 }), intParam({ name: "Height", description: "Set to 0 when width is set to non-zero to keep the same aspect ratio", defaultValue: (t2) => t2 ? t2.dimensions[1] : 0, min: 0 }), checkboxParam({ name: "Keep scale", description: "If checked, the image will be stretched to fit the new dimensions", defaultValue: false })], fn: ({ image: t2, parameters: [n, o, s] }) => {
-  logger.info(`Resizing image from ${t2.dimensions[0]}x${t2.dimensions[1]} to ${n}x${o} with keepScale=${s}`);
   const [c, l] = t2.dimensions, p = n === 0 ? Math.ceil(c / l * o) : n, h = o === 0 ? Math.ceil(l / c * n) : o;
   return resizeImage$1({ image: t2, newWidth: p, newHeight: h, keepScale: s });
 } }), reverseAnimation = buildEffect({ name: "Reverse Animation", group: "Animation", description: "Reverses the animation", requiresAnimation: true, params: [], fn: ({ image: t2 }) => ({ dimensions: t2.dimensions, frames: reverse(t2.frames) }) }), ripple = buildEffect({ name: "Ripple", group: "Misc", description: "Create a ripple effect, like water", requiresAnimation: true, params: [sliderParam({ name: "Amplitude", defaultValue: 20, min: 0, max: 100, step: 5, description: "How strong the ripple effect should be" }), sliderParam({ name: "Period", defaultValue: 1, min: 1, max: 20, description: "How many ripples you want" })], fn: mapImageWithPrecompute(({ animationProgress: t2 }) => ({ shift: t2 * 2 * Math.PI }), ({ computed: { shift: t2 }, coord: [n, o], dimensions: [, s], parameters: [c, l], getSrcPixel: p }) => {
@@ -33667,7 +33662,7 @@ function __wbg_finalize_init(t2, n) {
 }
 async function __wbg_init(t2) {
   if (wasm !== void 0) return wasm;
-  typeof t2 < "u" && (Object.getPrototypeOf(t2) === Object.prototype ? { module_or_path: t2 } = t2 : console.warn("using deprecated parameters for the initialization function; pass a single object instead")), typeof t2 > "u" && (t2 = new URL("/partymoji/assets/gif_encoder_wasm_bg-C9I3mQvz.wasm", import.meta.url));
+  typeof t2 < "u" && (Object.getPrototypeOf(t2) === Object.prototype ? { module_or_path: t2 } = t2 : console.warn("using deprecated parameters for the initialization function; pass a single object instead")), typeof t2 > "u" && (t2 = new URL("/partymoji/assets/gif_encoder_wasm_bg-DheGfBij.wasm", import.meta.url));
   const n = __wbg_get_imports();
   (typeof t2 == "string" || typeof Request == "function" && t2 instanceof Request || typeof URL == "function" && t2 instanceof URL) && (t2 = fetch(t2));
   const { instance: o, module: s } = await __wbg_load(await t2, n);
@@ -33681,7 +33676,7 @@ const initializeWasm = async () => {
   const [s, c] = t2.dimensions, l = new Uint8Array(t2.frames.reduce((h, g) => h + g.length, 0));
   let p = 0;
   for (const h of t2.frames) l.set(h, p), p += h.length;
-  return console.time("Initialize WASM"), await initializeWasm(), console.timeEnd("Initialize WASM"), console.info(" Calling WASM with width: ", s, "height: ", c, "transparentColor: ", n, "fps: ", o, create_gif_data_url), create_gif_data_url(s, c, l, o, n ? new Uint8Array(n) : null);
+  return console.time("Initialize WASM"), await initializeWasm(), console.timeEnd("Initialize WASM"), console.debug("Calling WASM", { width: s, height: c, transparentColor: n, fps: o }), create_gif_data_url(s, c, l, o, n ? new Uint8Array(n) : null);
 }, runEffects = async ({ image: t2, effectInput: n, randomSeed: o, fps: s, useWasm: c }) => {
   const l = seedrandom(o);
   logger.info("Running effect, name:", n.effectName, "params:", n.params, "useWasm:", c);
@@ -33927,7 +33922,7 @@ const computationMap = /* @__PURE__ */ new Map(), handleError = (t2) => (n) => {
 }, runEffectsAsync = async (t2) => new Promise((n, o) => {
   const s = `${Date.now().toString()}-${Math.floor(Math.random() * 1e5).toString()}`;
   computationMap.set(s, { resolve: n, reject: o });
-  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-Cu6qLzwu.js", import.meta.url), { type: "module" }));
+  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-iXsxeuMV.js", import.meta.url), { type: "module" }));
   logger.info("Running effect ASYNC, name:", t2.effectInput.effectName, "params:", t2.effectInput.params, "useWasm:", t2.useWasm, "worker:", c), c.runEffectRPC(t2).then(handleSuccess(s), handleError(s));
 }), computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync, computeGifsForState = async ({ state: t2, startEffectIndex: n, onCompute: o }) => {
   assert$1(t2.baseImage, "No source image, this button should be disabled!");
@@ -34117,7 +34112,7 @@ const TooltipInner = () => jsxRuntimeExports.jsxs(Stack, { spacing: 1, children:
 }, ProcessorQueueProvider = ({ children: t2 }) => {
   const n = React.useRef(0);
   return jsxRuntimeExports.jsx(ProcessorQueueContext, { value: { latestRunIdRef: n }, children: t2 });
-}, COMPUTE_DEBOUNCE_MILLIS = 1e3, CURRENT_APP_STATE_VERSION = 8, DEFAULT_FPS = 20, fpsParam = sliderParam({ name: "Final Gif Frames per Second", defaultValue: DEFAULT_FPS, min: 1, max: 60 }), DEFAULT_STATE = { version: CURRENT_APP_STATE_VERSION, effects: [], baseImage: void 0, fps: DEFAULT_FPS, useWasm: false }, Inner = () => {
+}, COMPUTE_DEBOUNCE_MILLIS = 1e3, CURRENT_APP_STATE_VERSION = 8, DEFAULT_FPS = 20, fpsParam = sliderParam({ name: "Final Gif Frames per Second", defaultValue: DEFAULT_FPS, min: 1, max: 60 }), DEFAULT_STATE = { version: CURRENT_APP_STATE_VERSION, effects: [], baseImage: void 0, fps: DEFAULT_FPS, useWasm: true }, Inner = () => {
   const [t2, n] = React.useState(DEFAULT_STATE), [o, s] = React.useState({ compute: false }), [c, l] = React.useState(null), p = useSetAlert();
   React.useEffect(() => {
     IS_MOBILE && p({ severity: "warning", message: "This app is not well optimized for mobile. Your experience may not be great." });
@@ -34155,9 +34150,7 @@ const TooltipInner = () => jsxRuntimeExports.jsxs(Stack, { spacing: 1, children:
     h((y) => ({ ...y, baseImage: g, fname: b, fps: v }), { compute: "now" });
   } }), fpsParam.fn({ value: t2.fps, onChange: (g) => {
     h((b) => ({ ...b, fps: g }), { compute: "later" });
-  } }), jsxRuntimeExports.jsx(FormControlLabel, { control: jsxRuntimeExports.jsx(Checkbox, { checked: t2.useWasm, onChange: (g) => {
-    h((b) => ({ ...b, useWasm: g.target.checked }), { compute: "now" });
-  }, color: "primary" }), label: "Use WASM for rendering" })] }) }), t2.baseImage != null && jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsx(ImageEffectList, { appState: t2, possibleEffects: POSSIBLE_EFFECTS, onEffectsChange: (g) => {
+  } })] }) }), t2.baseImage != null && jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsx(ImageEffectList, { appState: t2, possibleEffects: POSSIBLE_EFFECTS, onEffectsChange: (g) => {
     h((b) => ({ ...b, effects: g }), { compute: "now" });
   } }) }), jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsxs(Stack, { spacing: 3, children: [jsxRuntimeExports.jsx(Typography, { variant: "h5", children: "Clear Effects" }), jsxRuntimeExports.jsxs(Typography, { variant: "body1", children: [jsxRuntimeExports.jsx(Icon, { name: "Warning", color: "warning" }), " Clicking this button will clear all effects for the image"] }), jsxRuntimeExports.jsx(Button, { startIcon: jsxRuntimeExports.jsx(Icon, { name: "Clear" }), sx: { maxWidth: "300px" }, variant: "contained", color: "warning", onClick: () => {
     const g = { ...DEFAULT_STATE, baseImage: t2.baseImage };

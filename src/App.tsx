@@ -6,8 +6,6 @@ import {
   Paper,
   Stack,
   Typography,
-  Checkbox,
-  FormControlLabel,
 } from '@mui/material';
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 
@@ -52,7 +50,7 @@ const DEFAULT_STATE: AppState = {
   effects: [],
   baseImage: undefined,
   fps: DEFAULT_FPS,
-  useWasm: false,
+  useWasm: true,
 };
 
 const Inner: React.FC = () => {
@@ -255,8 +253,7 @@ const Inner: React.FC = () => {
                     );
                   },
                 })}
-                {/* Add the checkbox here */}
-                <FormControlLabel
+                {/* <FormControlLabel
                   control={
                     <Checkbox
                       checked={state.useWasm}
@@ -273,7 +270,7 @@ const Inner: React.FC = () => {
                     />
                   }
                   label="Use WASM for rendering"
-                />
+                /> */}
               </Stack>
             </Section>
             {state.baseImage != null && (

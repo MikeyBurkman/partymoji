@@ -7,7 +7,6 @@ const initializeWasm = async () => {
   if (initialized) {
     return;
   }
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   await init();
   initialized = true;
 };
@@ -37,19 +36,13 @@ export const wasmCreateGif = async ({
   await initializeWasm();
   console.timeEnd('Initialize WASM');
 
-  console.info(
-    ' Calling WASM with width: ',
+  console.debug('Calling WASM', {
     width,
-    'height: ',
     height,
-    'transparentColor: ',
     transparentColor,
-    'fps: ',
     fps,
-    create_gif_data_url,
-  );
+  });
 
-  // eslint-disable-next-line
   return create_gif_data_url(
     width,
     height,

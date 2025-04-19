@@ -1,30 +1,25 @@
-const logLevel: string =
-  (import.meta.env.VITE_LOG_LEVEL as string | undefined) ?? 'info';
-const logLevels = ['error', 'warn', 'info', 'debug'];
+const LOG_LEVELS = ['error', 'warn', 'info', 'debug'] as const;
+type LogLevel = (typeof LOG_LEVELS)[number];
 
-console.info('Log level:', logLevel);
+const logLevel =
+  (import.meta.env.VITE_LOG_LEVEL as LogLevel | undefined) ?? 'info';
 
-const logLevelIndex = logLevels.indexOf(logLevel);
+const logLevelIndex = LOG_LEVELS.indexOf(logLevel);
 
-export const logger = {
-  error: (...args: Array<unknown>) => {
-    if (logLevelIndex >= logLevels.indexOf('error')) {
-      console.error(...args);
-    }
+function buildLogger(level: LogLevel): (...args: Array<unknown>) => void {
+  if (logLevelIndex >= LOG_LEVELS.indexOf(level)) {
+    return (...args: Array<unknown>) => {
+      console[level](...args);
+    };
+  } else {
+    return () => null;
+  }
+}
+
+export const logger = LOG_LEVELS.reduce(
+  (acc, level) => {
+    acc[level] = buildLogger(level);
+    return acc;
   },
-  warn: (...args: Array<unknown>) => {
-    if (logLevelIndex >= logLevels.indexOf('warn')) {
-      console.warn(...args);
-    }
-  },
-  info: (...args: Array<unknown>) => {
-    if (logLevelIndex >= logLevels.indexOf('info')) {
-      console.info(...args);
-    }
-  },
-  debug: (...args: Array<unknown>) => {
-    if (logLevelIndex >= logLevels.indexOf('debug')) {
-      console.debug(...args);
-    }
-  },
-};
+  {} as Record<LogLevel, (...args: Array<unknown>) => void>,
+);
