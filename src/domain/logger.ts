@@ -4,24 +4,26 @@ const logLevels = ['error', 'warn', 'info', 'debug'];
 
 console.info('Log level:', logLevel);
 
+const logLevelIndex = logLevels.indexOf(logLevel);
+
 export const logger = {
-  error: (...args: any[]) => {
-    if (logLevels.indexOf(logLevel) >= logLevels.indexOf('error')) {
+  error: (...args: Array<unknown>) => {
+    if (logLevelIndex >= logLevels.indexOf('error')) {
       console.error(...args);
     }
   },
-  warn: (...args: any[]) => {
-    if (logLevels.indexOf(logLevel) >= logLevels.indexOf('warn')) {
+  warn: (...args: Array<unknown>) => {
+    if (logLevelIndex >= logLevels.indexOf('warn')) {
       console.warn(...args);
     }
   },
-  info: (...args: any[]) => {
-    if (logLevels.indexOf(logLevel) >= logLevels.indexOf('info')) {
+  info: (...args: Array<unknown>) => {
+    if (logLevelIndex >= logLevels.indexOf('info')) {
       console.info(...args);
     }
   },
-  debug: (...args: any[]) => {
-    if (logLevels.indexOf(logLevel) >= logLevels.indexOf('debug')) {
+  debug: (...args: Array<unknown>) => {
+    if (logLevelIndex >= logLevels.indexOf('debug')) {
       console.debug(...args);
     }
   },
