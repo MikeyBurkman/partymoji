@@ -1,4 +1,5 @@
 import { RunArgs } from './RunArgs';
+import { logger } from './utils';
 import { ImageEffectResult } from './types';
 
 interface Computation {
@@ -40,6 +41,20 @@ export const runEffectsAsync = async (args: RunArgs) => {
 
     const worker = new ComlinkWorker<typeof import('./effect.worker')>(
       new URL('./effect.worker', import.meta.url),
+      {
+        type: 'module',
+      },
+    );
+
+    logger.info(
+      'Running effect ASYNC, name:',
+      args.effectInput.effectName,
+      'params:',
+      args.effectInput.params,
+      'useWasm:',
+      args.useWasm,
+      'worker:',
+      worker,
     );
 
     worker

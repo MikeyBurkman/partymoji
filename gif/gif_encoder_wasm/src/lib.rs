@@ -29,7 +29,7 @@ pub fn create_gif_data_url(
     );
 
     // Start timing
-    console::time();
+    console::time_with_label("WASM GIF Creation");
     let frames_vec = frames.to_vec();
 
     // Handle the optional transparent color
@@ -50,7 +50,7 @@ pub fn create_gif_data_url(
     let data_url = format!("data:image/gif;base64,{}", base64_encoded);
 
     // End timing
-    console::time_end();
+    console::time_end_with_label("WASM GIF Creation");
 
     // Return the data URL as a String
     data_url

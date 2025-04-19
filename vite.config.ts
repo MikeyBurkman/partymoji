@@ -9,8 +9,8 @@ import { comlink } from 'vite-plugin-comlink';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    tsconfigPaths(),
     comlink(),
+    tsconfigPaths(),
     react(),
     nodePolyfills(),
     wasm(),
@@ -19,12 +19,20 @@ export default defineConfig({
   worker: {
     format: 'es',
     plugins: () => [
-      tsconfigPaths(),
-      comlink(),
-      nodePolyfills(),
       wasm(),
+      comlink(),
+      tsconfigPaths(),
+      nodePolyfills(),
       topLevelAwait(),
     ],
+    rollupOptions: {
+      watch: {},
+    },
   },
   base: '/partymoji',
+  build: {
+    modulePreload: {
+      polyfill: false,
+    },
+  },
 });

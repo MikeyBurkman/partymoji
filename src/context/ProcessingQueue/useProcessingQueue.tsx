@@ -1,9 +1,9 @@
 import React from 'react';
 import { computeGif } from '~/domain/computeGifs';
-import { debugLog } from '~/domain/env';
 import { RunArgs } from '~/domain/RunArgs';
 import type { ImageEffectResult } from '~/domain/types';
 import { ProcessorQueueContext } from './ProcessorQueueContext';
+import { logger } from '~/domain/utils';
 
 const getRunId = () => Math.floor(Math.random() * 100000);
 
@@ -26,12 +26,12 @@ export function useProcessingQueue({
 
   const onFinish = React.useCallback(
     (runId: number, results: ImageEffectResult) => {
-      debugLog('Finished', { runId, latestRunIdRef });
+      logger.debug('Finished', { runId, latestRunIdRef });
       if (runId === latestRunIdRef.current) {
         onComplete(results);
       } else {
         // Throw away this result -- it's been superceded by another compute
-        debugLog('Throwing away an old compute');
+        logger.debug('Throwing away an old compute');
       }
     },
     [onComplete, latestRunIdRef],
@@ -40,7 +40,7 @@ export function useProcessingQueue({
   return React.useCallback(
     (args: RunArgs): void => {
       const runId = getRunId();
-      debugLog('Computing: ', { runId, args });
+      logger.debug('Computing: ', { runId, args });
       latestRunIdRef.current = runId;
       void computeGif(args)
         .then((results) => {

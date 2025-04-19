@@ -2,11 +2,10 @@ import GIFEncoder from 'gif-encoder';
 import seedrandom from 'seedrandom';
 import { effectByName } from '~/effects';
 import { Color, Image, ImageEffectResult } from './types';
-import { colorUtil, imageUtil, miscUtil } from '~/domain/utils';
+import { colorUtil, imageUtil, miscUtil, logger } from '~/domain/utils';
 import { fakeTransparency } from '~/effects/fake-transparency';
 import { RunArgs } from './RunArgs';
-import { logger } from './logger';
-// import { wasmCreateGif } from './wasmGifEncoder';
+import { wasmCreateGif } from './wasmGifEncoder';
 
 // Returns a list of gif data URLs, for each effect
 export const runEffects = async ({
@@ -18,6 +17,8 @@ export const runEffects = async ({
 }: RunArgs): Promise<ImageEffectResult> => {
   const random = seedrandom(randomSeed);
 
+  logger.info('Running effect, name:', effectInput.effectName, 'params:', effectInput.params, 'useWasm:', useWasm);
+  
   const effect = effectByName(effectInput.effectName);
   const result = await effect.fn({
     image,
@@ -135,13 +136,15 @@ const createGif = async ({
   fps: number;
   useWasm: boolean;
 }): Promise<string> => {
+
+  logger.debug('Creating GIF with dimensions:', image.dimensions, 'fps:', fps, 'useWasm:', useWasm);
+  
   if (useWasm) {
-    logger.warn('Temporarly not using wasm while we fix it');
-    // return wasmCreateGif({
-    //   image,
-    //   transparentColor,
-    //   fps,
-    // });
+    return wasmCreateGif({
+      image,
+      transparentColor,
+      fps,
+    });
   }
 
   return new Promise<string>((resolve) => {

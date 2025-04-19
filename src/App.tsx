@@ -6,8 +6,6 @@ import {
   Paper,
   Stack,
   Typography,
-  Checkbox,
-  FormControlLabel,
 } from '@mui/material';
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 
@@ -19,7 +17,6 @@ import { Icon } from '~/components/Icon';
 import { computeGifsForState, getEffectsDiff } from '~/domain/computeGifs';
 import type { AppState, AppStateEffect } from '~/domain/types';
 import { miscUtil } from '~/domain/utils';
-import { debugLog, IS_MOBILE, IS_DEV } from '~/domain/env';
 
 import * as localStorage from '~/localStorage';
 import { sliderParam } from '~/params/sliderParam';
@@ -30,6 +27,8 @@ import {
   useSetAlert,
 } from './context/AlertContext';
 import { ProcessorQueueProvider } from './context/ProcessingQueue';
+import { IS_MOBILE } from './domain/utils/isMobile';
+import { logger, IS_DEV } from './domain/utils';
 
 // Number of millis to wait after a change before recomputing the gif
 const COMPUTE_DEBOUNCE_MILLIS = 1000;
@@ -51,7 +50,7 @@ const DEFAULT_STATE: AppState = {
   effects: [],
   baseImage: undefined,
   fps: DEFAULT_FPS,
-  useWasm: false,
+  useWasm: true,
 };
 
 const Inner: React.FC = () => {
@@ -143,7 +142,7 @@ const Inner: React.FC = () => {
   );
 
   React.useEffect(() => {
-    debugLog('UseEffect, doCompute', doCompute);
+    logger.debug('UseEffect, doCompute', doCompute);
     if (!doCompute.compute) {
       return;
     }
@@ -254,8 +253,7 @@ const Inner: React.FC = () => {
                     );
                   },
                 })}
-                {/* Add the checkbox here */}
-                <FormControlLabel
+                {/* <FormControlLabel
                   control={
                     <Checkbox
                       checked={state.useWasm}
@@ -272,7 +270,7 @@ const Inner: React.FC = () => {
                     />
                   }
                   label="Use WASM for rendering"
-                />
+                /> */}
               </Stack>
             </Section>
             {state.baseImage != null && (

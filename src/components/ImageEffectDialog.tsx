@@ -15,8 +15,7 @@ import {
   Typography,
 } from '@mui/material';
 import type { EffectInput, ImageEffectResult, AnyEffect } from '~/domain/types';
-import { miscUtil } from '~/domain/utils';
-import { debugLog } from '~/domain/env';
+import { miscUtil, logger } from '~/domain/utils';
 import { Gif } from './Gif';
 import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
 import { useProcessingQueue } from '~/context/ProcessingQueue/useProcessingQueue';
@@ -102,7 +101,7 @@ export const ImageEffectDialog: React.FC<Props> = ({
     }
 
     if (!initialLoaded) {
-      debugLog('Initial loading');
+      logger.debug('Initial loading');
       // The initial loading of the original effect
       setImage({
         computing: false,

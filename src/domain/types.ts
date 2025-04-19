@@ -142,16 +142,15 @@ export interface EffectInput {
   params: Array<JsonType>;
 }
 
+export interface AppStateEffectDoneState {
+  status: 'done';
+  image: ImageEffectResult;
+}
+
 export interface AppStateEffect {
   effectName: string;
+  state: { status: 'init' } | { status: 'computing' } | AppStateEffectDoneState;
   paramsValues: Array<JsonType>;
-  state:
-    | { status: 'init' }
-    | { status: 'computing' }
-    | {
-        status: 'done';
-        image: ImageEffectResult;
-      };
 }
 
 export interface AppState {

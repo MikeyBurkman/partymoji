@@ -1,8 +1,8 @@
 import { runEffects } from './run';
 import { runEffectsAsync } from './runAsync';
 import { AppState, Image, ImageEffectResult } from './types';
-import { IS_DEV, debugLog, IS_MOBILE } from './env';
-import { miscUtil } from './utils';
+import { IS_MOBILE } from './utils/isMobile';
+import { miscUtil, logger, IS_DEV } from './utils';
 
 // OffscreenCanvas isn't supported by mobile browsers, so mobile will also run synchronously,
 //  which will force us to use regular canvas and not OffscreenCanvas.
@@ -69,7 +69,7 @@ export const getEffectsDiff = ({
     currState.baseImage !== prevState.baseImage ||
     currState.useWasm !== prevState.useWasm
   ) {
-    debugLog('FPS, useWasm, or base image is different');
+    logger.debug('FPS, useWasm, or base image is different');
     return { diff: true, index: 0 };
   }
 
@@ -82,17 +82,17 @@ export const getEffectsDiff = ({
     const prevE = prevEffects[i];
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- invalid linting error
     if (!prevE) {
-      debugLog('No prevE, index ', i);
+      logger.debug('No prevE, index ', i);
       return { diff: true, index: i };
     }
 
     if (prevE.state.status !== 'done') {
-      debugLog('PrevE not done ', i);
+      logger.debug('PrevE not done ', i);
       return { diff: true, index: i };
     }
 
     if (currE.effectName !== prevE.effectName) {
-      debugLog('Different effect name ', i);
+      logger.debug('Different effect name ', i);
       return { diff: true, index: i };
     }
 
@@ -101,12 +101,12 @@ export const getEffectsDiff = ({
       const currEParam: unknown = currE.paramsValues[ei];
       const prevEP: unknown = prevE.paramsValues[ei];
       if (JSON.stringify(currEParam) !== JSON.stringify(prevEP)) {
-        debugLog('Param different', i, ei);
+        logger.debug('Param different', i, ei);
         return { diff: true, index: i };
       }
     }
   }
 
-  debugLog('No diff');
+  logger.debug('No diff');
   return { diff: false };
 };
