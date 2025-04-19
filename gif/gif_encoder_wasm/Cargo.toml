@@ -18,4 +18,4 @@ crate-type = ["cdylib"]
 
 [dependencies.web-sys]
 version = "0.3.77"
-features = ["Blob", "Url", "console", "Window", "Performance"]
+features = ["Blob", "Url", "console"]
