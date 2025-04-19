@@ -14,6 +14,27 @@
             });
         }), Object.freeze(t);
     }
+    const logLevel = "debug", logLevels = [
+        "error",
+        "warn",
+        "info",
+        "debug"
+    ];
+    console.info("Log level:", logLevel);
+    const logLevelIndex = logLevels.indexOf(logLevel), logger = {
+        error: (...t)=>{
+            logLevelIndex >= logLevels.indexOf("error") && console.error(...t);
+        },
+        warn: (...t)=>{
+            logLevelIndex >= logLevels.indexOf("warn") && console.warn(...t);
+        },
+        info: (...t)=>{
+            logLevelIndex >= logLevels.indexOf("info") && console.info(...t);
+        },
+        debug: (...t)=>{
+            logLevelIndex >= logLevels.indexOf("debug") && console.debug(...t);
+        }
+    };
     var commonjsGlobal = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : typeof global < "u" ? global : typeof self < "u" ? self : {};
     function getDefaultExportFromCjs$1(t) {
         return t && t.__esModule && Object.prototype.hasOwnProperty.call(t, "default") ? t.default : t;
@@ -20537,7 +20558,9 @@ https://github.com/browserify/crypto-browserify`);
         });
     }, blobOrFileToDataUrl = (t)=>new Promise((n)=>{
             const o = new FileReader;
-            o.onload = ()=>n(o.result), o.readAsDataURL(t);
+            o.onload = ()=>{
+                n(o.result);
+            }, o.readAsDataURL(t);
         }), toHexColor = ([t, n, o])=>{
         const s = (c)=>{
             const l = c.toString(16).toUpperCase();
@@ -21086,10 +21109,12 @@ https://github.com/browserify/crypto-browserify`);
         const g = (I)=>(S)=>{
                 if (!p.current || !I) return;
                 const Q = p.current.getBoundingClientRect(), O = S.clientX - Q.left, P = S.clientY - Q.top;
-                setTimeout(()=>I([
+                setTimeout(()=>{
+                    I([
                         O,
                         P
-                    ]), 0);
+                    ]);
+                }, 0);
             }, v = React.useMemo(()=>{
             if (o) return {
                 cursor: "pointer"
@@ -23006,7 +23031,9 @@ _inline_1_arg0_=_inline_1_v[_inline_1_arg2_[_inline_1_arg2_.length-1]]
     var libExports = requireLib();
     const toArrayBuffer = (t)=>new Promise((n)=>{
             const o = new FileReader;
-            o.onload = ()=>n(o.result), o.readAsArrayBuffer(t);
+            o.onload = ()=>{
+                n(o.result);
+            }, o.readAsArrayBuffer(t);
         }), readGifFromFile = async (t)=>{
         const n = await toArrayBuffer(t), o = libExports.parseGIF(n), s = [
             o.lsd.width,
@@ -23045,11 +23072,15 @@ _inline_1_arg0_=_inline_1_v[_inline_1_arg2_[_inline_1_arg2_.length-1]]
             };
         }
         return {
-            image: await new Promise((l, d)=>getPixels(n, (h, p)=>{
-                    if (h) return d(h);
+            image: await new Promise((l, d)=>{
+                getPixels(n, (h, p)=>{
+                    if (h) {
+                        d(h);
+                        return;
+                    }
                     if (p.shape.length === 3) {
                         const [w, B] = p.shape;
-                        return l({
+                        l({
                             frames: [
                                 Uint8ClampedArray.from(p.data)
                             ],
@@ -23058,20 +23089,22 @@ _inline_1_arg0_=_inline_1_v[_inline_1_arg2_[_inline_1_arg2_.length-1]]
                                 B
                             ]
                         });
+                        return;
                     }
                     const [m, g, v] = p.shape, y = g * v * 4, b = [];
                     for(let w = 0; w < m; w += 1){
                         const B = p.data.subarray(w * y, (w + 1) * y);
                         b.push(Uint8ClampedArray.from(B));
                     }
-                    return l({
+                    l({
                         frames: b,
                         dimensions: [
                             g,
                             v
                         ]
                     });
-                })),
+                });
+            }),
             dataUrl: n,
             fps: 20
         };
@@ -37491,10 +37524,10 @@ export default theme;`;
         warning: Warning
     }, Tooltip = ({ kind: t, description: n })=>{
         if (!n) return null;
-        const o = typeof n == "string" ? HtmlTooltip : Tooltip$1, s = ICON_COMPONENT_MAP[t];
-        return jsxRuntimeExports.jsx(o, {
+        const o = ICON_COMPONENT_MAP[t], s = typeof n == "string" ? HtmlTooltip : Tooltip$1;
+        return jsxRuntimeExports.jsx(s, {
             title: n,
-            children: jsxRuntimeExports.jsx(s, {
+            children: jsxRuntimeExports.jsx(o, {
                 htmlColor: COLOR_MAP[t]
             })
         });
@@ -37631,7 +37664,9 @@ export default theme;`;
                     jsxRuntimeExports.jsx(Checkbox, {
                         "aria-label": t,
                         checked: n,
-                        onChange: (c)=>s(c.target.checked)
+                        onChange: (c)=>{
+                            s(c.target.checked);
+                        }
                     })
                 ]
             })
@@ -46277,12 +46312,16 @@ export default theme;`;
     }, Expandable = ({ mainEle: t, children: n })=>{
         const [o, s] = React.useState(!0);
         return jsxRuntimeExports.jsx(ClickAwayListener, {
-            onClickAway: ()=>s(!0),
+            onClickAway: ()=>{
+                s(!0);
+            },
             children: jsxRuntimeExports.jsxs(Stack, {
                 children: [
                     jsxRuntimeExports.jsx(Button, {
                         variant: "text",
-                        onClick: ()=>s(!o),
+                        onClick: ()=>{
+                            s(!o);
+                        },
                         style: {
                             color: "black"
                         },
@@ -46365,7 +46404,8 @@ export default theme;`;
                 })
         };
     }
-    const DropdownParam = ({ name: t, options: n, value: o, description: s, onChange: c })=>jsxRuntimeExports.jsxs(Stack, {
+    function DropdownParam({ name: t, options: n, value: o, description: s, onChange: c }) {
+        return jsxRuntimeExports.jsxs(Stack, {
             spacing: 1,
             children: [
                 jsxRuntimeExports.jsxs(Stack, {
@@ -46386,7 +46426,9 @@ export default theme;`;
                     children: jsxRuntimeExports.jsx(Select, {
                         autoWidth: !0,
                         value: o,
-                        onChange: (l)=>c(l.target.value),
+                        onChange: (l)=>{
+                            c(l.target.value);
+                        },
                         children: n.map((l)=>jsxRuntimeExports.jsx(MenuItem, {
                                 value: l.value,
                                 children: l.name
@@ -46395,6 +46437,7 @@ export default theme;`;
                 })
             ]
         });
+    }
     function dropdownParam(t) {
         return {
             name: t.name,
@@ -46570,7 +46613,45 @@ export default theme;`;
         const n = t.split("/");
         return n[n.length - 1];
     }, ImagePicker = ({ currentImage: t, onChange: n })=>{
-        const [o, s] = React.useState();
+        const [o, s] = React.useState(), c = async (d)=>{
+            const h = d.target.value;
+            try {
+                if (s(void 0), h.startsWith("data:")) {
+                    const { image: v, fps: y } = await readImage(h);
+                    n({
+                        gif: h,
+                        image: v,
+                        gifWithBackgroundColor: h,
+                        partiallyTransparent: isPartiallyTransparent(v)
+                    }, "image", y);
+                    return;
+                }
+                if (!isUrl(h)) {
+                    s("Does not appear to be a valid URL");
+                    return;
+                }
+                const p = await getImageFromUrl(h), { image: m, fps: g } = await readImage(p);
+                n({
+                    gif: p,
+                    image: m,
+                    gifWithBackgroundColor: p,
+                    partiallyTransparent: isPartiallyTransparent(m)
+                }, parseFileName(h), g);
+            } catch (p) {
+                console.error("Error importing url", p), s("Error importing url");
+            }
+        }, l = async (d)=>{
+            const h = d.target.files?.item(0);
+            if (h) {
+                const { dataUrl: p, image: m, fps: g } = await readImage(h);
+                n({
+                    gif: p,
+                    image: m,
+                    gifWithBackgroundColor: p,
+                    partiallyTransparent: isPartiallyTransparent(m)
+                }, parseFileName(h.name), g);
+            }
+        };
         return jsxRuntimeExports.jsxs(Stack, {
             spacing: 2,
             alignItems: "center",
@@ -46583,34 +46664,7 @@ export default theme;`;
                         fullWidth: !0,
                         error: !!o,
                         helperText: o,
-                        onBlur: async (c)=>{
-                            const l = c.target.value;
-                            try {
-                                if (s(void 0), l.startsWith("data:")) {
-                                    const { image: m, fps: g } = await readImage(l);
-                                    n({
-                                        gif: l,
-                                        image: m,
-                                        gifWithBackgroundColor: l,
-                                        partiallyTransparent: isPartiallyTransparent(m)
-                                    }, "image", g);
-                                    return;
-                                }
-                                if (!isUrl(l)) {
-                                    s("Does not appear to be a valid URL");
-                                    return;
-                                }
-                                const d = await getImageFromUrl(l), { image: h, fps: p } = await readImage(d);
-                                n({
-                                    gif: d,
-                                    image: h,
-                                    gifWithBackgroundColor: d,
-                                    partiallyTransparent: isPartiallyTransparent(h)
-                                }, parseFileName(l), p);
-                            } catch (d) {
-                                console.error("Error importing url", d), s("Error importing url");
-                            }
-                        }
+                        onBlur: (d)=>void c(d)
                     })
                 }),
                 jsxRuntimeExports.jsx(Box, {
@@ -46632,18 +46686,7 @@ export default theme;`;
                             hidden: !0,
                             accept: "image/png,image/jpg,image/jpeg,image/gif",
                             name: "source-image",
-                            onChange: async (c)=>{
-                                const d = Array.from(c.target.files ?? [])[0];
-                                if (d) {
-                                    const { dataUrl: h, image: p, fps: m } = await readImage(d);
-                                    n({
-                                        gif: h,
-                                        image: p,
-                                        gifWithBackgroundColor: h,
-                                        partiallyTransparent: isPartiallyTransparent(p)
-                                    }, parseFileName(d.name), m);
-                                }
-                            }
+                            onChange: (d)=>void l(d)
                         })
                     ]
                 }),
@@ -46775,7 +46818,9 @@ export default theme;`;
                     children: jsxRuntimeExports.jsx(RadioGroup, {
                         "aria-label": t,
                         defaultValue: o,
-                        onChange: (l)=>c(l.target.value),
+                        onChange: (l)=>{
+                            c(l.target.value);
+                        },
                         children: n.map((l)=>jsxRuntimeExports.jsx(FormControlLabel, {
                                 value: l.value,
                                 control: jsxRuntimeExports.jsx(Radio, {}),
@@ -46794,7 +46839,9 @@ export default theme;`;
                     value: n.value,
                     options: t.options,
                     description: t.description,
-                    onChange: (o)=>n.onChange(o)
+                    onChange: (o)=>{
+                        n.onChange(o);
+                    }
                 })
         };
     }
@@ -46887,7 +46934,9 @@ export default theme;`;
                 jsxRuntimeExports.jsx(FormControl, {
                     children: jsxRuntimeExports.jsx(TextField, {
                         value: c,
-                        onChange: (d)=>l(d.target.value),
+                        onChange: (d)=>{
+                            l(d.target.value);
+                        },
                         onBlur: ()=>{
                             c.length > 0 && s(c);
                         }
@@ -46904,11 +46953,60 @@ export default theme;`;
                     onChange: n.onChange,
                     value: n.value
                 })
-        }), VariableLengthParam = ({ name: t, newParamText: n, createNewParam: o, value: s, description: c, onChange: l })=>{
-        const [d, h] = React.useState(s.map((p)=>({
+        });
+    function VariableLengthParam({ name: t, newParamText: n, createNewParam: o, value: s, description: c, onChange: l }) {
+        const [d, h] = React.useState(s.map((g)=>({
                 param: o(),
-                pValue: p
-            })));
+                pValue: g
+            }))), p = React.useMemo(()=>d.map(({ param: g, pValue: v }, y)=>{
+                const b = g.fn({
+                    value: v,
+                    onChange: (w)=>{
+                        const B = d.map((I, S)=>y === S ? {
+                                param: g,
+                                pValue: w
+                            } : I);
+                        h(B), l(B.map((I)=>I.pValue));
+                    }
+                });
+                return jsxRuntimeExports.jsxs(Stack, {
+                    direction: "row",
+                    children: [
+                        jsxRuntimeExports.jsx(IconButton, {
+                            onClick: ()=>{
+                                const w = d.filter((B, I)=>I !== y);
+                                h(w), l(w.map((B)=>B.pValue));
+                            },
+                            style: {
+                                visibility: y === 0 ? "hidden" : void 0
+                            },
+                            children: jsxRuntimeExports.jsx(Icon, {
+                                name: "Delete"
+                            })
+                        }),
+                        b
+                    ]
+                }, `${t}-${y}`);
+            }), [
+            t,
+            l,
+            d
+        ]), m = React.useCallback(()=>{
+            const g = o(), v = [
+                ...d,
+                {
+                    param: g,
+                    pValue: g.defaultValue()
+                }
+            ];
+            h(v);
+            const y = v.map((b)=>b.pValue);
+            l(y);
+        }, [
+            o,
+            l,
+            d
+        ]);
         return jsxRuntimeExports.jsx(Paper, {
             children: jsxRuntimeExports.jsxs(Stack, {
                 spacing: 1,
@@ -46927,56 +47025,16 @@ export default theme;`;
                             })
                         ]
                     }),
-                    d.map(({ param: p, pValue: m }, g)=>{
-                        const v = p.fn({
-                            value: m,
-                            onChange: (y)=>{
-                                const b = d.map((w, B)=>g === B ? {
-                                        param: p,
-                                        pValue: y
-                                    } : w);
-                                h(b), l(b.map((w)=>w.pValue));
-                            }
-                        });
-                        return jsxRuntimeExports.jsxs(Stack, {
-                            direction: "row",
-                            children: [
-                                jsxRuntimeExports.jsx(IconButton, {
-                                    onClick: ()=>{
-                                        const y = d.filter((b, w)=>w !== g);
-                                        h(y), l(y.map((b)=>b.pValue));
-                                    },
-                                    style: {
-                                        visibility: g === 0 ? "hidden" : void 0
-                                    },
-                                    children: jsxRuntimeExports.jsx(Icon, {
-                                        name: "Delete"
-                                    })
-                                }),
-                                v
-                            ]
-                        }, `${t}-${g}`);
-                    }),
+                    p,
                     jsxRuntimeExports.jsx(Button, {
                         variant: "contained",
-                        onClick: ()=>{
-                            const p = o(), m = [
-                                ...d,
-                                {
-                                    param: p,
-                                    pValue: p.defaultValue()
-                                }
-                            ];
-                            h(m);
-                            const g = m.map((v)=>v.pValue);
-                            l(g);
-                        },
+                        onClick: m,
                         children: n
                     })
                 ]
             })
         });
-    };
+    }
     function variableLengthParam(t) {
         return {
             name: t.name,
@@ -48072,7 +48130,7 @@ export default theme;`;
         fn: ({ image: t, parameters: [n, o, s, c, l] })=>{
             const [d, h] = t.dimensions, p = o.length * n, m = Math.round(360 / p);
             let g = o.length;
-            for(; (p / g).toFixed(2).slice(-2) !== "00";)g -= 1;
+            for(; !(p / g).toFixed(2).endsWith("00");)g -= 1;
             const v = [
                 d / 2 + s,
                 h / 2 - c
@@ -48772,14 +48830,14 @@ export default theme;`;
                 const h = createCanvas(t.dimensions);
                 for(let p = n; p > 0; p -= 1){
                     const m = d - p + 1, g = m >= 0 ? m : t.frames.length + m, v = t.frames[g];
-                    v != null && (applyFilter(h, {
+                    applyFilter(h, {
                         opacity: Math.floor(p / n * o),
                         blur: Math.floor(p * c)
                     }), drawImageOnCanvas({
                         ctx: h.ctx,
                         dimensions: t.dimensions,
                         frame: v
-                    }));
+                    });
                 }
                 applyFilter(h, {
                     opacity: 100,
@@ -48931,7 +48989,7 @@ export default theme;`;
                 }));
         }
     });
-    var __vite__wasmUrl = "/partymoji/assets/gif_encoder_wasm_bg-C8ApCiyb.wasm", __vite__initWasm = async (t = {}, n)=>{
+    var __vite__wasmUrl = "/partymoji/assets/gif_encoder_wasm_bg-Dus8EHxi.wasm", __vite__initWasm = async (t = {}, n)=>{
         let o;
         if (n.startsWith("data:")) {
             const s = n.replace(/^data:.*?base64,/, "");
@@ -49203,7 +49261,7 @@ export default theme;`;
                 gif: v,
                 image: h,
                 partiallyTransparent: !1,
-                gifWithBackgroundColor: b == null ? void 0 : await createGif({
+                gifWithBackgroundColor: b == null ? null : await createGif({
                     image: b,
                     transparentColor: void 0,
                     fps: s,
@@ -49272,11 +49330,23 @@ export default theme;`;
         const s = toHexColor(randomColor(t));
         return o > 2e3 ? s : n.has(s) ? findRandomColorNotInSet(t, n, o + 1) : s;
     }, ctx = self;
-    ctx.addEventListener("message", async (t)=>{
-        const o = {
-            status: "complete",
-            result: await runEffects(t.data)
-        };
-        ctx.postMessage(o);
+    ctx.addEventListener("message", (t)=>{
+        (async ()=>{
+            try {
+                logger.info("Received message from main thread:", t.data);
+                const o = {
+                    status: "complete",
+                    result: await runEffects(t.data)
+                };
+                logger.info("Sending message to main thread:", o), ctx.postMessage(o);
+            } catch (n) {
+                logger.error("Error in worker:", n);
+                const o = {
+                    status: "error",
+                    error: n
+                };
+                logger.info("Sending error message to main thread:", o), ctx.postMessage(o);
+            }
+        })();
     });
 })();

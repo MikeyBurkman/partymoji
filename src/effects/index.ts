@@ -1,5 +1,5 @@
 import { reject, pipe, sortBy } from 'remeda';
-import type { ParamFunction, Effect, EffectGroup } from '~/domain/types';
+import type { EffectGroup, AnyEffect } from '~/domain/types';
 import { miscUtil } from '~/domain/utils';
 
 import { adjustImage } from './adjust-image';
@@ -58,7 +58,7 @@ import { transparency } from './transparency';
 import { transpose } from './transpose';
 
 // This array dictates the order of the groups.
-const GROUP_ORDERING: EffectGroup[] = [
+const GROUP_ORDERING: Array<EffectGroup> = [
   'Animation',
   'Image',
   'Party',
@@ -132,12 +132,11 @@ export const POSSIBLE_EFFECTS = pipe(
     (x) => x.name,
   ),
   reject((x) => x.disabled),
-);
+  // TODO Might be able to refactor some types to get rid of this cast.
+) as unknown as Array<AnyEffect>;
 
-export const effectByName = (
-  name: string,
-): Effect<readonly ParamFunction<unknown>[]> => {
+export const effectByName = (name: string): AnyEffect => {
   const t = POSSIBLE_EFFECTS.find((t) => t.name === name);
   miscUtil.assert(t, `Could not find matching effect: ${name}`);
-  return t as unknown as Effect<readonly ParamFunction<unknown>[]>;
+  return t;
 };

@@ -1,5 +1,6 @@
 import { RunArgs } from './RunArgs';
 import RunEffectWorker from './effect.worker?worker';
+import { logger } from './logger';
 import { AsyncRunMessage, ImageEffectResult } from './types';
 
 interface Computation {
@@ -31,6 +32,16 @@ const handleSuccess = (computationId: string, result: ImageEffectResult) => {
 export const runEffectsAsync = (args: RunArgs) =>
   new Promise<ImageEffectResult>((resolve, reject) => {
     const worker = new RunEffectWorker();
+    logger.info(
+      'Running effect ASYNC, name:',
+      args.effectInput.effectName,
+      'params:',
+      args.effectInput.params,
+      'useWasm:',
+      args.useWasm,
+      'worker:',
+      worker,
+    );
 
     const computationId = `${Date.now().toString()}-${Math.floor(
       Math.random() * 100000,
@@ -46,9 +57,10 @@ export const runEffectsAsync = (args: RunArgs) =>
     worker.onmessage = (message: { data: AsyncRunMessage }) => {
       // See effect.worker.ts for what messages look like
       const data = message.data;
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- MIKE - status is hardcoded to 'complete'
       if (data.status === 'complete') {
         handleSuccess(computationId, data.result);
+      } else {
+        handleError(computationId)(data.error);
       }
     };
 

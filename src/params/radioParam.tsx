@@ -13,7 +13,7 @@ import { toParamFunction } from './utils';
 
 const RadioParam: React.FC<{
   name: string;
-  options: readonly { name: string; value: string }[];
+  options: ReadonlyArray<{ name: string; value: string }>;
   value: string;
   description?: string;
   onChange: (s: string) => void;
@@ -28,7 +28,7 @@ const RadioParam: React.FC<{
         <RadioGroup
           aria-label={name}
           defaultValue={value}
-          onChange={(event) => onChange(event.target.value)}
+          onChange={(event) => { onChange(event.target.value); }}
         >
           {options.map((t) => (
             <FormControlLabel
@@ -46,7 +46,7 @@ const RadioParam: React.FC<{
 
 export function radioParam<T extends string>(args: {
   name: string;
-  options: readonly { name: string; value: T }[];
+  options: ReadonlyArray<{ name: string; value: T }>;
   description?: string;
   defaultValue: ParamFnDefault<T>;
 }): ParamFunction<T> {
@@ -60,7 +60,7 @@ export function radioParam<T extends string>(args: {
           value={params.value}
           options={args.options}
           description={args.description}
-          onChange={(s) => params.onChange(s as T)}
+          onChange={(s) => { params.onChange(s as T); }}
         />
       );
     },

@@ -20,7 +20,6 @@ export const runEffects = async ({
   const effect = effectByName(effectInput.effectName);
   const result = await effect.fn({
     image,
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     parameters: effectInput.params,
     random,
   });
@@ -77,7 +76,7 @@ export const runEffects = async ({
       partiallyTransparent: false,
       gifWithBackgroundColor:
         resultWithBG == null
-          ? undefined
+          ? null
           : await createGif({
               image: resultWithBG,
               transparentColor: undefined,
@@ -159,7 +158,7 @@ const createGif = async ({
       gif.setTransparent(Number(`0x${hexColor}`));
     }
 
-    const data: Buffer[] = [];
+    const data: Array<Buffer> = [];
     gif.on('data', (chunk: Buffer) => {
       data.push(chunk);
     });

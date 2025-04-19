@@ -1,15 +1,15 @@
-import type { AppState, ImageEffectResult } from '~/domain/types';
+import type { AppState, ImageEffectResult, JsonType } from '~/domain/types';
 import { miscUtil, imageImportUtil, imageUtil } from '~/domain/utils';
 
 const LOCAL_STORAGE_KEY = 'partymoji-state';
 
 interface SerializedAppState {
   baseImage: string | undefined;
-  effects: {
+  effects: Array<{
     effectName: string;
-    paramsValues: unknown[];
+    paramsValues: Array<JsonType>;
     state: { status: 'init' };
-  }[];
+  }>;
   version: number;
   fname?: string | undefined;
   fps: number;
