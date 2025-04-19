@@ -98,8 +98,8 @@ export const getEffectsDiff = ({
 
     // Compare the param values
     for (let ei = 0; ei < currE.paramsValues.length; ei += 1) {
-      const currEParam = currE.paramsValues[ei];
-      const prevEP = prevE.paramsValues[ei];
+      const currEParam: unknown = currE.paramsValues[ei];
+      const prevEP: unknown = prevE.paramsValues[ei];
       if (JSON.stringify(currEParam) !== JSON.stringify(prevEP)) {
         debugLog('Param different', i, ei);
         return { diff: true, index: i };

@@ -15,6 +15,7 @@
     "build:all": "pnpm build:wasm && pnpm build",
     "build:all:prod": "pnpm build:wasm:prod && pnpm build",
     "lint": "tsc && eslint .",
+    "lint-fix": "eslint --fix .",
     "preview": "vite preview",
     "copy-docs": "rimraf docs && cp -R dist docs",
     "pretty": "prettier --write \"**/*.{js,md,ts,html,tsx,json}\"",

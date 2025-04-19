@@ -2,12 +2,11 @@ import { logger } from './logger';
 import { runEffects } from './run';
 import { RunArgs } from './RunArgs';
 import { AsyncRunMessage } from './types';
-import { promiseWithoutResult } from './utils';
 
 const ctx: Worker = self as unknown as Worker;
 
-ctx.addEventListener('message', (event: MessageEvent<RunArgs>) =>
-  promiseWithoutResult(async () => {
+ctx.addEventListener('message', (event: MessageEvent<RunArgs>) => {
+  void (async () => {
     try {
       logger.info('Received message from main thread:', event.data);
       const result = await runEffects(event.data);
@@ -29,5 +28,5 @@ ctx.addEventListener('message', (event: MessageEvent<RunArgs>) =>
       logger.info('Sending error message to main thread:', message);
       ctx.postMessage(message);
     }
-  }),
-);
+  })();
+});

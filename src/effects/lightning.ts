@@ -4,7 +4,7 @@ import { colorUtil, imageUtil } from '~/domain/utils';
 import { textParam } from '~/params';
 import { buildEffect } from './utils';
 
-const lightningIntensities: Color[] = [
+const lightningIntensities: Array<Color> = [
   [0, 15, 40, 255], // dark color
   [150, 150, 175, 255],
   [180, 180, 205, 255],

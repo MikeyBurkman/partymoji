@@ -7,22 +7,22 @@ console.info('Log level:', logLevel);
 const logLevelIndex = logLevels.indexOf(logLevel);
 
 export const logger = {
-  error: (...args: unknown[]) => {
+  error: (...args: Array<unknown>) => {
     if (logLevelIndex >= logLevels.indexOf('error')) {
       console.error(...args);
     }
   },
-  warn: (...args: unknown[]) => {
+  warn: (...args: Array<unknown>) => {
     if (logLevelIndex >= logLevels.indexOf('warn')) {
       console.warn(...args);
     }
   },
-  info: (...args: unknown[]) => {
+  info: (...args: Array<unknown>) => {
     if (logLevelIndex >= logLevels.indexOf('info')) {
       console.info(...args);
     }
   },
-  debug: (...args: unknown[]) => {
+  debug: (...args: Array<unknown>) => {
     if (logLevelIndex >= logLevels.indexOf('debug')) {
       console.debug(...args);
     }

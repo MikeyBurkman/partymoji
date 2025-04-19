@@ -45,7 +45,7 @@ export const trails = buildEffect({
     frames[5] = src[3]*25% > src[4]*25% > src[5]
     ...
     */
-    const frames: FrameData[] = [];
+    const frames: Array<FrameData> = [];
     for (let i = 0; i < image.frames.length; i += 1) {
       const canvas = canvasUtil.createCanvas(image.dimensions);
       for (let n = numTrails; n > 0; n -= 1) {

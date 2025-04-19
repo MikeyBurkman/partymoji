@@ -77,7 +77,7 @@ export const runEffects = async ({
       partiallyTransparent: false,
       gifWithBackgroundColor:
         resultWithBG == null
-          ? undefined
+          ? null
           : await createGif({
               image: resultWithBG,
               transparentColor: undefined,
@@ -159,7 +159,7 @@ const createGif = async ({
       gif.setTransparent(Number(`0x${hexColor}`));
     }
 
-    const data: Buffer[] = [];
+    const data: Array<Buffer> = [];
     gif.on('data', (chunk: Buffer) => {
       data.push(chunk);
     });

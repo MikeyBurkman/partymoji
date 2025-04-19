@@ -59,6 +59,8 @@ export const runEffectsAsync = (args: RunArgs) =>
       const data = message.data;
       if (data.status === 'complete') {
         handleSuccess(computationId, data.result);
+      } else {
+        handleError(computationId)(data.error);
       }
     };
 

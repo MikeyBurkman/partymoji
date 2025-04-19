@@ -51,10 +51,12 @@ export type FrameData = Uint8ClampedArray;
  * Each frame represents one frame in the animation -- if `frames` has length 4, then
  *  it means that there are 4 animation frames in the image.
  */
-export interface Image {
+// (This is a type, not an interface, because it doesn't play nicely with JsonType otherwise.)
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export type Image = {
   dimensions: Dimensions;
-  frames: FrameData[];
-}
+  frames: Array<FrameData>;
+};
 
 export type Random = seedrandom.PRNG;
 
@@ -86,7 +88,7 @@ export interface Params<T> {
   onChange: (v: T) => void;
 }
 
-export interface ParamFunction<T> {
+export interface ParamFunction<T extends JsonType> {
   name: string;
   /**
    * If the previous image is done computing, it will be given to this function.
@@ -96,7 +98,11 @@ export interface ParamFunction<T> {
   fn: (params: Params<T>) => JSX.Element;
 }
 
-export type ParamFnDefault<T> = ParamFunction<T>['defaultValue'] | T;
+export type AnyParamFunction = ParamFunction<JsonType>;
+
+export type ParamFnDefault<T extends JsonType> =
+  | ParamFunction<T>['defaultValue']
+  | T;
 
 export type EffectFn<Params> = (
   opts: EffectFnOpts<Params>,
@@ -130,17 +136,16 @@ export interface Effect<T extends ReadonlyArray<ParamFunction<any>>> {
   requiresAnimation?: true;
 }
 
+export type AnyEffect = Effect<ReadonlyArray<AnyParamFunction>>;
+
 export interface EffectInput {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  effect: Effect<any>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  params: any;
+  effect: AnyEffect;
+  params: Array<JsonType>;
 }
 
 export interface AppStateEffect {
   effectName: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  paramsValues: any[];
+  paramsValues: Array<JsonType>;
   state:
     | { status: 'init' }
     | { status: 'computing' }
@@ -154,7 +159,7 @@ export interface AppState {
   version: number;
   baseImage?: ImageEffectResult;
   fname?: string;
-  effects: AppStateEffect[];
+  effects: Array<AppStateEffect>;
   fps: number;
   useWasm: boolean;
 }
@@ -170,14 +175,23 @@ export type ImageEffectResult = {
   | {
       partiallyTransparent: false;
       /** Will be null if there's no transparency to this image */
-      gifWithBackgroundColor: string | undefined;
+      gifWithBackgroundColor: string | null;
     }
 );
 
-export interface AsyncRunMessage {
+export interface AsyncRunErrorMessage {
+  status: 'error';
+  /** The error message, if any */
+  error?: unknown;
+}
+
+export interface AsyncRunSuccessMessage {
   status: 'complete';
+  /** The result of the effect */
   result: ImageEffectResult;
 }
+
+export type AsyncRunMessage = AsyncRunErrorMessage | AsyncRunSuccessMessage;
 
 export interface CanvasData {
   canvas: OffscreenCanvas | HTMLCanvasElement;

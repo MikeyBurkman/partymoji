@@ -22,7 +22,7 @@ const readGifFromFile = async (
   const dimensions: Dimensions = [gif.lsd.width, gif.lsd.height];
   const finalCanvas = createCanvas(dimensions);
 
-  const frameDelays: number[] = [];
+  const frameDelays: Array<number> = [];
 
   const frames = decompressFrames(gif, true).map(
     (parsedFrame): Uint8ClampedArray => {
@@ -109,7 +109,7 @@ export const readImage = async (
   const image = await new Promise<Image>((res, rej) => {
     getPixels(
       dataUrl,
-      (err: Error | null, results: { shape: number[]; data: Uint8Array }) => {
+      (err: Error | null, results: { shape: Array<number>; data: Uint8Array }) => {
         if (err) {
           rej(err);
           return;
@@ -128,7 +128,7 @@ export const readImage = async (
         // Multiple frames, need to slice up the image data into numFrames slices
         const [numFrames, width, height] = results.shape;
         const sliceSize = width * height * 4;
-        const frames: Uint8ClampedArray[] = [];
+        const frames: Array<Uint8ClampedArray> = [];
         for (let i = 0; i < numFrames; i += 1) {
           const frame = results.data.subarray(
             i * sliceSize,

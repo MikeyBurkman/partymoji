@@ -22,13 +22,13 @@ export function assert(
 
 /** Returns a new array where the item at the given index is replaced by the given value */
 export const replaceIndex = <T>(
-  arr: T[],
+  arr: Array<T>,
   index: number,
   newValueFn: (oldValue: T) => T,
-): T[] => arr.map((x, i) => (index === i ? newValueFn(x) : x));
+): Array<T> => arr.map((x, i) => (index === i ? newValueFn(x) : x));
 
 /** Returns a new array with the element at the index removed */
-export const removeIndex = <T>(arr: T[], index: number): T[] =>
+export const removeIndex = <T>(arr: Array<T>, index: number): Array<T> =>
   arr.filter((_t, idx) => {
     console.log('Removing', { index, idx });
     return index !== idx;
@@ -39,7 +39,7 @@ export const removeIndex = <T>(arr: T[], index: number): T[] =>
  * @example
  * insertInto(['a','b','c'], 1, 'z'); // ['a','z','b','c']
  */
-export const insertInto = <T>(arr: T[], index: number, newValue: T): T[] => {
+export const insertInto = <T>(arr: Array<T>, index: number, newValue: T): Array<T> => {
   return [...arr.slice(0, index), newValue, ...arr.slice(index)];
 };
 

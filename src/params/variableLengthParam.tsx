@@ -9,27 +9,84 @@ interface VariableLengthProps<T extends JsonType> {
   name: string;
   newParamText: string;
   createNewParam: () => ParamFunction<T>;
-  value: T[];
+  value: Array<T>;
   description?: string;
-  onChange: (v: T) => void;
+  onChange: (v: Array<T>) => void;
 }
 
-interface ParamState {
-  param: ParamFunction<any>;
-  pValue: any;
+interface ParamState<T extends JsonType> {
+  param: ParamFunction<T>;
+  pValue: T;
 }
 
-const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
+function VariableLengthParam<T extends JsonType>({
   name,
   newParamText,
   createNewParam,
   value,
   description,
   onChange,
-}) => {
-  const [params, setParams] = React.useState<ParamState[]>(
+}: VariableLengthProps<T>) {
+  const [params, setParams] = React.useState<Array<ParamState<T>>>(
     value.map((v) => ({ param: createNewParam(), pValue: v })),
   );
+
+  const paramComponents = React.useMemo(() => {
+    return params.map(({ param, pValue }, idx) => {
+      const ele = param.fn({
+        value: pValue,
+        onChange: (newValue) => {
+          const p = params.map((oldP, i) => {
+            if (idx === i) {
+              return {
+                param,
+                pValue: newValue,
+              };
+            }
+            return oldP;
+          });
+          setParams(p);
+          onChange(p.map((n) => n.pValue));
+        },
+      });
+
+      return (
+        <Stack direction="row" key={`${name}-${idx}`}>
+          <IconButton
+            onClick={() => {
+              const newParams = params.filter((_x, i) => i !== idx);
+              setParams(newParams);
+              onChange(newParams.map((n) => n.pValue));
+            }}
+            style={{
+              visibility:
+                idx === 0 /* Hide delete on first item */
+                  ? 'hidden'
+                  : undefined,
+            }}
+          >
+            <Icon name="Delete" />
+          </IconButton>
+          {ele}
+        </Stack>
+      );
+    });
+  }, [name, onChange, params]);
+
+  const onClickNewParam = React.useCallback(() => {
+    const p = createNewParam();
+    const newParams = [
+      ...params,
+      {
+        param: p,
+        pValue: p.defaultValue(),
+      },
+    ];
+    setParams(newParams);
+    const vals = newParams.map((n) => n.pValue);
+    onChange(vals);
+  }, [createNewParam, onChange, params]);
+
   return (
     <Paper>
       <Stack spacing={1}>
@@ -37,81 +94,28 @@ const VariableLengthParam: React.FC<VariableLengthProps<any>> = ({
           <Typography variant="body2">{name}</Typography>
           <Tooltip kind="help" description={description} />
         </Stack>
-        {params.map(({ param, pValue }, idx) => {
-          const ele = param.fn({
-            value: pValue,
-            onChange: (newValue) => {
-              const p = params.map((oldP, i) => {
-                if (idx === i) {
-                  return {
-                    param,
-                    pValue: newValue,
-                  };
-                }
-                return oldP;
-              });
-              setParams(p);
-              onChange(p.map((n) => n.pValue));
-            },
-          });
-
-          return (
-            <Stack direction="row" key={`${name}-${idx}`}>
-              <IconButton
-                onClick={() => {
-                  const newParams = params.filter((_x, i) => i !== idx);
-                  setParams(newParams);
-                  onChange(newParams.map((n) => n.pValue));
-                }}
-                style={{
-                  visibility:
-                    idx === 0 /* Hide delete on first item */
-                      ? 'hidden'
-                      : undefined,
-                }}
-              >
-                <Icon name="Delete" />
-              </IconButton>
-              {ele}
-            </Stack>
-          );
-        })}
-        <Button
-          variant="contained"
-          onClick={() => {
-            const p = createNewParam();
-            const newParams: ParamState[] = [
-              ...params,
-              {
-                param: p,
-                pValue: p.defaultValue(),
-              },
-            ];
-            setParams(newParams);
-            const vals = newParams.map((n) => n.pValue);
-            onChange(vals);
-          }}
-        >
+        {paramComponents}
+        <Button variant="contained" onClick={onClickNewParam}>
           {newParamText}
         </Button>
       </Stack>
     </Paper>
   );
-};
+}
 
 export function variableLengthParam<T extends JsonType>(args: {
   name: string;
   newParamText: string;
   createNewParam: () => ParamFunction<T>;
   description?: string;
-  defaultValue: ParamFnDefault<T[]>;
-}): ParamFunction<T[]> {
+  defaultValue: ParamFnDefault<Array<T>>;
+}): ParamFunction<Array<T>> {
   return {
     name: args.name,
     defaultValue: toParamFunction(args.defaultValue),
     fn: (params) => {
       return (
-        <VariableLengthParam
+        <VariableLengthParam<T>
           name={args.name}
           newParamText={args.newParamText}
           value={params.value}

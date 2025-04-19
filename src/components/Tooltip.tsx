@@ -43,17 +43,11 @@ export const Tooltip: React.FC<TooltipProps> = ({ kind, description }) => {
   }
 
   const InnerIcon = ICON_COMPONENT_MAP[kind];
-  // If the description is a string, use HtmlTooltip, otherwise use MuiTooltip
-  if (typeof description == 'string') {
-    return (
-      <HtmlTooltip title={description}>
-        <InnerIcon htmlColor={COLOR_MAP[kind]} />
-      </HtmlTooltip>
-    );
-  }
+
+  const Component = typeof description == 'string' ? HtmlTooltip : MuiTooltip;
   return (
-    <MuiTooltip title={description}>
+    <Component title={description}>
       <InnerIcon htmlColor={COLOR_MAP[kind]} />
-    </MuiTooltip>
+    </Component>
   );
 };

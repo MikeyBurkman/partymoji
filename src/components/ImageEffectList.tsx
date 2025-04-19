@@ -4,13 +4,12 @@ import { saveAs } from 'file-saver';
 
 import { IS_MOBILE } from '~/domain/env';
 import type {
-  ParamFunction,
-  Effect,
   AppStateEffect,
   Image,
   AppState,
   ImageEffectResult,
   EffectInput,
+  AnyEffect,
 } from '~/domain/types';
 import { miscUtil } from '~/domain/utils';
 import { effectByName } from '~/effects';
@@ -26,8 +25,8 @@ type EffectEditDialogState =
 
 interface EffectListProps {
   appState: AppState;
-  possibleEffects: Array<Effect<any>>;
-  onEffectsChange: (t: AppStateEffect[]) => void;
+  possibleEffects: Array<AnyEffect>;
+  onEffectsChange: (t: Array<AppStateEffect>) => void;
 }
 
 const effectKey = (t: AppStateEffect, idx: number): string =>
@@ -38,7 +37,7 @@ const effectKey = (t: AppStateEffect, idx: number): string =>
 interface ImageEffectProps {
   effect: AppStateEffect;
   index: number;
-  currentEffects: AppStateEffect[];
+  currentEffects: Array<AppStateEffect>;
   setEffectEditDialogState: (state: EffectEditDialogState) => void;
   onEffectsChange: EffectListProps['onEffectsChange'];
   newDefaultEffect: (index: number) => AppStateEffect;
@@ -69,15 +68,13 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
     onEffectsChange(
       miscUtil.insertInto(currentEffects, newIdx, newDefaultEffect(index)),
     );
-    setTimeout(
-      () =>
-        { setEffectEditDialogState({
-          open: true,
-          idx: newIdx,
-          isNew: true,
-        }); },
-      2,
-    );
+    setTimeout(() => {
+      setEffectEditDialogState({
+        open: true,
+        idx: newIdx,
+        isNew: true,
+      });
+    }, 2);
   }, [
     currentEffects,
     index,
@@ -189,7 +186,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
   const newDefaultEffect = React.useCallback(
     (tIdx: number): AppStateEffect => ({
       effectName: possibleEffects[0].name,
-      paramsValues: possibleEffects[0].params.map((p: ParamFunction<any>) => {
+      paramsValues: possibleEffects[0].params.map((p) => {
         let image: Image | undefined = undefined;
         if (tIdx === 0) {
           image = appState.baseImage?.image;
@@ -211,15 +208,13 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
     onEffectsChange(
       miscUtil.insertInto(currentEffects, 0, newDefaultEffect(0)),
     );
-    setTimeout(
-      () =>
-        { setEffectEditDialogState({
-          open: true,
-          idx: 0,
-          isNew: true,
-        }); },
-      2,
-    );
+    setTimeout(() => {
+      setEffectEditDialogState({
+        open: true,
+        idx: 0,
+        isNew: true,
+      });
+    }, 2);
   }, [currentEffects, newDefaultEffect, onEffectsChange]);
 
   const finalGif = React.useMemo((): string | undefined => {

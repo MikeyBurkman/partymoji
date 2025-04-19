@@ -46,7 +46,7 @@ export default tseslint.config(
         'error',
         { allowNumber: true },
       ],
-      "@typescript-eslint/array-type": ["error", { default: "array-simple" }],
+      '@typescript-eslint/array-type': ['error', { default: 'generic' }],
     },
   },
 );

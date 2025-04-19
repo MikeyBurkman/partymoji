@@ -66,7 +66,7 @@ const floodFill = ({
       has: ([x, y]: Coord) => set.has(`${x}-${y}`),
     };
   })();
-  const stack: Coord[] = [[0, image.dimensions[1] - 1]]; // Bottom right pixel
+  const stack: Array<Coord> = [[0, image.dimensions[1] - 1]]; // Bottom right pixel
   const push = (coord: Coord) => {
     if (!visited.has(coord)) {
       visited.add(coord);
