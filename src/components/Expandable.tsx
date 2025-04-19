@@ -14,11 +14,11 @@ export const Expandable: React.FC<ExpandableProps> = ({
   const [collapsed, setCollapsed] = React.useState(true);
 
   return (
-    <ClickAwayListener onClickAway={() => setCollapsed(true)}>
+    <ClickAwayListener onClickAway={() => { setCollapsed(true); }}>
       <Stack>
         <Button
           variant="text"
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={() => { setCollapsed(!collapsed); }}
           style={{ color: 'black' }}
           size="small"
         >

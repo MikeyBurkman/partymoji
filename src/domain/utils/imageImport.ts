@@ -7,7 +7,9 @@ import * as miscUtil from './misc';
 const toArrayBuffer = (file: File): Promise<ArrayBuffer> =>
   new Promise<ArrayBuffer>((resolve) => {
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as ArrayBuffer);
+    reader.onload = () => {
+      resolve(reader.result as ArrayBuffer);
+    };
     reader.readAsArrayBuffer(file);
   });
 
@@ -20,7 +22,7 @@ const readGifFromFile = async (
   const dimensions: Dimensions = [gif.lsd.width, gif.lsd.height];
   const finalCanvas = createCanvas(dimensions);
 
-  const frameDelays: number[] = [];
+  const frameDelays: Array<number> = [];
 
   const frames = decompressFrames(gif, true).map(
     (parsedFrame): Uint8ClampedArray => {
@@ -104,27 +106,29 @@ export const readImage = async (
     };
   }
 
-  const image = await new Promise<Image>((res, rej) =>
+  const image = await new Promise<Image>((res, rej) => {
     getPixels(
       dataUrl,
-      (err: Error | null, results: { shape: number[]; data: Uint8Array }) => {
+      (err: Error | null, results: { shape: Array<number>; data: Uint8Array }) => {
         if (err) {
-          return rej(err);
+          rej(err);
+          return;
         }
 
         if (results.shape.length === 3) {
           const [width, height] = results.shape;
           // Single frame
-          return res({
+          res({
             frames: [Uint8ClampedArray.from(results.data)],
             dimensions: [width, height],
           });
+          return;
         }
 
         // Multiple frames, need to slice up the image data into numFrames slices
         const [numFrames, width, height] = results.shape;
         const sliceSize = width * height * 4;
-        const frames: Uint8ClampedArray[] = [];
+        const frames: Array<Uint8ClampedArray> = [];
         for (let i = 0; i < numFrames; i += 1) {
           const frame = results.data.subarray(
             i * sliceSize,
@@ -133,13 +137,13 @@ export const readImage = async (
           // Contrary to the TS types, the result of subarray returns a regular Uint8Array, NOT a clamped one!
           frames.push(Uint8ClampedArray.from(frame));
         }
-        return res({
+        res({
           frames,
           dimensions: [width, height],
         });
       },
-    ),
-  );
+    );
+  });
 
   return {
     image,

@@ -72,7 +72,7 @@ export const pinwheelColors = buildEffect({
     //  won't get a smooth transition.
     // We'll cut off colors from the end of the list until we get an even multiple.
     let colorsLength = colors.length;
-    while ((ribbonCount / colorsLength).toFixed(2).slice(-2) !== '00') {
+    while (!(ribbonCount / colorsLength).toFixed(2).endsWith('00')) {
       colorsLength -= 1;
     }
 

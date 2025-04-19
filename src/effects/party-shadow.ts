@@ -34,7 +34,7 @@ export const partyShadow = buildEffect({
   fn: ({ image, parameters: [layers, blurRadius, offsetX, offsetY] }) =>
     imageUtil.mapFrames(image, (frame, frameIndex, frameCount) => {
       const animationProgress = frameIndex / frameCount;
-      const colors: Color[] = [];
+      const colors: Array<Color> = [];
       const startHue = animationProgress * 360;
       const hueSize = 360 / layers;
       for (let i = 0; i < layers; i += 1) {
@@ -62,7 +62,7 @@ const applyShadows = ({
 }: {
   frame: FrameData;
   dimensions: Dimensions;
-  colors: Color[];
+  colors: Array<Color>;
   offsetX: number;
   offsetY: number;
   blurRadius: number;

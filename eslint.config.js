@@ -18,6 +18,7 @@ export default tseslint.config(
       ...tseslint.configs.stylisticTypeChecked,
     ],
     files: ['**/*.{ts,tsx}'],
+    ignores: ['gif/**/*', 'vite.config.ts'], // Exclude files in the "gif" folder
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
@@ -45,6 +46,7 @@ export default tseslint.config(
         'error',
         { allowNumber: true },
       ],
+      '@typescript-eslint/array-type': ['error', { default: 'generic' }],
     },
   },
 );

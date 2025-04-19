@@ -80,6 +80,7 @@ export const getEffectsDiff = ({
   for (let i = 0; i < currEffects.length; i += 1) {
     const currE = currEffects[i];
     const prevE = prevEffects[i];
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- invalid linting error
     if (!prevE) {
       debugLog('No prevE, index ', i);
       return { diff: true, index: i };
@@ -97,8 +98,8 @@ export const getEffectsDiff = ({
 
     // Compare the param values
     for (let ei = 0; ei < currE.paramsValues.length; ei += 1) {
-      const currEParam = currE.paramsValues[ei];
-      const prevEP = prevE.paramsValues[ei];
+      const currEParam: unknown = currE.paramsValues[ei];
+      const prevEP: unknown = prevE.paramsValues[ei];
       if (JSON.stringify(currEParam) !== JSON.stringify(prevEP)) {
         debugLog('Param different', i, ei);
         return { diff: true, index: i };

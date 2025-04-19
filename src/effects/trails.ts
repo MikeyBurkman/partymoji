@@ -45,7 +45,7 @@ export const trails = buildEffect({
     frames[5] = src[3]*25% > src[4]*25% > src[5]
     ...
     */
-    const frames: FrameData[] = [];
+    const frames: Array<FrameData> = [];
     for (let i = 0; i < image.frames.length; i += 1) {
       const canvas = canvasUtil.createCanvas(image.dimensions);
       for (let n = numTrails; n > 0; n -= 1) {
@@ -53,17 +53,15 @@ export const trails = buildEffect({
         const frameIdx = idx >= 0 ? idx : image.frames.length + idx;
 
         const frameToCopy = image.frames[frameIdx];
-        if (frameToCopy != null) {
-          canvasUtil.applyFilter(canvas, {
-            opacity: Math.floor((n / numTrails) * trailOpacity),
-            blur: Math.floor(n * blurCoefficient),
-          });
-          canvasUtil.drawImageOnCanvas({
-            ctx: canvas.ctx,
-            dimensions: image.dimensions,
-            frame: frameToCopy,
-          });
-        }
+        canvasUtil.applyFilter(canvas, {
+          opacity: Math.floor((n / numTrails) * trailOpacity),
+          blur: Math.floor(n * blurCoefficient),
+        });
+        canvasUtil.drawImageOnCanvas({
+          ctx: canvas.ctx,
+          dimensions: image.dimensions,
+          frame: frameToCopy,
+        });
       }
       canvasUtil.applyFilter(canvas, {
         opacity: 100,

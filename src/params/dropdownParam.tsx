@@ -5,18 +5,23 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import React from 'react';
 import { Tooltip } from '~/components/Tooltip';
 import type { ParamFnDefault, ParamFunction } from '~/domain/types';
 import { toParamFunction } from './utils';
 
-const DropdownParam: React.FC<{
+function DropdownParam<T extends string>({
+  name,
+  options,
+  value,
+  description,
+  onChange,
+}: {
   name: string;
-  options: readonly { name: string; value: string }[];
-  value?: any;
+  options: ReadonlyArray<{ name: string; value: string }>;
+  value?: T;
   description?: string;
-  onChange: (v: string) => void;
-}> = ({ name, options, value, description, onChange }) => {
+  onChange: (v: T) => void;
+}) {
   return (
     <Stack spacing={1}>
       <Stack direction="row" spacing={1}>
@@ -27,7 +32,9 @@ const DropdownParam: React.FC<{
         <Select
           autoWidth
           value={value}
-          onChange={(event) => onChange(event.target.value as string)}
+          onChange={(event) => {
+            onChange(event.target.value as T);
+          }}
         >
           {options.map((t) => (
             <MenuItem key={t.value} value={t.value}>
@@ -38,11 +45,11 @@ const DropdownParam: React.FC<{
       </FormControl>
     </Stack>
   );
-};
+}
 
 export function dropdownParam<T extends string>(args: {
   name: string;
-  options: readonly { name: string; value: T }[];
+  options: ReadonlyArray<{ name: string; value: T }>;
   description?: string;
   defaultValue: ParamFnDefault<T>;
 }): ParamFunction<T> {
@@ -51,12 +58,12 @@ export function dropdownParam<T extends string>(args: {
     defaultValue: toParamFunction(args.defaultValue),
     fn: (params) => {
       return (
-        <DropdownParam
+        <DropdownParam<T>
           name={args.name}
           value={params.value}
           options={args.options}
           description={args.description}
-          onChange={params.onChange as any}
+          onChange={params.onChange}
         />
       );
     },

@@ -1,5 +1,5 @@
 import { RunArgs } from './RunArgs';
-import { AsyncRunMessage, ImageEffectResult } from './types';
+import { ImageEffectResult } from './types';
 
 interface Computation {
   resolve: (result: ImageEffectResult) => void;
@@ -18,14 +18,15 @@ const handleError = (computationId: string) => (error: unknown) => {
   computationMap.delete(computationId);
 };
 
-const handleSuccess = (computationId: string) => (msg: AsyncRunMessage) => {
-  const computation = computationMap.get(computationId);
-  if (!computation) {
-    return;
-  }
-  computation.resolve(msg.result);
-  computationMap.delete(computationId);
-};
+const handleSuccess =
+  (computationId: string) => (result: ImageEffectResult) => {
+    const computation = computationMap.get(computationId);
+    if (!computation) {
+      return;
+    }
+    computation.resolve(result);
+    computationMap.delete(computationId);
+  };
 
 export const runEffectsAsync = async (args: RunArgs) => {
   return new Promise<ImageEffectResult>((resolve, reject) => {
@@ -43,7 +44,6 @@ export const runEffectsAsync = async (args: RunArgs) => {
 
     worker
       .runEffectRPC(args)
-      .then(handleSuccess(computationId))
-      .catch(handleError(computationId));
+      .then(handleSuccess(computationId), handleError(computationId));
   });
 };

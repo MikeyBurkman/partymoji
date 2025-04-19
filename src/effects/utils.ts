@@ -6,7 +6,8 @@ import type {
   EffectGroup,
 } from '~/domain/types';
 
-export const buildEffect = <T extends readonly ParamFunction<any>[]>(args: {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const buildEffect = <T extends ReadonlyArray<ParamFunction<any>>>(args: {
   name: string;
   group: EffectGroup;
   params: T;

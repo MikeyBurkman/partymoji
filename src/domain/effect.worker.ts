@@ -1,13 +1,7 @@
 import { runEffects } from './run';
 import { RunArgs } from './RunArgs';
-import { AsyncRunMessage } from './types';
+import { ImageEffectResult } from './types';
 
-export async function runEffectRPC(args: RunArgs): Promise<AsyncRunMessage> {
-  console.log('MESSAGE', args);
-
-  const result = await runEffects(args);
-  return {
-    status: 'complete',
-    result,
-  };
+export async function runEffectRPC(args: RunArgs): Promise<ImageEffectResult> {
+  return await runEffects(args);
 }
