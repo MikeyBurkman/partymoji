@@ -1,6 +1,6 @@
 import type { CanvasData, Dimensions, FrameData, Color } from '~/domain/types';
 import { toHexColor } from './color';
-import { IS_WORKER } from '../isWorker';
+import { IS_WORKER } from './isWorker';
 import { assert } from './misc';
 
 export const createCanvas = ([width, height]: Dimensions): CanvasData => {

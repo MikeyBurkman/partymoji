@@ -29,9 +29,8 @@ import {
   useSetAlert,
 } from './context/AlertContext';
 import { ProcessorQueueProvider } from './context/ProcessingQueue';
-import { logger } from './domain/logger';
-import { IS_MOBILE } from './domain/isMobile';
-import { IS_DEV } from './domain/modes';
+import { IS_MOBILE } from './domain/utils/isMobile';
+import { logger, IS_DEV } from './domain/utils';
 
 // Number of millis to wait after a change before recomputing the gif
 const COMPUTE_DEBOUNCE_MILLIS = 1000;

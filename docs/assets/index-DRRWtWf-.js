@@ -13,24 +13,6 @@ function _mergeNamespaces(t2, n) {
   }
   return Object.freeze(Object.defineProperty(t2, Symbol.toStringTag, { value: "Module" }));
 }
-(function() {
-  const n = document.createElement("link").relList;
-  if (n && n.supports && n.supports("modulepreload")) return;
-  for (const c of document.querySelectorAll('link[rel="modulepreload"]')) s(c);
-  new MutationObserver((c) => {
-    for (const l of c) if (l.type === "childList") for (const p of l.addedNodes) p.tagName === "LINK" && p.rel === "modulepreload" && s(p);
-  }).observe(document, { childList: true, subtree: true });
-  function o(c) {
-    const l = {};
-    return c.integrity && (l.integrity = c.integrity), c.referrerPolicy && (l.referrerPolicy = c.referrerPolicy), c.crossOrigin === "use-credentials" ? l.credentials = "include" : c.crossOrigin === "anonymous" ? l.credentials = "omit" : l.credentials = "same-origin", l;
-  }
-  function s(c) {
-    if (c.ep) return;
-    c.ep = true;
-    const l = o(c);
-    fetch(c.href, l);
-  }
-})();
 var commonjsGlobal = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : typeof global < "u" ? global : typeof self < "u" ? self : {};
 function getDefaultExportFromCjs$1(t2) {
   return t2 && t2.__esModule && Object.prototype.hasOwnProperty.call(t2, "default") ? t2.default : t2;
@@ -19079,7 +19061,17 @@ function useDebounce({ value: t2, debounceMillis: n, onChange: o }) {
     c(t2);
   }, [t2]), [s, p];
 }
-const MAX_SIZE$1 = 220, calculateDimensions = (t2) => {
+const IS_DEV = false, logLevel = "info", logLevels = ["error", "warn", "info", "debug"];
+console.info("Log level:", logLevel);
+const logLevelIndex = logLevels.indexOf(logLevel), logger = { error: (...t2) => {
+  logLevelIndex >= logLevels.indexOf("error") && console.error(...t2);
+}, warn: (...t2) => {
+  logLevelIndex >= logLevels.indexOf("warn") && console.warn(...t2);
+}, info: (...t2) => {
+  logLevelIndex >= logLevels.indexOf("info") && console.info(...t2);
+}, debug: (...t2) => {
+  logLevelIndex >= logLevels.indexOf("debug") && console.debug(...t2);
+} }, MAX_SIZE$1 = 220, calculateDimensions = (t2) => {
   if (t2 == null) return { maxWidth: `${MAX_SIZE$1}px`, maxHeight: `${MAX_SIZE$1}px`, width: 128 };
   const [n, o] = t2, s = o / n;
   if (n > o) {
@@ -31584,17 +31576,7 @@ const seedrandom = getDefaultExportFromCjs$1(seedrandomExports), lightningIntens
 }, ({ coord: t2, getSrcPixel: n, computed: { colorPalette: o } }) => {
   const s = n(t2);
   return minBy(o, (l) => colorDiff(l, s)) ?? [0, 0, 0, 0];
-}) }), repeatAnimation = buildEffect({ name: "Repeat Animation", group: "Animation", description: "Repeats the current animation some number of times", secondaryDescription: "This can greatly increase the final file size!", requiresAnimation: true, params: [sliderParam({ name: "Number of Repeats", defaultValue: 1, min: 1, max: 50 })], fn: ({ image: t2, parameters: [n] }) => ({ dimensions: t2.dimensions, frames: range$1(0, t2.frames.length * (n + 1)).map((o) => t2.frames[o % t2.frames.length]) }) }), logLevel = "info", logLevels = ["error", "warn", "info", "debug"];
-console.info("Log level:", logLevel);
-const logLevelIndex = logLevels.indexOf(logLevel), logger = { error: (...t2) => {
-  logLevelIndex >= logLevels.indexOf("error") && console.error(...t2);
-}, warn: (...t2) => {
-  logLevelIndex >= logLevels.indexOf("warn") && console.warn(...t2);
-}, info: (...t2) => {
-  logLevelIndex >= logLevels.indexOf("info") && console.info(...t2);
-}, debug: (...t2) => {
-  logLevelIndex >= logLevels.indexOf("debug") && console.debug(...t2);
-} }, resizeImage = buildEffect({ name: "Resize Image", group: "Image", description: "Change the absolute dimensions of the image.", params: [intParam({ name: "Width", description: "Set to 0 when height is set to non-zero to keep the same aspect ratio", defaultValue: (t2) => t2 ? t2.dimensions[0] : 0, min: 0 }), intParam({ name: "Height", description: "Set to 0 when width is set to non-zero to keep the same aspect ratio", defaultValue: (t2) => t2 ? t2.dimensions[1] : 0, min: 0 }), checkboxParam({ name: "Keep scale", description: "If checked, the image will be stretched to fit the new dimensions", defaultValue: false })], fn: ({ image: t2, parameters: [n, o, s] }) => {
+}) }), repeatAnimation = buildEffect({ name: "Repeat Animation", group: "Animation", description: "Repeats the current animation some number of times", secondaryDescription: "This can greatly increase the final file size!", requiresAnimation: true, params: [sliderParam({ name: "Number of Repeats", defaultValue: 1, min: 1, max: 50 })], fn: ({ image: t2, parameters: [n] }) => ({ dimensions: t2.dimensions, frames: range$1(0, t2.frames.length * (n + 1)).map((o) => t2.frames[o % t2.frames.length]) }) }), resizeImage = buildEffect({ name: "Resize Image", group: "Image", description: "Change the absolute dimensions of the image.", params: [intParam({ name: "Width", description: "Set to 0 when height is set to non-zero to keep the same aspect ratio", defaultValue: (t2) => t2 ? t2.dimensions[0] : 0, min: 0 }), intParam({ name: "Height", description: "Set to 0 when width is set to non-zero to keep the same aspect ratio", defaultValue: (t2) => t2 ? t2.dimensions[1] : 0, min: 0 }), checkboxParam({ name: "Keep scale", description: "If checked, the image will be stretched to fit the new dimensions", defaultValue: false })], fn: ({ image: t2, parameters: [n, o, s] }) => {
   logger.info(`Resizing image from ${t2.dimensions[0]}x${t2.dimensions[1]} to ${n}x${o} with keepScale=${s}`);
   const [c, l] = t2.dimensions, p = n === 0 ? Math.ceil(c / l * o) : n, h = o === 0 ? Math.ceil(l / c * n) : o;
   return resizeImage$1({ image: t2, newWidth: p, newHeight: h, keepScale: s });
@@ -33699,7 +33681,7 @@ const initializeWasm = async () => {
   const [s, c] = t2.dimensions, l = new Uint8Array(t2.frames.reduce((h, g) => h + g.length, 0));
   let p = 0;
   for (const h of t2.frames) l.set(h, p), p += h.length;
-  return await initializeWasm(), console.info(" Calling WASM with width: ", s, "height: ", c, "transparentColor: ", n, "fps: ", o, create_gif_data_url), create_gif_data_url(s, c, l, o, n ? new Uint8Array(n) : null);
+  return console.time("Initialize WASM"), await initializeWasm(), console.timeEnd("Initialize WASM"), console.info(" Calling WASM with width: ", s, "height: ", c, "transparentColor: ", n, "fps: ", o, create_gif_data_url), create_gif_data_url(s, c, l, o, n ? new Uint8Array(n) : null);
 }, runEffects = async ({ image: t2, effectInput: n, randomSeed: o, fps: s, useWasm: c }) => {
   const l = seedrandom(o);
   logger.info("Running effect, name:", n.effectName, "params:", n.params, "useWasm:", c);
@@ -33945,9 +33927,9 @@ const computationMap = /* @__PURE__ */ new Map(), handleError = (t2) => (n) => {
 }, runEffectsAsync = async (t2) => new Promise((n, o) => {
   const s = `${Date.now().toString()}-${Math.floor(Math.random() * 1e5).toString()}`;
   computationMap.set(s, { resolve: n, reject: o });
-  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-B2f9C_l6.js", import.meta.url), { type: "module" }));
+  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-Cu6qLzwu.js", import.meta.url), { type: "module" }));
   logger.info("Running effect ASYNC, name:", t2.effectInput.effectName, "params:", t2.effectInput.params, "useWasm:", t2.useWasm, "worker:", c), c.runEffectRPC(t2).then(handleSuccess(s), handleError(s));
-}), IS_DEV = false, computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync, computeGifsForState = async ({ state: t2, startEffectIndex: n, onCompute: o }) => {
+}), computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync, computeGifsForState = async ({ state: t2, startEffectIndex: n, onCompute: o }) => {
   assert$1(t2.baseImage, "No source image, this button should be disabled!");
   let s;
   if (n === 0) s = t2.baseImage.image;

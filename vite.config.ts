@@ -19,12 +19,20 @@ export default defineConfig({
   worker: {
     format: 'es',
     plugins: () => [
+      wasm(),
       comlink(),
       tsconfigPaths(),
       nodePolyfills(),
-      wasm(),
       topLevelAwait(),
     ],
+    rollupOptions: {
+      watch: {},
+    },
   },
   base: '/partymoji',
+  build: {
+    modulePreload: {
+      polyfill: false,
+    },
+  },
 });

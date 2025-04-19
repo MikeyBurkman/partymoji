@@ -33,7 +33,9 @@ export const wasmCreateGif = async ({
     offset += frame.length;
   }
 
+  console.time('Initialize WASM');
   await initializeWasm();
+  console.timeEnd('Initialize WASM');
 
   console.info(
     ' Calling WASM with width: ',

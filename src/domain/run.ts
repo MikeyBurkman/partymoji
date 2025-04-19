@@ -2,10 +2,9 @@ import GIFEncoder from 'gif-encoder';
 import seedrandom from 'seedrandom';
 import { effectByName } from '~/effects';
 import { Color, Image, ImageEffectResult } from './types';
-import { colorUtil, imageUtil, miscUtil } from '~/domain/utils';
+import { colorUtil, imageUtil, miscUtil, logger } from '~/domain/utils';
 import { fakeTransparency } from '~/effects/fake-transparency';
 import { RunArgs } from './RunArgs';
-import { logger } from './logger';
 import { wasmCreateGif } from './wasmGifEncoder';
 
 // Returns a list of gif data URLs, for each effect
