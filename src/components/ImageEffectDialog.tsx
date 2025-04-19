@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import type { EffectInput, ImageEffectResult, AnyEffect } from '~/domain/types';
 import { miscUtil } from '~/domain/utils';
-import { logger } from '~/domain/utils';
+import { logger } from '~/domain/logger';
 import { Gif } from './Gif';
 import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
 import { useProcessingQueue } from '~/context/ProcessingQueue/useProcessingQueue';

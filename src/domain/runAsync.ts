@@ -1,5 +1,5 @@
 import { RunArgs } from './RunArgs';
-import { logger } from './utils';
+import { logger } from './logger';
 import { ImageEffectResult } from './types';
 
 interface Computation {

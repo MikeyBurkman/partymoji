@@ -1,8 +1,10 @@
 import { runEffects } from './run';
 import { runEffectsAsync } from './runAsync';
 import { AppState, Image, ImageEffectResult } from './types';
-import { IS_DEV, IS_MOBILE, logger } from './utils';
+import { IS_MOBILE } from './isMobile';
+import { IS_DEV } from './modes';
 import { miscUtil } from './utils';
+import { logger } from '~/domain/logger';
 
 // OffscreenCanvas isn't supported by mobile browsers, so mobile will also run synchronously,
 //  which will force us to use regular canvas and not OffscreenCanvas.

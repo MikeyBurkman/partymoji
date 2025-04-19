@@ -1,4 +1,4 @@
-import { logger } from './utils';
+import { logger } from './logger';
 import { runEffects } from './run';
 import { RunArgs } from './RunArgs';
 import { ImageEffectResult } from './types';

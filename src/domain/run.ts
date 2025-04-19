@@ -5,7 +5,7 @@ import { Color, Image, ImageEffectResult } from './types';
 import { colorUtil, imageUtil, miscUtil } from '~/domain/utils';
 import { fakeTransparency } from '~/effects/fake-transparency';
 import { RunArgs } from './RunArgs';
-import { logger } from './utils';
+import { logger } from './logger';
 import { wasmCreateGif } from './wasmGifEncoder';
 
 // Returns a list of gif data URLs, for each effect

@@ -19,7 +19,6 @@ import { Icon } from '~/components/Icon';
 import { computeGifsForState, getEffectsDiff } from '~/domain/computeGifs';
 import type { AppState, AppStateEffect } from '~/domain/types';
 import { miscUtil } from '~/domain/utils';
-import { IS_DEV, IS_MOBILE, logger } from './domain/utils';
 
 import * as localStorage from '~/localStorage';
 import { sliderParam } from '~/params/sliderParam';
@@ -30,6 +29,9 @@ import {
   useSetAlert,
 } from './context/AlertContext';
 import { ProcessorQueueProvider } from './context/ProcessingQueue';
+import { logger } from './domain/logger';
+import { IS_MOBILE } from './domain/isMobile';
+import { IS_DEV } from './domain/modes';
 
 // Number of millis to wait after a change before recomputing the gif
 const COMPUTE_DEBOUNCE_MILLIS = 1000;

@@ -3,7 +3,7 @@ import { computeGif } from '~/domain/computeGifs';
 import { RunArgs } from '~/domain/RunArgs';
 import type { ImageEffectResult } from '~/domain/types';
 import { ProcessorQueueContext } from './ProcessorQueueContext';
-import { logger } from '~/domain/utils';
+import { logger } from '~/domain/logger';
 
 const getRunId = () => Math.floor(Math.random() * 100000);
 

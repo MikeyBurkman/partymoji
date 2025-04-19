@@ -19079,18 +19079,119 @@ function useDebounce({ value: t2, debounceMillis: n, onChange: o }) {
     c(t2);
   }, [t2]), [s, p];
 }
-const logLevel = "info", logLevels = ["error", "warn", "info", "debug"];
-console.info("Log level:", logLevel);
-const logLevelIndex = logLevels.indexOf(logLevel), logger = { error: (...t2) => {
-  logLevelIndex >= logLevels.indexOf("error") && console.error(...t2);
-}, warn: (...t2) => {
-  logLevelIndex >= logLevels.indexOf("warn") && console.warn(...t2);
-}, info: (...t2) => {
-  logLevelIndex >= logLevels.indexOf("info") && console.info(...t2);
-}, debug: (...t2) => {
-  logLevelIndex >= logLevels.indexOf("debug") && console.debug(...t2);
-} };
-var mobileDetect = { exports: {} }, hasRequiredMobileDetect;
+const MAX_SIZE$1 = 220, calculateDimensions = (t2) => {
+  if (t2 == null) return { maxWidth: `${MAX_SIZE$1}px`, maxHeight: `${MAX_SIZE$1}px`, width: 128 };
+  const [n, o] = t2, s = o / n;
+  if (n > o) {
+    const c = MAX_SIZE$1, l = s * MAX_SIZE$1;
+    return { maxWidth: `${c}px`, maxHeight: `${l}px`, width: 128, height: 128 * s };
+  } else {
+    const c = MAX_SIZE$1, l = 1 / s * MAX_SIZE$1;
+    return { maxHeight: `${c}px`, maxWidth: `${l}px`, width: 128, height: 128 * s };
+  }
+}, Gif = ({ src: t2, alt: n, dimensions: o }) => jsxRuntimeExports.jsx("img", { src: t2, alt: `gif-${n}`, style: calculateDimensions(o) }), parseFileName = (t2) => {
+  const n = t2.split("/");
+  return n[n.length - 1];
+}, ImagePicker = ({ currentImage: t2, onChange: n }) => {
+  const [o, s] = React.useState(), c = async (p) => {
+    const h = p.target.value;
+    try {
+      if (s(void 0), h.startsWith("data:")) {
+        const { image: y, fps: B } = await readImage(h);
+        n({ gif: h, image: y, gifWithBackgroundColor: h, partiallyTransparent: isPartiallyTransparent(y) }, "image", B);
+        return;
+      }
+      if (!isUrl(h)) {
+        s("Does not appear to be a valid URL");
+        return;
+      }
+      const g = await getImageFromUrl(h), { image: b, fps: v } = await readImage(g);
+      n({ gif: g, image: b, gifWithBackgroundColor: g, partiallyTransparent: isPartiallyTransparent(b) }, parseFileName(h), v);
+    } catch (g) {
+      console.error("Error importing url", g), s("Error importing url");
+    }
+  }, l = async (p) => {
+    var _a;
+    const h = (_a = p.target.files) == null ? void 0 : _a.item(0);
+    if (h) {
+      const { dataUrl: g, image: b, fps: v } = await readImage(h);
+      n({ gif: g, image: b, gifWithBackgroundColor: g, partiallyTransparent: isPartiallyTransparent(b) }, parseFileName(h.name), v);
+    }
+  };
+  return jsxRuntimeExports.jsxs(Stack, { spacing: 2, alignItems: "center", children: [jsxRuntimeExports.jsx(Stack, { direction: "row", children: jsxRuntimeExports.jsx(TextField, { label: "URL", variant: "outlined", fullWidth: true, error: !!o, helperText: o, onBlur: (p) => void c(p) }) }), jsxRuntimeExports.jsx(Box, { children: "OR" }), jsxRuntimeExports.jsxs(Button, { startIcon: jsxRuntimeExports.jsx(Icon, { name: "Image" }), sx: { maxWidth: "300px" }, variant: "contained", component: "label", children: ["Upload an Image", jsxRuntimeExports.jsx("input", { type: "file", hidden: true, accept: "image/png,image/jpg,image/jpeg,image/gif", name: "source-image", onChange: (p) => void l(p) })] }), t2 && jsxRuntimeExports.jsx(Gif, { src: t2.gif, dimensions: t2.image.dimensions, alt: "Source" })] });
+};
+var FileSaver_min$1 = { exports: {} }, FileSaver_min = FileSaver_min$1.exports, hasRequiredFileSaver_min;
+function requireFileSaver_min() {
+  return hasRequiredFileSaver_min || (hasRequiredFileSaver_min = 1, function(t2, n) {
+    (function(o, s) {
+      s();
+    })(FileSaver_min, function() {
+      function o(b, v) {
+        return typeof v > "u" ? v = { autoBom: false } : typeof v != "object" && (console.warn("Deprecated: Expected third argument to be a object"), v = { autoBom: !v }), v.autoBom && /^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(b.type) ? new Blob(["\uFEFF", b], { type: b.type }) : b;
+      }
+      function s(b, v, y) {
+        var B = new XMLHttpRequest();
+        B.open("GET", b), B.responseType = "blob", B.onload = function() {
+          g(B.response, v, y);
+        }, B.onerror = function() {
+          console.error("could not download file");
+        }, B.send();
+      }
+      function c(b) {
+        var v = new XMLHttpRequest();
+        v.open("HEAD", b, false);
+        try {
+          v.send();
+        } catch {
+        }
+        return 200 <= v.status && 299 >= v.status;
+      }
+      function l(b) {
+        try {
+          b.dispatchEvent(new MouseEvent("click"));
+        } catch {
+          var v = document.createEvent("MouseEvents");
+          v.initMouseEvent("click", true, true, window, 0, 0, 0, 80, 20, false, false, false, false, 0, null), b.dispatchEvent(v);
+        }
+      }
+      var p = typeof window == "object" && window.window === window ? window : typeof self == "object" && self.self === self ? self : typeof commonjsGlobal == "object" && commonjsGlobal.global === commonjsGlobal ? commonjsGlobal : void 0, h = p.navigator && /Macintosh/.test(navigator.userAgent) && /AppleWebKit/.test(navigator.userAgent) && !/Safari/.test(navigator.userAgent), g = p.saveAs || (typeof window != "object" || window !== p ? function() {
+      } : "download" in HTMLAnchorElement.prototype && !h ? function(b, v, y) {
+        var B = p.URL || p.webkitURL, x = document.createElement("a");
+        v = v || b.name || "download", x.download = v, x.rel = "noopener", typeof b == "string" ? (x.href = b, x.origin === location.origin ? l(x) : c(x.href) ? s(b, v, y) : l(x, x.target = "_blank")) : (x.href = B.createObjectURL(b), setTimeout(function() {
+          B.revokeObjectURL(x.href);
+        }, 4e4), setTimeout(function() {
+          l(x);
+        }, 0));
+      } : "msSaveOrOpenBlob" in navigator ? function(b, v, y) {
+        if (v = v || b.name || "download", typeof b != "string") navigator.msSaveOrOpenBlob(o(b, y), v);
+        else if (c(b)) s(b, v, y);
+        else {
+          var B = document.createElement("a");
+          B.href = b, B.target = "_blank", setTimeout(function() {
+            l(B);
+          });
+        }
+      } : function(b, v, y, B) {
+        if (B = B || open("", "_blank"), B && (B.document.title = B.document.body.innerText = "downloading..."), typeof b == "string") return s(b, v, y);
+        var x = b.type === "application/octet-stream", C = /constructor/i.test(p.HTMLElement) || p.safari, S = /CriOS\/[\d]+/.test(navigator.userAgent);
+        if ((S || x && C || h) && typeof FileReader < "u") {
+          var Q = new FileReader();
+          Q.onloadend = function() {
+            var N = Q.result;
+            N = S ? N : N.replace(/^data:[^;]*;/, "data:attachment/file;"), B ? B.location.href = N : location = N, B = null;
+          }, Q.readAsDataURL(b);
+        } else {
+          var P = p.URL || p.webkitURL, H = P.createObjectURL(b);
+          B ? B.location = H : location.href = H, B = null, setTimeout(function() {
+            P.revokeObjectURL(H);
+          }, 4e4);
+        }
+      });
+      p.saveAs = g.saveAs = g, t2.exports = g;
+    });
+  }(FileSaver_min$1)), FileSaver_min$1.exports;
+}
+var FileSaver_minExports = requireFileSaver_min(), mobileDetect = { exports: {} }, hasRequiredMobileDetect;
 function requireMobileDetect() {
   return hasRequiredMobileDetect || (hasRequiredMobileDetect = 1, function(t2) {
     /*!mobile-detect v1.4.5 2021-03-13*/
@@ -19213,120 +19314,7 @@ function requireMobileDetect() {
   }(mobileDetect)), mobileDetect.exports;
 }
 var mobileDetectExports = requireMobileDetect();
-const MobileDetect = getDefaultExportFromCjs$1(mobileDetectExports), IS_MOBILE = new MobileDetect(window.navigator.userAgent).mobile() != null, IS_DEV = false, MAX_SIZE$1 = 220, calculateDimensions = (t2) => {
-  if (t2 == null) return { maxWidth: `${MAX_SIZE$1}px`, maxHeight: `${MAX_SIZE$1}px`, width: 128 };
-  const [n, o] = t2, s = o / n;
-  if (n > o) {
-    const c = MAX_SIZE$1, l = s * MAX_SIZE$1;
-    return { maxWidth: `${c}px`, maxHeight: `${l}px`, width: 128, height: 128 * s };
-  } else {
-    const c = MAX_SIZE$1, l = 1 / s * MAX_SIZE$1;
-    return { maxHeight: `${c}px`, maxWidth: `${l}px`, width: 128, height: 128 * s };
-  }
-}, Gif = ({ src: t2, alt: n, dimensions: o }) => jsxRuntimeExports.jsx("img", { src: t2, alt: `gif-${n}`, style: calculateDimensions(o) }), parseFileName = (t2) => {
-  const n = t2.split("/");
-  return n[n.length - 1];
-}, ImagePicker = ({ currentImage: t2, onChange: n }) => {
-  const [o, s] = React.useState(), c = async (p) => {
-    const h = p.target.value;
-    try {
-      if (s(void 0), h.startsWith("data:")) {
-        const { image: y, fps: B } = await readImage(h);
-        n({ gif: h, image: y, gifWithBackgroundColor: h, partiallyTransparent: isPartiallyTransparent(y) }, "image", B);
-        return;
-      }
-      if (!isUrl(h)) {
-        s("Does not appear to be a valid URL");
-        return;
-      }
-      const g = await getImageFromUrl(h), { image: b, fps: v } = await readImage(g);
-      n({ gif: g, image: b, gifWithBackgroundColor: g, partiallyTransparent: isPartiallyTransparent(b) }, parseFileName(h), v);
-    } catch (g) {
-      console.error("Error importing url", g), s("Error importing url");
-    }
-  }, l = async (p) => {
-    var _a;
-    const h = (_a = p.target.files) == null ? void 0 : _a.item(0);
-    if (h) {
-      const { dataUrl: g, image: b, fps: v } = await readImage(h);
-      n({ gif: g, image: b, gifWithBackgroundColor: g, partiallyTransparent: isPartiallyTransparent(b) }, parseFileName(h.name), v);
-    }
-  };
-  return jsxRuntimeExports.jsxs(Stack, { spacing: 2, alignItems: "center", children: [jsxRuntimeExports.jsx(Stack, { direction: "row", children: jsxRuntimeExports.jsx(TextField, { label: "URL", variant: "outlined", fullWidth: true, error: !!o, helperText: o, onBlur: (p) => void c(p) }) }), jsxRuntimeExports.jsx(Box, { children: "OR" }), jsxRuntimeExports.jsxs(Button, { startIcon: jsxRuntimeExports.jsx(Icon, { name: "Image" }), sx: { maxWidth: "300px" }, variant: "contained", component: "label", children: ["Upload an Image", jsxRuntimeExports.jsx("input", { type: "file", hidden: true, accept: "image/png,image/jpg,image/jpeg,image/gif", name: "source-image", onChange: (p) => void l(p) })] }), t2 && jsxRuntimeExports.jsx(Gif, { src: t2.gif, dimensions: t2.image.dimensions, alt: "Source" })] });
-};
-var FileSaver_min$1 = { exports: {} }, FileSaver_min = FileSaver_min$1.exports, hasRequiredFileSaver_min;
-function requireFileSaver_min() {
-  return hasRequiredFileSaver_min || (hasRequiredFileSaver_min = 1, function(t2, n) {
-    (function(o, s) {
-      s();
-    })(FileSaver_min, function() {
-      function o(b, v) {
-        return typeof v > "u" ? v = { autoBom: false } : typeof v != "object" && (console.warn("Deprecated: Expected third argument to be a object"), v = { autoBom: !v }), v.autoBom && /^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(b.type) ? new Blob(["\uFEFF", b], { type: b.type }) : b;
-      }
-      function s(b, v, y) {
-        var B = new XMLHttpRequest();
-        B.open("GET", b), B.responseType = "blob", B.onload = function() {
-          g(B.response, v, y);
-        }, B.onerror = function() {
-          console.error("could not download file");
-        }, B.send();
-      }
-      function c(b) {
-        var v = new XMLHttpRequest();
-        v.open("HEAD", b, false);
-        try {
-          v.send();
-        } catch {
-        }
-        return 200 <= v.status && 299 >= v.status;
-      }
-      function l(b) {
-        try {
-          b.dispatchEvent(new MouseEvent("click"));
-        } catch {
-          var v = document.createEvent("MouseEvents");
-          v.initMouseEvent("click", true, true, window, 0, 0, 0, 80, 20, false, false, false, false, 0, null), b.dispatchEvent(v);
-        }
-      }
-      var p = typeof window == "object" && window.window === window ? window : typeof self == "object" && self.self === self ? self : typeof commonjsGlobal == "object" && commonjsGlobal.global === commonjsGlobal ? commonjsGlobal : void 0, h = p.navigator && /Macintosh/.test(navigator.userAgent) && /AppleWebKit/.test(navigator.userAgent) && !/Safari/.test(navigator.userAgent), g = p.saveAs || (typeof window != "object" || window !== p ? function() {
-      } : "download" in HTMLAnchorElement.prototype && !h ? function(b, v, y) {
-        var B = p.URL || p.webkitURL, x = document.createElement("a");
-        v = v || b.name || "download", x.download = v, x.rel = "noopener", typeof b == "string" ? (x.href = b, x.origin === location.origin ? l(x) : c(x.href) ? s(b, v, y) : l(x, x.target = "_blank")) : (x.href = B.createObjectURL(b), setTimeout(function() {
-          B.revokeObjectURL(x.href);
-        }, 4e4), setTimeout(function() {
-          l(x);
-        }, 0));
-      } : "msSaveOrOpenBlob" in navigator ? function(b, v, y) {
-        if (v = v || b.name || "download", typeof b != "string") navigator.msSaveOrOpenBlob(o(b, y), v);
-        else if (c(b)) s(b, v, y);
-        else {
-          var B = document.createElement("a");
-          B.href = b, B.target = "_blank", setTimeout(function() {
-            l(B);
-          });
-        }
-      } : function(b, v, y, B) {
-        if (B = B || open("", "_blank"), B && (B.document.title = B.document.body.innerText = "downloading..."), typeof b == "string") return s(b, v, y);
-        var x = b.type === "application/octet-stream", C = /constructor/i.test(p.HTMLElement) || p.safari, S = /CriOS\/[\d]+/.test(navigator.userAgent);
-        if ((S || x && C || h) && typeof FileReader < "u") {
-          var Q = new FileReader();
-          Q.onloadend = function() {
-            var N = Q.result;
-            N = S ? N : N.replace(/^data:[^;]*;/, "data:attachment/file;"), B ? B.location.href = N : location = N, B = null;
-          }, Q.readAsDataURL(b);
-        } else {
-          var P = p.URL || p.webkitURL, H = P.createObjectURL(b);
-          B ? B.location = H : location.href = H, B = null, setTimeout(function() {
-            P.revokeObjectURL(H);
-          }, 4e4);
-        }
-      });
-      p.saveAs = g.saveAs = g, t2.exports = g;
-    });
-  }(FileSaver_min$1)), FileSaver_min$1.exports;
-}
-var FileSaver_minExports = requireFileSaver_min();
-const HtmlTooltip = styled(({ className: t2, ...n }) => jsxRuntimeExports.jsx(Tooltip$1, { ...n, classes: { popper: t2 } }))(({ theme: t2 }) => ({ [`& .${tooltipClasses.tooltip}`]: { maxWidth: 220, fontSize: t2.typography.pxToRem(12), border: "1px solid #dadde9" } })), COLOR_MAP = { help: "#666666", info: "#9c27b0", warning: "#ed6c02" }, ICON_COMPONENT_MAP = { help: Help$1, info: Info, warning: Warning }, Tooltip = ({ kind: t2, description: n }) => {
+const MobileDetect = getDefaultExportFromCjs$1(mobileDetectExports), IS_MOBILE = new MobileDetect(window.navigator.userAgent).mobile() != null, HtmlTooltip = styled(({ className: t2, ...n }) => jsxRuntimeExports.jsx(Tooltip$1, { ...n, classes: { popper: t2 } }))(({ theme: t2 }) => ({ [`& .${tooltipClasses.tooltip}`]: { maxWidth: 220, fontSize: t2.typography.pxToRem(12), border: "1px solid #dadde9" } })), COLOR_MAP = { help: "#666666", info: "#9c27b0", warning: "#ed6c02" }, ICON_COMPONENT_MAP = { help: Help$1, info: Info, warning: Warning }, Tooltip = ({ kind: t2, description: n }) => {
   if (!n) return null;
   const o = ICON_COMPONENT_MAP[t2], s = typeof n == "string" ? HtmlTooltip : Tooltip$1;
   return jsxRuntimeExports.jsx(s, { title: n, children: jsxRuntimeExports.jsx(o, { htmlColor: COLOR_MAP[t2] }) });
@@ -31596,7 +31584,17 @@ const seedrandom = getDefaultExportFromCjs$1(seedrandomExports), lightningIntens
 }, ({ coord: t2, getSrcPixel: n, computed: { colorPalette: o } }) => {
   const s = n(t2);
   return minBy(o, (l) => colorDiff(l, s)) ?? [0, 0, 0, 0];
-}) }), repeatAnimation = buildEffect({ name: "Repeat Animation", group: "Animation", description: "Repeats the current animation some number of times", secondaryDescription: "This can greatly increase the final file size!", requiresAnimation: true, params: [sliderParam({ name: "Number of Repeats", defaultValue: 1, min: 1, max: 50 })], fn: ({ image: t2, parameters: [n] }) => ({ dimensions: t2.dimensions, frames: range$1(0, t2.frames.length * (n + 1)).map((o) => t2.frames[o % t2.frames.length]) }) }), resizeImage = buildEffect({ name: "Resize Image", group: "Image", description: "Change the absolute dimensions of the image.", params: [intParam({ name: "Width", description: "Set to 0 when height is set to non-zero to keep the same aspect ratio", defaultValue: (t2) => t2 ? t2.dimensions[0] : 0, min: 0 }), intParam({ name: "Height", description: "Set to 0 when width is set to non-zero to keep the same aspect ratio", defaultValue: (t2) => t2 ? t2.dimensions[1] : 0, min: 0 }), checkboxParam({ name: "Keep scale", description: "If checked, the image will be stretched to fit the new dimensions", defaultValue: false })], fn: ({ image: t2, parameters: [n, o, s] }) => {
+}) }), repeatAnimation = buildEffect({ name: "Repeat Animation", group: "Animation", description: "Repeats the current animation some number of times", secondaryDescription: "This can greatly increase the final file size!", requiresAnimation: true, params: [sliderParam({ name: "Number of Repeats", defaultValue: 1, min: 1, max: 50 })], fn: ({ image: t2, parameters: [n] }) => ({ dimensions: t2.dimensions, frames: range$1(0, t2.frames.length * (n + 1)).map((o) => t2.frames[o % t2.frames.length]) }) }), logLevel = "info", logLevels = ["error", "warn", "info", "debug"];
+console.info("Log level:", logLevel);
+const logLevelIndex = logLevels.indexOf(logLevel), logger = { error: (...t2) => {
+  logLevelIndex >= logLevels.indexOf("error") && console.error(...t2);
+}, warn: (...t2) => {
+  logLevelIndex >= logLevels.indexOf("warn") && console.warn(...t2);
+}, info: (...t2) => {
+  logLevelIndex >= logLevels.indexOf("info") && console.info(...t2);
+}, debug: (...t2) => {
+  logLevelIndex >= logLevels.indexOf("debug") && console.debug(...t2);
+} }, resizeImage = buildEffect({ name: "Resize Image", group: "Image", description: "Change the absolute dimensions of the image.", params: [intParam({ name: "Width", description: "Set to 0 when height is set to non-zero to keep the same aspect ratio", defaultValue: (t2) => t2 ? t2.dimensions[0] : 0, min: 0 }), intParam({ name: "Height", description: "Set to 0 when width is set to non-zero to keep the same aspect ratio", defaultValue: (t2) => t2 ? t2.dimensions[1] : 0, min: 0 }), checkboxParam({ name: "Keep scale", description: "If checked, the image will be stretched to fit the new dimensions", defaultValue: false })], fn: ({ image: t2, parameters: [n, o, s] }) => {
   logger.info(`Resizing image from ${t2.dimensions[0]}x${t2.dimensions[1]} to ${n}x${o} with keepScale=${s}`);
   const [c, l] = t2.dimensions, p = n === 0 ? Math.ceil(c / l * o) : n, h = o === 0 ? Math.ceil(l / c * n) : o;
   return resizeImage$1({ image: t2, newWidth: p, newHeight: h, keepScale: s });
@@ -33947,9 +33945,9 @@ const computationMap = /* @__PURE__ */ new Map(), handleError = (t2) => (n) => {
 }, runEffectsAsync = async (t2) => new Promise((n, o) => {
   const s = `${Date.now().toString()}-${Math.floor(Math.random() * 1e5).toString()}`;
   computationMap.set(s, { resolve: n, reject: o });
-  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-hLVwo2iQ.js", import.meta.url), { type: "module" }));
+  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-B2f9C_l6.js", import.meta.url), { type: "module" }));
   logger.info("Running effect ASYNC, name:", t2.effectInput.effectName, "params:", t2.effectInput.params, "useWasm:", t2.useWasm, "worker:", c), c.runEffectRPC(t2).then(handleSuccess(s), handleError(s));
-}), computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync, computeGifsForState = async ({ state: t2, startEffectIndex: n, onCompute: o }) => {
+}), IS_DEV = false, computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync, computeGifsForState = async ({ state: t2, startEffectIndex: n, onCompute: o }) => {
   assert$1(t2.baseImage, "No source image, this button should be disabled!");
   let s;
   if (n === 0) s = t2.baseImage.image;

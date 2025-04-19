@@ -1,7 +1,7 @@
 import { imageUtil } from '~/domain/utils';
 import { checkboxParam, intParam } from '~/params';
 import { buildEffect } from './utils';
-import { logger } from '~/domain/utils';
+import { logger } from '~/domain/logger';
 
 export const resizeImage = buildEffect({
   name: 'Resize Image',
