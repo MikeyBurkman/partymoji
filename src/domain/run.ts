@@ -20,7 +20,6 @@ export const runEffects = async ({
   const effect = effectByName(effectInput.effectName);
   const result = await effect.fn({
     image,
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     parameters: effectInput.params,
     random,
   });
