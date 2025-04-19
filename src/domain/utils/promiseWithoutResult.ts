@@ -15,11 +15,11 @@
  *   return "data";
  * }
  *
- * const fetchDataWithoutResult = voidPromise(fetchData);
+ * const fetchDataWithoutResult = promiseWithoutResult(fetchData);
  * fetchDataWithoutResult("https://example.com"); // The result of fetchData is ignored.
  * ```
  */
-export function promiseWithoutResult<ARGS extends unknown[]>(
+export function promiseWithoutResult<ARGS extends Array<unknown>>(
   fn: (...args: ARGS) => Promise<unknown>,
 ): (...args: ARGS) => void {
   return (...args) => {
