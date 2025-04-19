@@ -1,7 +1,18 @@
 import { Color, Image } from './types';
-import { create_gif_data_url } from 'gif_encoder_wasm';
+import init, { create_gif_data_url } from '@wasm/gif_encoder_wasm';
 
-export const wasmCreateGif = ({
+let initialized = false;
+
+const initializeWasm = async () => {
+  if (initialized) {
+    return;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  await init();
+  initialized = true;
+};
+
+export const wasmCreateGif = async ({
   image,
   transparentColor,
   fps,
@@ -9,7 +20,7 @@ export const wasmCreateGif = ({
   image: Image;
   transparentColor: Color | undefined;
   fps: number;
-}): string => {
+}): Promise<string> => {
   console.info('Creating GIF with WASM');
   const [width, height] = image.dimensions;
 
@@ -22,6 +33,8 @@ export const wasmCreateGif = ({
     offset += frame.length;
   }
 
+  await initializeWasm();
+
   console.info(
     ' Calling WASM with width: ',
     width,
@@ -31,8 +44,10 @@ export const wasmCreateGif = ({
     transparentColor,
     'fps: ',
     fps,
+    create_gif_data_url,
   );
 
+  // eslint-disable-next-line
   return create_gif_data_url(
     width,
     height,

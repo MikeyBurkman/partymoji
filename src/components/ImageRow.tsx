@@ -11,7 +11,6 @@ import { Gif } from './Gif';
 import { CanvasElement } from '~/domain/utils';
 import { drawImageOnCanvas, applyTransform } from '~/domain/utils/canvas';
 import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
-import { logger } from '~/domain/logger';
 
 const MAX_SIZE = 128;
 
@@ -142,8 +141,6 @@ interface ImageRowProps {
 
 export const ImageRow: React.FC<ImageRowProps> = ({ appStateEffect }) => {
   if (appStateEffect.state.status !== 'done') {
-    logger.debug('ImageRow - status = ', appStateEffect.state.status);
-    debugger;
     return <CircularProgress />;
   }
 

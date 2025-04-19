@@ -19,9 +19,7 @@ import { Icon } from '~/components/Icon';
 import { computeGifsForState, getEffectsDiff } from '~/domain/computeGifs';
 import type { AppState, AppStateEffect } from '~/domain/types';
 import { miscUtil } from '~/domain/utils';
-import { IS_DEV } from '~/domain/modes';
-import { IS_MOBILE } from './domain/isMobile';
-import { logger } from './domain/logger';
+import { IS_DEV, IS_MOBILE, logger } from './domain/utils';
 
 import * as localStorage from '~/localStorage';
 import { sliderParam } from '~/params/sliderParam';
