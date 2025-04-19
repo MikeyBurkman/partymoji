@@ -20,7 +20,8 @@
     "copy-docs": "rimraf docs && cp -R dist docs",
     "pretty": "prettier --write \"**/*.{js,md,ts,html,tsx,json}\"",
     "preinstall": "npx --yes only-allow pnpm",
-    "prepare": "husky"
+    "prepare": "husky",
+    "clean": "rimraf dist docs gif/**/{pkg,target}"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -32,6 +33,7 @@
     "@types/seedrandom": "^3.0.8",
     "bezier-easing": "^2.1.0",
     "color-convert": "^3.0.1",
+    "comlink": "^4.4.2",
     "file-saver": "^2.0.5",
     "get-pixels": "^3.3.3",
     "gif-encoder": "^0.7.2",
@@ -65,6 +67,7 @@
     "typescript": "~5.7.3",
     "typescript-eslint": "^8.30.1",
     "vite": "^6.3.1",
+    "vite-plugin-comlink": "^5.1.0",
     "vite-plugin-node-polyfills": "^0.23.0",
     "vite-plugin-top-level-await": "^1.5.0",
     "vite-tsconfig-paths": "^5.1.4"

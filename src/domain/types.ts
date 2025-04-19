@@ -178,20 +178,6 @@ export type ImageEffectResult = {
     }
 );
 
-export interface AsyncRunErrorMessage {
-  status: 'error';
-  /** The error message, if any */
-  error?: unknown;
-}
-
-export interface AsyncRunSuccessMessage {
-  status: 'complete';
-  /** The result of the effect */
-  result: ImageEffectResult;
-}
-
-export type AsyncRunMessage = AsyncRunErrorMessage | AsyncRunSuccessMessage;
-
 export interface CanvasData {
   canvas: OffscreenCanvas | HTMLCanvasElement;
   ctx: OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D;

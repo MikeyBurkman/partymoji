@@ -38,6 +38,6 @@ export const wasmCreateGif = ({
     height,
     flattenedFrames,
     fps,
-    transparentColor && new Uint8Array(transparentColor),
+    transparentColor ? new Uint8Array(transparentColor) : null,
   );
 };

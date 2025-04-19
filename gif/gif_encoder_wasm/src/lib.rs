@@ -1,8 +1,7 @@
 use base64::{Engine, engine::general_purpose::STANDARD as BASE64_STANDARD};
+use console_error_panic_hook;
 use js_sys::Uint8Array;
 use wasm_bindgen::prelude::*;
-extern crate web_sys;
-use console_error_panic_hook;
 use web_sys::console;
 
 #[wasm_bindgen(start)]
@@ -30,13 +29,7 @@ pub fn create_gif_data_url(
     );
 
     // Start timing
-    let start_time = web_sys::window()
-        .expect("should have a Window")
-        .performance()
-        .expect("should have a Performance")
-        .now();
-
-    // Convert Uint8Array to Vec<u8>
+    console::time();
     let frames_vec = frames.to_vec();
 
     // Handle the optional transparent color
@@ -57,20 +50,8 @@ pub fn create_gif_data_url(
     let data_url = format!("data:image/gif;base64,{}", base64_encoded);
 
     // End timing
-    let end_time = web_sys::window()
-        .expect("should have a Window")
-        .performance()
-        .expect("should have a Performance")
-        .now();
+    console::time_end();
 
-    // Log the elapsed time
-    console::info_1(
-        &format!(
-            "WASM: GIF creation and encoding took {} ms",
-            end_time - start_time
-        )
-        .into(),
-    );
     // Return the data URL as a String
     data_url
 }
