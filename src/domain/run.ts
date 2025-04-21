@@ -1,8 +1,7 @@
-import GIFEncoder from 'gif-encoder';
 import seedrandom from 'seedrandom';
 import { effectByName } from '~/effects';
 import { Color, Image, ImageEffectResult } from './types';
-import { colorUtil, imageUtil, miscUtil, logger } from '~/domain/utils';
+import { colorUtil, imageUtil, logger } from '~/domain/utils';
 import { fakeTransparency } from '~/effects/fake-transparency';
 import { RunArgs } from './RunArgs';
 import { wasmCreateGif } from './wasmGifEncoder';
@@ -13,12 +12,19 @@ export const runEffects = async ({
   effectInput,
   randomSeed,
   fps,
-  useWasm,
+  useAlternateGifGenerator,
 }: RunArgs): Promise<ImageEffectResult> => {
   const random = seedrandom(randomSeed);
 
-  logger.info('Running effect, name:', effectInput.effectName, 'params:', effectInput.params, 'useWasm:', useWasm);
-  
+  logger.info(
+    'Running effect, name:',
+    effectInput.effectName,
+    'params:',
+    effectInput.params,
+    'useAlternateGifGenerator:',
+    useAlternateGifGenerator,
+  );
+
   const effect = effectByName(effectInput.effectName);
   const result = await effect.fn({
     image,
@@ -38,7 +44,7 @@ export const runEffects = async ({
     image: encodeTransparency(result, transparentColor),
     transparentColor,
     fps,
-    useWasm,
+    useAlternateGifGenerator,
   });
 
   const endTime = performance.now();
@@ -59,7 +65,7 @@ export const runEffects = async ({
         image: resultWithBG,
         transparentColor: undefined,
         fps,
-        useWasm,
+        useAlternateGifGenerator,
       }),
     };
   } else {
@@ -83,7 +89,7 @@ export const runEffects = async ({
               image: resultWithBG,
               transparentColor: undefined,
               fps,
-              useWasm,
+              useAlternateGifGenerator,
             }),
     };
   }
@@ -129,54 +135,27 @@ const createGif = async ({
   image,
   transparentColor,
   fps,
-  useWasm,
+  useAlternateGifGenerator,
 }: {
   image: Image;
   transparentColor: Color | undefined;
   fps: number;
-  useWasm: boolean;
+  useAlternateGifGenerator: boolean;
 }): Promise<string> => {
+  logger.debug(
+    'Creating GIF with dimensions:',
+    image.dimensions,
+    'fps:',
+    fps,
+    'useAlternateGifGenerator:',
+    useAlternateGifGenerator,
+  );
 
-  logger.debug('Creating GIF with dimensions:', image.dimensions, 'fps:', fps, 'useWasm:', useWasm);
-  
-  if (useWasm) {
-    return wasmCreateGif({
-      image,
-      transparentColor,
-      fps,
-    });
-  }
-
-  return new Promise<string>((resolve) => {
-    const [width, height] = image.dimensions;
-    const gif: GIFEncoder = new GIFEncoder(width, height);
-
-    gif.setFrameRate(fps);
-    gif.setRepeat(0); // Loop indefinitely
-
-    // gif.setQuality(10);
-    gif.writeHeader();
-
-    if (transparentColor) {
-      // Need to convert '#RRGGBB' to '0xRRGGBB'
-      const hexColor = colorUtil.toHexColor(transparentColor).slice(1);
-      gif.setTransparent(Number(`0x${hexColor}`));
-    }
-
-    const data: Array<Buffer> = [];
-    gif.on('data', (chunk: Buffer) => {
-      data.push(chunk);
-    });
-    gif.once('end', () => {
-      const blob = new Blob(data, { type: 'image/gif' });
-      void miscUtil.blobOrFileToDataUrl(blob).then(resolve);
-    });
-
-    image.frames.forEach((f) => {
-      gif.addFrame(f);
-    });
-
-    gif.finish();
+  return wasmCreateGif({
+    image,
+    transparentColor,
+    fps,
+    useAlternateGifGenerator,
   });
 };
 

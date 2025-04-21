@@ -2,7 +2,7 @@ const LOG_LEVELS = ['error', 'warn', 'info', 'debug'] as const;
 type LogLevel = (typeof LOG_LEVELS)[number];
 
 const logLevel =
-  (import.meta.env.VITE_LOG_LEVEL as LogLevel | undefined) ?? 'info';
+  (import.meta.env.VITE_LOG_LEVEL as LogLevel | undefined) ?? 'debug';
 
 const logLevelIndex = LOG_LEVELS.indexOf(logLevel);
 

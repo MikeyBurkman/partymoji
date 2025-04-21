@@ -14,9 +14,9 @@ pub fn create_gif(
     {
         let mut encoder = GifEncoder::new_with_speed(&mut buffer, 20);
         encoder
-        .set_repeat(Repeat::Infinite)
-        .map_err(|e| GifCreationError::EncodingError(e.to_string()))?;
-        
+            .set_repeat(Repeat::Infinite)
+            .map_err(|e| GifCreationError::EncodingError(e.to_string()))?;
+
         let frame_size = (width * height * 4) as usize;
         let frame_count = frames.len() / frame_size;
         let frame_delay = image::Delay::from_numer_denom_ms(1000, fps as u32);

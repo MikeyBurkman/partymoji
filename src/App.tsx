@@ -1,8 +1,10 @@
 import React from 'react';
 import {
   Button,
+  Checkbox,
   Container,
   Divider,
+  FormControlLabel,
   Paper,
   Stack,
   Typography,
@@ -35,7 +37,7 @@ const COMPUTE_DEBOUNCE_MILLIS = 1000;
 
 // Increase this by 1 when there's a breaking change to the app state.
 // Don't change this unless we have to!
-const CURRENT_APP_STATE_VERSION = 8;
+const CURRENT_APP_STATE_VERSION = 9;;
 
 const DEFAULT_FPS = 20;
 const fpsParam = sliderParam({
@@ -50,7 +52,7 @@ const DEFAULT_STATE: AppState = {
   effects: [],
   baseImage: undefined,
   fps: DEFAULT_FPS,
-  useWasm: true,
+  useAlternateGifGenerator: true,
 };
 
 const Inner: React.FC = () => {
@@ -253,15 +255,15 @@ const Inner: React.FC = () => {
                     );
                   },
                 })}
-                {/* <FormControlLabel
+                <FormControlLabel
                   control={
                     <Checkbox
-                      checked={state.useWasm}
+                      checked={state.useAlternateGifGenerator}
                       onChange={(event) => {
                         setState(
                           (prevState) => ({
                             ...prevState,
-                            useWasm: event.target.checked,
+                            useAlternateGifGenerator: event.target.checked,
                           }),
                           { compute: 'now' },
                         );
@@ -269,8 +271,8 @@ const Inner: React.FC = () => {
                       color="primary"
                     />
                   }
-                  label="Use WASM for rendering"
-                /> */}
+                  label="Use Faster rendering"
+                />
               </Stack>
             </Section>
             {state.baseImage != null && (
