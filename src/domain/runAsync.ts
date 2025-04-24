@@ -46,16 +46,10 @@ export const runEffectsAsync = async (args: RunArgs) => {
       },
     );
 
-    logger.info(
-      'Running effect ASYNC, name:',
-      args.effectInput.effectName,
-      'params:',
-      args.effectInput.params,
-      'useWasm:',
-      args.useWasm,
-      'worker:',
-      worker,
-    );
+    logger.info('Running effect ASYNC', {
+      name: args.effectInput.effectName,
+      params: args.effectInput.params,
+    });
 
     worker
       .runEffectRPC(args)

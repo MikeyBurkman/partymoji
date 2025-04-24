@@ -50,7 +50,6 @@ const DEFAULT_STATE: AppState = {
   effects: [],
   baseImage: undefined,
   fps: DEFAULT_FPS,
-  useWasm: true,
 };
 
 const Inner: React.FC = () => {
@@ -142,7 +141,7 @@ const Inner: React.FC = () => {
   );
 
   React.useEffect(() => {
-    logger.debug('UseEffect, doCompute', doCompute);
+    logger.debug('UseEffect', { doCompute });
     if (!doCompute.compute) {
       return;
     }
@@ -253,24 +252,6 @@ const Inner: React.FC = () => {
                     );
                   },
                 })}
-                {/* <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={state.useWasm}
-                      onChange={(event) => {
-                        setState(
-                          (prevState) => ({
-                            ...prevState,
-                            useWasm: event.target.checked,
-                          }),
-                          { compute: 'now' },
-                        );
-                      }}
-                      color="primary"
-                    />
-                  }
-                  label="Use WASM for rendering"
-                /> */}
               </Stack>
             </Section>
             {state.baseImage != null && (

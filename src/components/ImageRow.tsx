@@ -115,7 +115,9 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
                 <Typography variant="caption">Show Transparency</Typography>
                 <Checkbox
                   checked={showTransparency}
-                  onChange={(e) => { setShowTransparency(e.target.checked); }}
+                  onChange={(e) => {
+                    setShowTransparency(e.target.checked);
+                  }}
                 />
               </Stack>
             )}
@@ -123,7 +125,9 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
               <Typography variant="caption">Show Frame Border</Typography>
               <Checkbox
                 checked={showBorder}
-                onChange={(e) => { setShowBorder(e.target.checked); }}
+                onChange={(e) => {
+                  setShowBorder(e.target.checked);
+                }}
               />
             </Stack>
           </Stack>
