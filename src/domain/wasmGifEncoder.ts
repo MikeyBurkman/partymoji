@@ -1,4 +1,4 @@
-import { Color, Image } from './types';
+import { Image } from './types';
 import init, { create_gif_data_url } from '@wasm/gif_encoder_wasm';
 
 let initialized = false;
@@ -13,11 +13,9 @@ const initializeWasm = async () => {
 
 export const wasmCreateGif = async ({
   image,
-  transparentColor,
   fps,
 }: {
   image: Image;
-  transparentColor: Color | undefined;
   fps: number;
 }): Promise<string> => {
   console.info('Creating GIF with WASM');
@@ -39,7 +37,6 @@ export const wasmCreateGif = async ({
   console.debug('Calling WASM', {
     width,
     height,
-    transparentColor,
     fps,
   });
 
@@ -48,6 +45,6 @@ export const wasmCreateGif = async ({
     height,
     flattenedFrames,
     fps,
-    transparentColor ? new Uint8Array(transparentColor) : null,
+    null, // TODO Remove transparent arg from the Rust code
   );
 };
