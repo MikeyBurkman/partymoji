@@ -39,6 +39,7 @@ import { pinwheelRainbowBackground } from './pinwheel-rainbow-background';
 import { radianceColors } from './radiance-colors';
 import { radianceRainbow } from './radiance-rainbow';
 import { radianceRainbowBackground } from './radiance-rainbow-background';
+import { rain } from './rain';
 import { reduceColorPalette } from './reduce-color-palette';
 import { repeatAnimation } from './repeat-animation';
 import { resizeImage } from './resize-image';
@@ -107,6 +108,7 @@ export const POSSIBLE_EFFECTS = pipe(
     radianceColors,
     radianceRainbow,
     radianceRainbowBackground,
+    rain,
     reduceColorPalette,
     repeatAnimation,
     resizeImage,
