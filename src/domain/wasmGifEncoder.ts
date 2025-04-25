@@ -1,8 +1,5 @@
 import { Image } from './types';
-import init, {
-  create_gif_data_url,
-  create_gif_data_url2,
-} from '@wasm/gif_encoder_wasm';
+import init, { create_gif_data_url } from '@wasm/gif_encoder_wasm';
 
 let initialized = false;
 
@@ -20,11 +17,9 @@ const initializeWasm = async () => {
 export const wasmCreateGif = async ({
   image,
   fps,
-  useAlternateGifGenerator,
 }: {
   image: Image;
   fps: number;
-  useAlternateGifGenerator: boolean;
 }): Promise<string> => {
   console.info('Creating GIF with WASM');
   const [width, height] = image.dimensions;
@@ -46,21 +41,5 @@ export const wasmCreateGif = async ({
     fps,
   });
 
-  if (useAlternateGifGenerator) {
-    return create_gif_data_url2(
-      width,
-      height,
-      flattenedFrames,
-      fps,
-      null, // TODO Remove transparent arg from the Rust code
-    );
-  }
-
-  return create_gif_data_url(
-    width,
-    height,
-    flattenedFrames,
-    fps,
-    null, // TODO Remove transparent arg from the Rust code
-  );
+  return create_gif_data_url(width, height, flattenedFrames, fps);
 };

@@ -13,7 +13,6 @@ interface SerializedAppState {
   version: number;
   fname?: string | undefined;
   fps: number;
-  useAlternateGifGenerator: boolean;
 }
 
 export const getStoredAppState = async (): Promise<AppState | undefined> => {

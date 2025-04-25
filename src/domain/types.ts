@@ -159,7 +159,6 @@ export interface AppState {
   fname?: string;
   effects: Array<AppStateEffect>;
   fps: number;
-  useAlternateGifGenerator: boolean;
 }
 
 export type ImageEffectResult = {

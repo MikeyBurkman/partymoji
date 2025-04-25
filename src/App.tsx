@@ -1,10 +1,8 @@
 import React from 'react';
 import {
   Button,
-  Checkbox,
   Container,
   Divider,
-  FormControlLabel,
   Paper,
   Stack,
   Typography,
@@ -52,7 +50,6 @@ const DEFAULT_STATE: AppState = {
   effects: [],
   baseImage: undefined,
   fps: DEFAULT_FPS,
-  useAlternateGifGenerator: true,
 };
 
 const Inner: React.FC = () => {
@@ -255,24 +252,6 @@ const Inner: React.FC = () => {
                     );
                   },
                 })}
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={state.useAlternateGifGenerator}
-                      onChange={(event) => {
-                        setState(
-                          (prevState) => ({
-                            ...prevState,
-                            useAlternateGifGenerator: event.target.checked,
-                          }),
-                          { compute: 'now' },
-                        );
-                      }}
-                      color="primary"
-                    />
-                  }
-                  label="Use Faster rendering"
-                />
               </Stack>
             </Section>
             {state.baseImage != null && (

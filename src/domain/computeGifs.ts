@@ -47,7 +47,6 @@ export const computeGifsForState = async ({
         params: effect.paramsValues,
       },
       fps: state.fps,
-      useAlternateGifGenerator: state.useAlternateGifGenerator,
     });
 
     image = result.image;
@@ -66,10 +65,9 @@ export const getEffectsDiff = ({
 }): { diff: true; index: number } | { diff: false } => {
   if (
     currState.fps !== prevState.fps ||
-    currState.baseImage !== prevState.baseImage ||
-    currState.useAlternateGifGenerator !== prevState.useAlternateGifGenerator
+    currState.baseImage !== prevState.baseImage
   ) {
-    logger.debug('FPS, useAlternateGifGenerator, or base image is different');
+    logger.debug('FPS or base image is different');
     return { diff: true, index: 0 };
   }
 

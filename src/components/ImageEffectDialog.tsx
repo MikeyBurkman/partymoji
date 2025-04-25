@@ -39,7 +39,6 @@ interface Props {
   possibleEffects: Array<AnyEffect>;
   currFps: number;
   currRandomSeed: string;
-  currUseAlternateGifGenerator: boolean;
   onChangeEffect: (
     effect: EffectInput,
     computedImage: ImageEffectResult | undefined,
@@ -54,7 +53,6 @@ export const ImageEffectDialog: React.FC<Props> = ({
   possibleEffects,
   currFps,
   currRandomSeed,
-  currUseAlternateGifGenerator,
   onChangeEffect,
   onCancel,
 }) => {
@@ -129,7 +127,6 @@ export const ImageEffectDialog: React.FC<Props> = ({
         effectName: editingEffect.effect.name,
         params: editingEffect.params,
       },
-      useAlternateGifGenerator: currUseAlternateGifGenerator,
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

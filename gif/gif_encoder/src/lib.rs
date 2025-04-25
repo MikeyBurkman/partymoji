@@ -1,6 +1,5 @@
 use std::fmt;
 
-pub mod gif;
 pub mod image;
 
 // Define a custom error type

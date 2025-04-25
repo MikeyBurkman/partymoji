@@ -8,5 +8,4 @@ export interface RunArgs {
     params: Array<JsonType>;
   };
   fps: number;
-  useAlternateGifGenerator: boolean;
 }

@@ -296,7 +296,6 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
         initialImage={dialogInitialImage}
         currentEffect={currentEffect}
         currFps={appState.fps}
-        currUseAlternateGifGenerator={appState.useAlternateGifGenerator}
         currRandomSeed="partymoji"
       />
       <Box>

@@ -12,7 +12,6 @@ export const runEffects = async ({
   effectInput,
   randomSeed,
   fps,
-  useAlternateGifGenerator,
 }: RunArgs): Promise<ImageEffectResult> => {
   const random = seedrandom(randomSeed);
 
@@ -34,7 +33,6 @@ export const runEffects = async ({
     // Transform any of our transparent pixels to what our gif understands to be transparent
     image: result,
     fps,
-    useAlternateGifGenerator,
   });
 
   const endTime = performance.now();
@@ -53,7 +51,6 @@ export const runEffects = async ({
     gifWithBackgroundColor: await createGif({
       image: resultWithBG,
       fps,
-      useAlternateGifGenerator
     }),
   };
 };
@@ -61,24 +58,14 @@ export const runEffects = async ({
 const createGif = async ({
   image,
   fps,
-  useAlternateGifGenerator,
 }: {
   image: Image;
   fps: number;
-  useAlternateGifGenerator: boolean;
 }): Promise<string> => {
-  logger.debug(
-    'Creating GIF with dimensions:',
-    image.dimensions,
-    'fps:',
-    fps,
-    'useAlternateGifGenerator:',
-    useAlternateGifGenerator,
-  );
+  logger.debug('Creating GIF with dimensions:', image.dimensions, 'fps:', fps);
 
   return wasmCreateGif({
     image,
     fps,
-    useAlternateGifGenerator,
   });
 };
