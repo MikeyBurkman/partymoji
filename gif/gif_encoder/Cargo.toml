@@ -9,6 +9,7 @@ authors.workspace = true
 homepage.workspace = true
 
 [dependencies]
+color_quant = "1.1.0"
 gif = "0.13.1"
 image = { version = "0.25.6", default-features = false, features = ["gif"] }
 

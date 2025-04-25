@@ -1,6 +1,6 @@
 use crate::GifCreationError;
+use color_quant::NeuQuant;
 use gif::{Encoder, Frame, Repeat};
-use std::collections::HashMap;
 use std::io::Cursor;
 
 pub fn create_gif(
@@ -13,78 +13,43 @@ pub fn create_gif(
 ) -> Result<Vec<u8>, GifCreationError> {
     let mut buffer = Cursor::new(Vec::new());
     {
-        // Create a GIF encoder
         let mut encoder = Encoder::new(&mut buffer, width as u16, height as u16, &[]).unwrap();
         encoder.set_repeat(Repeat::Infinite).unwrap();
 
         let frame_size = (width * height * 4) as usize;
         let frame_count = frames.len() / frame_size;
 
-        let mut transparent_color_arr: [u8; 3] = [0; 3];
-        let mut transparent_index: Option<u8> = None;
-        if let Some(transparent) = transparent_color {
-            let transparent_rgb = [transparent[0], transparent[1], transparent[2]];
-            transparent_color_arr = transparent_rgb;
-            transparent_index = Some(0);
-            log(format!("Transparent color: {:?}", transparent_color_arr));
-        }
-
         for frame_index in 0..frame_count {
             let frame_base = frame_index * frame_size;
-            let mut indexed_pixels = Vec::with_capacity((width * height) as usize);
+            let frame_pixels = &frames[frame_base..frame_base + frame_size];
 
-            // Create a palette and indexed pixel buffer
-            let mut palette = vec![0; 256 * 3]; // RGB palette for GIF (256 colors max)
-            let mut palette_map = HashMap::new();
-            let mut next_color_index = 0;
-
-            if (transparent_color.is_some()) && (next_color_index == 0) {
-                // If we have a transparent color, we need to add it to the palette
-                palette[0..3].copy_from_slice(&transparent_color_arr);
-                next_color_index += 1;
+            // Step 1: Extract RGB values
+            let mut rgb_pixels = Vec::new();
+            for chunk in frame_pixels.chunks(4) {
+                rgb_pixels.push(chunk[0]); // Red
+                rgb_pixels.push(chunk[1]); // Green
+                rgb_pixels.push(chunk[2]); // Blue
             }
 
-            for y in 0..height {
-                for x in 0..width {
-                    let pixel_index = frame_base + ((y * width + x) * 4) as usize;
+            // Step 2: Quantize colors to 256 or fewer
+            let quantizer = NeuQuant::new(10, 256, &rgb_pixels);
+            let palette = quantizer.color_map_rgb(); // Get the quantized palette
 
-                    let pixel_color = [
-                        frames[pixel_index],
-                        frames[pixel_index + 1],
-                        frames[pixel_index + 2],
-                    ];
+            // Step 3: Map each pixel to the closest color in the palette
+            let indexed_pixels = map_pixels_to_palette(&rgb_pixels, &palette);
 
-                    // Handle transparency
-                    if let Some(transparent_index) = transparent_index {
-                        if pixel_color == transparent_color_arr {
-                            indexed_pixels.push(transparent_index); // Transparent index
-                            continue;
-                        }
-                    }
-
-                    // Map the color to an index in the palette
-                    let color = (pixel_color[0], pixel_color[1], pixel_color[2]);
-                    let color_index = *palette_map.entry(color).or_insert_with(|| {
-                        let index = next_color_index;
-                        if index < 256 {
-                            palette[index * 3..index * 3 + 3].copy_from_slice(&pixel_color);
-                            next_color_index += 1;
-                            index
-                        } else {
-                            log(format!(
-                                "Palette overflow: color {:?}, frame_index: {}",
-                                pixel_color, frame_index
-                            ));
-                            // Handle palette overflow gracefully
-                            0
-                        }
-                    });
-
-                    indexed_pixels.push(color_index as u8);
+            // Step 4: Handle transparency
+            let mut transparent_index: Option<u8> = None;
+            if let Some(transparent) = transparent_color {
+                if let Some(index) = palette
+                    .chunks(3)
+                    .position(|color| color == &transparent[0..3])
+                {
+                    transparent_index = Some(index as u8);
                 }
             }
 
-            // Create a GIF frame
+            // Step 5: Create a GIF frame
             let mut frame = Frame::from_indexed_pixels(
                 width as u16,
                 height as u16,
@@ -92,7 +57,6 @@ pub fn create_gif(
                 transparent_index,
             );
             frame.delay = (100 / fps) as u16; // Frame delay in hundredths of a second
-
             frame.palette = Some(palette);
 
             // Add the frame to the GIF
@@ -101,4 +65,37 @@ pub fn create_gif(
     } // The encoder is dropped here, releasing the borrow on `buffer`
 
     Ok(buffer.into_inner())
+}
+
+fn map_pixels_to_palette(rgb_pixels: &[u8], palette: &[u8]) -> Vec<u8> {
+    let mut indexed_pixels = Vec::new();
+
+    for chunk in rgb_pixels.chunks(3) {
+        let r = chunk[0];
+        let g = chunk[1];
+        let b = chunk[2];
+
+        // Find the closest color in the palette
+        let mut closest_index = 0;
+        let mut closest_distance = u32::MAX;
+        for (i, color) in palette.chunks(3).enumerate() {
+            let pr = color[0];
+            let pg = color[1];
+            let pb = color[2];
+
+            // Calculate squared Euclidean distance
+            let distance = ((r as i32 - pr as i32).pow(2)
+                + (g as i32 - pg as i32).pow(2)
+                + (b as i32 - pb as i32).pow(2)) as u32;
+
+            if distance < closest_distance {
+                closest_distance = distance;
+                closest_index = i;
+            }
+        }
+
+        indexed_pixels.push(closest_index as u8);
+    }
+
+    indexed_pixels
 }
