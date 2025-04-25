@@ -261,7 +261,6 @@ dependencies = [
 name = "gif_encoder"
 version = "0.1.0"
 dependencies = [
- "color_quant",
  "gif",
  "image",
 ]
