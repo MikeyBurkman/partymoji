@@ -47,7 +47,6 @@ pub enum GifCreationError {
     InvalidImageData(String),
     EncodingError(String),
     IoError(std::io::Error),
-    Overflow(String),
 }
 
 // Implement `std::fmt::Display` for the custom error
@@ -57,7 +56,6 @@ impl fmt::Display for GifCreationError {
             GifCreationError::InvalidImageData(msg) => write!(f, "Invalid image data: {}", msg),
             GifCreationError::EncodingError(msg) => write!(f, "Encoding error: {}", msg),
             GifCreationError::IoError(err) => write!(f, "IO error: {}", err),
-            GifCreationError::Overflow(msg) => write!(f, "Overflow error: {}", msg),
         }
     }
 }

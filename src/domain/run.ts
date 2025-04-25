@@ -62,8 +62,11 @@ const createGif = async ({
   image: Image;
   fps: number;
 }): Promise<string> => {
-  logger.debug('Creating GIF with dimensions:', image.dimensions, 'fps:', fps);
-
+  logger.debug('Creating GIF', {
+    dimensions: image.dimensions,
+    fps,
+  });
+  
   return wasmCreateGif({
     image,
     fps,

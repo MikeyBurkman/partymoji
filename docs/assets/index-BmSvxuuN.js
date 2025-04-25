@@ -31757,7 +31757,7 @@ function __wbg_finalize_init(t2, n) {
 }
 async function __wbg_init(t2) {
   if (wasm !== void 0) return wasm;
-  typeof t2 < "u" && (Object.getPrototypeOf(t2) === Object.prototype ? { module_or_path: t2 } = t2 : console.warn("using deprecated parameters for the initialization function; pass a single object instead")), typeof t2 > "u" && (t2 = new URL("/partymoji/assets/gif_encoder_wasm_bg-E50IxHzi.wasm", import.meta.url));
+  typeof t2 < "u" && (Object.getPrototypeOf(t2) === Object.prototype ? { module_or_path: t2 } = t2 : console.warn("using deprecated parameters for the initialization function; pass a single object instead")), typeof t2 > "u" && (t2 = new URL("/partymoji/assets/gif_encoder_wasm_bg-Br2U5Mbr.wasm", import.meta.url));
   const n = __wbg_get_imports();
   (typeof t2 == "string" || typeof Request == "function" && t2 instanceof Request || typeof URL == "function" && t2 instanceof URL) && (t2 = fetch(t2));
   const { instance: o, module: s } = await __wbg_load(await t2, n);
@@ -31779,7 +31779,7 @@ const initializeWasm = async () => {
   console.log(`GIF creation took ${b - h} milliseconds.`);
   const v = await fakeTransparency.fn({ image: p, parameters: [], random: c });
   return { gif: m, image: p, partiallyTransparent: isPartiallyTransparent(p), gifWithBackgroundColor: await createGif({ image: v, fps: s }) };
-}, createGif = async ({ image: t2, fps: n }) => (logger.debug("Creating GIF with dimensions:", t2.dimensions, "fps:", n), wasmCreateGif({ image: t2, fps: n }));
+}, createGif = async ({ image: t2, fps: n }) => (logger.debug("Creating GIF", { dimensions: t2.dimensions, fps: n }), wasmCreateGif({ image: t2, fps: n }));
 /**
 * @license
 * Copyright 2019 Google LLC
@@ -31973,7 +31973,7 @@ const computationMap = /* @__PURE__ */ new Map(), handleError = (t2) => (n) => {
 }, runEffectsAsync = async (t2) => new Promise((n, o) => {
   const s = `${Date.now().toString()}-${Math.floor(Math.random() * 1e5).toString()}`;
   computationMap.set(s, { resolve: n, reject: o });
-  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-I9FloyE9.js", import.meta.url), { type: "module" }));
+  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker--Lzi9itq.js", import.meta.url), { type: "module" }));
   logger.info("Running effect ASYNC", { name: t2.effectInput.effectName, params: t2.effectInput.params }), c.runEffectRPC(t2).then(handleSuccess(s), handleError(s));
 }), computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync, computeGifsForState = async ({ state: t2, startEffectIndex: n, onCompute: o }) => {
   assert(t2.baseImage, "No source image, this button should be disabled!");
@@ -32163,7 +32163,7 @@ const TooltipInner = () => jsxRuntimeExports.jsxs(Stack, { spacing: 1, children:
 }, ProcessorQueueProvider = ({ children: t2 }) => {
   const n = React.useRef(0);
   return jsxRuntimeExports.jsx(ProcessorQueueContext, { value: { latestRunIdRef: n }, children: t2 });
-}, COMPUTE_DEBOUNCE_MILLIS = 1e3, CURRENT_APP_STATE_VERSION = 9, DEFAULT_FPS = 20, fpsParam = sliderParam({ name: "Final Gif Frames per Second", defaultValue: DEFAULT_FPS, min: 1, max: 60 }), DEFAULT_STATE = { version: CURRENT_APP_STATE_VERSION, effects: [], baseImage: void 0, fps: DEFAULT_FPS }, Inner = () => {
+}, COMPUTE_DEBOUNCE_MILLIS = 1e3, CURRENT_APP_STATE_VERSION = 8, DEFAULT_FPS = 20, fpsParam = sliderParam({ name: "Final Gif Frames per Second", defaultValue: DEFAULT_FPS, min: 1, max: 60 }), DEFAULT_STATE = { version: CURRENT_APP_STATE_VERSION, effects: [], baseImage: void 0, fps: DEFAULT_FPS }, Inner = () => {
   const [t2, n] = React.useState(DEFAULT_STATE), [o, s] = React.useState({ compute: false }), [c, l] = React.useState(null), p = useSetAlert();
   React.useEffect(() => {
     IS_MOBILE && p({ severity: "warning", message: "This app is not well optimized for mobile. Your experience may not be great." });

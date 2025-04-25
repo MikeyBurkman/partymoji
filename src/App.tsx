@@ -35,7 +35,7 @@ const COMPUTE_DEBOUNCE_MILLIS = 1000;
 
 // Increase this by 1 when there's a breaking change to the app state.
 // Don't change this unless we have to!
-const CURRENT_APP_STATE_VERSION = 9;
+const CURRENT_APP_STATE_VERSION = 8;
 
 const DEFAULT_FPS = 20;
 const fpsParam = sliderParam({
