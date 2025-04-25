@@ -102,8 +102,7 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
         <Stack alignItems="center" spacing={2}>
           <Stack direction="row" spacing={2}>
             <Typography variant="h6">
-              #{index + 1}: {effect.effectName} (
-              {effect.paramsValues.map(String).join(', ')})
+              #{index + 1}: {effect.effectName}
             </Typography>
             {requiresAnimation}
           </Stack>
