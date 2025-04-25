@@ -13611,35 +13611,16 @@ const getPixelFromSource = (t2, n, o) => {
   const [s, c] = t2.dimensions, l = s / 2 * (n ?? 1) - s / 2, p = c / 2 * (o ?? 1) - c / 2;
   return mapFrames(t2, (h) => applyCanvasFromFrame({ dimensions: t2.dimensions, frame: h, preEffect: (m) => applyTransform(m, { horizontalScale: n, verticalScale: o, horizontalTranslation: -l, verticalTranslation: -p }) }));
 }, resizeImage$1 = ({ image: t2, newWidth: n, newHeight: o, keepScale: s }) => {
-  let c = [];
-  for (const p of t2.frames) {
-    const h = /* @__PURE__ */ new Set();
-    for (let m = 0; m < p.length; m += 4) {
-      const b = [p[m], p[m + 1], p[m + 2], p[m + 3]];
-      h.add(b.join(","));
-    }
-    c.push(h.size);
-  }
-  c.length > 256 ? console.warn("resizeImage BEFORE - Unique colors:", c) : console.info("resizeImage BEFORE - Unique colors:", c);
-  const l = mapFrames(t2, (p) => {
-    const h = createCanvas([n, o]), m = frameToCanvas({ dimensions: t2.dimensions, frame: p });
-    if (s) h.ctx.drawImage(m.canvas, 0, 0, n, o);
+  const c = mapFrames(t2, (l) => {
+    const p = createCanvas([n, o]), h = frameToCanvas({ dimensions: t2.dimensions, frame: l });
+    if (s) p.ctx.drawImage(h.canvas, 0, 0, n, o);
     else {
-      const b = n / 2 - t2.dimensions[0] / 2, v = o / 2 - t2.dimensions[1] / 2;
-      h.ctx.drawImage(m.canvas, b, v, t2.dimensions[0], t2.dimensions[1]);
+      const m = n / 2 - t2.dimensions[0] / 2, b = o / 2 - t2.dimensions[1] / 2;
+      p.ctx.drawImage(h.canvas, m, b, t2.dimensions[0], t2.dimensions[1]);
     }
-    return canvasToFrame(h);
+    return canvasToFrame(p);
   });
-  c = [];
-  for (const p of l.frames) {
-    const h = /* @__PURE__ */ new Set();
-    for (let m = 0; m < p.length; m += 4) {
-      const b = [p[m], p[m + 1], p[m + 2], p[m + 3]];
-      h.add(b.join(","));
-    }
-    c.push(h.size);
-  }
-  return c.length > 256 ? console.warn("resizeImage AFTER - Unique colors:", c) : console.info("resizeImage AFTER - Unique colors:", c), { dimensions: [n, o], frames: l.frames };
+  return { dimensions: [n, o], frames: c.frames };
 }, duplicateImage = (t2) => ({ dimensions: t2.dimensions, frames: t2.frames.map((n) => new Uint8ClampedArray(n)) }), setPixel = (t2) => {
   const n = getImageIndex(t2.image.dimensions, t2.coord[0], t2.coord[1]), o = t2.image.frames[t2.frameIndex];
   o[n] = t2.color[0], o[n + 1] = t2.color[1], o[n + 2] = t2.color[2], o[n + 3] = t2.color[3];
@@ -19080,7 +19061,7 @@ function useDebounce({ value: t2, debounceMillis: n, onChange: o }) {
     c(t2);
   }, [t2]), [s, p];
 }
-const IS_DEV = false, LOG_LEVELS = ["error", "warn", "info", "debug"], logLevel = "debug", logLevelIndex = LOG_LEVELS.indexOf(logLevel);
+const IS_DEV = false, LOG_LEVELS = ["error", "warn", "info", "debug"], logLevel = "info", logLevelIndex = LOG_LEVELS.indexOf(logLevel);
 function buildLogger(t2) {
   return logLevelIndex >= LOG_LEVELS.indexOf(t2) ? (...n) => {
     console[t2](...n);
@@ -31776,7 +31757,7 @@ function __wbg_finalize_init(t2, n) {
 }
 async function __wbg_init(t2) {
   if (wasm !== void 0) return wasm;
-  typeof t2 < "u" && (Object.getPrototypeOf(t2) === Object.prototype ? { module_or_path: t2 } = t2 : console.warn("using deprecated parameters for the initialization function; pass a single object instead")), typeof t2 > "u" && (t2 = new URL("/partymoji/assets/gif_encoder_wasm_bg-BP-z7jUg.wasm", import.meta.url));
+  typeof t2 < "u" && (Object.getPrototypeOf(t2) === Object.prototype ? { module_or_path: t2 } = t2 : console.warn("using deprecated parameters for the initialization function; pass a single object instead")), typeof t2 > "u" && (t2 = new URL("/partymoji/assets/gif_encoder_wasm_bg-E50IxHzi.wasm", import.meta.url));
   const n = __wbg_get_imports();
   (typeof t2 == "string" || typeof Request == "function" && t2 instanceof Request || typeof URL == "function" && t2 instanceof URL) && (t2 = fetch(t2));
   const { instance: o, module: s } = await __wbg_load(await t2, n);
@@ -31784,13 +31765,13 @@ async function __wbg_init(t2) {
 }
 let initialized = false;
 const initializeWasm = async () => {
-  initialized || (console.time("Initialize WASM"), await __wbg_init(), console.timeEnd("Initialize WASM"), initialized = true);
+  initialized || (await __wbg_init(), initialized = true);
 }, wasmCreateGif = async ({ image: t2, fps: n }) => {
-  console.info("Creating GIF with WASM");
+  logger.info("Creating GIF with WASM");
   const [o, s] = t2.dimensions, c = new Uint8Array(t2.frames.reduce((p, h) => p + h.length, 0));
   let l = 0;
   for (const p of t2.frames) c.set(p, l), l += p.length;
-  return await initializeWasm(), console.debug("Calling WASM", { width: o, height: s, fps: n }), create_gif_data_url(o, s, c, n);
+  return await initializeWasm(), logger.debug("Calling WASM", { width: o, height: s, fps: n }), create_gif_data_url(o, s, c, n);
 }, runEffects = async ({ image: t2, effectInput: n, randomSeed: o, fps: s }) => {
   const c = seedrandom(o);
   logger.info("Running effect", { name: n.effectName, params: n.params });
@@ -31992,7 +31973,7 @@ const computationMap = /* @__PURE__ */ new Map(), handleError = (t2) => (n) => {
 }, runEffectsAsync = async (t2) => new Promise((n, o) => {
   const s = `${Date.now().toString()}-${Math.floor(Math.random() * 1e5).toString()}`;
   computationMap.set(s, { resolve: n, reject: o });
-  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-wGQc0V7g.js", import.meta.url), { type: "module" }));
+  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-I9FloyE9.js", import.meta.url), { type: "module" }));
   logger.info("Running effect ASYNC", { name: t2.effectInput.effectName, params: t2.effectInput.params }), c.runEffectRPC(t2).then(handleSuccess(s), handleError(s));
 }), computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync, computeGifsForState = async ({ state: t2, startEffectIndex: n, onCompute: o }) => {
   assert(t2.baseImage, "No source image, this button should be disabled!");

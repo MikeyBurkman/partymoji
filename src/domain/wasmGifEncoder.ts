@@ -1,5 +1,6 @@
 import { Image } from './types';
 import init, { create_gif_data_url } from '@wasm/gif_encoder_wasm';
+import { logger } from './utils';
 
 let initialized = false;
 
@@ -7,9 +8,7 @@ const initializeWasm = async () => {
   if (initialized) {
     return;
   }
-  console.time('Initialize WASM');
   await init();
-  console.timeEnd('Initialize WASM');
 
   initialized = true;
 };
@@ -21,7 +20,7 @@ export const wasmCreateGif = async ({
   image: Image;
   fps: number;
 }): Promise<string> => {
-  console.info('Creating GIF with WASM');
+  logger.info('Creating GIF with WASM');
   const [width, height] = image.dimensions;
 
   const flattenedFrames = new Uint8Array(
@@ -35,7 +34,7 @@ export const wasmCreateGif = async ({
 
   await initializeWasm();
 
-  console.debug('Calling WASM', {
+  logger.debug('Calling WASM', {
     width,
     height,
     fps,

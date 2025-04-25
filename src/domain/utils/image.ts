@@ -228,22 +228,6 @@ export const resizeImage = ({
   newHeight: number;
   keepScale: boolean;
 }): Image => {
-  // count the unique colors by frame
-  let uniqueColors: Array<number> = [];
-  for (const frame of image.frames) {
-    const frameColors = new Set();
-    for (let i = 0; i < frame.length; i += 4) {
-      const color = [frame[i], frame[i + 1], frame[i + 2], frame[i + 3]];
-      frameColors.add(color.join(','));
-    }
-    uniqueColors.push(frameColors.size);
-  }
-
-  if (uniqueColors.length > 256) {
-    console.warn('resizeImage BEFORE - Unique colors:', uniqueColors);
-  } else {
-    console.info('resizeImage BEFORE - Unique colors:', uniqueColors);
-  }
   const newFrames = mapFrames(image, (frame) => {
     const rootCanvas = createCanvas([newWidth, newHeight]);
     const imgCanvas = frameToCanvas({ dimensions: image.dimensions, frame });
@@ -267,20 +251,6 @@ export const resizeImage = ({
     return canvasToFrame(rootCanvas);
   });
 
-  uniqueColors = [];
-  for (const frame of newFrames.frames) {
-    const frameColors = new Set();
-    for (let i = 0; i < frame.length; i += 4) {
-      const color = [frame[i], frame[i + 1], frame[i + 2], frame[i + 3]];
-      frameColors.add(color.join(','));
-    }
-    uniqueColors.push(frameColors.size);
-  }
-  if (uniqueColors.length > 256) {
-    console.warn('resizeImage AFTER - Unique colors:', uniqueColors);
-  } else {
-    console.info('resizeImage AFTER - Unique colors:', uniqueColors);
-  }
   return {
     dimensions: [newWidth, newHeight],
     frames: newFrames.frames,
