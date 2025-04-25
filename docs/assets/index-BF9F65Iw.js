@@ -13355,7 +13355,7 @@ const replaceIndex = (t2, n, o) => t2.map((s, c) => n === c ? o(s) : s), removeI
     return l.length === 2 ? l : "0" + l;
   };
   return `#${s(t2)}${s(n)}${s(o)}`;
-}, fromHexColor = (t2) => [parseInt(t2.toUpperCase().substring(1, 3), 16), parseInt(t2.toUpperCase().substring(3, 5), 16), parseInt(t2.toUpperCase().substring(5, 8), 16), 255], isTransparent$1 = (t2) => t2[3] < 64, isPartiallyTransparent$1 = (t2) => !isTransparent$1(t2) && t2[3] < 128, randomColor = (t2) => [Math.floor(t2.int32() * 256), Math.floor(t2.int32() * 256), Math.floor(t2.int32() * 256), 255], getAveragePixelValue = ([t2, n, o]) => Math.round((t2 + n + o) / 3), clampColor = ([t2, n, o, s]) => [clamp(t2, 0, 255), clamp(n, 0, 255), clamp(o, 0, 255), clamp(s, 0, 255)], TRANSPARENT_COLOR = [0, 0, 0, 0], shiftTowardsHue = ([t2, n, o, s], c, l) => {
+}, fromHexColor = (t2) => [parseInt(t2.toUpperCase().substring(1, 3), 16), parseInt(t2.toUpperCase().substring(3, 5), 16), parseInt(t2.toUpperCase().substring(5, 8), 16), 255], isTransparent$1 = (t2) => t2[3] < 64, isPartiallyTransparent$1 = (t2) => !isTransparent$1(t2) && t2[3] < 128, getAveragePixelValue = ([t2, n, o]) => Math.round((t2 + n + o) / 3), clampColor = ([t2, n, o, s]) => [clamp(t2, 0, 255), clamp(n, 0, 255), clamp(o, 0, 255), clamp(s, 0, 255)], TRANSPARENT_COLOR = [0, 0, 0, 0], shiftTowardsHue = ([t2, n, o, s], c, l) => {
   const [, p, h] = convert$1.rgb.hsl([t2, n, o]), [m, b, v] = convert$1.hsl.rgb([c, weightedValue(l, p, 100), h]);
   return [weightedValue(l, t2, m), weightedValue(l, n, b), weightedValue(l, o, v), s];
 }, shiftHue = ([t2, n, o, s], c) => {
@@ -13611,16 +13611,35 @@ const getPixelFromSource = (t2, n, o) => {
   const [s, c] = t2.dimensions, l = s / 2 * (n ?? 1) - s / 2, p = c / 2 * (o ?? 1) - c / 2;
   return mapFrames(t2, (h) => applyCanvasFromFrame({ dimensions: t2.dimensions, frame: h, preEffect: (m) => applyTransform(m, { horizontalScale: n, verticalScale: o, horizontalTranslation: -l, verticalTranslation: -p }) }));
 }, resizeImage$1 = ({ image: t2, newWidth: n, newHeight: o, keepScale: s }) => {
-  const c = mapFrames(t2, (l) => {
-    const p = createCanvas([n, o]), h = frameToCanvas({ dimensions: t2.dimensions, frame: l });
-    if (s) p.ctx.drawImage(h.canvas, 0, 0, n, o);
-    else {
-      const m = n / 2 - t2.dimensions[0] / 2, b = o / 2 - t2.dimensions[1] / 2;
-      p.ctx.drawImage(h.canvas, m, b, t2.dimensions[0], t2.dimensions[1]);
+  let c = [];
+  for (const p of t2.frames) {
+    const h = /* @__PURE__ */ new Set();
+    for (let m = 0; m < p.length; m += 4) {
+      const b = [p[m], p[m + 1], p[m + 2], p[m + 3]];
+      h.add(b.join(","));
     }
-    return canvasToFrame(p);
+    c.push(h.size);
+  }
+  c.length > 256 ? console.warn("resizeImage BEFORE - Unique colors:", c) : console.info("resizeImage BEFORE - Unique colors:", c);
+  const l = mapFrames(t2, (p) => {
+    const h = createCanvas([n, o]), m = frameToCanvas({ dimensions: t2.dimensions, frame: p });
+    if (s) h.ctx.drawImage(m.canvas, 0, 0, n, o);
+    else {
+      const b = n / 2 - t2.dimensions[0] / 2, v = o / 2 - t2.dimensions[1] / 2;
+      h.ctx.drawImage(m.canvas, b, v, t2.dimensions[0], t2.dimensions[1]);
+    }
+    return canvasToFrame(h);
   });
-  return { dimensions: [n, o], frames: c.frames };
+  c = [];
+  for (const p of l.frames) {
+    const h = /* @__PURE__ */ new Set();
+    for (let m = 0; m < p.length; m += 4) {
+      const b = [p[m], p[m + 1], p[m + 2], p[m + 3]];
+      h.add(b.join(","));
+    }
+    c.push(h.size);
+  }
+  return c.length > 256 ? console.warn("resizeImage AFTER - Unique colors:", c) : console.info("resizeImage AFTER - Unique colors:", c), { dimensions: [n, o], frames: l.frames };
 }, duplicateImage = (t2) => ({ dimensions: t2.dimensions, frames: t2.frames.map((n) => new Uint8ClampedArray(n)) }), setPixel = (t2) => {
   const n = getImageIndex(t2.image.dimensions, t2.coord[0], t2.coord[1]), o = t2.image.frames[t2.frameIndex];
   o[n] = t2.color[0], o[n + 1] = t2.color[1], o[n + 2] = t2.color[2], o[n + 3] = t2.color[3];
@@ -31552,7 +31571,21 @@ const seedrandom = getDefaultExportFromCjs$1(seedrandomExports), lightningIntens
     return colorFromHue(j);
   }), S = c === 100 ? l : applyCanvasFromFrame({ dimensions: t2.dimensions, frame: l, preEffect: (Q) => applyFilter(Q, { opacity: c }) });
   return combineImages({ dimensions: t2.dimensions, background: C, foreground: S });
-}) }), reduceColorPalette = buildEffect({ name: "Reduce Color Palette", group: "Colors", description: "Reduce the number of unique colors in the gif, to reduce the file size.", secondaryDescription: "This can be a slow operation depending on the number of final colors", params: [sliderParam({ name: "Percent Reduction", description: "0% will have no effect, 100% will result in just one unique color in the result", defaultValue: 70, min: 0, max: 100 })], fn: mapImageWithPrecompute(({ image: t2, parameters: [n] }) => {
+}) }), rain = buildEffect({ name: "Rain", group: "Misc", description: "Make the image rain from above", requiresAnimation: true, params: [sliderParam({ name: "Copies", description: "Positive number", defaultValue: 2, min: 0, max: 10 }), sliderParam({ name: "Spacing", description: "Spacing between copies, as a percentage of the image size", defaultValue: 25, min: 0, max: 100 }), dropdownParam({ name: "Spin", description: "Spin the copies as they fall", options: [{ name: "No spin", value: "none" }, { name: "Clockwise", value: "clockwise" }, { name: "Counter-clockwise", value: "counter-clockwise" }], defaultValue: "none" })], fn: ({ image: t2, parameters: [n, o, s] }) => {
+  const [c, l] = t2.dimensions, p = Math.ceil(c / (n + 1)), h = Math.ceil(l / (n + 1)), m = Math.ceil(l / h), b = Math.floor(p * o / 100), v = Math.floor(h * o / 100), y = p - b, B = h - v;
+  return mapFrames(t2, (x, C, S) => {
+    const Q = C / S, I = frameToCanvas({ dimensions: t2.dimensions, frame: x }), O = (() => {
+      if (s === "none") return I;
+      const j = s === "clockwise" ? -1 : 1, Y = createCanvas(t2.dimensions);
+      return applyRotation(Y, Q * 360 * j), Y.ctx.drawImage(I.canvas, 0, 0), Y;
+    })(), q = createCanvas(t2.dimensions), N = q.ctx;
+    for (let j = 0; j <= n; j++) {
+      const Y = Math.ceil(c * (j / (n + 1)));
+      for (let oe = 0; oe < m + 2; oe++) (j + oe) % 2 === 0 && N.drawImage(O.canvas, 0, 0, c, l, Y + b / 2, oe * h + (Q * h - h) * 2, y, B);
+    }
+    return canvasToFrame(q);
+  });
+} }), reduceColorPalette = buildEffect({ name: "Reduce Color Palette", group: "Colors", description: "Reduce the number of unique colors in the gif, to reduce the file size.", secondaryDescription: "This can be a slow operation depending on the number of final colors", params: [sliderParam({ name: "Percent Reduction", description: "0% will have no effect, 100% will result in just one unique color in the result", defaultValue: 70, min: 0, max: 100 })], fn: mapImageWithPrecompute(({ image: t2, parameters: [n] }) => {
   const o = /* @__PURE__ */ new Set();
   mapFrames(t2, (h) => mapCoords(t2.dimensions, (m) => {
     const b = getPixelFromSource(t2.dimensions, h, m);
@@ -31619,7 +31652,7 @@ const seedrandom = getDefaultExportFromCjs$1(seedrandomExports), lightningIntens
 } }), transparency = buildEffect({ name: "Transparency", group: "Image", description: "Set certain pixels to be transparent", params: [checkboxParam({ name: "Matches are Transparent", description: "If checked, then pixels matching this color will be made transparent. If not checked, non-matching pixels are transparent.", defaultValue: true }), colorPickerParam({ name: "Color", defaultValue: fromHexColor("#000000") }), sliderParam({ name: "Tolerance", description: 'A higher number will mean colors that are "close" to the chosen color will be transparent. (0 - 100)', defaultValue: 10, min: 0, max: 100 })], fn: mapImage(({ coord: t2, getSrcPixel: n, parameters: [o, s, c] }) => {
   const l = n(t2), p = colorDiff(l, s) * 100 <= c;
   return (o ? p : !p) ? [l[0], l[1], l[2], 0] : l;
-}) }), transpose = buildEffect({ name: "Transpose", group: "Image", description: "Move the image left or right, up or down", params: [intParam({ name: "X", defaultValue: 0 }), intParam({ name: "Y", defaultValue: 0 })], fn: mapImage(({ coord: [t2, n], getSrcPixel: o, parameters: [s, c] }) => o([t2 + s, n + c])) }), GROUP_ORDERING = ["Animation", "Image", "Party", "Transform", "Colors", "Misc"], POSSIBLE_EFFECTS = pipe([setAnimationLength, adjustImage, backgroundColor, backgroundImage, blur, bounce, bounceAnimation, circle, changingFocus, colorPalette, colors, colorsBackground, doubleVision, dropShadow, dualHue, expand, fade, fill, fisheye, grid, hueChange, hueShift, hueShiftPulse, hueWave, lightning, mirror, nuke, opacity, party, partyBackground, partyHarder, partyShadow, pinwheelColors, pinwheelRainbow, pinwheelRainbowBackground, radianceColors, radianceRainbow, radianceRainbowBackground, reduceColorPalette, repeatAnimation, resizeImage, reverseAnimation, ripple, rotate, roxbury, scaleImage, shake, slowAnimation, spin, staticc, text, trails, transparency, transpose], sortBy((t2) => GROUP_ORDERING.indexOf(t2.group), (t2) => -1 * (t2.groupOrder ?? 0), (t2) => t2.name), reject((t2) => t2.disabled)), effectByName = (t2) => {
+}) }), transpose = buildEffect({ name: "Transpose", group: "Image", description: "Move the image left or right, up or down", params: [intParam({ name: "X", defaultValue: 0 }), intParam({ name: "Y", defaultValue: 0 })], fn: mapImage(({ coord: [t2, n], getSrcPixel: o, parameters: [s, c] }) => o([t2 + s, n + c])) }), GROUP_ORDERING = ["Animation", "Image", "Party", "Transform", "Colors", "Misc"], POSSIBLE_EFFECTS = pipe([setAnimationLength, adjustImage, backgroundColor, backgroundImage, blur, bounce, bounceAnimation, circle, changingFocus, colorPalette, colors, colorsBackground, doubleVision, dropShadow, dualHue, expand, fade, fill, fisheye, grid, hueChange, hueShift, hueShiftPulse, hueWave, lightning, mirror, nuke, opacity, party, partyBackground, partyHarder, partyShadow, pinwheelColors, pinwheelRainbow, pinwheelRainbowBackground, radianceColors, radianceRainbow, radianceRainbowBackground, rain, reduceColorPalette, repeatAnimation, resizeImage, reverseAnimation, ripple, rotate, roxbury, scaleImage, shake, slowAnimation, spin, staticc, text, trails, transparency, transpose], sortBy((t2) => GROUP_ORDERING.indexOf(t2.group), (t2) => -1 * (t2.groupOrder ?? 0), (t2) => t2.name), reject((t2) => t2.disabled)), effectByName = (t2) => {
   const n = POSSIBLE_EFFECTS.find((o) => o.name === t2);
   return assert(n, `Could not find matching effect: ${t2}`), n;
 }, TooltipInner$1 = () => jsxRuntimeExports.jsxs(Stack, { spacing: 1, children: [jsxRuntimeExports.jsx(Typography, { children: "This resulting image contains partial transparency" }), jsxRuntimeExports.jsx(Typography, { variant: "caption", children: "Gifs do not handle partial transparency, so a fake background has been applied to the preview." }), jsxRuntimeExports.jsx(Typography, { variant: "caption", children: 'Be sure to add some effect after this that affects the "background", or else anything that is partially transparent will be made either fully transparent, or fully opaque.' })] }), BackgroundPreviewTooltip = () => jsxRuntimeExports.jsx(Tooltip, { kind: "info", description: jsxRuntimeExports.jsx(TooltipInner$1, {}) }), COLORS = ["#111111", "#888888"], fakeTransparency = buildEffect({ name: "Fake Transparency", group: "Image", description: "This is just to display behind a picture when there are partially-transparent pixels, as GIFs do not support partial transparency", params: [], disabled: true, fn: ({ image: t2 }) => {
@@ -31761,7 +31794,7 @@ function __wbg_finalize_init(t2, n) {
 }
 async function __wbg_init(t2) {
   if (wasm !== void 0) return wasm;
-  typeof t2 < "u" && (Object.getPrototypeOf(t2) === Object.prototype ? { module_or_path: t2 } = t2 : console.warn("using deprecated parameters for the initialization function; pass a single object instead")), typeof t2 > "u" && (t2 = new URL("/partymoji/assets/gif_encoder_wasm_bg-Ca9clLPs.wasm", import.meta.url));
+  typeof t2 < "u" && (Object.getPrototypeOf(t2) === Object.prototype ? { module_or_path: t2 } = t2 : console.warn("using deprecated parameters for the initialization function; pass a single object instead")), typeof t2 > "u" && (t2 = new URL("/partymoji/assets/gif_encoder_wasm_bg-BTT3zb4W.wasm", import.meta.url));
   const n = __wbg_get_imports();
   (typeof t2 == "string" || typeof Request == "function" && t2 instanceof Request || typeof URL == "function" && t2 instanceof URL) && (t2 = fetch(t2));
   const { instance: o, module: s } = await __wbg_load(await t2, n);
@@ -31770,49 +31803,20 @@ async function __wbg_init(t2) {
 let initialized = false;
 const initializeWasm = async () => {
   initialized || (console.time("Initialize WASM"), await __wbg_init(), console.timeEnd("Initialize WASM"), initialized = true);
-}, wasmCreateGif = async ({ image: t2, transparentColor: n, fps: o, useAlternateGifGenerator: s }) => {
+}, wasmCreateGif = async ({ image: t2, fps: n, useAlternateGifGenerator: o }) => {
   console.info("Creating GIF with WASM");
-  const [c, l] = t2.dimensions, p = new Uint8Array(t2.frames.reduce((m, b) => m + b.length, 0));
-  let h = 0;
-  for (const m of t2.frames) p.set(m, h), h += m.length;
-  return await initializeWasm(), console.debug("Calling WASM", { width: c, height: l, transparentColor: n, fps: o }), s ? create_gif_data_url2(c, l, p, o, n ? new Uint8Array(n) : null) : create_gif_data_url(c, l, p, o, n ? new Uint8Array(n) : null);
+  const [s, c] = t2.dimensions, l = new Uint8Array(t2.frames.reduce((h, m) => h + m.length, 0));
+  let p = 0;
+  for (const h of t2.frames) l.set(h, p), p += h.length;
+  return await initializeWasm(), console.debug("Calling WASM", { width: s, height: c, fps: n }), o ? create_gif_data_url2(s, c, l, n, null) : create_gif_data_url(s, c, l, n, null);
 }, runEffects = async ({ image: t2, effectInput: n, randomSeed: o, fps: s, useAlternateGifGenerator: c }) => {
   const l = seedrandom(o);
-  logger.info("Running effect, name:", n.effectName, "params:", n.params, "useAlternateGifGenerator:", c);
-  const h = await effectByName(n.effectName).fn({ image: t2, parameters: n.params, random: l }), { transparentColor: m, hasPartialTransparency: b } = getTransparentColor(h, l), v = performance.now(), y = await createGif({ image: encodeTransparency(h, m), transparentColor: m, fps: s, useAlternateGifGenerator: c }), B = performance.now();
-  if (console.log(`GIF creation took ${B - v} milliseconds.`), b) {
-    const x = await fakeTransparency.fn({ image: h, parameters: [], random: l });
-    return { gif: y, image: h, partiallyTransparent: true, gifWithBackgroundColor: await createGif({ image: x, transparentColor: void 0, fps: s, useAlternateGifGenerator: c }) };
-  } else {
-    const x = m == null ? void 0 : await fakeTransparency.fn({ image: h, parameters: [], random: l });
-    return { gif: y, image: h, partiallyTransparent: false, gifWithBackgroundColor: x == null ? null : await createGif({ image: x, transparentColor: void 0, fps: s, useAlternateGifGenerator: c }) };
-  }
-}, encodeTransparency = (t2, n) => {
-  if (!n) return t2;
-  const o = t2.frames.map((s) => {
-    const c = new Uint8ClampedArray(s.length);
-    for (let l = 0; l < s.length; l += 4) s[l + 3] < 128 ? (c[l] = n[0], c[l + 1] = n[1], c[l + 2] = n[2], c[l + 3] = 0) : (c[l] = s[l], c[l + 1] = s[l + 1], c[l + 2] = s[l + 2], c[l + 3] = 0);
-    return c;
-  });
-  return { dimensions: t2.dimensions, frames: o };
-}, createGif = async ({ image: t2, transparentColor: n, fps: o, useAlternateGifGenerator: s }) => (logger.debug("Creating GIF with dimensions:", t2.dimensions, "fps:", o, "useAlternateGifGenerator:", s), wasmCreateGif({ image: t2, transparentColor: n, fps: o, useAlternateGifGenerator: s })), getTransparentColor = (t2, n) => {
-  let o = false;
-  const s = /* @__PURE__ */ new Set(), [c, l] = t2.dimensions;
-  let p = false, h = toHexColor([0, 255, 0, 255]);
-  return t2.frames.forEach((m) => {
-    for (let b = 0; b < l; b += 1) for (let v = 0; v < c; v += 1) {
-      const y = getPixelFromSource(t2.dimensions, m, [v, b]);
-      if (isPartiallyTransparent$1(y) && (p = true), isTransparent$1(y)) o = true;
-      else {
-        const B = toHexColor(y);
-        s.add(B), B === h && (h = findRandomColorNotInSet(n, s));
-      }
-    }
-  }), { transparentColor: o ? fromHexColor(h) : void 0, hasPartialTransparency: p };
-}, findRandomColorNotInSet = (t2, n, o = 0) => {
-  const s = toHexColor(randomColor(t2));
-  return o > 2e3 ? s : n.has(s) ? findRandomColorNotInSet(t2, n, o + 1) : s;
-};
+  logger.info("Running effect", { name: n.effectName, params: n.params });
+  const h = await effectByName(n.effectName).fn({ image: t2, parameters: n.params, random: l }), m = performance.now(), b = await createGif({ image: h, fps: s, useAlternateGifGenerator: c }), v = performance.now();
+  console.log(`GIF creation took ${v - m} milliseconds.`);
+  const y = await fakeTransparency.fn({ image: h, parameters: [], random: l });
+  return { gif: b, image: h, partiallyTransparent: isPartiallyTransparent(h), gifWithBackgroundColor: await createGif({ image: y, fps: s, useAlternateGifGenerator: c }) };
+}, createGif = async ({ image: t2, fps: n, useAlternateGifGenerator: o }) => (logger.debug("Creating GIF with dimensions:", t2.dimensions, "fps:", n, "useAlternateGifGenerator:", o), wasmCreateGif({ image: t2, fps: n, useAlternateGifGenerator: o }));
 /**
 * @license
 * Copyright 2019 Google LLC
@@ -32006,8 +32010,8 @@ const computationMap = /* @__PURE__ */ new Map(), handleError = (t2) => (n) => {
 }, runEffectsAsync = async (t2) => new Promise((n, o) => {
   const s = `${Date.now().toString()}-${Math.floor(Math.random() * 1e5).toString()}`;
   computationMap.set(s, { resolve: n, reject: o });
-  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-xKwB6K_1.js", import.meta.url), { type: "module" }));
-  logger.info("Running effect ASYNC, name:", t2.effectInput.effectName, "params:", t2.effectInput.params, "useAlternateGifGenerator:", t2.useAlternateGifGenerator), c.runEffectRPC(t2).then(handleSuccess(s), handleError(s));
+  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-D9G1yYJU.js", import.meta.url), { type: "module" }));
+  logger.info("Running effect ASYNC", { name: t2.effectInput.effectName, params: t2.effectInput.params }), c.runEffectRPC(t2).then(handleSuccess(s), handleError(s));
 }), computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync, computeGifsForState = async ({ state: t2, startEffectIndex: n, onCompute: o }) => {
   assert(t2.baseImage, "No source image, this button should be disabled!");
   let s;
@@ -32220,7 +32224,7 @@ const TooltipInner = () => jsxRuntimeExports.jsxs(Stack, { spacing: 1, children:
     });
   }, []);
   return React.useEffect(() => {
-    logger.debug("UseEffect, doCompute", o), o.compute && (s({ compute: false }), (async () => (h((m) => ({ ...m, effects: m.effects.map((b, v) => v < o.startIndex ? b : { ...b, state: { status: "computing" } }) }), { compute: "no" }), await computeGifsForState({ state: t2, onCompute: (m, b) => {
+    logger.debug("UseEffect", { doCompute: o }), o.compute && (s({ compute: false }), (async () => (h((m) => ({ ...m, effects: m.effects.map((b, v) => v < o.startIndex ? b : { ...b, state: { status: "computing" } }) }), { compute: "no" }), await computeGifsForState({ state: t2, onCompute: (m, b) => {
       h((v) => ({ ...v, effects: replaceIndex(v.effects, b, (y) => ({ ...y, state: { status: "done", image: m } })) }), { compute: "no" });
     }, startEffectIndex: o.startIndex })))());
   }, [o]), jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(ScopedCssBaseline, {}), jsxRuntimeExports.jsx(Container, { maxWidth: IS_MOBILE ? "sm" : "md", children: jsxRuntimeExports.jsxs(Stack, { spacing: 4, justifyContent: "space-evenly", alignItems: "center", width: IS_MOBILE ? "sm" : void 0, divider: jsxRuntimeExports.jsx(Divider, {}), children: [jsxRuntimeExports.jsx(Typography, { variant: "h2", pt: 4, children: "Partymoji" }), jsxRuntimeExports.jsxs(Stack, { spacing: 4, divider: jsxRuntimeExports.jsx(Divider, {}), children: [jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsx(Help, {}) }), jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsxs(Stack, { spacing: 1, alignItems: "center", children: [jsxRuntimeExports.jsx(Typography, { variant: "h5", children: "Source Image" }), jsxRuntimeExports.jsx(ImagePicker, { name: "Upload a source image", currentImage: t2.baseImage, onChange: (m, b, v) => {

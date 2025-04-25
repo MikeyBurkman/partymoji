@@ -37,7 +37,6 @@
     "comlink": "^4.4.2",
     "file-saver": "^2.0.5",
     "get-pixels": "^3.3.3",
-    "gif-encoder": "^0.7.2",
     "gif_encoder_wasm": "link:gif/gif_encoder_wasm/pkg",
     "gifuct-js": "^2.1.2",
     "mobile-detect": "^1.4.5",
