@@ -34,13 +34,11 @@ fn main() {
         }
     }
 
-    // Optional transparency color (e.g., fully transparent black)
-    let transparent_color = Some([0, 0, 0, 0]);
-
     // Measure the execution time of the create_gif function
     let start = Instant::now();
-    let gif_result =
-        gif_encoder::gif::create_gif(width as i32, height as i32, frames, fps, transparent_color);
+    let gif_result = gif_encoder::create_gif(width as i32, height as i32, frames, fps);
+
+    // let gif_result = gif_encoder::gif::create_gif(width as i32, height as i32, frames, fps, transparent_color);
     let duration = start.elapsed();
 
     println!("create_gif executed in: {:?}", duration);

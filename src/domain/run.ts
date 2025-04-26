@@ -66,7 +66,7 @@ const createGif = async ({
     dimensions: image.dimensions,
     fps,
   });
-
+  
   return wasmCreateGif({
     image,
     fps,

@@ -10,13 +10,7 @@ pub fn main() {
 }
 
 #[wasm_bindgen]
-pub fn create_gif_data_url(
-    width: i32,
-    height: i32,
-    frames: Uint8Array,
-    fps: i32,
-    transparent_color: Option<Uint8Array>,
-) -> String {
+pub fn create_gif_data_url(width: i32, height: i32, frames: Uint8Array, fps: i32) -> String {
     console::info_1(
         &format!(
             "WASM: create_gif_data_url called, width: {}, height: {}, fps: {}, frames length: {}",
@@ -32,16 +26,8 @@ pub fn create_gif_data_url(
     console::time_with_label("WASM GIF Creation");
     let frames_vec = frames.to_vec();
 
-    // Handle the optional transparent color
-    let transparent_color_option = transparent_color.map(|color| {
-        let color_vec = color.to_vec();
-        [color_vec[0], color_vec[1], color_vec[2], color_vec[3]]
-    });
-
     // Create a GIF with optional transparency
-    let gif_data =
-        gif_encoder::image::create_gif(width, height, frames_vec, fps, transparent_color_option)
-            .unwrap();
+    let gif_data = gif_encoder::create_gif(width, height, frames_vec, fps).unwrap();
 
     // Encode the GIF data as Base64 using the new Engine API
     let base64_encoded = BASE64_STANDARD.encode(&gif_data);
