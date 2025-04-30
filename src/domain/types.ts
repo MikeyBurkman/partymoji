@@ -159,6 +159,7 @@ export interface AppState {
   fname?: string;
   effects: Array<AppStateEffect>;
   fps: number;
+  frameCount: number;
 }
 
 export type ImageEffectResult = {

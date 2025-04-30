@@ -48,7 +48,6 @@ import { ripple } from './ripple';
 import { rotate } from './rotate';
 import { roxbury } from './roxbury';
 import { scaleImage } from './scale-image';
-import { setAnimationLength } from './set-animation-length';
 import { shake } from './shake';
 import { slowAnimation } from './slow-animation';
 import { spin } from './spin';
@@ -70,7 +69,6 @@ const GROUP_ORDERING: Array<EffectGroup> = [
 
 export const POSSIBLE_EFFECTS = pipe(
   [
-    setAnimationLength,
     adjustImage,
     backgroundColor,
     backgroundImage,

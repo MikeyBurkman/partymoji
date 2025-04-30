@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Button,
   Container,
@@ -8,27 +7,25 @@ import {
   Typography,
 } from '@mui/material';
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
-
+import React from 'react';
 import { Help } from '~/components/Help';
-import { ImagePicker } from '~/components/ImagePicker';
-import { ImageEffectList } from '~/components/ImageEffectList';
 import { Icon } from '~/components/Icon';
-
+import { ImageEffectList } from '~/components/ImageEffectList';
 import { computeGifsForState, getEffectsDiff } from '~/domain/computeGifs';
 import type { AppState, AppStateEffect } from '~/domain/types';
-import { miscUtil } from '~/domain/utils';
-
-import * as localStorage from '~/localStorage';
-import { sliderParam } from '~/params/sliderParam';
+import { imageUtil, miscUtil } from '~/domain/utils';
 import { POSSIBLE_EFFECTS } from '~/effects';
+import * as localStorage from '~/localStorage';
+import { SourceImage } from './components/SourceImage';
+import { DEFAULT_FPS } from './config';
 import {
   AlertProvider,
   AlertSnackbar,
   useSetAlert,
 } from './context/AlertContext';
 import { ProcessorQueueProvider } from './context/ProcessingQueue';
+import { IS_DEV, logger } from './domain/utils';
 import { IS_MOBILE } from './domain/utils/isMobile';
-import { logger, IS_DEV } from './domain/utils';
 
 // Number of millis to wait after a change before recomputing the gif
 const COMPUTE_DEBOUNCE_MILLIS = 1000;
@@ -37,21 +34,74 @@ const COMPUTE_DEBOUNCE_MILLIS = 1000;
 // Don't change this unless we have to!
 const CURRENT_APP_STATE_VERSION = 8;
 
-const DEFAULT_FPS = 20;
-const fpsParam = sliderParam({
-  name: 'Final Gif Frames per Second',
-  defaultValue: DEFAULT_FPS,
-  min: 1,
-  max: 60,
-});
-
 const DEFAULT_STATE: AppState = {
   version: CURRENT_APP_STATE_VERSION,
   effects: [],
   baseImage: undefined,
   fps: DEFAULT_FPS,
+  frameCount: 1,
 };
 
+// Contains the "help" and Image Source sections.
+const Header: React.FC<{
+  state: AppState;
+  setState: (
+    fn: (oldState: AppState) => AppState,
+    {
+      compute,
+    }: {
+      compute: 'no' | 'now' | 'later';
+    },
+  ) => void;
+  setAlert: (alert: { severity: 'error' | 'warning'; message: string }) => void;
+}> = ({ state, setState, setAlert }) => {
+  return (
+    <>
+      <Section>
+        <Help />
+      </Section>
+      <Section>
+        <SourceImage
+          baseImage={state.baseImage}
+          fps={state.fps}
+          onImageChange={(baseImage, fname, fps) => {
+            setState(
+              (prevState) => ({
+                ...prevState,
+                baseImage,
+                fname,
+                fps,
+              }),
+              { compute: 'now' },
+            );
+          }}
+          onFpsChange={(fps) => {
+            setState(
+              (prevState) => ({
+                ...prevState,
+                fps,
+              }),
+              { compute: 'later' },
+            );
+          }}
+          onFrameCountChange={(frameCount) => {
+            logger.info('Frame count changed', { frameCount });
+            setState(
+              (prevState) => ({
+                ...prevState,
+                frameCount,
+              }),
+              { compute: 'now' },
+            );
+          }}
+          setAlert={setAlert}
+        />
+      </Section>
+    </>
+  );
+};
+
+// The main body component of the whole app.
 const Inner: React.FC = () => {
   const [state, setStateRaw] = React.useState(DEFAULT_STATE);
   const [doCompute, setDoCompute] = React.useState<
@@ -115,7 +165,10 @@ const Inner: React.FC = () => {
             currState: newState,
           });
 
-          if (effectsDiff.diff) {
+          if (newState.frameCount !== oldState.frameCount) {
+            // redo everything if the frame count changes
+            setDoCompute({ compute: true, startIndex: 0 });
+          } else if (effectsDiff.diff) {
             if (compute === 'now') {
               setDoCompute({ compute: true, startIndex: effectsDiff.index });
             } else {
@@ -149,6 +202,12 @@ const Inner: React.FC = () => {
     // TODO What happens if new changes come in while we're already computing?
     // Need to throw away previous results and calculate new ones.
     setDoCompute({ compute: false });
+
+    if (state.baseImage) {
+      // set frame count -- it's a NOOP if no changes are made
+      state.baseImage.image = imageUtil.changeFrameCount(state.baseImage.image, state.frameCount);
+    }
+
     void (async () => {
       setState(
         (prevState) => ({
@@ -206,54 +265,7 @@ const Inner: React.FC = () => {
             Partymoji
           </Typography>
           <Stack spacing={4} divider={<Divider />}>
-            <Section>
-              <Help />
-            </Section>
-            <Section>
-              <Stack spacing={1} alignItems="center">
-                <Typography variant="h5">Source Image</Typography>
-                <ImagePicker
-                  name="Upload a source image"
-                  currentImage={state.baseImage}
-                  onChange={(baseImage, fname, fps) => {
-                    if (IS_MOBILE) {
-                      const [width, height] = baseImage.image.dimensions;
-                      if (width > 512 || height > 512) {
-                        setAlert({
-                          severity: 'error',
-                          message:
-                            'The image you chose is too large to work well on mobile.',
-                        });
-
-                        return;
-                      }
-                    }
-
-                    setState(
-                      (prevState) => ({
-                        ...prevState,
-                        baseImage,
-                        fname,
-                        fps,
-                      }),
-                      { compute: 'now' },
-                    );
-                  }}
-                />
-                {fpsParam.fn({
-                  value: state.fps,
-                  onChange: (fps) => {
-                    setState(
-                      (prevState) => ({
-                        ...prevState,
-                        fps,
-                      }),
-                      { compute: 'later' },
-                    );
-                  },
-                })}
-              </Stack>
-            </Section>
+            <Header state={state} setState={setState} setAlert={setAlert} />
             {state.baseImage != null && (
               <>
                 <Section>

@@ -1,18 +1,11 @@
-import type { AppState, ImageEffectResult, JsonType } from '~/domain/types';
+import type { AppState, ImageEffectResult } from '~/domain/types';
 import { miscUtil, imageImportUtil, imageUtil } from '~/domain/utils';
 
 const LOCAL_STORAGE_KEY = 'partymoji-state';
 
-interface SerializedAppState {
+interface SerializedAppState extends Omit<AppState, 'baseImage'> {
   baseImage: string | undefined;
-  effects: Array<{
-    effectName: string;
-    paramsValues: Array<JsonType>;
-    state: { status: 'init' };
-  }>;
-  version: number;
   fname?: string | undefined;
-  fps: number;
 }
 
 export const getStoredAppState = async (): Promise<AppState | undefined> => {
