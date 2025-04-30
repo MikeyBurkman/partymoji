@@ -32050,7 +32050,7 @@ const TooltipInner = () => jsxRuntimeExports.jsxs(Stack, { spacing: 1, children:
   }, children: "Save and Close" })] })] }) });
 }, MAX_SIZE = 128, Inner$1 = ({ result: t2, effectName: n }) => {
   const o = t2.image, { frames: s, dimensions: c } = o, [l, p] = c, [h, m] = React.useState(true), [b, v] = React.useState(true), { eleWidth: y, eleHeight: B, hScale: x, vScale: C } = React.useMemo(() => {
-    const Q = p / l;
+    const Q = l / p;
     let I = MAX_SIZE, O = MAX_SIZE;
     return l > p ? O = Math.floor(Q * MAX_SIZE) : I = Math.floor(Q * MAX_SIZE), { eleWidth: I, eleHeight: O, hScale: I / l, vScale: O / p };
   }, [p, l]), S = React.useMemo(() => s.map((Q, I) => jsxRuntimeExports.jsxs(Stack, { alignItems: "center", children: [jsxRuntimeExports.jsxs(Typography, { variant: "caption", children: ["Frame ", I + 1] }), jsxRuntimeExports.jsx("div", { style: b ? { border: "2px solid black" } : {}, children: jsxRuntimeExports.jsx(CanvasElement, { width: y, height: B, onCanvasMount: (O) => {
