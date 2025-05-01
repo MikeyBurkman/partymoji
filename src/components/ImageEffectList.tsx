@@ -270,7 +270,9 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
 
   const onSaveGif = React.useCallback(() => {
     if (finalGif != null) {
-      saveAs(finalGif, appState.fname ?? 'image.gif');
+      const fileName =
+        (appState.fname ?? 'image').replace(/\.[^/.]+$/, '') + '.gif';
+      saveAs(finalGif, fileName);
     }
   }, [finalGif, appState]);
 

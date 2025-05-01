@@ -32107,7 +32107,10 @@ const TooltipInner = () => jsxRuntimeExports.jsxs(Stack, { spacing: 1, children:
   }, [s, c, o]), C = React.useCallback(() => {
     c.open && c.isNew && o(removeIndex(s, c.idx)), l({ open: false });
   }, [s, c, o]), S = React.useCallback(() => {
-    B != null && FileSaver_minExports.saveAs(B, t2.fname ?? "image.gif");
+    if (B != null) {
+      const I = (t2.fname ?? "image").replace(/\.[^/.]+$/, "") + ".gif";
+      FileSaver_minExports.saveAs(B, I);
+    }
   }, [B, t2]), Q = React.useMemo(() => c.open && c.isNew ? c.idx : Number.MAX_SAFE_INTEGER, [c]);
   return jsxRuntimeExports.jsxs(Stack, { children: [jsxRuntimeExports.jsx(ImageEffectDialog, { open: c.open, possibleEffects: n, onChangeEffect: x, onCancel: C, initialImage: m, currentEffect: b, currFps: t2.fps, currRandomSeed: "partymoji" }), jsxRuntimeExports.jsxs(Box, { children: [jsxRuntimeExports.jsx(Divider, { sx: { pb: 4 }, children: jsxRuntimeExports.jsx(Button, { startIcon: jsxRuntimeExports.jsx(Icon, { name: "Add" }), onClick: y, name: "add", children: "Insert First Effect" }) }), s.map((I, O) => O !== Q && jsxRuntimeExports.jsx(ImageEffect, { index: O, currentEffects: s, effect: I, setEffectEditDialogState: l, onEffectsChange: o, newDefaultEffect: v }, effectKey(I, O)))] }), B != null && jsxRuntimeExports.jsx(Paper, { style: { padding: 8 }, elevation: 4, children: jsxRuntimeExports.jsxs(Stack, { alignItems: "center", spacing: 2, children: [jsxRuntimeExports.jsx(Typography, { variant: "h6", children: "Final Result" }), jsxRuntimeExports.jsx(Gif, { src: B, alt: t2.fname ?? "image.gif" }), jsxRuntimeExports.jsx(Button, { variant: "contained", onClick: S, startIcon: jsxRuntimeExports.jsx(Icon, { name: "SaveAlt" }), children: "Save Gif" })] }) })] });
 }, LOCAL_STORAGE_KEY = "partymoji-state", getStoredAppState = async () => {
