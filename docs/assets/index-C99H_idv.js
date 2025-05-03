@@ -32207,9 +32207,12 @@ const TooltipInner = () => jsxRuntimeExports.jsxs(Stack, { spacing: 1, children:
     });
   }, []);
   return React.useEffect(() => {
-    logger.debug("UseEffect", { doCompute: o }), o.compute && (s({ compute: false }), t2.baseImage && (t2.baseImage.image = changeFrameCount(t2.baseImage.image, t2.frameCount)), (async () => (h((m) => ({ ...m, effects: m.effects.map((b, v) => v < o.startIndex ? b : { ...b, state: { status: "computing" } }) }), { compute: "no" }), await computeGifsForState({ state: t2, onCompute: (m, b) => {
-      h((v) => ({ ...v, effects: replaceIndex(v.effects, b, (y) => ({ ...y, state: { status: "done", image: m } })) }), { compute: "no" });
-    }, startEffectIndex: o.startIndex })))());
+    logger.debug("UseEffect", { doCompute: o }), o.compute && (s({ compute: false }), (async () => {
+      const m = t2.baseImage;
+      m && m.image.frames.length !== t2.frameCount && h((b) => b.baseImage == null ? b : { ...b, baseImage: { ...b.baseImage, image: changeFrameCount(b.baseImage.image, t2.frameCount) } }, { compute: "now" }), h((b) => ({ ...b, effects: b.effects.map((v, y) => y < o.startIndex ? v : { ...v, state: { status: "computing" } }) }), { compute: "now" }), await computeGifsForState({ state: t2, onCompute: (b, v) => {
+        h((y) => ({ ...y, effects: replaceIndex(y.effects, v, (B) => ({ ...B, state: { status: "done", image: b } })) }), { compute: "no" });
+      }, startEffectIndex: o.startIndex });
+    })());
   }, [o]), jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(ScopedCssBaseline, {}), jsxRuntimeExports.jsx(Container, { maxWidth: IS_MOBILE ? "sm" : "md", children: jsxRuntimeExports.jsxs(Stack, { spacing: 4, justifyContent: "space-evenly", alignItems: "center", width: IS_MOBILE ? "sm" : void 0, divider: jsxRuntimeExports.jsx(Divider, {}), children: [jsxRuntimeExports.jsx(Typography, { variant: "h2", pt: 4, children: "Partymoji" }), jsxRuntimeExports.jsxs(Stack, { spacing: 4, divider: jsxRuntimeExports.jsx(Divider, {}), children: [jsxRuntimeExports.jsx(Header, { state: t2, setState: h, setAlert: p }), t2.baseImage != null && jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsx(ImageEffectList, { appState: t2, possibleEffects: POSSIBLE_EFFECTS, onEffectsChange: (m) => {
     h((b) => ({ ...b, effects: m }), { compute: "now" });
   } }) }), t2.effects.length && jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsxs(Stack, { spacing: 3, children: [jsxRuntimeExports.jsx(Typography, { variant: "h5", children: "Clear Effects" }), jsxRuntimeExports.jsxs(Typography, { variant: "body1", children: [jsxRuntimeExports.jsx(Icon, { name: "Warning", color: "warning" }), " Clicking this button will clear all effects for the image"] }), jsxRuntimeExports.jsx(Button, { startIcon: jsxRuntimeExports.jsx(Icon, { name: "Clear" }), sx: { maxWidth: "300px" }, variant: "contained", color: "warning", onClick: () => {

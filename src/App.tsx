@@ -200,30 +200,47 @@ const Inner: React.FC = () => {
     // Need to throw away previous results and calculate new ones.
     setDoCompute({ compute: false });
 
-    if (state.baseImage) {
-      // set frame count -- it's a NOOP if no changes are made
-      state.baseImage.image = imageUtil.changeFrameCount(
-        state.baseImage.image,
-        state.frameCount,
-      );
-    }
-
     void (async () => {
-      setState(
-        (prevState) => ({
-          ...prevState,
-          effects: prevState.effects.map((t, i): AppStateEffect => {
-            if (i < doCompute.startIndex) {
-              return t;
-            } else {
-              return {
-                ...t,
-                state: { status: 'computing' },
-              };
+      // Handle frame count changes
+      const baseImage = state.baseImage;
+      if (baseImage && baseImage.image.frames.length !== state.frameCount) {
+        setState(
+          (prevState) => {
+            if (prevState.baseImage == null) {
+              return prevState;
             }
-          }),
-        }),
-        { compute: 'no' },
+            return {
+              ...prevState,
+              baseImage: {
+                ...prevState.baseImage,
+                image: imageUtil.changeFrameCount(
+                  prevState.baseImage.image,
+                  state.frameCount,
+                ),
+              },
+            };
+          },
+          { compute: 'now' },
+        );
+      }
+
+      setState(
+        (prevState) => {
+          return {
+            ...prevState,
+            effects: prevState.effects.map((t, i): AppStateEffect => {
+              if (i < doCompute.startIndex) {
+                return t;
+              } else {
+                return {
+                  ...t,
+                  state: { status: 'computing' },
+                };
+              }
+            }),
+          };
+        },
+        { compute: 'now' },
       );
       // TODO error handling
       await computeGifsForState({
