@@ -11,7 +11,7 @@ import React from 'react';
 import { Help } from '~/components/Help';
 import { Icon } from '~/components/Icon';
 import { ImageEffectList } from '~/components/ImageEffectList';
-import { computeGifsForState, getEffectsDiff } from '~/domain/computeGifs';
+import { computeGifsForState, getStateDiff } from '~/domain/computeGifs';
 import type { AppState, AppStateEffect } from '~/domain/types';
 import { imageUtil, miscUtil } from '~/domain/utils';
 import { POSSIBLE_EFFECTS } from '~/effects';
@@ -160,17 +160,14 @@ const Inner: React.FC = () => {
             setComputeTimer(null);
           }
 
-          const effectsDiff = getEffectsDiff({
+          const stateDiff = getStateDiff({
             prevState: oldState,
             currState: newState,
           });
 
-          if (newState.frameCount !== oldState.frameCount) {
-            // redo everything if the frame count changes
-            setDoCompute({ compute: true, startIndex: 0 });
-          } else if (effectsDiff.diff) {
+          if (stateDiff.changed) {
             if (compute === 'now') {
-              setDoCompute({ compute: true, startIndex: effectsDiff.index });
+              setDoCompute({ compute: true, startIndex: stateDiff.index });
             } else {
               setDoCompute({ compute: false });
               setComputeTimer(
@@ -178,7 +175,7 @@ const Inner: React.FC = () => {
                   setComputeTimer(null);
                   setDoCompute({
                     compute: true,
-                    startIndex: effectsDiff.index,
+                    startIndex: stateDiff.index,
                   });
                 }, COMPUTE_DEBOUNCE_MILLIS),
               );

@@ -31987,20 +31987,20 @@ const computationMap = /* @__PURE__ */ new Map(), handleError = (t2) => (n) => {
     const l = t2.effects[c], p = await computeGif({ randomSeed: t2.baseImage.gif, image: s, effectInput: { effectName: l.effectName, params: l.paramsValues }, fps: t2.fps });
     s = p.image, o(p, c);
   }
-}, getEffectsDiff = ({ currState: t2, prevState: n }) => {
-  if (t2.fps !== n.fps || t2.baseImage !== n.baseImage) return logger.debug("FPS or base image is different"), { diff: true, index: 0 };
+}, getStateDiff = ({ currState: t2, prevState: n }) => {
+  if (t2.fps !== n.fps || t2.baseImage !== n.baseImage || t2.frameCount !== n.frameCount) return logger.debug("FPS, base image or frameCount is different"), { changed: true, index: 0 };
   const o = t2.effects, s = n.effects;
   for (let c = 0; c < o.length; c += 1) {
     const l = o[c], p = s[c];
-    if (!p) return logger.debug("No prevE, index ", c), { diff: true, index: c };
-    if (p.state.status !== "done") return logger.debug("PrevE not done ", c), { diff: true, index: c };
-    if (l.effectName !== p.effectName) return logger.debug("Different effect name ", c), { diff: true, index: c };
+    if (!p) return logger.debug("No prevE, index ", c), { changed: true, index: c };
+    if (p.state.status !== "done") return logger.debug("PrevE not done ", c), { changed: true, index: c };
+    if (l.effectName !== p.effectName) return logger.debug("Different effect name ", c), { changed: true, index: c };
     for (let h = 0; h < l.paramsValues.length; h += 1) {
       const m = l.paramsValues[h], b = p.paramsValues[h];
-      if (JSON.stringify(m) !== JSON.stringify(b)) return logger.debug("Param different", c, h), { diff: true, index: c };
+      if (JSON.stringify(m) !== JSON.stringify(b)) return logger.debug("Param different", c, h), { changed: true, index: c };
     }
   }
-  return logger.debug("No diff"), { diff: false };
+  return logger.debug("No diff"), { changed: false };
 }, ProcessorQueueContext = React.createContext({ latestRunIdRef: null }), getRunId = () => Math.floor(Math.random() * 1e5);
 function useProcessingQueue({ onComplete: t2, onError: n }) {
   const { latestRunIdRef: o } = React.use(ProcessorQueueContext), s = React.useCallback((c, l) => {
@@ -32198,8 +32198,8 @@ const TooltipInner = () => jsxRuntimeExports.jsxs(Stack, { spacing: 1, children:
       const y = m(v);
       if (saveAppState(y), b !== "no" && y.baseImage != null) {
         c && (clearTimeout(c), l(null));
-        const B = getEffectsDiff({ prevState: v, currState: y });
-        y.frameCount !== v.frameCount ? s({ compute: true, startIndex: 0 }) : B.diff && (b === "now" ? s({ compute: true, startIndex: B.index }) : (s({ compute: false }), l(setTimeout(() => {
+        const B = getStateDiff({ prevState: v, currState: y });
+        B.changed && (b === "now" ? s({ compute: true, startIndex: B.index }) : (s({ compute: false }), l(setTimeout(() => {
           l(null), s({ compute: true, startIndex: B.index });
         }, COMPUTE_DEBOUNCE_MILLIS))));
       }
