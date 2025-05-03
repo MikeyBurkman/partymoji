@@ -63,17 +63,19 @@ export const SourceImage: React.FC<SourceImageProps> = ({
           onImageChange(baseImage, fname, fps);
         }}
       />
-      {fpsParam.fn({
-        value: fps,
-        onChange: onFpsChange,
-      })}
-      {frameCountParam.fn({
-        value: baseImage?.image.frames.length ?? 0,
-        onChange: (num) => {
-          logger.info('FRAME COUNT CHANGED:', num);
-          onFrameCountChange(num);
-        },
-      })}
+      {!!baseImage &&
+        fpsParam.fn({
+          value: fps,
+          onChange: onFpsChange,
+        })}
+      {!!baseImage &&
+        frameCountParam.fn({
+          value: baseImage.image.frames.length,
+          onChange: (num) => {
+            logger.info('FRAME COUNT CHANGED:', num);
+            onFrameCountChange(num);
+          },
+        })}
     </Stack>
   );
 };
