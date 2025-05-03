@@ -31757,7 +31757,7 @@ function __wbg_finalize_init(t2, n) {
 }
 async function __wbg_init(t2) {
   if (wasm !== void 0) return wasm;
-  typeof t2 < "u" && (Object.getPrototypeOf(t2) === Object.prototype ? { module_or_path: t2 } = t2 : console.warn("using deprecated parameters for the initialization function; pass a single object instead")), typeof t2 > "u" && (t2 = new URL("/partymoji/assets/gif_encoder_wasm_bg-Br2U5Mbr.wasm", import.meta.url));
+  typeof t2 < "u" && (Object.getPrototypeOf(t2) === Object.prototype ? { module_or_path: t2 } = t2 : console.warn("using deprecated parameters for the initialization function; pass a single object instead")), typeof t2 > "u" && (t2 = new URL("/partymoji/assets/gif_encoder_wasm_bg-4EUPuwXC.wasm", import.meta.url));
   const n = __wbg_get_imports();
   (typeof t2 == "string" || typeof Request == "function" && t2 instanceof Request || typeof URL == "function" && t2 instanceof URL) && (t2 = fetch(t2));
   const { instance: o, module: s } = await __wbg_load(await t2, n);
@@ -31973,7 +31973,7 @@ const computationMap = /* @__PURE__ */ new Map(), handleError = (t2) => (n) => {
 }, runEffectsAsync = async (t2) => new Promise((n, o) => {
   const s = `${Date.now().toString()}-${Math.floor(Math.random() * 1e5).toString()}`;
   computationMap.set(s, { resolve: n, reject: o });
-  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker--Lzi9itq.js", import.meta.url), { type: "module" }));
+  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-AsdibgBa.js", import.meta.url), { type: "module" }));
   logger.info("Running effect ASYNC", { name: t2.effectInput.effectName, params: t2.effectInput.params }), c.runEffectRPC(t2).then(handleSuccess(s), handleError(s));
 }), computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync, computeGifsForState = async ({ state: t2, startEffectIndex: n, onCompute: o }) => {
   assert(t2.baseImage, "No source image, this button should be disabled!");
@@ -32107,7 +32107,10 @@ const TooltipInner = () => jsxRuntimeExports.jsxs(Stack, { spacing: 1, children:
   }, [s, c, o]), C = React.useCallback(() => {
     c.open && c.isNew && o(removeIndex(s, c.idx)), l({ open: false });
   }, [s, c, o]), S = React.useCallback(() => {
-    B != null && FileSaver_minExports.saveAs(B, t2.fname ?? "image.gif");
+    if (B != null) {
+      const I = (t2.fname ?? "image").replace(/\.[^/.]+$/, "") + ".gif";
+      FileSaver_minExports.saveAs(B, I);
+    }
   }, [B, t2]), Q = React.useMemo(() => c.open && c.isNew ? c.idx : Number.MAX_SAFE_INTEGER, [c]);
   return jsxRuntimeExports.jsxs(Stack, { children: [jsxRuntimeExports.jsx(ImageEffectDialog, { open: c.open, possibleEffects: n, onChangeEffect: x, onCancel: C, initialImage: m, currentEffect: b, currFps: t2.fps, currRandomSeed: "partymoji" }), jsxRuntimeExports.jsxs(Box, { children: [jsxRuntimeExports.jsx(Divider, { sx: { pb: 4 }, children: jsxRuntimeExports.jsx(Button, { startIcon: jsxRuntimeExports.jsx(Icon, { name: "Add" }), onClick: y, name: "add", children: "Insert First Effect" }) }), s.map((I, O) => O !== Q && jsxRuntimeExports.jsx(ImageEffect, { index: O, currentEffects: s, effect: I, setEffectEditDialogState: l, onEffectsChange: o, newDefaultEffect: v }, effectKey(I, O)))] }), B != null && jsxRuntimeExports.jsx(Paper, { style: { padding: 8 }, elevation: 4, children: jsxRuntimeExports.jsxs(Stack, { alignItems: "center", spacing: 2, children: [jsxRuntimeExports.jsx(Typography, { variant: "h6", children: "Final Result" }), jsxRuntimeExports.jsx(Gif, { src: B, alt: t2.fname ?? "image.gif" }), jsxRuntimeExports.jsx(Button, { variant: "contained", onClick: S, startIcon: jsxRuntimeExports.jsx(Icon, { name: "SaveAlt" }), children: "Save Gif" })] }) })] });
 }, LOCAL_STORAGE_KEY = "partymoji-state", getStoredAppState = async () => {
