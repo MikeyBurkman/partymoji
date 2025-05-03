@@ -205,7 +205,10 @@ const Inner: React.FC = () => {
 
     if (state.baseImage) {
       // set frame count -- it's a NOOP if no changes are made
-      state.baseImage.image = imageUtil.changeFrameCount(state.baseImage.image, state.frameCount);
+      state.baseImage.image = imageUtil.changeFrameCount(
+        state.baseImage.image,
+        state.frameCount,
+      );
     }
 
     void (async () => {
@@ -283,31 +286,33 @@ const Inner: React.FC = () => {
                     }}
                   />
                 </Section>
-                <Section>
-                  <Stack spacing={3}>
-                    <Typography variant="h5">Clear Effects</Typography>
-                    <Typography variant="body1">
-                      <Icon name="Warning" color="warning" /> Clicking this
-                      button will clear all effects for the image
-                    </Typography>
-                    <Button
-                      startIcon={<Icon name="Clear" />}
-                      sx={{ maxWidth: '300px' }}
-                      variant="contained"
-                      color="warning"
-                      onClick={() => {
-                        const newState: AppState = {
-                          ...DEFAULT_STATE,
-                          baseImage: state.baseImage,
-                        };
-                        setStateRaw(newState);
-                        localStorage.saveAppState(newState);
-                      }}
-                    >
-                      Clear Effects
-                    </Button>
-                  </Stack>
-                </Section>
+                {state.effects.length && (
+                  <Section>
+                    <Stack spacing={3}>
+                      <Typography variant="h5">Clear Effects</Typography>
+                      <Typography variant="body1">
+                        <Icon name="Warning" color="warning" /> Clicking this
+                        button will clear all effects for the image
+                      </Typography>
+                      <Button
+                        startIcon={<Icon name="Clear" />}
+                        sx={{ maxWidth: '300px' }}
+                        variant="contained"
+                        color="warning"
+                        onClick={() => {
+                          const newState: AppState = {
+                            ...DEFAULT_STATE,
+                            baseImage: state.baseImage,
+                          };
+                          setStateRaw(newState);
+                          localStorage.saveAppState(newState);
+                        }}
+                      >
+                        Clear Effects
+                      </Button>
+                    </Stack>
+                  </Section>
+                )}
               </>
             )}
             <a
