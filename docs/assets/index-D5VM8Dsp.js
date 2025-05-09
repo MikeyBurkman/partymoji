@@ -31757,7 +31757,7 @@ function __wbg_finalize_init(t2, n) {
 }
 async function __wbg_init(t2) {
   if (wasm !== void 0) return wasm;
-  typeof t2 < "u" && (Object.getPrototypeOf(t2) === Object.prototype ? { module_or_path: t2 } = t2 : console.warn("using deprecated parameters for the initialization function; pass a single object instead")), typeof t2 > "u" && (t2 = new URL("/partymoji/assets/gif_encoder_wasm_bg-Br2U5Mbr.wasm", import.meta.url));
+  typeof t2 < "u" && (Object.getPrototypeOf(t2) === Object.prototype ? { module_or_path: t2 } = t2 : console.warn("using deprecated parameters for the initialization function; pass a single object instead")), typeof t2 > "u" && (t2 = new URL("/partymoji/assets/gif_encoder_wasm_bg-4EUPuwXC.wasm", import.meta.url));
   const n = __wbg_get_imports();
   (typeof t2 == "string" || typeof Request == "function" && t2 instanceof Request || typeof URL == "function" && t2 instanceof URL) && (t2 = fetch(t2));
   const { instance: o, module: s } = await __wbg_load(await t2, n);
@@ -31973,7 +31973,7 @@ const computationMap = /* @__PURE__ */ new Map(), handleError = (t2) => (n) => {
 }, runEffectsAsync = async (t2) => new Promise((n, o) => {
   const s = `${Date.now().toString()}-${Math.floor(Math.random() * 1e5).toString()}`;
   computationMap.set(s, { resolve: n, reject: o });
-  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-OByb-8YT.js", import.meta.url), { type: "module" }));
+  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-CqQqjN7N.js", import.meta.url), { type: "module" }));
   logger.info("Running effect ASYNC", { name: t2.effectInput.effectName, params: t2.effectInput.params }), c.runEffectRPC(t2).then(handleSuccess(s), handleError(s));
 }), computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync, computeGifsForState = async ({ state: t2, startEffectIndex: n, onCompute: o }) => {
   assert(t2.baseImage, "No source image, this button should be disabled!");
@@ -32050,7 +32050,7 @@ const TooltipInner = () => jsxRuntimeExports.jsxs(Stack, { spacing: 1, children:
   }, children: "Save and Close" })] })] }) });
 }, MAX_SIZE = 128, Inner$1 = ({ result: t2, effectName: n }) => {
   const o = t2.image, { frames: s, dimensions: c } = o, [l, p] = c, [h, m] = React.useState(true), [b, v] = React.useState(true), { eleWidth: y, eleHeight: B, hScale: x, vScale: C } = React.useMemo(() => {
-    const Q = l / p;
+    const Q = p / l;
     let I = MAX_SIZE, O = MAX_SIZE;
     return l > p ? O = Math.floor(Q * MAX_SIZE) : I = Math.floor(Q * MAX_SIZE), { eleWidth: I, eleHeight: O, hScale: I / l, vScale: O / p };
   }, [p, l]), S = React.useMemo(() => s.map((Q, I) => jsxRuntimeExports.jsxs(Stack, { alignItems: "center", children: [jsxRuntimeExports.jsxs(Typography, { variant: "caption", children: ["Frame ", I + 1] }), jsxRuntimeExports.jsx("div", { style: b ? { border: "2px solid black" } : {}, children: jsxRuntimeExports.jsx(CanvasElement, { width: y, height: B, onCanvasMount: (O) => {
@@ -32150,17 +32150,17 @@ const TooltipInner = () => jsxRuntimeExports.jsxs(Stack, { spacing: 1, children:
   var _a;
   const n = { ...t2, baseImage: (_a = t2.baseImage) == null ? void 0 : _a.gif, effects: t2.effects.map((o) => ({ ...o, state: { status: "init" } })) };
   return JSON.stringify(n);
-}, DEFAULT_FPS = 20, MAX_FRAMES = 50, fpsParam = sliderParam({ name: "Final Gif Frames per Second", defaultValue: DEFAULT_FPS, min: 1, max: 60 }), frameCountParam = sliderParam({ name: "Final Gif Frame Count", defaultValue: 0, min: 1, max: MAX_FRAMES }), SourceImage = ({ baseImage: t2, fps: n, onImageChange: o, onFpsChange: s, onFrameCountChange: c, setAlert: l }) => jsxRuntimeExports.jsxs(Stack, { spacing: 1, alignItems: "center", children: [jsxRuntimeExports.jsx(Typography, { variant: "h5", children: "Source Image" }), jsxRuntimeExports.jsx(ImagePicker, { name: "Upload a source image", currentImage: t2, onChange: (p, h, m) => {
+}, DEFAULT_FPS = 20, MAX_FRAMES = 50, fpsParam = sliderParam({ name: "Final Gif Frames per Second", defaultValue: DEFAULT_FPS, min: 1, max: 60 }), frameCountParam = sliderParam({ name: "Final Gif Frame Count", defaultValue: 0, min: 1, max: MAX_FRAMES }), SourceImage = ({ baseImage: t2, fps: n, frameCount: o, onImageChange: s, onFpsChange: c, onFrameCountChange: l, setAlert: p }) => jsxRuntimeExports.jsxs(Stack, { spacing: 1, alignItems: "center", children: [jsxRuntimeExports.jsx(Typography, { variant: "h5", children: "Source Image" }), jsxRuntimeExports.jsx(ImagePicker, { name: "Upload a source image", currentImage: t2, onChange: (h, m, b) => {
   if (IS_MOBILE) {
-    const [b, v] = p.image.dimensions;
-    if (b > 512 || v > 512) {
-      l({ severity: "error", message: "The image you chose is too large to work well on mobile." });
+    const [v, y] = h.image.dimensions;
+    if (v > 512 || y > 512) {
+      p({ severity: "error", message: "The image you chose is too large to work well on mobile." });
       return;
     }
   }
-  o(p, h, m);
-} }), !!t2 && fpsParam.fn({ value: n, onChange: s }), !!t2 && frameCountParam.fn({ value: t2.image.frames.length, onChange: (p) => {
-  logger.info("FRAME COUNT CHANGED:", p), c(p);
+  s(h, m, b);
+} }), t2 != null && fpsParam.fn({ value: n, onChange: c }), t2 != null && frameCountParam.fn({ value: o, onChange: (h) => {
+  logger.info("FRAME COUNT CHANGED:", h), l(h);
 } })] }), AlertContext = React.createContext({ alert: null, setAlert: () => {
   throw new Error("Context not initialized");
 } }), AlertProvider = ({ children: t2 }) => {
@@ -32177,47 +32177,51 @@ const TooltipInner = () => jsxRuntimeExports.jsxs(Stack, { spacing: 1, children:
 }, ProcessorQueueProvider = ({ children: t2 }) => {
   const n = React.useRef(0);
   return jsxRuntimeExports.jsx(ProcessorQueueContext, { value: { latestRunIdRef: n }, children: t2 });
-}, COMPUTE_DEBOUNCE_MILLIS = 1e3, CURRENT_APP_STATE_VERSION = 8, DEFAULT_STATE = { version: CURRENT_APP_STATE_VERSION, effects: [], baseImage: void 0, fps: DEFAULT_FPS, frameCount: 1 }, Header = ({ state: t2, setState: n, setAlert: o }) => jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsx(Help, {}) }), jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsx(SourceImage, { baseImage: t2.baseImage, fps: t2.fps, onImageChange: (s, c, l) => {
-  n((p) => ({ ...p, baseImage: s, fname: c, fps: l }), { compute: "now" });
+}, COMPUTE_DEBOUNCE_MILLIS = 1e3, CURRENT_APP_STATE_VERSION = 8, DEFAULT_STATE = { version: CURRENT_APP_STATE_VERSION, effects: [], baseImage: void 0, fps: DEFAULT_FPS, frameCount: 1 }, Header = ({ state: t2, setState: n, setAlert: o }) => jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsx(Help, {}) }), jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsx(SourceImage, { baseImage: t2.baseImage, fps: t2.fps, frameCount: t2.frameCount, onImageChange: (s, c, l) => {
+  n((p) => ({ ...p, baseImage: s, fname: c, fps: l, frameCount: s.image.frames.length }), { compute: "now" });
 }, onFpsChange: (s) => {
   n((c) => ({ ...c, fps: s }), { compute: "later" });
 }, onFrameCountChange: (s) => {
-  logger.info("Frame count changed", { frameCount: s }), n((c) => ({ ...c, frameCount: s }), { compute: "now" });
+  logger.info("Frame count changed", { frameCount: s }), n((c) => ({ ...c, frameCount: s }), { compute: "later" });
 }, setAlert: o }) })] }), Inner = () => {
-  const [t2, n] = React.useState(DEFAULT_STATE), [o, s] = React.useState({ compute: false }), [c, l] = React.useState(null), p = useSetAlert();
+  const [t2, n] = React.useState(DEFAULT_STATE), [o, s] = React.useState({ compute: false }), c = React.useRef(null), l = useSetAlert();
   React.useEffect(() => {
-    IS_MOBILE && p({ severity: "warning", message: "This app is not well optimized for mobile. Your experience may not be great." });
-  }, [p]), React.useEffect(() => {
+    IS_MOBILE && l({ severity: "warning", message: "This app is not well optimized for mobile. Your experience may not be great." });
+  }, [l]), React.useEffect(() => {
     (async () => {
-      const m = await getStoredAppState();
-      m && (m.version === CURRENT_APP_STATE_VERSION ? (n(m), s({ compute: true, startIndex: 0 })) : clearAppState());
+      const h = await getStoredAppState();
+      h && (h.version === CURRENT_APP_STATE_VERSION ? (n(h), s({ compute: true, startIndex: 0 })) : clearAppState());
     })();
   }, []);
-  const h = React.useCallback((m, { compute: b }) => {
-    n((v) => {
-      const y = m(v);
-      if (saveAppState(y), b !== "no" && y.baseImage != null) {
-        c && (clearTimeout(c), l(null));
-        const B = getStateDiff({ prevState: v, currState: y });
-        B.changed && (b === "now" ? s({ compute: true, startIndex: B.index }) : (s({ compute: false }), l(setTimeout(() => {
-          l(null), s({ compute: true, startIndex: B.index });
-        }, COMPUTE_DEBOUNCE_MILLIS))));
+  const p = React.useCallback((h, { compute: m }) => {
+    n((b) => {
+      const v = h(b);
+      if (saveAppState(v), console.log("STATE CHANGE", v), m !== "no" && v.baseImage != null) {
+        c.current && (clearTimeout(c.current), c.current = null);
+        const y = getStateDiff({ prevState: b, currState: v });
+        y.changed && (m === "now" ? s({ compute: true, startIndex: y.index }) : (s({ compute: false }), c.current = setTimeout(() => {
+          c.current = null, s({ compute: true, startIndex: y.index });
+        }, COMPUTE_DEBOUNCE_MILLIS)));
       }
-      return y;
+      return v;
     });
   }, []);
   return React.useEffect(() => {
-    logger.debug("UseEffect", { doCompute: o }), o.compute && (s({ compute: false }), (async () => {
-      const m = t2.baseImage;
-      m && m.image.frames.length !== t2.frameCount && h((b) => b.baseImage == null ? b : { ...b, baseImage: { ...b.baseImage, image: changeFrameCount(b.baseImage.image, t2.frameCount) } }, { compute: "now" }), h((b) => ({ ...b, effects: b.effects.map((v, y) => y < o.startIndex ? v : { ...v, state: { status: "computing" } }) }), { compute: "now" }), await computeGifsForState({ state: t2, onCompute: (b, v) => {
-        h((y) => ({ ...y, effects: replaceIndex(y.effects, v, (B) => ({ ...B, state: { status: "done", image: b } })) }), { compute: "no" });
+    logger.debug("UseEffect", { doCompute: o }), o.compute && (console.log("Do compute!", window.STATE), s({ compute: false }), (async () => {
+      p((m) => ({ ...m, effects: m.effects.map((b, v) => v < o.startIndex ? b : { ...b, state: { status: "computing" } }) }), { compute: "now" });
+      const h = (() => {
+        const m = t2.baseImage;
+        return !m || m.image.frames.length === t2.frameCount ? (logger.info("Base image frame count did not change", { frameCount: t2.frameCount }), m) : { ...m, image: changeFrameCount(m.image, t2.frameCount) };
+      })();
+      await computeGifsForState({ state: { ...t2, baseImage: h }, onCompute: (m, b) => {
+        p((v) => ({ ...v, effects: replaceIndex(v.effects, b, (y) => ({ ...y, state: { status: "done", image: m } })) }), { compute: "no" });
       }, startEffectIndex: o.startIndex });
     })());
-  }, [o]), jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(ScopedCssBaseline, {}), jsxRuntimeExports.jsx(Container, { maxWidth: IS_MOBILE ? "sm" : "md", children: jsxRuntimeExports.jsxs(Stack, { spacing: 4, justifyContent: "space-evenly", alignItems: "center", width: IS_MOBILE ? "sm" : void 0, divider: jsxRuntimeExports.jsx(Divider, {}), children: [jsxRuntimeExports.jsx(Typography, { variant: "h2", pt: 4, children: "Partymoji" }), jsxRuntimeExports.jsxs(Stack, { spacing: 4, divider: jsxRuntimeExports.jsx(Divider, {}), children: [jsxRuntimeExports.jsx(Header, { state: t2, setState: h, setAlert: p }), t2.baseImage != null && jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsx(ImageEffectList, { appState: t2, possibleEffects: POSSIBLE_EFFECTS, onEffectsChange: (m) => {
-    h((b) => ({ ...b, effects: m }), { compute: "now" });
-  } }) }), t2.effects.length && jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsxs(Stack, { spacing: 3, children: [jsxRuntimeExports.jsx(Typography, { variant: "h5", children: "Clear Effects" }), jsxRuntimeExports.jsxs(Typography, { variant: "body1", children: [jsxRuntimeExports.jsx(Icon, { name: "Warning", color: "warning" }), " Clicking this button will clear all effects for the image"] }), jsxRuntimeExports.jsx(Button, { startIcon: jsxRuntimeExports.jsx(Icon, { name: "Clear" }), sx: { maxWidth: "300px" }, variant: "contained", color: "warning", onClick: () => {
-    const m = { ...DEFAULT_STATE, baseImage: t2.baseImage };
-    n(m), saveAppState(m);
+  }, [o, p, t2]), jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(ScopedCssBaseline, {}), jsxRuntimeExports.jsx(Container, { maxWidth: IS_MOBILE ? "sm" : "md", children: jsxRuntimeExports.jsxs(Stack, { spacing: 4, justifyContent: "space-evenly", alignItems: "center", width: IS_MOBILE ? "sm" : void 0, divider: jsxRuntimeExports.jsx(Divider, {}), children: [jsxRuntimeExports.jsx(Typography, { variant: "h2", pt: 4, children: "Partymoji" }), jsxRuntimeExports.jsxs(Stack, { spacing: 4, divider: jsxRuntimeExports.jsx(Divider, {}), children: [jsxRuntimeExports.jsx(Header, { state: t2, setState: p, setAlert: l }), t2.baseImage != null && jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsx(ImageEffectList, { appState: t2, possibleEffects: POSSIBLE_EFFECTS, onEffectsChange: (h) => {
+    p((m) => ({ ...m, effects: h }), { compute: "now" });
+  } }) }), t2.effects.length > 0 && jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsxs(Stack, { spacing: 3, children: [jsxRuntimeExports.jsx(Typography, { variant: "h5", children: "Clear Effects" }), jsxRuntimeExports.jsxs(Typography, { variant: "body1", children: [jsxRuntimeExports.jsx(Icon, { name: "Warning", color: "warning" }), " Clicking this button will clear all effects for the image"] }), jsxRuntimeExports.jsx(Button, { startIcon: jsxRuntimeExports.jsx(Icon, { name: "Clear" }), sx: { maxWidth: "300px" }, variant: "contained", color: "warning", onClick: () => {
+    const h = { ...DEFAULT_STATE, baseImage: t2.baseImage };
+    n(h), saveAppState(h);
   }, children: "Clear Effects" })] }) })] }), jsxRuntimeExports.jsx("a", { href: "https://github.com/MikeyBurkman/partymoji", target: "_blank", rel: "noreferrer", children: jsxRuntimeExports.jsx("img", { src: "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg", width: 64, height: 64, alt: "Github Link" }) })] })] }) }), jsxRuntimeExports.jsx(Stack, { pt: 8, children: jsxRuntimeExports.jsx(AlertSnackbar, {}) })] });
 }, Section = ({ children: t2 }) => jsxRuntimeExports.jsx(Paper, { style: { padding: 16, maxWidth: IS_MOBILE ? "300px" : void 0 }, children: t2 }), App = () => jsxRuntimeExports.jsx(ProcessorQueueProvider, { children: jsxRuntimeExports.jsx(AlertProvider, { children: jsxRuntimeExports.jsx(Inner, {}) }) });
 class TopLevelErrorBoundary extends React.Component {

@@ -24,6 +24,7 @@ const frameCountParam = sliderParam({
 interface SourceImageProps {
   baseImage?: ImageEffectResult;
   fps: number;
+  frameCount: number;
   onImageChange: (
     baseImage: ImageEffectResult,
     fname: string,
@@ -37,6 +38,7 @@ interface SourceImageProps {
 export const SourceImage: React.FC<SourceImageProps> = ({
   baseImage,
   fps,
+  frameCount,
   onImageChange,
   onFpsChange,
   onFrameCountChange,
@@ -60,17 +62,18 @@ export const SourceImage: React.FC<SourceImageProps> = ({
               return;
             }
           }
+
           onImageChange(baseImage, fname, fps);
         }}
       />
-      {!!baseImage &&
+      {baseImage != null &&
         fpsParam.fn({
           value: fps,
           onChange: onFpsChange,
         })}
-      {!!baseImage &&
+      {baseImage != null &&
         frameCountParam.fn({
-          value: baseImage.image.frames.length,
+          value: frameCount,
           onChange: (num) => {
             logger.info('FRAME COUNT CHANGED:', num);
             onFrameCountChange(num);

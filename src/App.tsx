@@ -65,6 +65,7 @@ const Header: React.FC<{
         <SourceImage
           baseImage={state.baseImage}
           fps={state.fps}
+          frameCount={state.frameCount}
           onImageChange={(baseImage, fname, fps) => {
             setState(
               (prevState) => ({
@@ -72,6 +73,7 @@ const Header: React.FC<{
                 baseImage,
                 fname,
                 fps,
+                frameCount: baseImage.image.frames.length,
               }),
               { compute: 'now' },
             );
@@ -92,7 +94,7 @@ const Header: React.FC<{
                 ...prevState,
                 frameCount,
               }),
-              { compute: 'now' },
+              { compute: 'later' },
             );
           }}
           setAlert={setAlert}
@@ -108,9 +110,7 @@ const Inner: React.FC = () => {
   const [doCompute, setDoCompute] = React.useState<
     { compute: true; startIndex: number } | { compute: false }
   >({ compute: false });
-  const [computeTimer, setComputeTimer] = React.useState<null | NodeJS.Timeout>(
-    null,
-  );
+  const computeTimerRef = React.useRef<null | NodeJS.Timeout>(null);
   const setAlert = useSetAlert();
 
   React.useEffect(() => {
@@ -147,6 +147,7 @@ const Inner: React.FC = () => {
       setStateRaw((oldState) => {
         const newState = fn(oldState);
         localStorage.saveAppState(newState);
+        console.log('STATE CHANGE', newState);
 
         if (IS_DEV) {
           // eslint-disable-next-line
@@ -156,9 +157,9 @@ const Inner: React.FC = () => {
         if (compute !== 'no' && newState.baseImage != null) {
           // Compute the gif some time from now.
           // Other changes within this time should push the compute time back
-          if (computeTimer) {
-            clearTimeout(computeTimer);
-            setComputeTimer(null);
+          if (computeTimerRef.current) {
+            clearTimeout(computeTimerRef.current);
+            computeTimerRef.current = null;
           }
 
           const stateDiff = getStateDiff({
@@ -169,17 +170,16 @@ const Inner: React.FC = () => {
           if (stateDiff.changed) {
             if (compute === 'now') {
               setDoCompute({ compute: true, startIndex: stateDiff.index });
-            } else { // later
+            } else {
+              // later
               setDoCompute({ compute: false });
-              setComputeTimer(
-                setTimeout(() => {
-                  setComputeTimer(null);
-                  setDoCompute({
-                    compute: true,
-                    startIndex: stateDiff.index,
-                  });
-                }, COMPUTE_DEBOUNCE_MILLIS),
-              );
+              computeTimerRef.current = setTimeout(() => {
+                computeTimerRef.current = null;
+                setDoCompute({
+                  compute: true,
+                  startIndex: stateDiff.index,
+                });
+              }, COMPUTE_DEBOUNCE_MILLIS);
             }
           }
         }
@@ -187,7 +187,6 @@ const Inner: React.FC = () => {
         return newState;
       });
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
@@ -197,34 +196,14 @@ const Inner: React.FC = () => {
       return;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+    console.log('Do compute!', (window as any).STATE);
+
     // TODO What happens if new changes come in while we're already computing?
     // Need to throw away previous results and calculate new ones.
     setDoCompute({ compute: false });
 
     void (async () => {
-      // Handle frame count changes
-      const baseImage = state.baseImage;
-      if (baseImage && baseImage.image.frames.length !== state.frameCount) {
-        setState(
-          (prevState) => {
-            if (prevState.baseImage == null) {
-              return prevState;
-            }
-            return {
-              ...prevState,
-              baseImage: {
-                ...prevState.baseImage,
-                image: imageUtil.changeFrameCount(
-                  prevState.baseImage.image,
-                  state.frameCount,
-                ),
-              },
-            };
-          },
-          { compute: 'now' },
-        );
-      }
-
       setState(
         (prevState) => {
           return {
@@ -243,9 +222,29 @@ const Inner: React.FC = () => {
         },
         { compute: 'now' },
       );
+
+      // Handle frame count changes
+      const newBaseImage = (() => {
+        const baseImage = state.baseImage;
+        if (!baseImage || baseImage.image.frames.length === state.frameCount) {
+          logger.info('Base image frame count did not change', {
+            frameCount: state.frameCount,
+          });
+          return baseImage;
+        }
+
+        return {
+          ...baseImage,
+          image: imageUtil.changeFrameCount(baseImage.image, state.frameCount),
+        };
+      })();
+
       // TODO error handling
       await computeGifsForState({
-        state,
+        state: {
+          ...state,
+          baseImage: newBaseImage,
+        },
         onCompute: (image, computeIdx) => {
           setState(
             (prevState) => ({
@@ -265,8 +264,7 @@ const Inner: React.FC = () => {
         startEffectIndex: doCompute.startIndex,
       });
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [doCompute]);
+  }, [doCompute, setState, state]);
 
   return (
     <>
@@ -301,7 +299,7 @@ const Inner: React.FC = () => {
                     }}
                   />
                 </Section>
-                {state.effects.length && (
+                {state.effects.length > 0 && (
                   <Section>
                     <Stack spacing={3}>
                       <Typography variant="h5">Clear Effects</Typography>
