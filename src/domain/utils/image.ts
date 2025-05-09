@@ -304,7 +304,9 @@ export const setPixel = (args: {
 
 export const changeFrameCount = (image: Image, frameCount: number): Image => {
   const currentFrames = image.frames;
-
+  if (currentFrames.length === frameCount) {
+    return image; // No change needed
+  }
   // Resulting image will contain frameCount frames.
   // If the original image had fewer than that, then we'll
   //  duplicate some frames to approximately slow the animation.

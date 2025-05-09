@@ -56,19 +56,19 @@ export const computeGifsForState = async ({
 };
 
 /** Get the index of the first effect that differs from curr to prev state */
-export const getEffectsDiff = ({
+export const getStateDiff = ({
   currState,
   prevState,
 }: {
   currState: AppState;
   prevState: AppState;
-}): { diff: true; index: number } | { diff: false } => {
+}): { changed: true; index: number } | { changed: false } => {
   if (
     currState.fps !== prevState.fps ||
-    currState.baseImage !== prevState.baseImage
-  ) {
-    logger.debug('FPS or base image is different');
-    return { diff: true, index: 0 };
+    currState.baseImage !== prevState.baseImage || 
+    currState.frameCount !== prevState.frameCount  ) {
+    logger.debug('FPS, base image or frameCount is different');
+    return { changed: true, index: 0 };
   }
 
   const currEffects = currState.effects;
@@ -81,17 +81,17 @@ export const getEffectsDiff = ({
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- invalid linting error
     if (!prevE) {
       logger.debug('No prevE, index ', i);
-      return { diff: true, index: i };
+      return { changed: true, index: i };
     }
 
     if (prevE.state.status !== 'done') {
       logger.debug('PrevE not done ', i);
-      return { diff: true, index: i };
+      return { changed: true, index: i };
     }
 
     if (currE.effectName !== prevE.effectName) {
       logger.debug('Different effect name ', i);
-      return { diff: true, index: i };
+      return { changed: true, index: i };
     }
 
     // Compare the param values
@@ -100,11 +100,11 @@ export const getEffectsDiff = ({
       const prevEP: unknown = prevE.paramsValues[ei];
       if (JSON.stringify(currEParam) !== JSON.stringify(prevEP)) {
         logger.debug('Param different', i, ei);
-        return { diff: true, index: i };
+        return { changed: true, index: i };
       }
     }
   }
 
   logger.debug('No diff');
-  return { diff: false };
+  return { changed: false };
 };

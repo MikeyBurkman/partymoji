@@ -26,9 +26,8 @@ https://mikeyburkman.github.io/partymoji/
   - Maybe make them exponential -- lower values on the slider are easier to select, but as you move the slider right, it starts skipping values. (Lower values typically require more precision.)
   - Could also try increasing/decreasing the slider value based on how fast the cursor is moving?
 - Rewrite (over time) the UI using styled-components, not Material UI, so we have more control over things
-- Write a gif encoder in Rust/web assembly, so creating gifs is a lot faster
-  - Ideally the gif encoder is a separate open source project that this app merely uses.
-  - Extra credit - GIFs can be greatly optimized by having subsequent animation frames only overwrite part of the image. Would be really cool to figure out how to do that ourselves.
+- Consider making the rust gif encoder a separate open source project that this app merely uses.
+- Extra credit - GIFs can be greatly optimized by having subsequent animation frames only overwrite part of the image. Would be really cool to figure out how to do that ourselves.
 
 ### Effect ideas
 
@@ -36,3 +35,4 @@ https://mikeyburkman.github.io/partymoji/
 - Spiraling out effect -- maybe applying opacity more as it progresses to the outer edge?
 - Sierpinski triangle effect
 - Give each pixel a randomized trajectory to give like a scatter effect? Maybe some sort of circular function that will ensure it returns to the starting point. Bezier curve to control the speed.
+- Allow adding and removing text on different frames (potentially with their own effects). This would allow for text to show up at different times in the animation

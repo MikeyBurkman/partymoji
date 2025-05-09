@@ -28,7 +28,7 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
   const [showBorder, setShowBorder] = React.useState(true);
 
   const { eleWidth, eleHeight, hScale, vScale } = React.useMemo(() => {
-    const aspectRatio = width / height;
+    const aspectRatio = height / width;
 
     let eleWidth = MAX_SIZE;
     let eleHeight = MAX_SIZE;

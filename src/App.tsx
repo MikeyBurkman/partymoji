@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Button,
   Container,
@@ -8,27 +7,26 @@ import {
   Typography,
 } from '@mui/material';
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
-
+import React from 'react';
 import { Help } from '~/components/Help';
-import { ImagePicker } from '~/components/ImagePicker';
-import { ImageEffectList } from '~/components/ImageEffectList';
 import { Icon } from '~/components/Icon';
-
-import { computeGifsForState, getEffectsDiff } from '~/domain/computeGifs';
+import { ImageEffectList } from '~/components/ImageEffectList';
+import { computeGifsForState, getStateDiff } from '~/domain/computeGifs';
 import type { AppState, AppStateEffect } from '~/domain/types';
-import { miscUtil } from '~/domain/utils';
-
-import * as localStorage from '~/localStorage';
-import { sliderParam } from '~/params/sliderParam';
+import { imageUtil, miscUtil } from '~/domain/utils';
 import { POSSIBLE_EFFECTS } from '~/effects';
+import * as localStorage from '~/localStorage';
+import { SourceImage } from './components/SourceImage';
+import { DEFAULT_FPS } from './config';
 import {
   AlertProvider,
   AlertSnackbar,
   useSetAlert,
 } from './context/AlertContext';
 import { ProcessorQueueProvider } from './context/ProcessingQueue';
+import { IS_DEV, logger } from './domain/utils';
 import { IS_MOBILE } from './domain/utils/isMobile';
-import { logger, IS_DEV } from './domain/utils';
+import './App.css';
 
 // Number of millis to wait after a change before recomputing the gif
 const COMPUTE_DEBOUNCE_MILLIS = 1000;
@@ -37,29 +35,82 @@ const COMPUTE_DEBOUNCE_MILLIS = 1000;
 // Don't change this unless we have to!
 const CURRENT_APP_STATE_VERSION = 8;
 
-const DEFAULT_FPS = 20;
-const fpsParam = sliderParam({
-  name: 'Final Gif Frames per Second',
-  defaultValue: DEFAULT_FPS,
-  min: 1,
-  max: 60,
-});
-
 const DEFAULT_STATE: AppState = {
   version: CURRENT_APP_STATE_VERSION,
   effects: [],
   baseImage: undefined,
   fps: DEFAULT_FPS,
+  frameCount: 1,
 };
 
+// Contains the "help" and Image Source sections.
+const Header: React.FC<{
+  state: AppState;
+  setState: (
+    fn: (oldState: AppState) => AppState,
+    {
+      compute,
+    }: {
+      compute: 'no' | 'now' | 'later';
+    },
+  ) => void;
+  setAlert: (alert: { severity: 'error' | 'warning'; message: string }) => void;
+}> = ({ state, setState, setAlert }) => {
+  return (
+    <>
+      <Section>
+        <Help />
+      </Section>
+      <Section>
+        <SourceImage
+          baseImage={state.baseImage}
+          fps={state.fps}
+          frameCount={state.frameCount}
+          onImageChange={(baseImage, fname, fps) => {
+            setState(
+              (prevState) => ({
+                ...prevState,
+                baseImage,
+                fname,
+                fps,
+                frameCount: baseImage.image.frames.length,
+              }),
+              { compute: 'now' },
+            );
+          }}
+          onFpsChange={(fps) => {
+            setState(
+              (prevState) => ({
+                ...prevState,
+                fps,
+              }),
+              { compute: 'later' },
+            );
+          }}
+          onFrameCountChange={(frameCount) => {
+            logger.info('Frame count changed', { frameCount });
+            setState(
+              (prevState) => ({
+                ...prevState,
+                frameCount,
+              }),
+              { compute: 'later' },
+            );
+          }}
+          setAlert={setAlert}
+        />
+      </Section>
+    </>
+  );
+};
+
+// The main body component of the whole app.
 const Inner: React.FC = () => {
   const [state, setStateRaw] = React.useState(DEFAULT_STATE);
   const [doCompute, setDoCompute] = React.useState<
     { compute: true; startIndex: number } | { compute: false }
   >({ compute: false });
-  const [computeTimer, setComputeTimer] = React.useState<null | NodeJS.Timeout>(
-    null,
-  );
+  const computeTimerRef = React.useRef<null | NodeJS.Timeout>(null);
   const setAlert = useSetAlert();
 
   React.useEffect(() => {
@@ -96,6 +147,7 @@ const Inner: React.FC = () => {
       setStateRaw((oldState) => {
         const newState = fn(oldState);
         localStorage.saveAppState(newState);
+        console.log('STATE CHANGE', newState);
 
         if (IS_DEV) {
           // eslint-disable-next-line
@@ -105,30 +157,29 @@ const Inner: React.FC = () => {
         if (compute !== 'no' && newState.baseImage != null) {
           // Compute the gif some time from now.
           // Other changes within this time should push the compute time back
-          if (computeTimer) {
-            clearTimeout(computeTimer);
-            setComputeTimer(null);
+          if (computeTimerRef.current) {
+            clearTimeout(computeTimerRef.current);
+            computeTimerRef.current = null;
           }
 
-          const effectsDiff = getEffectsDiff({
+          const stateDiff = getStateDiff({
             prevState: oldState,
             currState: newState,
           });
 
-          if (effectsDiff.diff) {
+          if (stateDiff.changed) {
             if (compute === 'now') {
-              setDoCompute({ compute: true, startIndex: effectsDiff.index });
+              setDoCompute({ compute: true, startIndex: stateDiff.index });
             } else {
+              // later
               setDoCompute({ compute: false });
-              setComputeTimer(
-                setTimeout(() => {
-                  setComputeTimer(null);
-                  setDoCompute({
-                    compute: true,
-                    startIndex: effectsDiff.index,
-                  });
-                }, COMPUTE_DEBOUNCE_MILLIS),
-              );
+              computeTimerRef.current = setTimeout(() => {
+                computeTimerRef.current = null;
+                setDoCompute({
+                  compute: true,
+                  startIndex: stateDiff.index,
+                });
+              }, COMPUTE_DEBOUNCE_MILLIS);
             }
           }
         }
@@ -136,7 +187,6 @@ const Inner: React.FC = () => {
         return newState;
       });
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
@@ -146,29 +196,55 @@ const Inner: React.FC = () => {
       return;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+    console.log('Do compute!', (window as any).STATE);
+
     // TODO What happens if new changes come in while we're already computing?
     // Need to throw away previous results and calculate new ones.
     setDoCompute({ compute: false });
+
     void (async () => {
       setState(
-        (prevState) => ({
-          ...prevState,
-          effects: prevState.effects.map((t, i): AppStateEffect => {
-            if (i < doCompute.startIndex) {
-              return t;
-            } else {
-              return {
-                ...t,
-                state: { status: 'computing' },
-              };
-            }
-          }),
-        }),
-        { compute: 'no' },
+        (prevState) => {
+          return {
+            ...prevState,
+            effects: prevState.effects.map((t, i): AppStateEffect => {
+              if (i < doCompute.startIndex) {
+                return t;
+              } else {
+                return {
+                  ...t,
+                  state: { status: 'computing' },
+                };
+              }
+            }),
+          };
+        },
+        { compute: 'now' },
       );
+
+      // Handle frame count changes
+      const newBaseImage = (() => {
+        const baseImage = state.baseImage;
+        if (!baseImage || baseImage.image.frames.length === state.frameCount) {
+          logger.info('Base image frame count did not change', {
+            frameCount: state.frameCount,
+          });
+          return baseImage;
+        }
+
+        return {
+          ...baseImage,
+          image: imageUtil.changeFrameCount(baseImage.image, state.frameCount),
+        };
+      })();
+
       // TODO error handling
       await computeGifsForState({
-        state,
+        state: {
+          ...state,
+          baseImage: newBaseImage,
+        },
         onCompute: (image, computeIdx) => {
           setState(
             (prevState) => ({
@@ -188,8 +264,7 @@ const Inner: React.FC = () => {
         startEffectIndex: doCompute.startIndex,
       });
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [doCompute]);
+  }, [doCompute, setState, state]);
 
   return (
     <>
@@ -206,54 +281,7 @@ const Inner: React.FC = () => {
             Partymoji
           </Typography>
           <Stack spacing={4} divider={<Divider />}>
-            <Section>
-              <Help />
-            </Section>
-            <Section>
-              <Stack spacing={1} alignItems="center">
-                <Typography variant="h5">Source Image</Typography>
-                <ImagePicker
-                  name="Upload a source image"
-                  currentImage={state.baseImage}
-                  onChange={(baseImage, fname, fps) => {
-                    if (IS_MOBILE) {
-                      const [width, height] = baseImage.image.dimensions;
-                      if (width > 512 || height > 512) {
-                        setAlert({
-                          severity: 'error',
-                          message:
-                            'The image you chose is too large to work well on mobile.',
-                        });
-
-                        return;
-                      }
-                    }
-
-                    setState(
-                      (prevState) => ({
-                        ...prevState,
-                        baseImage,
-                        fname,
-                        fps,
-                      }),
-                      { compute: 'now' },
-                    );
-                  }}
-                />
-                {fpsParam.fn({
-                  value: state.fps,
-                  onChange: (fps) => {
-                    setState(
-                      (prevState) => ({
-                        ...prevState,
-                        fps,
-                      }),
-                      { compute: 'later' },
-                    );
-                  },
-                })}
-              </Stack>
-            </Section>
+            <Header state={state} setState={setState} setAlert={setAlert} />
             {state.baseImage != null && (
               <>
                 <Section>
@@ -271,31 +299,33 @@ const Inner: React.FC = () => {
                     }}
                   />
                 </Section>
-                <Section>
-                  <Stack spacing={3}>
-                    <Typography variant="h5">Clear Effects</Typography>
-                    <Typography variant="body1">
-                      <Icon name="Warning" color="warning" /> Clicking this
-                      button will clear all effects for the image
-                    </Typography>
-                    <Button
-                      startIcon={<Icon name="Clear" />}
-                      sx={{ maxWidth: '300px' }}
-                      variant="contained"
-                      color="warning"
-                      onClick={() => {
-                        const newState: AppState = {
-                          ...DEFAULT_STATE,
-                          baseImage: state.baseImage,
-                        };
-                        setStateRaw(newState);
-                        localStorage.saveAppState(newState);
-                      }}
-                    >
-                      Clear Effects
-                    </Button>
-                  </Stack>
-                </Section>
+                {state.effects.length > 0 && (
+                  <Section>
+                    <Stack spacing={3}>
+                      <Typography variant="h5">Clear Effects</Typography>
+                      <Typography variant="body1">
+                        <Icon name="Warning" color="warning" /> Clicking this
+                        button will clear all effects for the image
+                      </Typography>
+                      <Button
+                        startIcon={<Icon name="Clear" />}
+                        sx={{ maxWidth: '300px' }}
+                        variant="contained"
+                        color="warning"
+                        onClick={() => {
+                          const newState: AppState = {
+                            ...DEFAULT_STATE,
+                            baseImage: state.baseImage,
+                          };
+                          setStateRaw(newState);
+                          localStorage.saveAppState(newState);
+                        }}
+                      >
+                        Clear Effects
+                      </Button>
+                    </Stack>
+                  </Section>
+                )}
               </>
             )}
             <a
