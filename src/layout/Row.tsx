@@ -23,6 +23,7 @@ export const Row: React.FC<RowProps> = ({
   width,
   padding,
   height,
+  backgroundColor,
 }) => {
   const alignItems = (() => {
     switch (verticalAlign) {
@@ -58,6 +59,7 @@ export const Row: React.FC<RowProps> = ({
       $padding={padding}
       $direction="row"
       $height={height}
+      $backgroundColor={backgroundColor}
     >
       {children}
     </FlexContainer>

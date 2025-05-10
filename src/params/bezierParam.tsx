@@ -1,6 +1,6 @@
 import React from 'react';
 import * as R from 'remeda';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { Tooltip } from '~/components/Tooltip';
 import type {
   Coord,
@@ -11,6 +11,7 @@ import type {
 } from '~/domain/types';
 import { CanvasElement, useDebounce, miscUtil } from '~/domain/utils';
 import { toParamFunction } from './utils';
+import { Row } from '~/layout';
 
 const BezierParam: React.FC<{
   name: string;
@@ -116,28 +117,26 @@ const BezierParam: React.FC<{
   );
 
   return (
-    <Stack spacing={1}>
-      <Stack direction="row" spacing={1}>
-        <Typography variant="body2" paddingTop="0.5rem">
-          {name}
-        </Typography>
-        <span style={{ paddingTop: '0.5rem' }}>
-          <Tooltip kind="help" description={description} />
-        </span>
-        <Box border={1}>
-          <CanvasElement
-            width={WIDTH}
-            height={HEIGHT}
-            onCanvasMount={onCanvasMount}
-            onMouseDown={onMouseDown}
-            onMouseUp={onMouseUp}
-            onMouseLeave={onMouseUp}
-            onMouseMove={onMouseMove}
-            cursorIsPointer={closestPointIdx != null}
-          />
-        </Box>
-      </Stack>
-    </Stack>
+    <Row gap={1}>
+      <Typography variant="body2" paddingTop="0.5rem">
+        {name}
+      </Typography>
+      <span style={{ paddingTop: '0.5rem' }}>
+        <Tooltip kind="help" description={description} />
+      </span>
+      <Box border={1}>
+        <CanvasElement
+          width={WIDTH}
+          height={HEIGHT}
+          onCanvasMount={onCanvasMount}
+          onMouseDown={onMouseDown}
+          onMouseUp={onMouseUp}
+          onMouseLeave={onMouseUp}
+          onMouseMove={onMouseMove}
+          cursorIsPointer={closestPointIdx != null}
+        />
+      </Box>
+    </Row>
   );
 };
 

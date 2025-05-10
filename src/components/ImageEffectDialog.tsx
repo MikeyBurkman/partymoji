@@ -9,7 +9,6 @@ import {
   DialogTitle,
   Divider,
   FormControl,
-  Stack,
   styled,
   TextField,
   Typography,
@@ -20,6 +19,7 @@ import { Gif } from './Gif';
 import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
 import { useProcessingQueue } from '~/context/ProcessingQueue/useProcessingQueue';
 import { RequiresAnimationTooltip } from './RequiresAnimationTooltip';
+import { Column } from '~/layout';
 
 const GroupHeader = styled('div')(({ theme }) => ({
   position: 'sticky',
@@ -149,7 +149,7 @@ export const ImageEffectDialog: React.FC<Props> = ({
       {editingEffect && effect && (
         <>
           <DialogTitle>
-            <Stack direction="row" spacing={4} marginTop={2}>
+            <Column padding={2} verticalAlign="middle">
               <FormControl fullWidth>
                 <Autocomplete
                   disableClearable
@@ -180,12 +180,12 @@ export const ImageEffectDialog: React.FC<Props> = ({
                   )}
                   renderOption={(props, effect) => (
                     <li {...props}>
-                      <Stack marginLeft={2} marginRight={2}>
+                      <Column>
                         <Typography variant="body2">{effect.name}</Typography>
                         <Typography variant="caption" marginLeft={2}>
                           {effect.description}
                         </Typography>
-                      </Stack>
+                      </Column>
                     </li>
                   )}
                   renderInput={(params) => (
@@ -193,27 +193,25 @@ export const ImageEffectDialog: React.FC<Props> = ({
                   )}
                 />
               </FormControl>
-            </Stack>
+              <Typography variant="body2" marginLeft={1}>
+                {effect.description}
+                <div>
+                  {effect.secondaryDescription && (
+                    <Typography variant="caption" marginLeft={3}>
+                      {effect.secondaryDescription}
+                    </Typography>
+                  )}
+                </div>
+              </Typography>{' '}
+            </Column>
           </DialogTitle>
           <DialogContent>
-            <Stack divider={<Divider />} spacing={2}>
-              <Stack direction="row" spacing={4}>
-                <Typography variant="body2">
-                  {effect.description}
-                  <div>
-                    {effect.secondaryDescription && (
-                      <Typography variant="caption" marginLeft={2}>
-                        {effect.secondaryDescription}
-                      </Typography>
-                    )}
-                  </div>
-                </Typography>
-                {effect.requiresAnimation &&
-                !image.computing &&
-                image.results.image.frames.length <= 1 ? (
-                  <RequiresAnimationTooltip />
-                ) : null}
-              </Stack>
+            <Column gap={2} horizontalAlign="center" width="100%">
+              {effect.requiresAnimation &&
+              !image.computing &&
+              image.results.image.frames.length <= 1 ? (
+                <RequiresAnimationTooltip />
+              ) : null}
 
               {effect.params.map(
                 // Create elements for each of the parameters for the selectect effect.
@@ -239,11 +237,16 @@ export const ImageEffectDialog: React.FC<Props> = ({
                       key={`${editingEffect.effect.name}-${param.name}`}
                     >
                       {ele}
+                      <Divider
+                        sx={{
+                          width: '100%',
+                        }}
+                      />
                     </React.Fragment>
                   );
                 },
               )}
-              <Stack sx={{ height: 300 }}>
+              <Column>
                 {image.computing ? (
                   <CircularProgress size={100} />
                 ) : (
@@ -261,8 +264,8 @@ export const ImageEffectDialog: React.FC<Props> = ({
                     ) : null}
                   </>
                 )}
-              </Stack>
-            </Stack>
+              </Column>
+            </Column>
           </DialogContent>
           <DialogActions>
             <Button

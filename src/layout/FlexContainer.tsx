@@ -30,6 +30,7 @@ export interface FlexContainerProps {
   padding?: number;
   direction: 'row' | 'column';
   height?: string;
+  backgroundColor?: string;
 }
 
 export const FlexContainer = styled.div<{
@@ -41,6 +42,7 @@ export const FlexContainer = styled.div<{
   $padding?: number;
   $direction: 'row' | 'column';
   $height?: string;
+  $backgroundColor?: string;
 }>`
   display: flex;
   flex-direction: ${({ $direction }) => $direction};
@@ -51,4 +53,5 @@ export const FlexContainer = styled.div<{
   width: ${({ $width }) => $width};
   height: ${({ $height }) => $height};
   padding: ${({ $padding }) => ($padding ? `${$padding * 8}px` : undefined)};
+  background-color: ${({ $backgroundColor }) => $backgroundColor};
 `;

@@ -6,15 +6,18 @@ import { CanvasElement } from '~/domain/utils';
 import { drawImageOnCanvas, applyTransform } from '~/domain/utils/canvas';
 import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
 import { Column, Row } from '~/layout';
+import { ClickableIcon } from './Icon';
+import { Expandable } from './Expandable';
 
 const MAX_SIZE = 128;
 
 interface InnerProps {
   result: ImageEffectResult;
   effectName: string;
+  onEdit: () => void;
 }
 
-const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
+const Inner: React.FC<InnerProps> = ({ result, effectName, onEdit }) => {
   const image = result.image;
   const { frames, dimensions } = image;
   const [width, height] = dimensions;
@@ -23,16 +26,16 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
   const [showBorder, setShowBorder] = React.useState(true);
 
   const { eleWidth, eleHeight, hScale, vScale } = React.useMemo(() => {
-    const aspectRatio = width < height ? width / height : height / width;
-
     let eleWidth = MAX_SIZE;
     let eleHeight = MAX_SIZE;
 
     if (width > height) {
       // If width is bigger, then keep the width at MAX and scale the height down
+      const aspectRatio = height / width;
       eleHeight = Math.floor(aspectRatio * MAX_SIZE);
     } else {
       // Else scale the width down
+      const aspectRatio = width / height;
       eleWidth = Math.floor(aspectRatio * MAX_SIZE);
     }
 
@@ -82,71 +85,93 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
 
   return (
     <>
-      <Column horizontalAlign="center">
-        <Typography variant="body1">Full Gif</Typography>
+      <Row verticalAlign="middle" horizontalAlign="space-evenly" gap={4}>
+        <Column horizontalAlign="center">
+          <h3>Effect Result</h3>
+          {result.partiallyTransparent ? (
+            <Column horizontalAlign="center">
+              <Gif
+                src={result.gifWithBackgroundColor}
+                dimensions={dimensions}
+                alt={effectName}
+              />
+              <BackgroundPreviewTooltip />
+            </Column>
+          ) : (
+            <Column>
+              <Gif
+                src={
+                  showTransparency && result.gifWithBackgroundColor
+                    ? result.gifWithBackgroundColor
+                    : result.gif
+                }
+                dimensions={dimensions}
+                alt={effectName}
+              />
+              {result.gifWithBackgroundColor != null && (
+                <Row>
+                  <Typography variant="caption">Show Transparency</Typography>
+                  <Checkbox
+                    checked={showTransparency}
+                    onChange={(e) => {
+                      setShowTransparency(e.target.checked);
+                    }}
+                  />
+                </Row>
+              )}
+            </Column>
+          )}
+        </Column>
+        <Column horizontalAlign="stretch" gap={3}>
+          <ClickableIcon label="Edit" name="Edit" onClick={onEdit} />
+        </Column>
+      </Row>
+      <Divider orientation="vertical" />
 
-        {result.partiallyTransparent ? (
-          <>
-            <Gif
-              src={result.gifWithBackgroundColor}
-              dimensions={dimensions}
-              alt={effectName}
-            />
-            <BackgroundPreviewTooltip />
-          </>
-        ) : (
-          <Column padding={2}>
-            <Gif
-              src={
-                showTransparency && result.gifWithBackgroundColor
-                  ? result.gifWithBackgroundColor
-                  : result.gif
-              }
-              dimensions={dimensions}
-              alt={effectName}
-            />
-            {result.gifWithBackgroundColor != null && (
-              <Row>
-                <Typography variant="caption">Show Transparency</Typography>
-                <Checkbox
-                  checked={showTransparency}
-                  onChange={(e) => {
-                    setShowTransparency(e.target.checked);
-                  }}
-                />
-              </Row>
-            )}
-            <Row>
-              <Typography variant="caption">Show Frame Border</Typography>
+      <Expandable mainEle={<h3>Frames</h3>}>
+        <Column horizontalAlign="left">
+          <Row>
+            {/* TODO: Maybe we always show the border? */}
+            <label>
               <Checkbox
                 checked={showBorder}
                 onChange={(e) => {
                   setShowBorder(e.target.checked);
                 }}
               />
-            </Row>
-          </Column>
-        )}
-      </Column>
-      <Divider orientation="vertical" />
-      {renderedFrames}
+              Show Frame Border
+            </label>
+          </Row>
+          <Row gap={2} verticalAlign="middle" wrap="wrap">
+            {renderedFrames}
+          </Row>
+        </Column>
+      </Expandable>
     </>
   );
 };
 
 interface ImageRowProps {
   appStateEffect: AppStateEffect;
+  onEdit: () => void;
+  onDelete: () => void;
 }
 
-export const ImageRow: React.FC<ImageRowProps> = ({ appStateEffect }) => {
+export const ImageRow: React.FC<ImageRowProps> = ({
+  appStateEffect,
+  onEdit,
+}) => {
   if (appStateEffect.state.status !== 'done') {
     return <CircularProgress />;
   }
 
   return (
-    <Inner
-      effectName={appStateEffect.effectName}
-      result={appStateEffect.state.image}
-    />
+    <Column horizontalAlign="center" gap={2}>
+      <Inner
+        effectName={appStateEffect.effectName}
+        result={appStateEffect.state.image}
+        onEdit={onEdit}
+      />
+    </Column>
   );
 };

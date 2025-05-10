@@ -1,6 +1,7 @@
-import { Button, ClickAwayListener, Collapse, Stack } from '@mui/material';
+import { Button, ClickAwayListener, Collapse } from '@mui/material';
 import React, { JSX } from 'react';
 import { Icon } from './Icon';
+import { Column, Row } from '~/layout';
 
 interface ExpandableProps {
   mainEle: JSX.Element;
@@ -14,21 +15,27 @@ export const Expandable: React.FC<ExpandableProps> = ({
   const [collapsed, setCollapsed] = React.useState(true);
 
   return (
-    <ClickAwayListener onClickAway={() => { setCollapsed(true); }}>
-      <Stack>
+    <ClickAwayListener
+      onClickAway={() => {
+        setCollapsed(true);
+      }}
+    >
+      <Column horizontalAlign="center">
         <Button
           variant="text"
-          onClick={() => { setCollapsed(!collapsed); }}
+          onClick={() => {
+            setCollapsed(!collapsed);
+          }}
           style={{ color: 'black' }}
           size="small"
         >
-          <Stack direction="row" alignItems="center" spacing={4}>
+          <Row verticalAlign="middle">
             <div>{mainEle}</div>
-            <Icon name={collapsed ? 'Add' : 'Remove'} />
-          </Stack>
+            <Icon name={collapsed ? 'ExpandMore' : 'ExpandLess'} />
+          </Row>
         </Button>
         <Collapse in={!collapsed}>{children}</Collapse>
-      </Stack>
+      </Column>
     </ClickAwayListener>
   );
 };

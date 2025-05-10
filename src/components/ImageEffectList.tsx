@@ -1,8 +1,6 @@
 import React from 'react';
-import { Box, Button, Divider, Stack, Typography, Paper } from '@mui/material';
+import { Divider, Stack, Typography, Paper } from '@mui/material';
 import { saveAs } from 'file-saver';
-
-import { IS_MOBILE } from '~/domain/utils/isMobile';
 import type {
   AppStateEffect,
   Image,
@@ -14,10 +12,12 @@ import type {
 import { miscUtil } from '~/domain/utils';
 import { effectByName } from '~/effects';
 import { Gif } from './Gif';
-import { Icon, ClickableIcon } from './Icon';
+import { Icon } from './Icon';
 import { ImageEffectDialog } from './ImageEffectDialog';
 import { ImageRow } from './ImageRow';
 import { RequiresAnimationTooltip } from './RequiresAnimationTooltip';
+import { Column, Row } from '~/layout';
+import { Button } from './Button';
 
 type EffectEditDialogState =
   | { open: false }
@@ -97,37 +97,39 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
   }, [effect]);
 
   return (
-    <Stack>
-      <Paper style={{ padding: 8 }} elevation={4}>
-        <Stack alignItems="center" spacing={2}>
-          <Stack direction="row" spacing={2}>
-            <Typography variant="h6">
-              #{index + 1}: {effect.effectName}
-            </Typography>
-            {requiresAnimation}
-          </Stack>
-          <Stack
-            direction="row"
-            maxWidth={IS_MOBILE ? '300px' : 'md'}
-            spacing={2}
-            sx={{ overflowX: 'auto' }}
-          >
-            <Stack spacing={2} justifyContent="center">
-              <ClickableIcon label="Edit" name="Settings" onClick={onEdit} />
-              <ClickableIcon label="Delete" name="Delete" onClick={onDelete} />
-            </Stack>
-            <ImageRow appStateEffect={effect} />
-          </Stack>
-        </Stack>
-      </Paper>
+    <Column gap={2} width="100%" horizontalAlign="stretch">
+      <Column
+        horizontalAlign="center"
+        padding={1}
+        gap={2}
+        backgroundColor="white"
+      >
+        <Row gap={2} verticalAlign="middle">
+          <h2>
+            #{index + 1}: {effect.effectName}
+          </h2>
+          {requiresAnimation}
+          <Button
+            variant="warning"
+            size="small"
+            onClick={onDelete}
+            icon={<Icon name="Delete" />}
+          />
+        </Row>
+        <ImageRow appStateEffect={effect} onEdit={onEdit} onDelete={onDelete} />
+      </Column>
       <Divider sx={{ py: 4 }}>
-        <Button onClick={onAddAfter} startIcon={<Icon name="Add" />}>
+        <Button
+          onClick={onAddAfter}
+          icon={<Icon name="Add" />}
+          variant="secondary"
+        >
           {index < currentEffects.length - 1
             ? 'Insert Effect Here'
             : 'Add New Effect'}
         </Button>
       </Divider>
-    </Stack>
+    </Column>
   );
 };
 
@@ -288,7 +290,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
   }, [effectEditDialogState]);
 
   return (
-    <Stack>
+    <Column horizontalAlign="stretch">
       <ImageEffectDialog
         open={effectEditDialogState.open}
         possibleEffects={possibleEffects}
@@ -299,42 +301,45 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
         currFps={appState.fps}
         currRandomSeed="partymoji"
       />
-      <Box>
-        <Divider sx={{ pb: 4 }}>
-          <Button startIcon={<Icon name="Add" />} onClick={onAddNew} name="add">
-            Insert First Effect
-          </Button>
-        </Divider>
-        {currentEffects.map(
-          (t, tIdx) =>
-            tIdx !== hiddenIdx && (
-              <ImageEffect
-                key={effectKey(t, tIdx)}
-                index={tIdx}
-                currentEffects={currentEffects}
-                effect={t}
-                setEffectEditDialogState={setEffectEditDialogState}
-                onEffectsChange={onEffectsChange}
-                newDefaultEffect={newDefaultEffect}
-              />
-            ),
-        )}
-      </Box>
+      <Divider sx={{ pb: 4 }}>
+        <Button
+          icon={<Icon name="Add" />}
+          onClick={onAddNew}
+          variant="secondary"
+        >
+          Insert First Effect
+        </Button>
+      </Divider>
+      {currentEffects.map(
+        (t, tIdx) =>
+          tIdx !== hiddenIdx && (
+            <ImageEffect
+              key={effectKey(t, tIdx)}
+              index={tIdx}
+              currentEffects={currentEffects}
+              effect={t}
+              setEffectEditDialogState={setEffectEditDialogState}
+              onEffectsChange={onEffectsChange}
+              newDefaultEffect={newDefaultEffect}
+            />
+          ),
+      )}
       {finalGif != null && (
         <Paper style={{ padding: 8 }} elevation={4}>
           <Stack alignItems="center" spacing={2}>
             <Typography variant="h6">Final Result</Typography>
             <Gif src={finalGif} alt={appState.fname ?? 'image.gif'} />
             <Button
-              variant="contained"
+              variant="primary"
+              size="large"
               onClick={onSaveGif}
-              startIcon={<Icon name="SaveAlt" />}
+              icon={<Icon name="SaveAlt" />}
             >
               Save Gif
             </Button>
           </Stack>
         </Paper>
       )}
-    </Stack>
+    </Column>
   );
 };

@@ -1,9 +1,11 @@
-import { Slider, Stack, Typography } from '@mui/material';
+import { Slider } from '@mui/material';
 import React from 'react';
 import { Tooltip } from '~/components/Tooltip';
 import type { ParamFnDefault, ParamFunction } from '~/domain/types';
 import { useDebounce } from '~/domain/utils/useDebounce';
 import { toParamFunction } from './utils';
+import styled from 'styled-components';
+import { Column, Row } from '~/layout';
 
 const SliderParam: React.FC<{
   name: string;
@@ -20,32 +22,34 @@ const SliderParam: React.FC<{
     debounceMillis: 500,
   });
 
+  const increments = Math.floor((max - min) / (step ?? 1));
+
+  // column with minimum width to be a usable slider
+  const SliderColumn = styled(Column)`
+    min-width: ${increments * 2}px;
+  `;
+
   return (
-    <Stack spacing={1}>
-      <Stack direction="row" spacing={1}>
-        <Typography variant="body2">{name}</Typography>
-        <Tooltip kind="help" description={description} />
-      </Stack>
-      <Stack
-        direction="row"
-        spacing={2}
-        sx={{ paddingLeft: '8px', paddingRight: '8px' }}
-      >
-        <Slider
-          aria-label={name}
-          value={val}
-          step={step}
-          valueLabelDisplay="off"
-          getAriaValueText={(x) => x.toString()}
-          min={min}
-          max={max}
-          onChange={(_e, value) => {
-            setVal(value);
-          }}
-        />
-        <Typography variant="body2">{val}</Typography>
-      </Stack>
-    </Stack>
+    <SliderColumn>
+      <Row width="100%" verticalAlign='middle' gap={2}>
+        <label>
+          {name} <Tooltip kind="help" description={description} />
+          <Slider
+            aria-label={name}
+            value={val}
+            step={step}
+            valueLabelDisplay="off"
+            getAriaValueText={(x) => x.toString()}
+            min={min}
+            max={max}
+            onChange={(_e, value) => {
+              setVal(value);
+            }}
+          />
+        </label>
+        <span>{val}</span>
+      </Row>
+    </SliderColumn>
   );
 };
 

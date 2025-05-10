@@ -23,6 +23,7 @@ export const Column: React.FC<ColumnProps> = ({
   width,
   padding,
   height,
+  backgroundColor,
 }) => {
   const alignItems = (() => {
     switch (horizontalAlign) {
@@ -57,6 +58,7 @@ export const Column: React.FC<ColumnProps> = ({
       $padding={padding}
       $direction="column"
       $height={height}
+      $backgroundColor={backgroundColor}
     >
       {children}
     </FlexContainer>
