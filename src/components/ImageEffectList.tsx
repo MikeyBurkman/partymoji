@@ -1,5 +1,4 @@
 import React from 'react';
-import { Divider, Stack, Typography, Paper } from '@mui/material';
 import { saveAs } from 'file-saver';
 import type {
   AppStateEffect,
@@ -18,6 +17,7 @@ import { ImageRow } from './ImageRow';
 import { RequiresAnimationTooltip } from './RequiresAnimationTooltip';
 import { Column, Row } from '~/layout';
 import { Button } from './Button';
+import { Divider } from './Divider';
 
 type EffectEditDialogState =
   | { open: false }
@@ -301,7 +301,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
         currFps={appState.fps}
         currRandomSeed="partymoji"
       />
-      <Divider sx={{ pb: 4 }}>
+      <Divider py={4}>
         <Button
           icon={<Icon name="Add" />}
           onClick={onAddNew}
@@ -325,20 +325,18 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
           ),
       )}
       {finalGif != null && (
-        <Paper style={{ padding: 8 }} elevation={4}>
-          <Stack alignItems="center" spacing={2}>
-            <Typography variant="h6">Final Result</Typography>
-            <Gif src={finalGif} alt={appState.fname ?? 'image.gif'} />
-            <Button
-              variant="primary"
-              size="large"
-              onClick={onSaveGif}
-              icon={<Icon name="SaveAlt" />}
-            >
-              Save Gif
-            </Button>
-          </Stack>
-        </Paper>
+        <Column horizontalAlign="center" padding={2} backgroundColor="white">
+          <h2>Final Result</h2>
+          <Gif src={finalGif} alt={appState.fname ?? 'image.gif'} />
+          <Button
+            variant="primary"
+            size="large"
+            onClick={onSaveGif}
+            icon={<Icon name="SaveAlt" />}
+          >
+            Save Gif
+          </Button>
+        </Column>
       )}
     </Column>
   );

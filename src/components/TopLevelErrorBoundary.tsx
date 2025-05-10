@@ -1,6 +1,7 @@
 import React, { ErrorInfo } from 'react';
-import { Button, Stack, Typography } from '@mui/material';
 import { Icon } from './Icon';
+import { Column } from '~/layout';
+import { Button } from './Button';
 
 interface Props {
   onClearLocalStorage: () => void;
@@ -28,25 +29,21 @@ export class TopLevelErrorBoundary extends React.Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <Stack spacing={1}>
-          <Typography variant="h2">Oh no!</Typography>
-          <Typography variant="body1">
-            There seems to have been an issue
-          </Typography>
-          <Typography variant="body2">
+        <Column>
+          <h2>Oh no!</h2>
+          <p>There seems to have been an issue</p>
+          <p>
             If refreshing the page doesn't fix things, click the below button to
             clear local storage
-          </Typography>
+          </p>
           <Button
-            variant="contained"
-            sx={{ maxWidth: '300px' }}
-            endIcon={<Icon name="PriorityHigh" />}
-            startIcon={<Icon name="PriorityHigh" />}
+            variant="warning"
+            icon={<Icon name="PriorityHigh" />}
             onClick={this.props.onClearLocalStorage}
           >
             Clear storage and reload
           </Button>
-        </Stack>
+        </Column>
       );
     }
 

@@ -1,9 +1,10 @@
-import { Button, IconButton, Paper, Stack, Typography } from '@mui/material';
+import { Button, IconButton, Paper } from '@mui/material';
 import React from 'react';
 import { Tooltip } from '~/components/Tooltip';
 import type { JsonType, ParamFnDefault, ParamFunction } from '~/domain/types';
 import { toParamFunction } from './utils';
 import { Icon } from '~/components/Icon';
+import { Column, Row } from '~/layout';
 
 interface VariableLengthProps<T extends JsonType> {
   name: string;
@@ -51,7 +52,7 @@ function VariableLengthParam<T extends JsonType>({
       });
 
       return (
-        <Stack direction="row" key={`${name}-${idx}`}>
+        <Row key={`${name}-${idx}`}>
           <IconButton
             onClick={() => {
               const newParams = params.filter((_x, i) => i !== idx);
@@ -68,7 +69,7 @@ function VariableLengthParam<T extends JsonType>({
             <Icon name="Delete" />
           </IconButton>
           {ele}
-        </Stack>
+        </Row>
       );
     });
   }, [name, onChange, params]);
@@ -89,16 +90,16 @@ function VariableLengthParam<T extends JsonType>({
 
   return (
     <Paper>
-      <Stack spacing={1}>
-        <Stack direction="row" spacing={1}>
-          <Typography variant="body2">{name}</Typography>
+      <Column>
+        <Row>
+          <p>{name}</p>
           <Tooltip kind="help" description={description} />
-        </Stack>
+        </Row>
         {paramComponents}
         <Button variant="contained" onClick={onClickNewParam}>
           {newParamText}
         </Button>
-      </Stack>
+      </Column>
     </Paper>
   );
 }

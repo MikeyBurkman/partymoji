@@ -1,14 +1,9 @@
-import {
-  FormControl,
-  FormHelperText,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { FormControl, FormHelperText, TextField } from '@mui/material';
 import React from 'react';
 import { Tooltip } from '~/components/Tooltip';
 import type { ParamFnDefault, ParamFunction } from '~/domain/types';
 import { toParamFunction } from './utils';
+import { Column, Row } from '~/layout';
 
 type ParsedParam<T> =
   | { valid: true; value: T }
@@ -38,11 +33,11 @@ const IntParam: React.FC<{
   };
 
   return (
-    <Stack spacing={1}>
-      <Stack direction="row" spacing={1}>
-        <Typography variant="body2">{name}</Typography>
+    <Column>
+      <Row>
+        <p>{name}</p>
         <Tooltip kind="help" description={description} />
-      </Stack>
+      </Row>
       <FormControl>
         <TextField
           error={!!invalidText}
@@ -54,7 +49,7 @@ const IntParam: React.FC<{
         />
         {invalidText && <FormHelperText>{invalidText}</FormHelperText>}
       </FormControl>
-    </Stack>
+    </Column>
   );
 };
 

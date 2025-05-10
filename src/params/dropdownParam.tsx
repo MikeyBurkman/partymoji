@@ -1,13 +1,8 @@
-import {
-  FormControl,
-  MenuItem,
-  Select,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { FormControl, MenuItem, Select } from '@mui/material';
 import { Tooltip } from '~/components/Tooltip';
 import type { ParamFnDefault, ParamFunction } from '~/domain/types';
 import { toParamFunction } from './utils';
+import { Column, Row } from '~/layout';
 
 function DropdownParam<T extends string>({
   name,
@@ -23,11 +18,11 @@ function DropdownParam<T extends string>({
   onChange: (v: T) => void;
 }) {
   return (
-    <Stack spacing={1}>
-      <Stack direction="row" spacing={1}>
-        <Typography variant="body2">{name}</Typography>
+    <Column>
+      <Row>
+        <p>{name}</p>
         <Tooltip kind="help" description={description} />
-      </Stack>
+      </Row>
       <FormControl>
         <Select
           autoWidth
@@ -43,7 +38,7 @@ function DropdownParam<T extends string>({
           ))}
         </Select>
       </FormControl>
-    </Stack>
+    </Column>
   );
 }
 

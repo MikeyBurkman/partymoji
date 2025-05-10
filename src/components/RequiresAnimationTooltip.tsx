@@ -1,17 +1,17 @@
-import { Stack, Typography } from '@mui/material';
 import { Tooltip } from './Tooltip';
+import { Column } from '~/layout';
 
 const TooltipInner: React.FC = () => (
-  <Stack spacing={1}>
-    <Typography>This is a static image</Typography>
-    <Typography variant="caption">
+  <Column>
+    <p>
+      This is a static image.
+      <br />
       This effect requires an animation in order to have any effect.
-    </Typography>
-    <Typography variant="caption">
+      <br />
       Be sure to add a "Set Animation Length" effect before this, so there are
       multiple animation frames.
-    </Typography>
-  </Stack>
+    </p>
+  </Column>
 );
 
 export const RequiresAnimationTooltip: React.FC = () => {

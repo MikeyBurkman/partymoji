@@ -1,9 +1,11 @@
-import { Button, Stack, Box, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import React from 'react';
 import { miscUtil, imageUtil, imageImportUtil } from '~/domain/utils';
 import type { ImageEffectResult } from '~/domain/types';
 import { Gif } from './Gif';
 import { Icon } from './Icon';
+import { Column } from '~/layout';
+import { Button } from './Button';
 
 const parseFileName = (s: string): string => {
   const parts = s.split('/'); // For URLs
@@ -87,24 +89,17 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
     }
   };
   return (
-    <Stack spacing={2} alignItems="center">
-      <Stack direction="row">
-        <TextField
-          label="URL"
-          variant="outlined"
-          fullWidth
-          error={!!error}
-          helperText={error}
-          onBlur={(e) => void handleUrlBlur(e)}
-        />
-      </Stack>
-      <Box>OR</Box>
-      <Button
-        startIcon={<Icon name="Image"></Icon>}
-        sx={{ maxWidth: '300px' }}
-        variant="contained"
-        component="label"
-      >
+    <Column horizontalAlign="center">
+      <TextField
+        label="URL"
+        variant="outlined"
+        fullWidth
+        error={!!error}
+        helperText={error}
+        onBlur={(e) => void handleUrlBlur(e)}
+      />
+      OR
+      <Button icon={<Icon name="Image"></Icon>} variant="primary">
         Upload an Image
         <input
           type="file"
@@ -121,6 +116,6 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
           alt="Source"
         />
       )}
-    </Stack>
+    </Column>
   );
 };

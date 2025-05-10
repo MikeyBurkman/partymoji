@@ -1,8 +1,9 @@
 import React from 'react';
-import { Checkbox, Stack, Typography } from '@mui/material';
+import { Checkbox } from '@mui/material';
 import { Tooltip } from '~/components/Tooltip';
 import type { ParamFnDefault, ParamFunction } from '~/domain/types';
 import { toParamFunction } from './utils';
+import { Row } from '~/layout';
 
 const CheckboxParam: React.FC<{
   name: string;
@@ -11,21 +12,19 @@ const CheckboxParam: React.FC<{
   onChange: (v: boolean) => void;
 }> = ({ name, value, description, onChange }) => {
   return (
-    <Stack spacing={1}>
-      <Stack direction="row" spacing={1}>
-        <Typography variant="body2" paddingTop="0.5rem">
-          {name}
-        </Typography>
-        <span style={{ paddingTop: '0.5rem' }}>
-          <Tooltip kind="help" description={description} />
-        </span>
-        <Checkbox
-          aria-label={name}
-          checked={value}
-          onChange={(e) => { onChange(e.target.checked); }}
-        />
-      </Stack>
-    </Stack>
+    <Row>
+      <p>{name}</p>
+      <span style={{ paddingTop: '0.5rem' }}>
+        <Tooltip kind="help" description={description} />
+      </span>
+      <Checkbox
+        aria-label={name}
+        checked={value}
+        onChange={(e) => {
+          onChange(e.target.checked);
+        }}
+      />
+    </Row>
   );
 };
 
