@@ -118,7 +118,7 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
         </Row>
         <ImageRow appStateEffect={effect} onEdit={onEdit} onDelete={onDelete} />
       </Column>
-      <Divider sx={{ py: 4 }}>
+      <Divider py={4}>
         <Button
           onClick={onAddAfter}
           icon={<Icon name="Add" />}
