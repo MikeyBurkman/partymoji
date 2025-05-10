@@ -1,11 +1,4 @@
-import {
-  Button,
-  Container,
-  Divider,
-  Paper,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Button, Container, Typography } from '@mui/material';
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 import React from 'react';
 import { Help } from '~/components/Help';
@@ -27,6 +20,7 @@ import { ProcessorQueueProvider } from './context/ProcessingQueue';
 import { IS_DEV, logger } from './domain/utils';
 import { IS_MOBILE } from './domain/utils/isMobile';
 import './App.css';
+import { Column, Row } from './layout';
 
 // Number of millis to wait after a change before recomputing the gif
 const COMPUTE_DEBOUNCE_MILLIS = 1000;
@@ -58,10 +52,8 @@ const Header: React.FC<{
 }> = ({ state, setState, setAlert }) => {
   return (
     <>
-      <Section>
+      <Column horizontalAlign="center">
         <Help />
-      </Section>
-      <Section>
         <SourceImage
           baseImage={state.baseImage}
           fps={state.fps}
@@ -99,7 +91,7 @@ const Header: React.FC<{
           }}
           setAlert={setAlert}
         />
-      </Section>
+      </Column>
     </>
   );
 };
@@ -270,21 +262,20 @@ const Inner: React.FC = () => {
     <>
       <ScopedCssBaseline />
       <Container maxWidth={IS_MOBILE ? 'sm' : 'md'}>
-        <Stack
-          spacing={4}
-          justifyContent="space-evenly"
-          alignItems="center"
+        <Column
+          gap={4}
+          verticalAlign="middle"
+          horizontalAlign="stretch"
           width={IS_MOBILE ? 'sm' : undefined}
-          divider={<Divider />}
         >
           <Typography variant="h2" pt={4}>
             Partymoji
           </Typography>
-          <Stack spacing={4} divider={<Divider />}>
+          <Column gap={4}>
             <Header state={state} setState={setState} setAlert={setAlert} />
             {state.baseImage != null && (
               <>
-                <Section>
+                <Column>
                   <ImageEffectList
                     appState={state}
                     possibleEffects={POSSIBLE_EFFECTS}
@@ -298,33 +289,31 @@ const Inner: React.FC = () => {
                       );
                     }}
                   />
-                </Section>
+                </Column>
                 {state.effects.length > 0 && (
-                  <Section>
-                    <Stack spacing={3}>
-                      <Typography variant="h5">Clear Effects</Typography>
-                      <Typography variant="body1">
-                        <Icon name="Warning" color="warning" /> Clicking this
-                        button will clear all effects for the image
-                      </Typography>
-                      <Button
-                        startIcon={<Icon name="Clear" />}
-                        sx={{ maxWidth: '300px' }}
-                        variant="contained"
-                        color="warning"
-                        onClick={() => {
-                          const newState: AppState = {
-                            ...DEFAULT_STATE,
-                            baseImage: state.baseImage,
-                          };
-                          setStateRaw(newState);
-                          localStorage.saveAppState(newState);
-                        }}
-                      >
-                        Clear Effects
-                      </Button>
-                    </Stack>
-                  </Section>
+                  <Column gap={3} horizontalAlign="left">
+                    <Typography variant="h5">Clear Effects</Typography>
+                    <Typography variant="body1">
+                      <Icon name="Warning" color="warning" /> Clicking this
+                      button will clear all effects for the image
+                    </Typography>
+                    <Button
+                      startIcon={<Icon name="Clear" />}
+                      sx={{ maxWidth: '300px' }}
+                      variant="contained"
+                      color="warning"
+                      onClick={() => {
+                        const newState: AppState = {
+                          ...DEFAULT_STATE,
+                          baseImage: state.baseImage,
+                        };
+                        setStateRaw(newState);
+                        localStorage.saveAppState(newState);
+                      }}
+                    >
+                      Clear Effects
+                    </Button>
+                  </Column>
                 )}
               </>
             )}
@@ -340,22 +329,16 @@ const Inner: React.FC = () => {
                 alt="Github Link"
               ></img>
             </a>
-          </Stack>
-        </Stack>
+          </Column>
+        </Column>
       </Container>
 
-      <Stack pt={8}>
+      <Column padding={8}>
         <AlertSnackbar />
-      </Stack>
+      </Column>
     </>
   );
 };
-
-const Section: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
-  <Paper style={{ padding: 16, maxWidth: IS_MOBILE ? '300px' : undefined }}>
-    {children}
-  </Paper>
-);
 
 export const App: React.FC = () => {
   return (

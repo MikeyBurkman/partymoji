@@ -1,11 +1,12 @@
 import React from 'react';
-import { Stack, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { ImagePicker } from './ImagePicker';
 import { IS_MOBILE } from '~/domain/utils/isMobile';
 import type { ImageEffectResult } from '~/domain/types';
 import { sliderParam } from '~/params';
 import { DEFAULT_FPS, MAX_FRAMES } from '~/config';
 import { logger } from '~/domain/utils';
+import { Column } from '~/layout';
 
 const fpsParam = sliderParam({
   name: 'Final Gif Frames per Second',
@@ -45,7 +46,7 @@ export const SourceImage: React.FC<SourceImageProps> = ({
   setAlert,
 }) => {
   return (
-    <Stack spacing={1} alignItems="center">
+    <Column horizontalAlign="center">
       <Typography variant="h5">Source Image</Typography>
       <ImagePicker
         name="Upload a source image"
@@ -79,6 +80,6 @@ export const SourceImage: React.FC<SourceImageProps> = ({
             onFrameCountChange(num);
           },
         })}
-    </Stack>
+    </Column>
   );
 };

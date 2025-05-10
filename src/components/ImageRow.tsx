@@ -1,16 +1,11 @@
 import React from 'react';
-import {
-  CircularProgress,
-  Stack,
-  Typography,
-  Divider,
-  Checkbox,
-} from '@mui/material';
+import { CircularProgress, Typography, Divider, Checkbox } from '@mui/material';
 import { AppStateEffect, ImageEffectResult } from '~/domain/types';
 import { Gif } from './Gif';
 import { CanvasElement } from '~/domain/utils';
 import { drawImageOnCanvas, applyTransform } from '~/domain/utils/canvas';
 import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
+import { Column, Row } from '~/layout';
 
 const MAX_SIZE = 128;
 
@@ -28,7 +23,7 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
   const [showBorder, setShowBorder] = React.useState(true);
 
   const { eleWidth, eleHeight, hScale, vScale } = React.useMemo(() => {
-    const aspectRatio = height / width;
+    const aspectRatio = width < height ? width / height : height / width;
 
     let eleWidth = MAX_SIZE;
     let eleHeight = MAX_SIZE;
@@ -52,8 +47,8 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
   const renderedFrames = React.useMemo(
     () =>
       frames.map((frame, idx) => (
-        <Stack
-          alignItems="center"
+        <Column
+          horizontalAlign="center"
           key={`${result.gif.substring(0, 16)}-${idx}`}
         >
           <Typography variant="caption">Frame {idx + 1}</Typography>
@@ -71,7 +66,7 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
               }}
             />
           </div>
-        </Stack>
+        </Column>
       )),
     [
       dimensions,
@@ -87,7 +82,7 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
 
   return (
     <>
-      <Stack alignItems="center">
+      <Column horizontalAlign="center">
         <Typography variant="body1">Full Gif</Typography>
 
         {result.partiallyTransparent ? (
@@ -100,7 +95,7 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
             <BackgroundPreviewTooltip />
           </>
         ) : (
-          <Stack spacing={1} pb={2}>
+          <Column padding={2}>
             <Gif
               src={
                 showTransparency && result.gifWithBackgroundColor
@@ -111,7 +106,7 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
               alt={effectName}
             />
             {result.gifWithBackgroundColor != null && (
-              <Stack direction="row">
+              <Row>
                 <Typography variant="caption">Show Transparency</Typography>
                 <Checkbox
                   checked={showTransparency}
@@ -119,9 +114,9 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
                     setShowTransparency(e.target.checked);
                   }}
                 />
-              </Stack>
+              </Row>
             )}
-            <Stack direction="row">
+            <Row>
               <Typography variant="caption">Show Frame Border</Typography>
               <Checkbox
                 checked={showBorder}
@@ -129,10 +124,10 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
                   setShowBorder(e.target.checked);
                 }}
               />
-            </Stack>
-          </Stack>
+            </Row>
+          </Column>
         )}
-      </Stack>
+      </Column>
       <Divider orientation="vertical" />
       {renderedFrames}
     </>
