@@ -34,6 +34,11 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
     try {
       setError(undefined);
 
+      if (!text) {
+        // Nothing entered, so don't do anything.
+        return;
+      }
+
       if (text.startsWith('data:')) {
         // Data URL
         const { image, fps } = await imageImportUtil.readImage(text);
