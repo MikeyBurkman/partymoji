@@ -25,6 +25,8 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
   onChange,
 }) => {
   const [error, setError] = React.useState<string | undefined>();
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
   const handleUrlBlur = async (
     e: React.FocusEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) => {
@@ -88,6 +90,11 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
       );
     }
   };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
   return (
     <Column horizontalAlign="center">
       <TextField
@@ -99,16 +106,21 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
         onBlur={(e) => void handleUrlBlur(e)}
       />
       OR
-      <Button icon={<Icon name="Image"></Icon>} variant="primary">
+      <Button
+        icon={<Icon name="Image"></Icon>}
+        variant="primary"
+        onClick={handleUploadClick}
+      >
         Upload an Image
-        <input
-          type="file"
-          hidden
-          accept="image/png,image/jpg,image/jpeg,image/gif"
-          name="source-image"
-          onChange={(e) => void handleFileChange(e)}
-        />
       </Button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        hidden
+        accept="image/png,image/jpg,image/jpeg,image/gif"
+        name="source-image"
+        onChange={(e) => void handleFileChange(e)}
+      />
       {currentImage && (
         <Gif
           src={currentImage.gif}
