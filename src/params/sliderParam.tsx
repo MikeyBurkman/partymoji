@@ -7,6 +7,11 @@ import { toParamFunction } from './utils';
 import styled from 'styled-components';
 import { Column, Row } from '~/layout';
 
+// column with minimum width to be a usable slider
+const SliderColumn = styled(Column)<{ $increments: number }>`
+  min-width: ${({ $increments }) => $increments * 2}px;
+`;
+
 const SliderParam: React.FC<{
   name: string;
   min: number;
@@ -24,14 +29,9 @@ const SliderParam: React.FC<{
 
   const increments = Math.floor((max - min) / (step ?? 1));
 
-  // column with minimum width to be a usable slider
-  const SliderColumn = styled(Column)`
-    min-width: ${increments * 2}px;
-  `;
-
   return (
-    <SliderColumn>
-      <Row width="100%" verticalAlign='middle' gap={2}>
+    <SliderColumn $increments={increments * 2}>
+      <Row width="100%" verticalAlign="middle" gap={2}>
         <label>
           {name} <Tooltip kind="help" description={description} />
           <Slider
