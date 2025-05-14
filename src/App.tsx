@@ -16,8 +16,9 @@ import { ProcessorQueueProvider } from './context/ProcessingQueue';
 import { IS_DEV, logger } from './domain/utils';
 import { IS_MOBILE } from './domain/utils/isMobile';
 import './App.css';
-import { Column, Header, Row } from './layout';
-import { Button } from './components/Button';
+import { Column, Row } from './layout';
+import { Button } from '~/components/Button';
+import { Header } from '~/components/Header';
 
 // Number of millis to wait after a change before recomputing the gif
 const COMPUTE_DEBOUNCE_MILLIS = 1000;

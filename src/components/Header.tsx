@@ -1,6 +1,6 @@
 import { AppState } from '~/domain/types';
 import { Help } from '~/components/Help';
-import { Column } from './Column';
+import { Column } from '../layout/Column';
 import { SourceImage } from '~/components/SourceImage';
 import { logger } from '~/domain/utils';
 
