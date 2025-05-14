@@ -1,8 +1,9 @@
-import { FormControl, Stack, TextField, Typography } from '@mui/material';
+import { FormControl, TextField } from '@mui/material';
 import React from 'react';
 import { Tooltip } from '~/components/Tooltip';
 import type { ParamFnDefault, ParamFunction } from '~/domain/types';
 import { toParamFunction } from './utils';
+import { Column, Row } from '~/layout';
 
 const TextParam: React.FC<{
   name: string;
@@ -13,15 +14,17 @@ const TextParam: React.FC<{
   const [val, setVal] = React.useState(value);
 
   return (
-    <Stack spacing={1}>
-      <Stack direction="row" spacing={1}>
-        <Typography variant="body2">{name}</Typography>
+    <Column>
+      <Row>
+        <p>{name}</p>
         <Tooltip kind="help" description={description} />
-      </Stack>
+      </Row>
       <FormControl>
         <TextField
           value={val}
-          onChange={(e) => { setVal(e.target.value); }}
+          onChange={(e) => {
+            setVal(e.target.value);
+          }}
           onBlur={() => {
             if (val.length > 0) {
               onChange(val);
@@ -29,7 +32,7 @@ const TextParam: React.FC<{
           }}
         />
       </FormControl>
-    </Stack>
+    </Column>
   );
 };
 

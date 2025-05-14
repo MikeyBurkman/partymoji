@@ -1,11 +1,11 @@
 import React from 'react';
-import { Stack, Typography } from '@mui/material';
 import { ImagePicker } from './ImagePicker';
 import { IS_MOBILE } from '~/domain/utils/isMobile';
 import type { ImageEffectResult } from '~/domain/types';
 import { sliderParam } from '~/params';
 import { DEFAULT_FPS, MAX_FRAMES } from '~/config';
 import { logger } from '~/domain/utils';
+import { Column } from '~/layout';
 
 const fpsParam = sliderParam({
   name: 'Final Gif Frames per Second',
@@ -44,41 +44,47 @@ export const SourceImage: React.FC<SourceImageProps> = ({
   onFrameCountChange,
   setAlert,
 }) => {
+  const imagePickerChangeHandler = (
+    baseImage: ImageEffectResult,
+    fname: string,
+    fps: number,
+  ) => {
+    if (IS_MOBILE) {
+      const [width, height] = baseImage.image.dimensions;
+      if (width > 512 || height > 512) {
+        setAlert({
+          severity: 'error',
+          message: 'The image you chose is too large to work well on mobile.',
+        });
+        return;
+      }
+    }
+    onImageChange(baseImage, fname, fps);
+  };
+
   return (
-    <Stack spacing={1} alignItems="center">
-      <Typography variant="h5">Source Image</Typography>
+    <Column backgroundColor='#ffffff' padding={2} gap={2} horizontalAlign='center'>
+      <h2>Source Image</h2>
       <ImagePicker
         name="Upload a source image"
         currentImage={baseImage}
-        onChange={(baseImage, fname, fps) => {
-          if (IS_MOBILE) {
-            const [width, height] = baseImage.image.dimensions;
-            if (width > 512 || height > 512) {
-              setAlert({
-                severity: 'error',
-                message:
-                  'The image you chose is too large to work well on mobile.',
-              });
-              return;
-            }
-          }
-
-          onImageChange(baseImage, fname, fps);
-        }}
+        onChange={imagePickerChangeHandler}
       />
-      {baseImage != null &&
-        fpsParam.fn({
-          value: fps,
-          onChange: onFpsChange,
-        })}
-      {baseImage != null &&
-        frameCountParam.fn({
-          value: frameCount,
-          onChange: (num) => {
-            logger.info('FRAME COUNT CHANGED:', num);
-            onFrameCountChange(num);
-          },
-        })}
-    </Stack>
+      {baseImage != null && (
+        <Column horizontalAlign="center" gap={2} padding={2}>
+          {fpsParam.fn({
+            value: fps,
+            onChange: onFpsChange,
+          })}
+          {frameCountParam.fn({
+            value: frameCount,
+            onChange: (num) => {
+              logger.info('FRAME COUNT CHANGED:', num);
+              onFrameCountChange(num);
+            },
+          })}
+        </Column>
+      )}
+    </Column>
   );
 };

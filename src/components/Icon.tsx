@@ -4,6 +4,9 @@ import {
   Add,
   Clear,
   Delete,
+  Edit,
+  ExpandLess,
+  ExpandMore,
   Image,
   PriorityHigh,
   Remove,
@@ -16,6 +19,9 @@ const iconImports = {
   Add,
   Clear,
   Delete,
+  Edit,
+  ExpandLess,
+  ExpandMore,
   Image,
   PriorityHigh,
   Remove,
@@ -25,6 +31,7 @@ const iconImports = {
 };
 
 export type IconName = keyof typeof iconImports;
+export type IconColor = MuiIconProps['color'];
 
 export interface ClickableIconProps {
   name: IconName;
@@ -71,7 +78,7 @@ export const ClickableIcon: React.FC<ClickableIconProps> = ({
 
 export interface IconProps {
   name: IconName;
-  color?: MuiIconProps['color'];
+  color?: IconColor;
   sx?: SxProps;
 }
 

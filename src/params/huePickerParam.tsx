@@ -1,10 +1,10 @@
-import { Stack, Typography } from '@mui/material';
 import React from 'react';
 import ColorPicker from 'react-best-gradient-color-picker';
 import { Tooltip } from '~/components/Tooltip';
 import type { ParamFnDefault, ParamFunction } from '~/domain/types';
 import { colorUtil } from '~/domain/utils';
 import { toParamFunction } from './utils';
+import { Column, Row } from '~/layout';
 
 const HuePickerParam: React.FC<{
   name: string;
@@ -27,11 +27,11 @@ const HuePickerParam: React.FC<{
   );
 
   return (
-    <Stack spacing={1}>
-      <Stack direction="row" spacing={1}>
-        <Typography variant="body2">{name}</Typography>
+    <Column>
+      <Row>
+        <p>{name}</p>
         <Tooltip kind="help" description={description} />
-      </Stack>
+      </Row>
       <ColorPicker
         value={rgbColor}
         onChange={setRgbColor}
@@ -46,7 +46,7 @@ const HuePickerParam: React.FC<{
         hideInputs
         hidePickerSquare
       />
-    </Stack>
+    </Column>
   );
 };
 

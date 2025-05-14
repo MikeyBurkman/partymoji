@@ -1,9 +1,11 @@
-import { Button, Stack, Box, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import React from 'react';
 import { miscUtil, imageUtil, imageImportUtil } from '~/domain/utils';
 import type { ImageEffectResult } from '~/domain/types';
 import { Gif } from './Gif';
 import { Icon } from './Icon';
+import { Column } from '~/layout';
+import { Button } from './Button';
 
 const parseFileName = (s: string): string => {
   const parts = s.split('/'); // For URLs
@@ -23,12 +25,19 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
   onChange,
 }) => {
   const [error, setError] = React.useState<string | undefined>();
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
   const handleUrlBlur = async (
     e: React.FocusEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) => {
     const text = e.target.value;
     try {
       setError(undefined);
+
+      if (!text) {
+        // Nothing entered, so don't do anything.
+        return;
+      }
 
       if (text.startsWith('data:')) {
         // Data URL
@@ -86,34 +95,37 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
       );
     }
   };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
   return (
-    <Stack spacing={2} alignItems="center">
-      <Stack direction="row">
-        <TextField
-          label="URL"
-          variant="outlined"
-          fullWidth
-          error={!!error}
-          helperText={error}
-          onBlur={(e) => void handleUrlBlur(e)}
-        />
-      </Stack>
-      <Box>OR</Box>
+    <Column horizontalAlign="center">
+      <TextField
+        label="URL"
+        variant="outlined"
+        fullWidth
+        error={!!error}
+        helperText={error}
+        onBlur={(e) => void handleUrlBlur(e)}
+      />
+      OR
       <Button
-        startIcon={<Icon name="Image"></Icon>}
-        sx={{ maxWidth: '300px' }}
-        variant="contained"
-        component="label"
+        icon={<Icon name="Image"></Icon>}
+        variant="primary"
+        onClick={handleUploadClick}
       >
         Upload an Image
-        <input
-          type="file"
-          hidden
-          accept="image/png,image/jpg,image/jpeg,image/gif"
-          name="source-image"
-          onChange={(e) => void handleFileChange(e)}
-        />
       </Button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        hidden
+        accept="image/png,image/jpg,image/jpeg,image/gif"
+        name="source-image"
+        onChange={(e) => void handleFileChange(e)}
+      />
       {currentImage && (
         <Gif
           src={currentImage.gif}
@@ -121,6 +133,6 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
           alt="Source"
         />
       )}
-    </Stack>
+    </Column>
   );
 };

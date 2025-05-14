@@ -1,4 +1,3 @@
-import { Stack, Typography } from '@mui/material';
 import React from 'react';
 import ColorPicker from 'react-best-gradient-color-picker';
 import { Expandable } from '~/components/Expandable';
@@ -6,6 +5,7 @@ import { Tooltip } from '~/components/Tooltip';
 import type { Color, ParamFnDefault, ParamFunction } from '~/domain/types';
 import { colorUtil } from '~/domain/utils';
 import { toParamFunction } from './utils';
+import { Row } from '~/layout';
 
 const ColorBox: React.FC<{ color: Color }> = ({ color }) => (
   <div
@@ -38,11 +38,11 @@ const ColorPickerParam: React.FC<{
   return (
     <Expandable
       mainEle={
-        <Stack direction="row" spacing={4}>
-          <Typography variant="body2">{name}</Typography>
+        <Row gap={2}>
+          <p>{name}</p>
           <Tooltip kind="help" description={description} />
           <ColorBox color={value} />
-        </Stack>
+        </Row>
       }
     >
       <ColorPicker

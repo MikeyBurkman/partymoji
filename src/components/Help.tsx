@@ -1,16 +1,17 @@
-import { Divider, Icon, Stack, Typography } from '@mui/material';
+import { Divider, Icon, Typography } from '@mui/material';
 import React from 'react';
 import { Expandable } from './Expandable';
+import { Column } from '~/layout';
 
 export const Help: React.FC = () => (
   <Expandable
     mainEle={<Typography variant="h5">Click here for Help</Typography>}
   >
-    <Group>
+    <Column>
       <Expandable
         mainEle={<Typography variant="h6">Getting Started</Typography>}
       >
-        <Section>
+        <Column>
           <SectionHeader>Start by importing an image.</SectionHeader>
           <SectionText>
             You may upload a png, jpg, or gif from your device.
@@ -29,15 +30,15 @@ export const Help: React.FC = () => (
             partially transparent pixels, you'll see a fake background applied
             behind it in the preview.
           </SectionText>
-        </Section>
+        </Column>
       </Expandable>
 
       <Expandable
         mainEle={<Typography variant="h6">Adding Effects</Typography>}
       >
-        <Group>
-          <Section>
-            <Section>
+        <Column>
+          <Column>
+            <Column>
               <SectionHeader>
                 Effects are applied to an image to manipulate it
               </SectionHeader>
@@ -49,12 +50,12 @@ export const Help: React.FC = () => (
                 Others may apply animated effects, such as making the image
                 spin, or cycle through colors.
               </SectionText>
-            </Section>
-          </Section>
+            </Column>
+          </Column>
 
           <Divider />
 
-          <Section>
+          <Column>
             <SectionHeader>
               For static images, you'll likely want to first "Set Animation
               Length".
@@ -73,11 +74,11 @@ export const Help: React.FC = () => (
               number of frames in order to meet those requirements. Slack has a
               limit of 128kb, and Discord has a limit of 256kb.
             </SectionText>
-          </Section>
+          </Column>
 
           <Divider />
 
-          <Section>
+          <Column>
             <SectionHeader>
               If uploading to Slack or Discord, you will probably want to use
               "Adjust Image" to set the width and height.
@@ -90,11 +91,11 @@ export const Help: React.FC = () => (
               Making images smaller will also decrease how long it takes to
               apply effects.
             </SectionText>
-          </Section>
+          </Column>
 
           <Divider />
 
-          <Section>
+          <Column>
             <SectionHeader>The order of effects matters</SectionHeader>
             <SectionText>
               The result of each effect is send to the next effect.
@@ -110,13 +111,13 @@ export const Help: React.FC = () => (
               image will have a very different effect than rotating before
               setting a background color.
             </SectionText>
-          </Section>
-        </Group>
+          </Column>
+        </Column>
       </Expandable>
 
       <Expandable mainEle={<Typography variant="h6">Creating Gifs</Typography>}>
-        <Group>
-          <Section>
+        <Column>
+          <Column>
             <SectionHeader>Gifs will compute automatically</SectionHeader>
             <SectionText>
               Whenever you add an effect, it will automatically compute a new
@@ -129,21 +130,11 @@ export const Help: React.FC = () => (
               Click on "Save Gif" at the bottom to export the final version of
               the gif after all effects have been applied.
             </SectionText>
-          </Section>
-        </Group>
+          </Column>
+        </Column>
       </Expandable>
-    </Group>
+    </Column>
   </Expandable>
-);
-
-const Group: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
-  <Stack spacing={2}>{children}</Stack>
-);
-
-const Section: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
-  <Stack width="sm" spacing={1}>
-    {children}
-  </Stack>
 );
 
 const SectionHeader: React.FC<{ children?: React.ReactNode }> = ({

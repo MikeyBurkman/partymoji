@@ -1,14 +1,4 @@
-import {
-  Button,
-  Container,
-  Divider,
-  Paper,
-  Stack,
-  Typography,
-} from '@mui/material';
-import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 import React from 'react';
-import { Help } from '~/components/Help';
 import { Icon } from '~/components/Icon';
 import { ImageEffectList } from '~/components/ImageEffectList';
 import { computeGifsForState, getStateDiff } from '~/domain/computeGifs';
@@ -16,7 +6,6 @@ import type { AppState, AppStateEffect } from '~/domain/types';
 import { imageUtil, miscUtil } from '~/domain/utils';
 import { POSSIBLE_EFFECTS } from '~/effects';
 import * as localStorage from '~/localStorage';
-import { SourceImage } from './components/SourceImage';
 import { DEFAULT_FPS } from './config';
 import {
   AlertProvider,
@@ -27,6 +16,9 @@ import { ProcessorQueueProvider } from './context/ProcessingQueue';
 import { IS_DEV, logger } from './domain/utils';
 import { IS_MOBILE } from './domain/utils/isMobile';
 import './App.css';
+import { Column, Row } from './layout';
+import { Button } from '~/components/Button';
+import { Header } from '~/components/Header';
 
 // Number of millis to wait after a change before recomputing the gif
 const COMPUTE_DEBOUNCE_MILLIS = 1000;
@@ -44,65 +36,6 @@ const DEFAULT_STATE: AppState = {
 };
 
 // Contains the "help" and Image Source sections.
-const Header: React.FC<{
-  state: AppState;
-  setState: (
-    fn: (oldState: AppState) => AppState,
-    {
-      compute,
-    }: {
-      compute: 'no' | 'now' | 'later';
-    },
-  ) => void;
-  setAlert: (alert: { severity: 'error' | 'warning'; message: string }) => void;
-}> = ({ state, setState, setAlert }) => {
-  return (
-    <>
-      <Section>
-        <Help />
-      </Section>
-      <Section>
-        <SourceImage
-          baseImage={state.baseImage}
-          fps={state.fps}
-          frameCount={state.frameCount}
-          onImageChange={(baseImage, fname, fps) => {
-            setState(
-              (prevState) => ({
-                ...prevState,
-                baseImage,
-                fname,
-                fps,
-                frameCount: baseImage.image.frames.length,
-              }),
-              { compute: 'now' },
-            );
-          }}
-          onFpsChange={(fps) => {
-            setState(
-              (prevState) => ({
-                ...prevState,
-                fps,
-              }),
-              { compute: 'later' },
-            );
-          }}
-          onFrameCountChange={(frameCount) => {
-            logger.info('Frame count changed', { frameCount });
-            setState(
-              (prevState) => ({
-                ...prevState,
-                frameCount,
-              }),
-              { compute: 'later' },
-            );
-          }}
-          setAlert={setAlert}
-        />
-      </Section>
-    </>
-  );
-};
 
 // The main body component of the whole app.
 const Inner: React.FC = () => {
@@ -123,6 +56,7 @@ const Inner: React.FC = () => {
     }
   }, [setAlert]);
 
+  // One-time load the app state from local storage
   React.useEffect(() => {
     void (async () => {
       // If we have local storage state on startup, then reload that
@@ -190,6 +124,7 @@ const Inner: React.FC = () => {
     [],
   );
 
+  // This effect is responsible for computing the gifs when data changes
   React.useEffect(() => {
     logger.debug('UseEffect', { doCompute });
     if (!doCompute.compute) {
@@ -268,94 +203,70 @@ const Inner: React.FC = () => {
 
   return (
     <>
-      <ScopedCssBaseline />
-      <Container maxWidth={IS_MOBILE ? 'sm' : 'md'}>
-        <Stack
-          spacing={4}
-          justifyContent="space-evenly"
-          alignItems="center"
-          width={IS_MOBILE ? 'sm' : undefined}
-          divider={<Divider />}
-        >
-          <Typography variant="h2" pt={4}>
-            Partymoji
-          </Typography>
-          <Stack spacing={4} divider={<Divider />}>
-            <Header state={state} setState={setState} setAlert={setAlert} />
-            {state.baseImage != null && (
+      <Column gap={4} verticalAlign="middle" horizontalAlign="stretch">
+        <h1>Partymoji</h1>
+        <Header state={state} setState={setState} setAlert={setAlert} />
+        {state.baseImage != null && (
+          <>
+            <h2>Effects</h2>
+            <ImageEffectList
+              appState={state}
+              possibleEffects={POSSIBLE_EFFECTS}
+              onEffectsChange={(effects) => {
+                setState(
+                  (prevState) => ({
+                    ...prevState,
+                    effects,
+                  }),
+                  { compute: 'now' },
+                );
+              }}
+            />
+            {state.effects.length > 0 && (
               <>
-                <Section>
-                  <ImageEffectList
-                    appState={state}
-                    possibleEffects={POSSIBLE_EFFECTS}
-                    onEffectsChange={(effects) => {
-                      setState(
-                        (prevState) => ({
-                          ...prevState,
-                          effects,
-                        }),
-                        { compute: 'now' },
-                      );
-                    }}
-                  />
-                </Section>
-                {state.effects.length > 0 && (
-                  <Section>
-                    <Stack spacing={3}>
-                      <Typography variant="h5">Clear Effects</Typography>
-                      <Typography variant="body1">
-                        <Icon name="Warning" color="warning" /> Clicking this
-                        button will clear all effects for the image
-                      </Typography>
-                      <Button
-                        startIcon={<Icon name="Clear" />}
-                        sx={{ maxWidth: '300px' }}
-                        variant="contained"
-                        color="warning"
-                        onClick={() => {
-                          const newState: AppState = {
-                            ...DEFAULT_STATE,
-                            baseImage: state.baseImage,
-                          };
-                          setStateRaw(newState);
-                          localStorage.saveAppState(newState);
-                        }}
-                      >
-                        Clear Effects
-                      </Button>
-                    </Stack>
-                  </Section>
-                )}
+                <h2>Clear Effects</h2>
+                <Row>
+                  <Icon name="Warning" color="warning" /> Clicking this button
+                  will clear all effects for the image
+                </Row>
+                <Button
+                  icon={<Icon name="Clear" />}
+                  variant="warning"
+                  onClick={() => {
+                    const newState: AppState = {
+                      ...DEFAULT_STATE,
+                      baseImage: state.baseImage,
+                    };
+                    setStateRaw(newState);
+                    localStorage.saveAppState(newState);
+                  }}
+                >
+                  Clear Effects
+                </Button>
               </>
             )}
-            <a
-              href="https://github.com/MikeyBurkman/partymoji"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg"
-                width={64}
-                height={64}
-                alt="Github Link"
-              ></img>
-            </a>
-          </Stack>
-        </Stack>
-      </Container>
+          </>
+        )}
+        <a
+          href="https://github.com/MikeyBurkman/partymoji"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg"
+            width={48}
+            height={48}
+            alt="Github Link"
+          ></img>
+        </a>
+      </Column>
 
-      <Stack pt={8}>
+      <Column padding={8}>
         <AlertSnackbar />
-      </Stack>
+      </Column>
     </>
   );
 };
-
-const Section: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
-  <Paper style={{ padding: 16, maxWidth: IS_MOBILE ? '300px' : undefined }}>
-    {children}
-  </Paper>
-);
 
 export const App: React.FC = () => {
   return (

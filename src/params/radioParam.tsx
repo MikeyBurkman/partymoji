@@ -3,13 +3,12 @@ import {
   FormControlLabel,
   Radio,
   RadioGroup,
-  Stack,
-  Typography,
 } from '@mui/material';
 import React from 'react';
 import { Tooltip } from '~/components/Tooltip';
 import type { ParamFnDefault, ParamFunction } from '~/domain/types';
 import { toParamFunction } from './utils';
+import { Column, Row } from '~/layout';
 
 const RadioParam: React.FC<{
   name: string;
@@ -19,16 +18,18 @@ const RadioParam: React.FC<{
   onChange: (s: string) => void;
 }> = ({ name, options, value, description, onChange }) => {
   return (
-    <Stack spacing={1}>
-      <Stack direction="row" spacing={1}>
-        <Typography variant="body2">{name}</Typography>
+    <Column>
+      <Row>
+        <p>{name}</p>
         <Tooltip kind="help" description={description} />
-      </Stack>
+      </Row>
       <FormControl component="fieldset">
         <RadioGroup
           aria-label={name}
           defaultValue={value}
-          onChange={(event) => { onChange(event.target.value); }}
+          onChange={(event) => {
+            onChange(event.target.value);
+          }}
         >
           {options.map((t) => (
             <FormControlLabel
@@ -40,7 +41,7 @@ const RadioParam: React.FC<{
           ))}
         </RadioGroup>
       </FormControl>
-    </Stack>
+    </Column>
   );
 };
 
@@ -60,7 +61,9 @@ export function radioParam<T extends string>(args: {
           value={params.value}
           options={args.options}
           description={args.description}
-          onChange={(s) => { params.onChange(s as T); }}
+          onChange={(s) => {
+            params.onChange(s as T);
+          }}
         />
       );
     },

@@ -11,7 +11,14 @@ export default defineConfig({
   plugins: [
     comlink(),
     tsconfigPaths(),
-    react(),
+    react({
+      include: /\.(jsx|tsx)$/,
+      babel: {
+        plugins: ['styled-components'],
+        babelrc: false,
+        configFile: false,
+      },
+    }),
     nodePolyfills(),
     wasm(),
     topLevelAwait(),
