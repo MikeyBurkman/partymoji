@@ -12,6 +12,11 @@ import type {
 import { CanvasElement, useDebounce, miscUtil } from '~/domain/utils';
 import { toParamFunction } from './utils';
 import { Row } from '~/layout';
+import styled from 'styled-components';
+
+const TooltipWrapper = styled.span`
+  paddingtop: 0.5rem;
+`;
 
 const BezierParam: React.FC<{
   name: string;
@@ -121,9 +126,9 @@ const BezierParam: React.FC<{
       <Typography variant="body2" paddingTop="0.5rem">
         {name}
       </Typography>
-      <span style={{ paddingTop: '0.5rem' }}>
+      <TooltipWrapper>
         <Tooltip kind="help" description={description} />
-      </span>
+      </TooltipWrapper>
       <Box border={1}>
         <CanvasElement
           width={WIDTH}
