@@ -25,7 +25,7 @@ export const Column: React.FC<ColumnProps> = ({
   height,
   backgroundColor,
 }) => {
-  const alignItems = (() => {
+  const alignItems = React.useMemo(() => {
     switch (horizontalAlign) {
       case 'left':
         return 'flex-start';
@@ -34,9 +34,9 @@ export const Column: React.FC<ColumnProps> = ({
       default:
         return horizontalAlign;
     }
-  })();
+  }, [horizontalAlign]);
 
-  const justifyContent = (() => {
+  const justifyContent = React.useMemo(() => {
     switch (verticalAlign) {
       case 'top':
         return 'flex-start';
@@ -47,7 +47,8 @@ export const Column: React.FC<ColumnProps> = ({
       default:
         return verticalAlign;
     }
-  })();
+  }, [verticalAlign]);
+
   return (
     <FlexContainer
       $gap={gap}

@@ -25,7 +25,7 @@ export const Row: React.FC<RowProps> = ({
   height,
   backgroundColor,
 }) => {
-  const alignItems = (() => {
+  const alignItems = React.useMemo(() => {
     switch (verticalAlign) {
       case 'top':
         return 'flex-start';
@@ -36,9 +36,9 @@ export const Row: React.FC<RowProps> = ({
       default:
         return verticalAlign;
     }
-  })();
+  }, [verticalAlign]);
 
-  const justifyContent = (() => {
+  const justifyContent = React.useMemo(() => {
     switch (horizontalAlign) {
       case 'left':
         return 'flex-start';
@@ -47,7 +47,7 @@ export const Row: React.FC<RowProps> = ({
       default:
         return horizontalAlign;
     }
-  })();
+  }, [horizontalAlign]);
 
   return (
     <FlexContainer
