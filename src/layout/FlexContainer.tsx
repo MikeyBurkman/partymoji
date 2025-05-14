@@ -33,20 +33,18 @@ export interface FlexContainerProps {
   backgroundColor?: string;
 }
 
-export const FlexContainer = styled.div<{
-  $gap: number;
-  $alignItems: AlignItemsType;
-  $justifyContent: JustifyContentType;
-  $wrap: string;
-  $width?: string;
-  $padding?: number;
-  $direction: 'row' | 'column';
-  $height?: string;
-  $backgroundColor?: string;
-}>`
+type DollarPrefixed<T> = {
+  [K in keyof T as `$${string & K}`]: T[K];
+};
+
+type StyledFlexContainerProps = DollarPrefixed<
+  Omit<FlexContainerProps, 'children'>
+> & { children: React.ReactNode };
+
+export const FlexContainer = styled.div<StyledFlexContainerProps>`
   display: flex;
   flex-direction: ${({ $direction }) => $direction};
-  gap: ${({ $gap }) => $gap * 8}px;
+  gap: ${({ $gap = 1 }) => $gap * 8}px;
   align-items: ${({ $alignItems }) => $alignItems};
   justify-content: ${({ $justifyContent }) => $justifyContent};
   flex-wrap: ${({ $wrap }) => $wrap};
