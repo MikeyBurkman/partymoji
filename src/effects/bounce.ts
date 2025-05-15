@@ -1,4 +1,4 @@
-import { imageUtil, miscUtil } from '~/domain/utils';
+import { imageUtil, logger, miscUtil } from '~/domain/utils';
 import { bezierParam, intParam } from '~/params';
 import { buildEffect } from './utils';
 
@@ -9,11 +9,11 @@ export const bounce = buildEffect({
   requiresAnimation: true,
   params: [
     intParam({
-      name: 'Bounce Height',
-      description: 'Positive number',
-      defaultValue: (image) =>
-        image ? Math.floor(image.dimensions[1] / 10) : 10,
+      name: 'Bounce Height %',
+      description: 'Percentage of the image height',
+      defaultValue: 50,
       min: 0,
+      max: 100,
     }),
     bezierParam({
       name: 'Easing',
@@ -21,10 +21,15 @@ export const bounce = buildEffect({
     }),
   ] as const,
   fn: imageUtil.mapImageWithPrecompute(
-    ({ animationProgress, parameters: [height, easing] }) => {
+    ({
+      animationProgress,
+      parameters: [perc, easing],
+      dimensions: [_, height],
+    }) => {
+      logger.info('height', height, 'perc', perc, 'easing', easing);
       const b = miscUtil.bezierCurve(easing, true)(animationProgress);
       return {
-        yOffset: Math.round(height * b),
+        yOffset: Math.round((perc / 100) * height * b),
       };
     },
     ({ computed: { yOffset }, coord: [x, y], getSrcPixel }) =>
