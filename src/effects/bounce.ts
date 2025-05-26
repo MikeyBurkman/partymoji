@@ -1,5 +1,5 @@
 import { imageUtil, logger, miscUtil } from '~/domain/utils';
-import { bezierParam, intParam } from '~/params';
+import { bezierParam, checkboxParam, intParam } from '~/params';
 import { buildEffect } from './utils';
 
 export const bounce = buildEffect({
@@ -19,17 +19,26 @@ export const bounce = buildEffect({
       name: 'Easing',
       defaultValue: miscUtil.LINEAR_BEZIER,
     }),
+    checkboxParam({
+      name: 'Up and Down',
+      description: 'If checked, the image will bounce in both directions',
+      defaultValue: false,
+    }),
   ] as const,
   fn: imageUtil.mapImageWithPrecompute(
     ({
       animationProgress,
-      parameters: [perc, easing],
+      parameters: [perc, easing, upAndDown],
       dimensions: [_, height],
     }) => {
-      logger.info('height', height, 'perc', perc, 'easing', easing);
       const b = miscUtil.bezierCurve(easing, true)(animationProgress);
+      const baseOffset = (perc / 100) * height;
       return {
-        yOffset: Math.round((perc / 100) * height * b),
+        yOffset: Math.round(
+          upAndDown
+            ? baseOffset * Math.sin(animationProgress * Math.PI * 2)
+            : baseOffset * b,
+        ),
       };
     },
     ({ computed: { yOffset }, coord: [x, y], getSrcPixel }) =>
