@@ -1,4 +1,4 @@
-import { imageUtil, logger, miscUtil } from '~/domain/utils';
+import { imageUtil, miscUtil } from '~/domain/utils';
 import { bezierParam, checkboxParam, intParam } from '~/params';
 import { buildEffect } from './utils';
 
