@@ -1,6 +1,18 @@
 import React from 'react';
-import { Box, Button, Divider, Stack, Typography, Paper } from '@mui/material';
+import {
+  Box,
+  Button,
+  Divider,
+  Stack,
+  Grid,
+  Typography,
+  Paper,
+  Autocomplete,
+  styled,
+  TextField,
+} from '@mui/material';
 import { saveAs } from 'file-saver';
+import { logger } from '~/domain/utils';
 
 import { IS_MOBILE } from '~/domain/utils/isMobile';
 import type {
@@ -8,20 +20,26 @@ import type {
   Image,
   AppState,
   ImageEffectResult,
-  EffectInput,
   AnyEffect,
+  JsonType,
 } from '~/domain/types';
 import { miscUtil } from '~/domain/utils';
 import { effectByName } from '~/effects';
 import { Gif } from './Gif';
 import { Icon, ClickableIcon } from './Icon';
-import { ImageEffectDialog } from './ImageEffectDialog';
 import { ImageRow } from './ImageRow';
 import { RequiresAnimationTooltip } from './RequiresAnimationTooltip';
 
-type EffectEditDialogState =
-  | { open: false }
-  | { open: true; idx: number; isNew: boolean };
+const GroupHeader = styled('div')(({ theme }) => ({
+  position: 'sticky',
+  top: '-8px',
+  padding: '4px 10px',
+  backgroundColor: theme.palette.primary.contrastText,
+}));
+
+const GroupItems = styled('ul')({
+  padding: 0,
+});
 
 interface EffectListProps {
   appState: AppState;
@@ -38,7 +56,7 @@ interface ImageEffectProps {
   effect: AppStateEffect;
   index: number;
   currentEffects: Array<AppStateEffect>;
-  setEffectEditDialogState: (state: EffectEditDialogState) => void;
+  possibleEffects: Array<AnyEffect>;
   onEffectsChange: EffectListProps['onEffectsChange'];
   newDefaultEffect: (index: number) => AppStateEffect;
 }
@@ -47,41 +65,28 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
   effect,
   index,
   currentEffects,
-  setEffectEditDialogState,
+  possibleEffects,
   onEffectsChange,
   newDefaultEffect,
 }) => {
-  const onEdit = React.useCallback(() => {
-    setEffectEditDialogState({
-      open: true,
-      idx: index,
-      isNew: false,
-    });
-  }, [index, setEffectEditDialogState]);
+  const currEffect = React.useMemo(
+    () => effectByName(effect.effectName),
+    [effect],
+  );
 
   const onDelete = React.useCallback(() => {
     onEffectsChange(miscUtil.removeIndex(currentEffects, index));
   }, [currentEffects, index, onEffectsChange]);
 
   const onAddAfter = React.useCallback(() => {
-    const newIdx = index + 1;
     onEffectsChange(
-      miscUtil.insertInto(currentEffects, newIdx, newDefaultEffect(index)),
+      miscUtil.insertInto(
+        currentEffects,
+        index + 1,
+        newDefaultEffect(index + 1),
+      ),
     );
-    setTimeout(() => {
-      setEffectEditDialogState({
-        open: true,
-        idx: newIdx,
-        isNew: true,
-      });
-    }, 2);
-  }, [
-    currentEffects,
-    index,
-    newDefaultEffect,
-    onEffectsChange,
-    setEffectEditDialogState,
-  ]);
+  }, [currentEffects, index, newDefaultEffect, onEffectsChange]);
 
   const requiresAnimation = React.useMemo(() => {
     if (effect.state.status !== 'done') {
@@ -96,14 +101,108 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
     return null;
   }, [effect]);
 
+  const onPickNewEffect = React.useCallback(
+    (_: unknown, newEffect: AnyEffect) => {
+      if (effect.state.status !== 'done') {
+        // This button should be disabled anyhow
+        return;
+      }
+
+      const baseImage = effect.state.image;
+      onEffectsChange(
+        miscUtil.replaceIndex(currentEffects, index, () => ({
+          effectName: newEffect.name,
+          paramsValues: newEffect.params.map((p) =>
+            p.defaultValue(baseImage.image),
+          ),
+          state: { status: 'init' },
+        })),
+      );
+    },
+    [currentEffects, effect, index, onEffectsChange],
+  );
+
+  const updateEffectParam = React.useCallback(
+    (paramValue: JsonType, paramIndex: number) => {
+      onEffectsChange(
+        miscUtil.replaceIndex(currentEffects, index, () => ({
+          effectName: currEffect.name,
+          paramsValues: miscUtil.replaceIndex(
+            effect.paramsValues,
+            paramIndex,
+            () => paramValue,
+          ),
+          state: { status: 'computing' },
+        })),
+      );
+    },
+    [currEffect, effect, currentEffects, index, onEffectsChange],
+  );
+
+  const effectParams = React.useMemo(
+    () =>
+      // Create elements for each of the parameters for the selected effect.
+      // Each of these would get an onChange event so we know when the user has
+      //  selected a value.
+      currEffect.params.map((param, paramIdx: number) => {
+        const ele = param.fn({
+          value: effect.paramsValues[paramIdx],
+          onChange: (v) => {
+            updateEffectParam(v, paramIdx);
+          },
+        });
+
+        return (
+          <Grid
+            key={`${effect.effectName}-${param.name}`}
+            size="auto"
+            minWidth={160}
+          >
+            {ele}
+          </Grid>
+        );
+      }),
+    [currEffect, effect, updateEffectParam],
+  );
+
   return (
     <Stack>
       <Paper style={{ padding: 8 }} elevation={4}>
         <Stack alignItems="center" spacing={2}>
-          <Stack direction="row" spacing={2}>
-            <Typography variant="h6">
-              #{index + 1}: {effect.effectName}
-            </Typography>
+          <Stack direction="row" spacing={2} width="100%">
+            <Autocomplete
+              fullWidth
+              disableClearable
+              value={currEffect}
+              options={possibleEffects}
+              groupBy={(e) => e.group}
+              onChange={onPickNewEffect}
+              disabled={effect.state.status !== 'done'}
+              getOptionLabel={(option) => option.name}
+              renderGroup={(params) => (
+                <li key={params.key}>
+                  <GroupHeader>
+                    <Typography variant="subtitle1">{params.group}</Typography>
+                    <Divider />
+                  </GroupHeader>
+                  <GroupItems>{params.children}</GroupItems>
+                </li>
+              )}
+              renderOption={(props, effect) => (
+                <li {...props}>
+                  <Stack marginLeft={2} marginRight={2}>
+                    <Typography variant="body2">{effect.name}</Typography>
+                    <Typography variant="caption" marginLeft={2}>
+                      {effect.description}
+                    </Typography>
+                  </Stack>
+                </li>
+              )}
+              renderInput={(params) => <TextField {...params} label="Effect" />}
+            />
+            <Stack spacing={2} justifyContent="center">
+              <ClickableIcon name="Delete" onClick={onDelete} />
+            </Stack>
             {requiresAnimation}
           </Stack>
           <Stack
@@ -112,15 +211,15 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
             spacing={2}
             sx={{ overflowX: 'auto' }}
           >
-            <Stack spacing={2} justifyContent="center">
-              <ClickableIcon label="Edit" name="Settings" onClick={onEdit} />
-              <ClickableIcon label="Delete" name="Delete" onClick={onDelete} />
-            </Stack>
             <ImageRow appStateEffect={effect} />
+            <Grid container spacing={4}>
+              {effectParams}
+            </Grid>
           </Stack>
         </Stack>
       </Paper>
       <Divider sx={{ py: 4 }}>
+        {/* Add-effect button can be in between items, or at the end of the list */}
         <Button onClick={onAddAfter} startIcon={<Icon name="Add" />}>
           {index < currentEffects.length - 1
             ? 'Insert Effect Here'
@@ -137,8 +236,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
   onEffectsChange,
 }) => {
   const currentEffects = appState.effects;
-  const [effectEditDialogState, setEffectEditDialogState] =
-    React.useState<EffectEditDialogState>({ open: false });
+  logger.debug('CURRENT EFFECTS', currentEffects);
 
   const [baseImage, setBaseImage] = React.useState<
     ImageEffectResult | undefined
@@ -151,37 +249,6 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
 
     setBaseImage(baseImage);
   }, [appState, baseImage]);
-
-  /** The first image to show when the edit dialog is opened */
-  const dialogInitialImage = React.useMemo(():
-    | ImageEffectResult
-    | undefined => {
-    if (!effectEditDialogState.open) {
-      return undefined;
-    }
-
-    const prevEffect = currentEffects[effectEditDialogState.idx - 1];
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- invalid linting error
-    if (prevEffect) {
-      return prevEffect.state.status === 'done'
-        ? prevEffect.state.image
-        : undefined;
-    }
-
-    return appState.baseImage;
-  }, [appState, currentEffects, effectEditDialogState]);
-
-  const currentEffect = React.useMemo((): EffectInput | undefined => {
-    if (!effectEditDialogState.open) {
-      return undefined;
-    }
-
-    const e = currentEffects[effectEditDialogState.idx];
-    return {
-      effect: effectByName(e.effectName),
-      params: e.paramsValues,
-    };
-  }, [effectEditDialogState, currentEffects]);
 
   const newDefaultEffect = React.useCallback(
     (tIdx: number): AppStateEffect => ({
@@ -208,65 +275,18 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
     onEffectsChange(
       miscUtil.insertInto(currentEffects, 0, newDefaultEffect(0)),
     );
-    setTimeout(() => {
-      setEffectEditDialogState({
-        open: true,
-        idx: 0,
-        isNew: true,
-      });
-    }, 2);
   }, [currentEffects, newDefaultEffect, onEffectsChange]);
 
-  const finalGif = React.useMemo((): string | undefined => {
-    const lastEffect = currentEffects[currentEffects.length - 1];
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- invalid linting error
+  const finalGif = React.useMemo((): string | null => {
+    const lastEffect = miscUtil.getLast(currentEffects);
     if (!lastEffect) {
-      return undefined;
+      return null;
     }
 
-    if (lastEffect.state.status !== 'done') {
-      return undefined;
-    }
-
-    return lastEffect.state.image.gif;
+    return lastEffect.state.status !== 'done'
+      ? null
+      : lastEffect.state.image.gif;
   }, [currentEffects]);
-
-  const dialogOnChangeEffect = React.useCallback(
-    (
-      newEffect: EffectInput,
-      computedImage: ImageEffectResult | undefined,
-    ): void => {
-      if (!effectEditDialogState.open) {
-        return;
-      }
-
-      onEffectsChange(
-        miscUtil.replaceIndex(
-          currentEffects,
-          effectEditDialogState.idx,
-          () => ({
-            effectName: newEffect.effect.name,
-            paramsValues: newEffect.params,
-            state: computedImage
-              ? { status: 'done', image: computedImage }
-              : { status: 'init' },
-          }),
-        ),
-      );
-      setEffectEditDialogState({ open: false });
-    },
-    [currentEffects, effectEditDialogState, onEffectsChange],
-  );
-
-  const dialogOnCancel = React.useCallback(() => {
-    if (effectEditDialogState.open && effectEditDialogState.isNew) {
-      // They pressed cancel on a new effect, so just remove the one we added.
-      onEffectsChange(
-        miscUtil.removeIndex(currentEffects, effectEditDialogState.idx),
-      );
-    }
-    setEffectEditDialogState({ open: false });
-  }, [currentEffects, effectEditDialogState, onEffectsChange]);
 
   const onSaveGif = React.useCallback(() => {
     if (finalGif != null) {
@@ -276,49 +296,25 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
     }
   }, [finalGif, appState]);
 
-  // Hide this effect index, as it's a new effect
-  const hiddenIdx = React.useMemo(() => {
-    if (!effectEditDialogState.open) {
-      return Number.MAX_SAFE_INTEGER;
-    }
-
-    return effectEditDialogState.isNew
-      ? effectEditDialogState.idx
-      : Number.MAX_SAFE_INTEGER;
-  }, [effectEditDialogState]);
-
   return (
     <Stack>
-      <ImageEffectDialog
-        open={effectEditDialogState.open}
-        possibleEffects={possibleEffects}
-        onChangeEffect={dialogOnChangeEffect}
-        onCancel={dialogOnCancel}
-        initialImage={dialogInitialImage}
-        currentEffect={currentEffect}
-        currFps={appState.fps}
-        currRandomSeed="partymoji"
-      />
       <Box>
         <Divider sx={{ pb: 4 }}>
           <Button startIcon={<Icon name="Add" />} onClick={onAddNew} name="add">
             Insert First Effect
           </Button>
         </Divider>
-        {currentEffects.map(
-          (t, tIdx) =>
-            tIdx !== hiddenIdx && (
-              <ImageEffect
-                key={effectKey(t, tIdx)}
-                index={tIdx}
-                currentEffects={currentEffects}
-                effect={t}
-                setEffectEditDialogState={setEffectEditDialogState}
-                onEffectsChange={onEffectsChange}
-                newDefaultEffect={newDefaultEffect}
-              />
-            ),
-        )}
+        {currentEffects.map((t, tIdx) => (
+          <ImageEffect
+            key={effectKey(t, tIdx)}
+            index={tIdx}
+            currentEffects={currentEffects}
+            effect={t}
+            onEffectsChange={onEffectsChange}
+            newDefaultEffect={newDefaultEffect}
+            possibleEffects={possibleEffects}
+          />
+        ))}
       </Box>
       {finalGif != null && (
         <Paper style={{ padding: 8 }} elevation={4}>

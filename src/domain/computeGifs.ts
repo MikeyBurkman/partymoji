@@ -1,6 +1,6 @@
 import { runEffects } from './run';
 import { runEffectsAsync } from './runAsync';
-import { AppState, Image, ImageEffectResult } from './types';
+import { AppState, AppStateEffect, Image } from './types';
 import { IS_MOBILE } from './utils/isMobile';
 import { miscUtil, logger, IS_DEV } from './utils';
 
@@ -13,12 +13,10 @@ export const computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync;
 export const computeGifsForState = async ({
   state,
   startEffectIndex,
-  onCompute,
 }: {
   state: AppState;
   startEffectIndex: number;
-  onCompute: (image: ImageEffectResult, idx: number) => void;
-}): Promise<void> => {
+}): Promise<AppState> => {
   miscUtil.assert(
     state.baseImage,
     'No source image, this button should be disabled!',
@@ -36,7 +34,15 @@ export const computeGifsForState = async ({
     image = prevEffectState.image.image;
   }
 
-  for (let i = startEffectIndex; i < state.effects.length; i += 1) {
+  const images: Array<AppStateEffect> = [];
+
+  for (let i = 0; i < state.effects.length; i += 1) {
+    if (i < startEffectIndex) {
+      // Skip effects that have already been computed
+      images.push(state.effects[i]);
+      continue;
+    }
+
     const effect = state.effects[i];
 
     const result = await computeGif({
@@ -50,9 +56,20 @@ export const computeGifsForState = async ({
     });
 
     image = result.image;
-
-    onCompute(result, i);
+    images.push({
+      effectName: effect.effectName,
+      state: {
+        status: 'done',
+        image: result,
+      },
+      paramsValues: effect.paramsValues,
+    });
   }
+
+  return {
+    ...state,
+    effects: images,
+  };
 };
 
 /** Get the index of the first effect that differs from curr to prev state */
@@ -65,8 +82,9 @@ export const getStateDiff = ({
 }): { changed: true; index: number } | { changed: false } => {
   if (
     currState.fps !== prevState.fps ||
-    currState.baseImage !== prevState.baseImage || 
-    currState.frameCount !== prevState.frameCount  ) {
+    currState.baseImage !== prevState.baseImage ||
+    currState.frameCount !== prevState.frameCount
+  ) {
     logger.debug('FPS, base image or frameCount is different');
     return { changed: true, index: 0 };
   }
