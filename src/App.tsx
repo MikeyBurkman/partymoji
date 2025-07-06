@@ -1,4 +1,11 @@
-import { Container, Divider, Paper, Stack, Typography } from '@mui/material';
+import {
+  Button,
+  Container,
+  Divider,
+  Paper,
+  Stack,
+  Typography,
+} from '@mui/material';
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 import React from 'react';
 import { Help } from '~/components/Help';
@@ -19,6 +26,7 @@ import {
   AppStateContextProps,
   AppStateProvider,
 } from './context/stateContext';
+import { Icon } from './components/Icon';
 
 // Contains the "help" and Image Source sections.
 const Header: React.FC<{
@@ -74,7 +82,7 @@ const Header: React.FC<{
 // The main body component of the whole app.
 const Inner: React.FC = () => {
   const setAlert = useSetAlert();
-  const { state, setState } = React.use(AppStateContext);
+  const { state, setState, resetState } = React.use(AppStateContext);
 
   React.useEffect(() => {
     if (IS_MOBILE) {
@@ -116,34 +124,24 @@ const Inner: React.FC = () => {
                     }}
                   />
                 </Section>
-                {/* {state.effects.length > 0 && (
-                  <Section>
-                    <Stack spacing={3}>
-                      <Typography variant="h5">Clear Effects</Typography>
-                      <Typography variant="body1">
-                        <Icon name="Warning" color="warning" /> Clicking this
-                        button will clear all effects for the image
-                      </Typography>
-                      <Button
-                        startIcon={<Icon name="Clear" />}
-                        sx={{ maxWidth: '300px' }}
-                        variant="contained"
-                        color="warning"
-                        onClick={() => {
-
-                          const newState: AppState = {
-                            ...DEFAULT_STATE,
-                            baseImage: state.baseImage,
-                          };
-                          setStateRaw(newState);
-                          localStorage.saveAppState(newState);
-                        }}
-                      >
-                        Clear Effects
-                      </Button>
-                    </Stack>
-                  </Section>
-                )} */}
+                <Section>
+                  <Stack spacing={3}>
+                    <Typography variant="h5">Reset</Typography>
+                    <Typography variant="body1">
+                      <Icon name="Warning" color="warning" /> Clicking this
+                      button will clear the image and all effects on it
+                    </Typography>
+                    <Button
+                      startIcon={<Icon name="Clear" />}
+                      sx={{ maxWidth: '300px' }}
+                      variant="contained"
+                      color="warning"
+                      onClick={resetState}
+                    >
+                      Reset
+                    </Button>
+                  </Stack>
+                </Section>
               </>
             )}
             <a
