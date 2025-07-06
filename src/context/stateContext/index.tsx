@@ -65,11 +65,13 @@ export interface AppStateContextProps {
     cb: (prevState: AppState) => AppState,
     debounce?: 'debounce',
   ) => void;
+  resetState: () => void;
 }
 
 export const AppStateContext = React.createContext<AppStateContextProps>({
   state: DEFAULT_STATE,
   setState: () => null,
+  resetState: () => null,
 });
 
 export const AppStateProvider: React.FC<{
@@ -79,26 +81,6 @@ export const AppStateProvider: React.FC<{
 
   // Used to set a debounce timer for computing gifs
   const computeTimer = React.useRef<NodeJS.Timeout | null>(null);
-
-  React.useEffect(() => {
-    (async () => {
-      const savedState = await localStorage.getStoredAppState();
-      if (savedState != null) {
-        if (savedState.version === CURRENT_APP_STATE_VERSION) {
-          // TODO How to trigger a recompute here, like in setState()
-          setState_internal(savedState, { doNotStore: true });
-        } else {
-          setState_internal(DEFAULT_STATE);
-        }
-      }
-      // eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable
-    })().catch((err: Error) => {
-      console.error(
-        'Error loading state from local storage',
-        err.stack ?? err.message,
-      );
-    });
-  }, [setState_internal]);
 
   const compute = useProcessingQueue({
     processFn: ({
@@ -137,6 +119,36 @@ export const AppStateProvider: React.FC<{
       setState_internal(computedState);
     },
   });
+
+  const initialized = React.useRef(false);
+  React.useEffect(() => {
+    if (initialized.current) {
+      return;
+    }
+
+    initialized.current = true;
+
+    (async () => {
+      const savedState = await localStorage.getStoredAppState();
+      if (savedState != null) {
+        if (savedState.version === CURRENT_APP_STATE_VERSION) {
+          setState_internal(savedState, { doNotStore: true });
+          compute({
+            state: savedState,
+            startEffectIndex: 0,
+          });
+        } else {
+          setState_internal(DEFAULT_STATE);
+        }
+      }
+      // eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable
+    })().catch((err: Error) => {
+      console.error(
+        'Error loading state from local storage',
+        err.stack ?? err.message,
+      );
+    });
+  }, [setState_internal, compute]);
 
   const setState = React.useCallback<AppStateContextProps['setState']>(
     (cb, debounce) => {
@@ -197,12 +209,17 @@ export const AppStateProvider: React.FC<{
     [compute, setState_internal, state],
   );
 
+  const resetState = React.useCallback(() => {
+    setState_internal(DEFAULT_STATE);
+  }, [setState_internal]);
+
   const context = React.useMemo<AppStateContextProps>(
     () => ({
       state,
       setState,
+      resetState,
     }),
-    [state, setState],
+    [state, setState, resetState],
   );
 
   return <AppStateContext value={context}>{children}</AppStateContext>;

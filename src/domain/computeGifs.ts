@@ -123,6 +123,12 @@ export const getStateDiff = ({
     }
   }
 
+  if (currEffects.length < prevEffects.length) {
+    // Could happen if an effect at the end was removed
+    logger.debug('Current effects length is less than previous effects length');
+    return { changed: true, index: currEffects.length };
+  }
+
   logger.debug('No diff');
   return { changed: false };
 };
