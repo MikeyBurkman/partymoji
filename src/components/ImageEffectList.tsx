@@ -76,11 +76,6 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
 
   const onDelete = React.useCallback(() => {
     const newEffects = miscUtil.removeIndex(currentEffects, index);
-    console.log('Removing index', {
-      currentEffects,
-      index,
-      newEffects,
-    });
     onEffectsChange(newEffects);
   }, [currentEffects, index, onEffectsChange]);
 
