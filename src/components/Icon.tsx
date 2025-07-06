@@ -30,7 +30,7 @@ export interface ClickableIconProps {
   name: IconName;
   onClick?: () => void;
   isDisabled?: boolean;
-  label: string;
+  label?: string;
 }
 
 export const ClickableIcon: React.FC<ClickableIconProps> = ({
