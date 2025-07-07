@@ -30,16 +30,26 @@ export const replaceIndex = <T>(
 /** Returns a new array with the element at the index removed */
 export const removeIndex = <T>(arr: Array<T>, index: number): Array<T> =>
   arr.filter((_t, idx) => {
-    console.log('Removing', { index, idx });
     return index !== idx;
   });
+
+export const getLast = <T>(arr: Array<T>): T | null => {
+  if (arr.length === 0) {
+    return null;
+  }
+  return arr[arr.length - 1];
+};
 
 /**
  * Returns a new array with the new item inserted into the given index.
  * @example
  * insertInto(['a','b','c'], 1, 'z'); // ['a','z','b','c']
  */
-export const insertInto = <T>(arr: Array<T>, index: number, newValue: T): Array<T> => {
+export const insertInto = <T>(
+  arr: Array<T>,
+  index: number,
+  newValue: T,
+): Array<T> => {
   return [...arr.slice(0, index), newValue, ...arr.slice(index)];
 };
 
@@ -129,6 +139,8 @@ export const dataURItoBlob = (dataURI: string): Blob => {
 export const blobOrFileToDataUrl = (file: File | Blob) =>
   new Promise<string>((resolve) => {
     const reader = new FileReader();
-    reader.onload = () => { resolve(reader.result as string); };
+    reader.onload = () => {
+      resolve(reader.result as string);
+    };
     reader.readAsDataURL(file);
   });

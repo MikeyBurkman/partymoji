@@ -27,16 +27,11 @@ export const runEffects = async ({
     random,
   });
 
-  const startTime = performance.now();
-
   const gif = await createGif({
     // Transform any of our transparent pixels to what our gif understands to be transparent
     image: result,
     fps,
   });
-
-  const endTime = performance.now();
-  console.log(`GIF creation took ${endTime - startTime} milliseconds.`);
 
   const resultWithBG = await fakeTransparency.fn({
     image: result,
@@ -64,9 +59,10 @@ const createGif = async ({
 }): Promise<string> => {
   logger.debug('Creating GIF', {
     dimensions: image.dimensions,
+    numberOfFrames: image.frames.length,
     fps,
   });
-  
+
   return wasmCreateGif({
     image,
     fps,

@@ -5,7 +5,6 @@ import { IS_MOBILE } from '~/domain/utils/isMobile';
 import type { ImageEffectResult } from '~/domain/types';
 import { sliderParam } from '~/params';
 import { DEFAULT_FPS, MAX_FRAMES } from '~/config';
-import { logger } from '~/domain/utils';
 
 const fpsParam = sliderParam({
   name: 'Final Gif Frames per Second',
@@ -74,10 +73,7 @@ export const SourceImage: React.FC<SourceImageProps> = ({
       {baseImage != null &&
         frameCountParam.fn({
           value: frameCount,
-          onChange: (num) => {
-            logger.info('FRAME COUNT CHANGED:', num);
-            onFrameCountChange(num);
-          },
+          onChange: onFrameCountChange,
         })}
     </Stack>
   );
