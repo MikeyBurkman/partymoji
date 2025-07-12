@@ -23,7 +23,7 @@ import type {
   JsonType,
 } from '~/domain/types';
 import { miscUtil } from '~/domain/utils';
-import { effectByName } from '~/effects';
+import { DEFAULT_EFFECT, effectByName, POSSIBLE_EFFECTS } from '~/effects';
 import { Gif } from './Gif';
 import { Icon, ClickableIcon } from './Icon';
 import { EffectImage } from './EffectImage';
@@ -42,7 +42,6 @@ const GroupItems = styled('ul')({
 
 interface EffectListProps {
   appState: AppState;
-  possibleEffects: Array<AnyEffect>;
   onEffectsChange: (t: Array<AppStateEffect>) => void;
 }
 
@@ -209,6 +208,12 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
             </Stack>
             {requiresAnimation}
           </Stack>
+          <Typography variant="subtitle1">{currEffect.description}</Typography>
+          {currEffect.secondaryDescription != null && (
+            <Typography variant="caption">
+              {currEffect.secondaryDescription}
+            </Typography>
+          )}
           <Grid container width="md" spacing={2} p={2}>
             <Grid size={4}>
               <EffectImage appStateEffect={effect} />
@@ -231,7 +236,6 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
 
 export const ImageEffectList: React.FC<EffectListProps> = ({
   appState,
-  possibleEffects,
   onEffectsChange,
 }) => {
   const currentEffects = appState.effects;
@@ -251,8 +255,8 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
 
   const newDefaultEffect = React.useCallback(
     (tIdx: number): AppStateEffect => ({
-      effectName: possibleEffects[0].name,
-      paramsValues: possibleEffects[0].params.map((p) => {
+      effectName: DEFAULT_EFFECT.name,
+      paramsValues: DEFAULT_EFFECT.params.map((p) => {
         let image: Image | undefined = undefined;
         if (tIdx === 0) {
           image = appState.baseImage?.image;
@@ -267,7 +271,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
       }),
       state: { status: 'init' },
     }),
-    [appState, currentEffects, possibleEffects],
+    [appState, currentEffects],
   );
 
   const onAddNew = React.useCallback(() => {
@@ -311,7 +315,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
             effect={t}
             onEffectsChange={onEffectsChange}
             newDefaultEffect={newDefaultEffect}
-            possibleEffects={possibleEffects}
+            possibleEffects={POSSIBLE_EFFECTS}
           />
         ))}
       </Box>

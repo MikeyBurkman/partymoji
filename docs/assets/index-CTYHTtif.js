@@ -31576,7 +31576,7 @@ const seedrandom = getDefaultExportFromCjs$1(seedrandomExports), lightningIntens
 }) }), transpose = buildEffect({ name: "Transpose", group: "Image", description: "Move the image left or right, up or down", params: [intParam({ name: "X", defaultValue: 0 }), intParam({ name: "Y", defaultValue: 0 })], fn: mapImage(({ coord: [t2, n], getSrcPixel: o, parameters: [s, c] }) => o([t2 + s, n + c])) }), GROUP_ORDERING = ["Animation", "Image", "Party", "Transform", "Colors", "Misc"], POSSIBLE_EFFECTS = pipe([adjustImage, backgroundColor, backgroundImage, blur, bounce, bounceAnimation, circle, changingFocus, colorPalette, colors, colorsBackground, doubleVision, dropShadow, dualHue, expand, fade, fill, fisheye, grid, hueChange, hueShift, hueShiftPulse, hueWave, lightning, mirror, nuke, opacity, party, partyBackground, partyHarder, partyShadow, pinwheelColors, pinwheelRainbow, pinwheelRainbowBackground, radianceColors, radianceRainbow, radianceRainbowBackground, rain, reduceColorPalette, repeatAnimation, resizeImage, reverseAnimation, ripple, rotate, roxbury, scaleImage, shake, slowAnimation, spin, staticc, text, trails, transparency, transpose], sortBy((t2) => GROUP_ORDERING.indexOf(t2.group), (t2) => -1 * (t2.groupOrder ?? 0), (t2) => t2.name), reject((t2) => t2.disabled)), effectByName = (t2) => {
   const n = POSSIBLE_EFFECTS.find((o) => o.name === t2);
   return assert(n, `Could not find matching effect: ${t2}`), n;
-}, TooltipInner$1 = () => jsxRuntimeExports.jsxs(Stack, { spacing: 1, children: [jsxRuntimeExports.jsx(Typography, { children: "This resulting image contains partial transparency" }), jsxRuntimeExports.jsx(Typography, { variant: "caption", children: "Gifs do not handle partial transparency, so a fake background has been applied to the preview." }), jsxRuntimeExports.jsx(Typography, { variant: "caption", children: 'Be sure to add some effect after this that affects the "background", or else anything that is partially transparent will be made either fully transparent, or fully opaque.' })] }), BackgroundPreviewTooltip = () => jsxRuntimeExports.jsx(Tooltip, { kind: "info", description: jsxRuntimeExports.jsx(TooltipInner$1, {}) }), shimmerAnimation = keyframes`
+}, DEFAULT_EFFECT = party, TooltipInner$1 = () => jsxRuntimeExports.jsxs(Stack, { spacing: 1, children: [jsxRuntimeExports.jsx(Typography, { children: "This resulting image contains partial transparency" }), jsxRuntimeExports.jsx(Typography, { variant: "caption", children: "Gifs do not handle partial transparency, so a fake background has been applied to the preview." }), jsxRuntimeExports.jsx(Typography, { variant: "caption", children: 'Be sure to add some effect after this that affects the "background", or else anything that is partially transparent will be made either fully transparent, or fully opaque.' })] }), BackgroundPreviewTooltip = () => jsxRuntimeExports.jsx(Tooltip, { kind: "info", description: jsxRuntimeExports.jsx(TooltipInner$1, {}) }), shimmerAnimation = keyframes`
   to {
     background-position-x: 0%;
   }
@@ -31618,35 +31618,35 @@ const seedrandom = getDefaultExportFromCjs$1(seedrandomExports), lightningIntens
     });
     return jsxRuntimeExports.jsx(Grid, { container: true, spacing: 4, children: C });
   }, [p, t2, y]);
-  return jsxRuntimeExports.jsxs(Stack, { children: [jsxRuntimeExports.jsx(Paper, { style: { padding: 8 }, elevation: 4, children: jsxRuntimeExports.jsxs(Stack, { spacing: 2, children: [jsxRuntimeExports.jsxs(Stack, { direction: "row", spacing: 2, width: "100%", children: [jsxRuntimeExports.jsx(Autocomplete, { fullWidth: true, disableClearable: true, value: p, options: s, groupBy: (C) => C.group, onChange: v, disabled: t2.state.status !== "done", getOptionLabel: (C) => C.name, renderGroup: (C) => jsxRuntimeExports.jsxs("li", { children: [jsxRuntimeExports.jsxs(GroupHeader, { children: [jsxRuntimeExports.jsx(Typography, { variant: "subtitle1", children: C.group }), jsxRuntimeExports.jsx(Divider, {})] }), jsxRuntimeExports.jsx(GroupItems, { children: C.children })] }, C.key), renderOption: (C, x) => jsxRuntimeExports.jsx("li", { ...C, children: jsxRuntimeExports.jsxs(Stack, { marginLeft: 2, marginRight: 2, children: [jsxRuntimeExports.jsx(Typography, { variant: "body2", children: x.name }), jsxRuntimeExports.jsx(Typography, { variant: "caption", marginLeft: 2, children: x.description })] }) }), renderInput: (C) => jsxRuntimeExports.jsx(TextField, { ...C, label: "Effect" }) }), jsxRuntimeExports.jsx(Stack, { spacing: 2, justifyContent: "center", children: jsxRuntimeExports.jsx(ClickableIcon, { name: "Delete", onClick: g }) }), b] }), jsxRuntimeExports.jsxs(Grid, { container: true, width: "md", spacing: 2, p: 2, children: [jsxRuntimeExports.jsx(Grid, { size: 4, children: jsxRuntimeExports.jsx(EffectImage, { appStateEffect: t2 }) }), jsxRuntimeExports.jsx(Grid, { size: 8, children: B })] })] }) }), jsxRuntimeExports.jsx(Divider, { sx: { py: 4 }, children: jsxRuntimeExports.jsx(Button, { onClick: m, startIcon: jsxRuntimeExports.jsx(Icon, { name: "Add" }), children: n < o.length - 1 ? "Insert Effect Here" : "Add New Effect" }) })] });
-}, ImageEffectList = ({ appState: t2, possibleEffects: n, onEffectsChange: o }) => {
-  const s = t2.effects;
-  logger.debug("CURRENT EFFECTS", s);
-  const [c, l] = React.useState();
+  return jsxRuntimeExports.jsxs(Stack, { children: [jsxRuntimeExports.jsx(Paper, { style: { padding: 8 }, elevation: 4, children: jsxRuntimeExports.jsxs(Stack, { spacing: 2, children: [jsxRuntimeExports.jsxs(Stack, { direction: "row", spacing: 2, width: "100%", children: [jsxRuntimeExports.jsx(Autocomplete, { fullWidth: true, disableClearable: true, value: p, options: s, groupBy: (C) => C.group, onChange: v, disabled: t2.state.status !== "done", getOptionLabel: (C) => C.name, renderGroup: (C) => jsxRuntimeExports.jsxs("li", { children: [jsxRuntimeExports.jsxs(GroupHeader, { children: [jsxRuntimeExports.jsx(Typography, { variant: "subtitle1", children: C.group }), jsxRuntimeExports.jsx(Divider, {})] }), jsxRuntimeExports.jsx(GroupItems, { children: C.children })] }, C.key), renderOption: (C, x) => jsxRuntimeExports.jsx("li", { ...C, children: jsxRuntimeExports.jsxs(Stack, { marginLeft: 2, marginRight: 2, children: [jsxRuntimeExports.jsx(Typography, { variant: "body2", children: x.name }), jsxRuntimeExports.jsx(Typography, { variant: "caption", marginLeft: 2, children: x.description })] }) }), renderInput: (C) => jsxRuntimeExports.jsx(TextField, { ...C, label: "Effect" }) }), jsxRuntimeExports.jsx(Stack, { spacing: 2, justifyContent: "center", children: jsxRuntimeExports.jsx(ClickableIcon, { name: "Delete", onClick: g }) }), b] }), jsxRuntimeExports.jsx(Typography, { variant: "subtitle1", children: p.description }), p.secondaryDescription != null && jsxRuntimeExports.jsx(Typography, { variant: "caption", children: p.secondaryDescription }), jsxRuntimeExports.jsxs(Grid, { container: true, width: "md", spacing: 2, p: 2, children: [jsxRuntimeExports.jsx(Grid, { size: 4, children: jsxRuntimeExports.jsx(EffectImage, { appStateEffect: t2 }) }), jsxRuntimeExports.jsx(Grid, { size: 8, children: B })] })] }) }), jsxRuntimeExports.jsx(Divider, { sx: { py: 4 }, children: jsxRuntimeExports.jsx(Button, { onClick: m, startIcon: jsxRuntimeExports.jsx(Icon, { name: "Add" }), children: n < o.length - 1 ? "Insert Effect Here" : "Add New Effect" }) })] });
+}, ImageEffectList = ({ appState: t2, onEffectsChange: n }) => {
+  const o = t2.effects;
+  logger.debug("CURRENT EFFECTS", o);
+  const [s, c] = React.useState();
   React.useEffect(() => {
-    !t2.baseImage || (c == null ? void 0 : c.gif) === t2.baseImage.gif || l(c);
-  }, [t2, c]);
-  const p = React.useCallback((v) => ({ effectName: n[0].name, paramsValues: n[0].params.map((y) => {
+    !t2.baseImage || (s == null ? void 0 : s.gif) === t2.baseImage.gif || c(s);
+  }, [t2, s]);
+  const l = React.useCallback((b) => ({ effectName: DEFAULT_EFFECT.name, paramsValues: DEFAULT_EFFECT.params.map((v) => {
     var _a;
-    let B;
-    if (v === 0) B = (_a = t2.baseImage) == null ? void 0 : _a.image;
+    let y;
+    if (b === 0) y = (_a = t2.baseImage) == null ? void 0 : _a.image;
     else {
-      const C = s[v];
-      C.state.status === "done" && (B = C.state.image.image);
+      const B = o[b];
+      B.state.status === "done" && (y = B.state.image.image);
     }
-    return y.defaultValue(B);
-  }), state: { status: "init" } }), [t2, s, n]), g = React.useCallback(() => {
-    o(insertInto(s, 0, p(0)));
-  }, [s, p, o]), m = React.useMemo(() => {
-    const v = getLast(s);
-    return v ? v.state.status !== "done" ? null : v.state.image.gif : null;
-  }, [s]), b = React.useCallback(() => {
-    if (m != null) {
-      const v = (t2.fname ?? "image").replace(/\.[^/.]+$/, "") + ".gif";
-      FileSaver_minExports.saveAs(m, v);
+    return v.defaultValue(y);
+  }), state: { status: "init" } }), [t2, o]), p = React.useCallback(() => {
+    n(insertInto(o, 0, l(0)));
+  }, [o, l, n]), g = React.useMemo(() => {
+    const b = getLast(o);
+    return b ? b.state.status !== "done" ? null : b.state.image.gif : null;
+  }, [o]), m = React.useCallback(() => {
+    if (g != null) {
+      const b = (t2.fname ?? "image").replace(/\.[^/.]+$/, "") + ".gif";
+      FileSaver_minExports.saveAs(g, b);
     }
-  }, [m, t2]);
-  return jsxRuntimeExports.jsxs(Stack, { children: [jsxRuntimeExports.jsxs(Box, { children: [jsxRuntimeExports.jsx(Divider, { sx: { pb: 4 }, children: jsxRuntimeExports.jsx(Button, { startIcon: jsxRuntimeExports.jsx(Icon, { name: "Add" }), onClick: g, name: "add", children: "Insert First Effect" }) }), s.map((v, y) => jsxRuntimeExports.jsx(ImageEffect, { index: y, currentEffects: s, effect: v, onEffectsChange: o, newDefaultEffect: p, possibleEffects: n }, effectKey(v, y)))] }), m != null && jsxRuntimeExports.jsx(Paper, { style: { padding: 8 }, elevation: 4, children: jsxRuntimeExports.jsxs(Stack, { alignItems: "center", spacing: 2, children: [jsxRuntimeExports.jsx(Typography, { variant: "h6", children: "Final Result" }), jsxRuntimeExports.jsx(Gif, { src: m, alt: t2.fname ?? "image.gif" }), jsxRuntimeExports.jsx(Button, { variant: "contained", onClick: b, startIcon: jsxRuntimeExports.jsx(Icon, { name: "SaveAlt" }), children: "Save Gif" })] }) })] });
+  }, [g, t2]);
+  return jsxRuntimeExports.jsxs(Stack, { children: [jsxRuntimeExports.jsxs(Box, { children: [jsxRuntimeExports.jsx(Divider, { sx: { pb: 4 }, children: jsxRuntimeExports.jsx(Button, { startIcon: jsxRuntimeExports.jsx(Icon, { name: "Add" }), onClick: p, name: "add", children: "Insert First Effect" }) }), o.map((b, v) => jsxRuntimeExports.jsx(ImageEffect, { index: v, currentEffects: o, effect: b, onEffectsChange: n, newDefaultEffect: l, possibleEffects: POSSIBLE_EFFECTS }, effectKey(b, v)))] }), g != null && jsxRuntimeExports.jsx(Paper, { style: { padding: 8 }, elevation: 4, children: jsxRuntimeExports.jsxs(Stack, { alignItems: "center", spacing: 2, children: [jsxRuntimeExports.jsx(Typography, { variant: "h6", children: "Final Result" }), jsxRuntimeExports.jsx(Gif, { src: g, alt: t2.fname ?? "image.gif" }), jsxRuntimeExports.jsx(Button, { variant: "contained", onClick: m, startIcon: jsxRuntimeExports.jsx(Icon, { name: "SaveAlt" }), children: "Save Gif" })] }) })] });
 };
 var mobileDetect = { exports: {} }, hasRequiredMobileDetect;
 function requireMobileDetect() {
@@ -32244,7 +32244,7 @@ const AppStateContext = React.createContext({ state: DEFAULT_STATE, setState: ()
   const t2 = useSetAlert(), { state: n, setState: o, resetState: s } = React.use(AppStateContext);
   return React.useEffect(() => {
     IS_MOBILE && t2({ severity: "warning", message: "This app is not well optimized for mobile. Your experience may not be great." });
-  }, [t2]), jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(ScopedCssBaseline, {}), jsxRuntimeExports.jsx(Container, { maxWidth: IS_MOBILE ? "sm" : "md", children: jsxRuntimeExports.jsxs(Stack, { spacing: 4, justifyContent: "space-evenly", alignItems: "center", width: IS_MOBILE ? "sm" : void 0, divider: jsxRuntimeExports.jsx(Divider, {}), children: [jsxRuntimeExports.jsx(Typography, { variant: "h2", pt: 4, children: "Partymoji" }), jsxRuntimeExports.jsxs(Stack, { spacing: 4, divider: jsxRuntimeExports.jsx(Divider, {}), children: [jsxRuntimeExports.jsx(Header, { state: n, setState: o, setAlert: t2 }), n.baseImage != null && jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsx(ImageEffectList, { appState: n, possibleEffects: POSSIBLE_EFFECTS, onEffectsChange: (c) => {
+  }, [t2]), jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(ScopedCssBaseline, {}), jsxRuntimeExports.jsx(Container, { maxWidth: IS_MOBILE ? "sm" : "md", children: jsxRuntimeExports.jsxs(Stack, { spacing: 4, justifyContent: "space-evenly", alignItems: "center", width: IS_MOBILE ? "sm" : void 0, divider: jsxRuntimeExports.jsx(Divider, {}), children: [jsxRuntimeExports.jsx(Typography, { variant: "h2", pt: 4, children: "Partymoji" }), jsxRuntimeExports.jsxs(Stack, { spacing: 4, divider: jsxRuntimeExports.jsx(Divider, {}), children: [jsxRuntimeExports.jsx(Header, { state: n, setState: o, setAlert: t2 }), n.baseImage != null && jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsx(ImageEffectList, { appState: n, onEffectsChange: (c) => {
     o((l) => ({ ...l, effects: c }));
   } }) }), jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsxs(Stack, { spacing: 3, children: [jsxRuntimeExports.jsx(Typography, { variant: "h5", children: "Reset" }), jsxRuntimeExports.jsxs(Typography, { variant: "body1", children: [jsxRuntimeExports.jsx(Icon, { name: "Warning", color: "warning" }), " Clicking this button will clear the image and all effects on it"] }), jsxRuntimeExports.jsx(Stack, { alignItems: "center", children: jsxRuntimeExports.jsx(Button, { startIcon: jsxRuntimeExports.jsx(Icon, { name: "Clear" }), sx: { maxWidth: "300px" }, variant: "contained", color: "error", onClick: s, children: "Reset GIF" }) })] }) })] }), jsxRuntimeExports.jsx("a", { href: "https://github.com/MikeyBurkman/partymoji", target: "_blank", rel: "noreferrer", children: jsxRuntimeExports.jsx("img", { src: "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg", width: 64, height: 64, alt: "Github Link" }) })] })] }) }), jsxRuntimeExports.jsx(Stack, { pt: 8, children: jsxRuntimeExports.jsx(AlertSnackbar, {}) })] });
 }, Section = ({ children: t2 }) => jsxRuntimeExports.jsx(Paper, { style: { padding: 16, maxWidth: IS_MOBILE ? "300px" : void 0 }, children: t2 }), App = () => jsxRuntimeExports.jsx(AppStateProvider, { children: jsxRuntimeExports.jsx(AlertProvider, { children: jsxRuntimeExports.jsx(Inner, {}) }) });
