@@ -131,15 +131,17 @@ const Inner: React.FC = () => {
                       <Icon name="Warning" color="warning" /> Clicking this
                       button will clear the image and all effects on it
                     </Typography>
-                    <Button
-                      startIcon={<Icon name="Clear" />}
-                      sx={{ maxWidth: '300px' }}
-                      variant="contained"
-                      color="warning"
-                      onClick={resetState}
-                    >
-                      Reset
-                    </Button>
+                    <Stack alignItems="center">
+                      <Button
+                        startIcon={<Icon name="Clear" />}
+                        sx={{ maxWidth: '300px' }}
+                        variant="contained"
+                        color="error"
+                        onClick={resetState}
+                      >
+                        Reset GIF
+                      </Button>
+                    </Stack>
                   </Stack>
                 </Section>
               </>

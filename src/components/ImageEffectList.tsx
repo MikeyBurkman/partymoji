@@ -14,7 +14,6 @@ import {
 import { saveAs } from 'file-saver';
 import { logger } from '~/domain/utils';
 
-import { IS_MOBILE } from '~/domain/utils/isMobile';
 import type {
   AppStateEffect,
   Image,
@@ -27,7 +26,7 @@ import { miscUtil } from '~/domain/utils';
 import { effectByName } from '~/effects';
 import { Gif } from './Gif';
 import { Icon, ClickableIcon } from './Icon';
-import { ImageRow } from './ImageRow';
+import { EffectImage } from './EffectImage';
 import { RequiresAnimationTooltip } from './RequiresAnimationTooltip';
 
 const GroupHeader = styled('div')(({ theme }) => ({
@@ -140,36 +139,40 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
     [currEffect, effect, currentEffects, index, onEffectsChange],
   );
 
-  const effectParams = React.useMemo(
-    () =>
-      // Create elements for each of the parameters for the selected effect.
-      // Each of these would get an onChange event so we know when the user has
-      //  selected a value.
-      currEffect.params.map((param, paramIdx: number) => {
-        const ele = param.fn({
-          value: effect.paramsValues[paramIdx],
-          onChange: (v) => {
-            updateEffectParam(v, paramIdx);
-          },
-        });
+  const effectParams = React.useMemo(() => {
+    // Create elements for each of the parameters for the selected effect.
+    // Each of these would get an onChange event so we know when the user has
+    //  selected a value.
+    const renderedParams = currEffect.params.map((param, paramIdx: number) => {
+      const ele = param.fn({
+        value: effect.paramsValues[paramIdx],
+        onChange: (v) => {
+          updateEffectParam(v, paramIdx);
+        },
+      });
 
-        return (
-          <Grid
-            key={`${effect.effectName}-${param.name}`}
-            size="auto"
-            minWidth={160}
-          >
-            {ele}
-          </Grid>
-        );
-      }),
-    [currEffect, effect, updateEffectParam],
-  );
+      return (
+        <Grid
+          key={`${effect.effectName}-${param.name}`}
+          size="auto"
+          minWidth={160}
+        >
+          {ele}
+        </Grid>
+      );
+    });
+
+    return (
+      <Grid container spacing={4}>
+        {renderedParams}
+      </Grid>
+    );
+  }, [currEffect, effect, updateEffectParam]);
 
   return (
     <Stack>
       <Paper style={{ padding: 8 }} elevation={4}>
-        <Stack alignItems="center" spacing={2}>
+        <Stack spacing={2}>
           <Stack direction="row" spacing={2} width="100%">
             <Autocomplete
               fullWidth
@@ -206,17 +209,12 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
             </Stack>
             {requiresAnimation}
           </Stack>
-          <Stack
-            direction="row"
-            maxWidth={IS_MOBILE ? '300px' : 'md'}
-            spacing={2}
-            sx={{ overflowX: 'auto' }}
-          >
-            <ImageRow appStateEffect={effect} />
-            <Grid container spacing={4}>
-              {effectParams}
+          <Grid container width="md" spacing={2} p={2}>
+            <Grid size={4}>
+              <EffectImage appStateEffect={effect} />
             </Grid>
-          </Stack>
+            <Grid size={8}>{effectParams}</Grid>
+          </Grid>
         </Stack>
       </Paper>
       <Divider sx={{ py: 4 }}>

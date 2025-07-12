@@ -1,8 +1,6 @@
 import React from 'react';
 import type { CanvasData, Coord } from '~/domain/types';
 
-export type BezierTuple = [Coord, Coord];
-
 export interface CanvasElementProps {
   width: number;
   height: number;
@@ -46,7 +44,9 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
       const rect = ref.current.getBoundingClientRect();
       const x = evt.clientX - rect.left;
       const y = evt.clientY - rect.top;
-      setTimeout(() => { callback([x, y]); }, 0);
+      setTimeout(() => {
+        callback([x, y]);
+      }, 0);
     };
 
   const style = React.useMemo((): React.CSSProperties | undefined => {
