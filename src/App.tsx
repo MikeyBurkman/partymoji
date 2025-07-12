@@ -11,7 +11,6 @@ import React from 'react';
 import { Help } from '~/components/Help';
 import { ImageEffectList } from '~/components/ImageEffectList';
 import type { AppState } from '~/domain/types';
-import { POSSIBLE_EFFECTS } from '~/effects';
 import { SourceImage } from './components/SourceImage';
 import {
   AlertProvider,
@@ -115,7 +114,6 @@ const Inner: React.FC = () => {
                 <Section>
                   <ImageEffectList
                     appState={state}
-                    possibleEffects={POSSIBLE_EFFECTS}
                     onEffectsChange={(effects) => {
                       setState((prevState) => ({
                         ...prevState,
