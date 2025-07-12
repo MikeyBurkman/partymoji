@@ -1,8 +1,9 @@
 import React from 'react';
-import { CircularProgress, Stack, Typography, Checkbox } from '@mui/material';
-import { AppStateEffect, ImageEffectResult } from '~/domain/types';
+import { Stack, Typography, Checkbox } from '@mui/material';
+import { AppStateEffect, Dimensions, ImageEffectResult } from '~/domain/types';
 import { Gif } from './Gif';
 import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
+import { Shimmer } from './Shimmer';
 
 interface InnerProps {
   result: ImageEffectResult;
@@ -16,7 +17,7 @@ const Inner: React.FC<InnerProps> = ({ result, effectName }) => {
 
   return (
     <>
-      <Stack alignItems="center">
+      <Stack>
         {result.partiallyTransparent ? (
           <>
             <Gif
@@ -59,15 +60,29 @@ interface ImageRowProps {
   appStateEffect: AppStateEffect;
 }
 
-export const ImageRow: React.FC<ImageRowProps> = ({ appStateEffect }) => {
+export const EffectImage: React.FC<ImageRowProps> = ({ appStateEffect }) => {
+  const cachedDimensions = React.useRef<Dimensions>([120, 120]);
+  React.useEffect(() => {
+    if (appStateEffect.state.status === 'done') {
+      cachedDimensions.current = appStateEffect.state.image.image.dimensions;
+    }
+  }, [appStateEffect]);
+
   if (appStateEffect.state.status !== 'done') {
-    return <CircularProgress />;
+    return (
+      <Shimmer
+        width={cachedDimensions.current[0]}
+        height={cachedDimensions.current[1]}
+      />
+    );
   }
 
   return (
-    <Inner
-      effectName={appStateEffect.effectName}
-      result={appStateEffect.state.image}
-    />
+    <>
+      <Inner
+        effectName={appStateEffect.effectName}
+        result={appStateEffect.state.image}
+      />
+    </>
   );
 };
