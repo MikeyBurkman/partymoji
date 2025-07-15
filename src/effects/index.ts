@@ -140,3 +140,5 @@ export const effectByName = (name: string): AnyEffect => {
   miscUtil.assert(t, `Could not find matching effect: ${name}`);
   return t;
 };
+
+export const DEFAULT_EFFECT = party;

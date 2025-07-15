@@ -11,7 +11,6 @@ import React from 'react';
 import { Help } from '~/components/Help';
 import { ImageEffectList } from '~/components/ImageEffectList';
 import type { AppState } from '~/domain/types';
-import { POSSIBLE_EFFECTS } from '~/effects';
 import { SourceImage } from './components/SourceImage';
 import {
   AlertProvider,
@@ -115,7 +114,6 @@ const Inner: React.FC = () => {
                 <Section>
                   <ImageEffectList
                     appState={state}
-                    possibleEffects={POSSIBLE_EFFECTS}
                     onEffectsChange={(effects) => {
                       setState((prevState) => ({
                         ...prevState,
@@ -131,15 +129,17 @@ const Inner: React.FC = () => {
                       <Icon name="Warning" color="warning" /> Clicking this
                       button will clear the image and all effects on it
                     </Typography>
-                    <Button
-                      startIcon={<Icon name="Clear" />}
-                      sx={{ maxWidth: '300px' }}
-                      variant="contained"
-                      color="warning"
-                      onClick={resetState}
-                    >
-                      Reset
-                    </Button>
+                    <Stack alignItems="center">
+                      <Button
+                        startIcon={<Icon name="Clear" />}
+                        sx={{ maxWidth: '300px' }}
+                        variant="contained"
+                        color="error"
+                        onClick={resetState}
+                      >
+                        Reset GIF
+                      </Button>
+                    </Stack>
                   </Stack>
                 </Section>
               </>
