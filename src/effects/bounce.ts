@@ -1,5 +1,5 @@
 import { imageUtil, miscUtil } from '~/domain/utils';
-import { bezierParam, intParam } from '~/params';
+import { bezierParam, checkboxParam, intParam } from '~/params';
 import { buildEffect } from './utils';
 
 export const bounce = buildEffect({
@@ -9,22 +9,36 @@ export const bounce = buildEffect({
   requiresAnimation: true,
   params: [
     intParam({
-      name: 'Bounce Height',
-      description: 'Positive number',
-      defaultValue: (image) =>
-        image ? Math.floor(image.dimensions[1] / 10) : 10,
+      name: 'Bounce Height %',
+      description: 'Percentage of the image height',
+      defaultValue: 50,
       min: 0,
+      max: 100,
     }),
     bezierParam({
       name: 'Easing',
       defaultValue: miscUtil.LINEAR_BEZIER,
     }),
+    checkboxParam({
+      name: 'Up and Down',
+      description: 'If checked, the image will bounce in both directions',
+      defaultValue: false,
+    }),
   ] as const,
   fn: imageUtil.mapImageWithPrecompute(
-    ({ animationProgress, parameters: [height, easing] }) => {
+    ({
+      animationProgress,
+      parameters: [perc, easing, upAndDown],
+      dimensions: [_, height],
+    }) => {
       const b = miscUtil.bezierCurve(easing, true)(animationProgress);
+      const baseOffset = (perc / 100) * height;
       return {
-        yOffset: Math.round(height * b),
+        yOffset: Math.round(
+          upAndDown
+            ? baseOffset * Math.sin(animationProgress * Math.PI * 2)
+            : baseOffset * b,
+        ),
       };
     },
     ({ computed: { yOffset }, coord: [x, y], getSrcPixel }) =>
