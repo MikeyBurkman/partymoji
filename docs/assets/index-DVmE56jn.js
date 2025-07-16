@@ -13463,7 +13463,7 @@ function requireSrc() {
 }
 var srcExports = requireSrc();
 const bezier = getDefaultExportFromCjs$1(srcExports);
-function assert(t2, n = "Unexpected falsy value") {
+function assert(t2, n = "Unexpected falsy value", o) {
   if (!t2) throw new Error(`AssertionFailure: ${n}`);
 }
 const replaceIndex = (t2, n, o) => t2.map((s, c) => n === c ? o(s) : s), removeIndex = (t2, n) => t2.filter((o, s) => n !== s), getLast = (t2) => t2.length === 0 ? null : t2[t2.length - 1], insertInto = (t2, n, o) => [...t2.slice(0, n), o, ...t2.slice(n)], isUrl = (t2) => /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(t2), clamp = (t2, n, o) => Math.max(Math.min(t2, o), n), weightedValue = (t2, n, o) => (1 - t2 / 100) * n + t2 / 100 * o, calculateAngle = (t2, n) => {
@@ -13765,13 +13765,13 @@ const getPixelFromSource = (t2, n, o) => {
     const c = Math.floor(s / n * o.length);
     return o[c];
   }) };
-}, isPartiallyTransparent = (t2) => {
-  for (const n of t2.frames) for (let o = 0; o < t2.dimensions[0]; o += 1) for (let s = 0; s < t2.dimensions[1]; s += 1) {
-    const c = getPixelFromSource(t2.dimensions, n, [o, s]);
-    if (isPartiallyTransparent$1(c)) return true;
+}, somePixel = (t2, n) => {
+  for (const o of t2.frames) for (let s = 0; s < t2.dimensions[0]; s += 1) for (let c = 0; c < t2.dimensions[1]; c += 1) {
+    const l = getPixelFromSource(t2.dimensions, o, [s, c]);
+    if (n(l)) return true;
   }
   return false;
-};
+}, isPartiallyTransparent = (t2) => somePixel(t2, isPartiallyTransparent$1), hasTransparentPixels = (t2) => somePixel(t2, isTransparent$1);
 var buffer$1 = {}, base64Js = {};
 base64Js.byteLength = byteLength;
 base64Js.toByteArray = toByteArray;
@@ -31602,7 +31602,7 @@ const seedrandom = getDefaultExportFromCjs$1(seedrandomExports), lightningIntens
     const C = removeIndex(o, n);
     c(C);
   }, [o, n, c]), m = React.useCallback(() => {
-    c(insertInto(o, n + 1, l(n + 1)));
+    c(insertInto(o, n + 1, l(n)));
   }, [o, n, l, c]), b = React.useMemo(() => t2.state.status !== "done" ? null : effectByName(t2.effectName).requiresAnimation && t2.state.image.image.frames.length <= 1 ? jsxRuntimeExports.jsx(RequiresAnimationTooltip, {}) : null, [t2]), v = React.useCallback((C, x) => {
     if (t2.state.status !== "done") return;
     const S = t2.state.image;
@@ -31632,7 +31632,7 @@ const seedrandom = getDefaultExportFromCjs$1(seedrandomExports), lightningIntens
     if (b === 0) y = (_a = t2.baseImage) == null ? void 0 : _a.image;
     else {
       const B = o[b];
-      B.state.status === "done" && (y = B.state.image.image);
+      console.log("HERE", { tIdx: b, previousEffect: B, currentEffects: o }), B.state.status === "done" && (y = B.state.image.image);
     }
     return v.defaultValue(y);
   }), state: { status: "init" } }), [t2, o]), p = React.useCallback(() => {
@@ -31942,8 +31942,13 @@ const initializeWasm = async () => {
 }, runEffects = async ({ image: t2, effectInput: n, randomSeed: o, fps: s }) => {
   const c = seedrandom(o);
   logger.info("Running effect", { name: n.effectName, params: n.params });
-  const p = await effectByName(n.effectName).fn({ image: t2, parameters: n.params, random: c }), g = await createGif({ image: p, fps: s }), m = await fakeTransparency.fn({ image: p, parameters: [], random: c });
-  return { gif: g, image: p, partiallyTransparent: isPartiallyTransparent(p), gifWithBackgroundColor: await createGif({ image: m, fps: s }) };
+  const p = await effectByName(n.effectName).fn({ image: t2, parameters: n.params, random: c }), g = await createGif({ image: p, fps: s });
+  if (isPartiallyTransparent(p)) {
+    const b = await fakeTransparency.fn({ image: p, parameters: [], random: c });
+    return { gif: g, image: p, partiallyTransparent: true, gifWithBackgroundColor: await createGif({ image: b, fps: s }) };
+  }
+  const m = hasTransparentPixels(p) ? await fakeTransparency.fn({ image: p, parameters: [], random: c }) : null;
+  return { gif: g, image: p, partiallyTransparent: false, gifWithBackgroundColor: m == null ? null : await createGif({ image: m, fps: s }) };
 }, createGif = async ({ image: t2, fps: n }) => (logger.debug("Creating GIF", { dimensions: t2.dimensions, numberOfFrames: t2.frames.length, fps: n }), wasmCreateGif({ image: t2, fps: n }));
 /**
 * @license
@@ -32138,16 +32143,12 @@ const computationMap = /* @__PURE__ */ new Map(), handleError = (t2) => (n) => {
 }, runEffectsAsync = async (t2) => new Promise((n, o) => {
   const s = `${Date.now().toString()}-${Math.floor(Math.random() * 1e5).toString()}`;
   computationMap.set(s, { resolve: n, reject: o });
-  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-BukZkAYZ.js", import.meta.url), { type: "module" }));
+  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-BbASWcp5.js", import.meta.url), { type: "module" }));
   logger.info("Running effect ASYNC", { name: t2.effectInput.effectName, params: t2.effectInput.params }), c.runEffectRPC(t2).then(handleSuccess(s), handleError(s));
 }), computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync, computeGifsForState = async ({ state: t2, startEffectIndex: n }) => {
   assert(t2.baseImage, "No source image, this button should be disabled!");
   let o;
-  if (n === 0) o = t2.baseImage.image;
-  else {
-    const c = t2.effects[n - 1].state;
-    assert(c.status === "done", "We should not be starting with this effect if the previous is not done computing"), o = c.image.image;
-  }
+  o = t2.baseImage.image;
   const s = [];
   for (let c = 0; c < t2.effects.length; c += 1) {
     if (c < n) {
@@ -32206,19 +32207,19 @@ function useAppState() {
   return React.useMemo(() => [t2, o], [t2, o]);
 }
 const AppStateContext = React.createContext({ state: DEFAULT_STATE, setState: () => null, resetState: () => null }), AppStateProvider = ({ children: t2 }) => {
-  const [n, o] = useAppState(), s = React.useRef(null), c = useProcessingQueue({ processFn: ({ state: b, startEffectIndex: v }) => {
-    const y = (() => {
-      const B = b.baseImage;
-      return !B || B.image.frames.length === b.frameCount ? (logger.info("Base image frame count did not change", { frameCount: b.frameCount }), B) : { ...B, image: changeFrameCount(B.image, b.frameCount) };
+  const [n, o] = useAppState(), s = React.useRef(null), c = useProcessingQueue({ processFn: ({ state: b }) => {
+    const v = (() => {
+      const y = b.baseImage;
+      return !y || y.image.frames.length === b.frameCount ? (logger.info("Base image frame count did not change", { frameCount: b.frameCount }), y) : { ...y, image: changeFrameCount(y.image, b.frameCount) };
     })();
-    return computeGifsForState({ state: { ...b, baseImage: y }, startEffectIndex: v });
+    return computeGifsForState({ state: { ...b, baseImage: v }, startEffectIndex: 0 });
   }, onComplete: (b) => {
     logger.debug("Compute finished", { computedState: b }), o(b);
   } }), l = React.useRef(false);
   React.useEffect(() => {
     l.current || (l.current = true, (async () => {
       const b = await getStoredAppState();
-      b != null && (b.version === CURRENT_APP_STATE_VERSION ? (o(b, { doNotStore: true }), c({ state: b, startEffectIndex: 0 })) : o(DEFAULT_STATE));
+      b != null && (b.version === CURRENT_APP_STATE_VERSION ? (o(b, { doNotStore: true }), c({ state: b })) : o(DEFAULT_STATE));
     })().catch((b) => {
       console.error("Error loading state from local storage", b.stack ?? b.message);
     }));
@@ -32227,7 +32228,7 @@ const AppStateContext = React.createContext({ state: DEFAULT_STATE, setState: ()
     s.current != null && (clearTimeout(s.current), s.current = null), logger.debug("Setting app state", { debounce: v });
     const B = setTimeout(() => {
       const C = b(n), x = getStateDiff({ prevState: n, currState: C });
-      logger.debug("Calculated state diff", { newState: C, stateDiff: x }), x.changed ? (o({ ...n, effects: n.effects.map((S) => ({ ...S, state: { status: "computing" } })) }, { doNotStore: true }), c({ state: C, startEffectIndex: x.index })) : logger.debug("No changes detected, skipping compute"), s.current === B && (s.current = null);
+      logger.debug("Calculated state diff", { newState: C, stateDiff: x }), x.changed ? (o({ ...n, effects: n.effects.map((S) => ({ ...S, state: { status: "computing" } })) }, { doNotStore: true }), c({ state: C })) : logger.debug("No changes detected, skipping compute"), s.current === B && (s.current = null);
     }, v === "debounce" ? DEBOUNCE_MILLIS : 0);
     s.current = B;
   }, [c, o, n]), g = React.useCallback(() => {

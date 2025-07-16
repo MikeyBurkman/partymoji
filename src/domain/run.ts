@@ -33,20 +33,50 @@ export const runEffects = async ({
     fps,
   });
 
-  const resultWithBG = await fakeTransparency.fn({
-    image: result,
-    parameters: [],
-    random,
-  });
+  if (imageUtil.isPartiallyTransparent(result)) {
+    const resultWithBG = await fakeTransparency.fn({
+      image: result,
+      parameters: [],
+      random,
+    });
+
+    return {
+      gif,
+      image: result,
+      partiallyTransparent: true,
+      gifWithBackgroundColor: await createGif({
+        image: resultWithBG,
+        fps,
+      }),
+    };
+  }
+
+  const resultWithBG = imageUtil.hasTransparentPixels(result)
+    ? await fakeTransparency.fn({
+        image: result,
+        parameters: [],
+        random,
+      })
+    : null;
 
   return {
     gif,
     image: result,
-    partiallyTransparent: imageUtil.isPartiallyTransparent(result),
-    gifWithBackgroundColor: await createGif({
-      image: resultWithBG,
-      fps,
-    }),
+    partiallyTransparent: false,
+    gifWithBackgroundColor:
+      resultWithBG == null
+        ? null
+        : await createGif({
+            image: resultWithBG,
+            fps,
+          }),
+  };
+
+  return {
+    gif,
+    image: result,
+    partiallyTransparent: false,
+    gifWithBackgroundColor: gif,
   };
 };
 

@@ -30,6 +30,7 @@ export const computeGifsForState = async ({
     miscUtil.assert(
       prevEffectState.status === 'done',
       'We should not be starting with this effect if the previous is not done computing',
+      { startEffectIndex, prevEffectState },
     );
     image = prevEffectState.image.image;
   }

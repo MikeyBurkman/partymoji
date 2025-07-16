@@ -14,9 +14,12 @@ import type { Coord, BezierTuple } from '~/domain/types';
 export function assert(
   condition: unknown,
   message = 'Unexpected falsy value',
+  meta?: Record<string, unknown>,
 ): asserts condition {
   if (!condition) {
-    throw new Error(`AssertionFailure: ${message}`);
+    throw new Error(
+      `AssertionFailure: ${message}${meta ? ` - ${JSON.stringify(meta)}` : ''}`,
+    );
   }
 }
 
