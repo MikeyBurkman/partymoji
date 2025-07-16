@@ -21,7 +21,7 @@ export const bounce = buildEffect({
     }),
     checkboxParam({
       name: 'Up and Down',
-      description: 'If checked, the image will bounce in both directions',
+      description: 'If checked, the image will bounce in both directions (using "Bounce Height %" in both directions)',
       defaultValue: false,
     }),
   ] as const,
