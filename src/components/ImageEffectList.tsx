@@ -79,11 +79,7 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
 
   const onAddAfter = React.useCallback(() => {
     onEffectsChange(
-      miscUtil.insertInto(
-        currentEffects,
-        index + 1,
-        newDefaultEffect(index + 1),
-      ),
+      miscUtil.insertInto(currentEffects, index + 1, newDefaultEffect(index)),
     );
   }, [currentEffects, index, newDefaultEffect, onEffectsChange]);
 
@@ -262,6 +258,7 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
           image = appState.baseImage?.image;
         } else {
           const previousEffect = currentEffects[tIdx];
+          console.log('HERE', { tIdx, previousEffect, currentEffects });
           if (previousEffect.state.status === 'done') {
             image = previousEffect.state.image.image;
           }
