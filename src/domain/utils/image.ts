@@ -9,18 +9,8 @@ import type {
   Image,
   Random,
 } from '~/domain/types';
-import {
-  applyCanvasFromFrame,
-  applyTransform,
-  canvasToFrame,
-  createCanvas,
-  frameToCanvas,
-} from './canvas';
-import {
-  clampColor,
-  TRANSPARENT_COLOR,
-  isPartiallyTransparent as isColorPartiallyTransparent,
-} from './color';
+import * as canvasUtil from './canvas';
+import * as colorUtil from './color';
 
 export const getPixelFromSource = (
   dimensions: Dimensions,
@@ -30,7 +20,7 @@ export const getPixelFromSource = (
   const [width, height] = dimensions;
   const [x, y] = coord;
   if (x < 0 || x >= width || y < 0 || y >= height) {
-    return TRANSPARENT_COLOR; // Default to transparent if an invalid coordinate
+    return colorUtil.TRANSPARENT_COLOR; // Default to transparent if an invalid coordinate
   }
 
   const idx = getImageIndex(dimensions, x, y);
@@ -63,7 +53,7 @@ export const mapCoords = (
   const transformedImageData = new Uint8ClampedArray(width * height * 4);
   for (let y = 0; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
-      const c = clampColor(cb([x, y]));
+      const c = colorUtil.clampColor(cb([x, y]));
       const idx = getImageIndex(dimensions, x, y);
       transformedImageData[idx] = c[0];
       transformedImageData[idx + 1] = c[1];
@@ -196,11 +186,11 @@ export const scaleImage = ({
   const offsetX = (width / 2) * (horizontalScale ?? 1) - width / 2;
   const offsetY = (height / 2) * (verticalScale ?? 1) - height / 2;
   return mapFrames(image, (imageData) =>
-    applyCanvasFromFrame({
+    canvasUtil.applyCanvasFromFrame({
       dimensions: image.dimensions,
       frame: imageData,
       preEffect: (canvasData) =>
-        applyTransform(canvasData, {
+        canvasUtil.applyTransform(canvasData, {
           horizontalScale,
           verticalScale,
           horizontalTranslation: -offsetX,
@@ -229,8 +219,11 @@ export const resizeImage = ({
   keepScale: boolean;
 }): Image => {
   const newFrames = mapFrames(image, (frame) => {
-    const rootCanvas = createCanvas([newWidth, newHeight]);
-    const imgCanvas = frameToCanvas({ dimensions: image.dimensions, frame });
+    const rootCanvas = canvasUtil.createCanvas([newWidth, newHeight]);
+    const imgCanvas = canvasUtil.frameToCanvas({
+      dimensions: image.dimensions,
+      frame,
+    });
 
     if (keepScale) {
       // Just blow it up
@@ -248,7 +241,7 @@ export const resizeImage = ({
       );
     }
 
-    return canvasToFrame(rootCanvas);
+    return canvasUtil.canvasToFrame(rootCanvas);
   });
 
   return {
@@ -320,17 +313,32 @@ export const changeFrameCount = (image: Image, frameCount: number): Image => {
   };
 };
 
-export const isPartiallyTransparent = (image: Image): boolean => {
-  // Could probably optimize this to just read the image data arrays directly, for every 4th index
+export const somePixel = (image: Image, cb: (c: Color) => boolean): boolean => {
   for (const frame of image.frames) {
     for (let x = 0; x < image.dimensions[0]; x += 1) {
       for (let y = 0; y < image.dimensions[1]; y += 1) {
         const px = getPixelFromSource(image.dimensions, frame, [x, y]);
-        if (isColorPartiallyTransparent(px)) {
+        if (cb(px)) {
           return true;
         }
       }
     }
   }
   return false;
+};
+
+/**
+ * Returns true if at least some pixel in the image is partially transparent.
+ * That is, the pixel is not opaque but is not considered fully transparent either.
+ * These pixels are fine for intermediate effects, but not for final output.
+ */
+export const isPartiallyTransparent = (image: Image): boolean => {
+  return somePixel(image, colorUtil.isPartiallyTransparent);
+};
+
+/**
+ * Returns true if the image has any fully-transparent pixels.
+ */
+export const hasTransparentPixels = (image: Image): boolean => {
+  return somePixel(image, colorUtil.isTransparent);
 };

@@ -83,13 +83,7 @@ export const AppStateProvider: React.FC<{
   const computeTimer = React.useRef<NodeJS.Timeout | null>(null);
 
   const compute = useProcessingQueue({
-    processFn: ({
-      state,
-      startEffectIndex,
-    }: {
-      state: AppState;
-      startEffectIndex: number;
-    }) => {
+    processFn: ({ state }: { state: AppState }) => {
       // Handle frame count changes
       const newBaseImage = (() => {
         const baseImage = state.baseImage;
@@ -111,7 +105,7 @@ export const AppStateProvider: React.FC<{
           ...state,
           baseImage: newBaseImage,
         },
-        startEffectIndex,
+        startEffectIndex: 0,
       });
     },
     onComplete: (computedState) => {
@@ -135,7 +129,6 @@ export const AppStateProvider: React.FC<{
           setState_internal(savedState, { doNotStore: true });
           compute({
             state: savedState,
-            startEffectIndex: 0,
           });
         } else {
           setState_internal(DEFAULT_STATE);
@@ -191,7 +184,6 @@ export const AppStateProvider: React.FC<{
 
           compute({
             state: newState,
-            startEffectIndex: stateDiff.index,
           });
         } else {
           // If no changes, we don't need to compute anything
