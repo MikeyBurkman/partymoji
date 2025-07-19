@@ -24167,9 +24167,21 @@ const buildEffect = (t2) => ({ name: t2.name, group: t2.group, params: t2.params
     const m = p / h, b = frameToCanvas({ dimensions: t2.dimensions, frame: l }), v = Math.floor(m * c.frames.length), y = frameToCanvas({ dimensions: c.dimensions, frame: c.frames[v] });
     return combineImages({ dimensions: t2.dimensions, background: o === "background" ? y : b, foreground: o === "background" ? b : y });
   });
-} }), blur = buildEffect({ name: "Blur", group: "Transform", description: "Blurs the image", params: [sliderParam({ name: "Amount", defaultValue: 2, min: 0, max: 20 })], fn: ({ image: t2, parameters: [n] }) => mapFrames(t2, (o) => applyCanvasFromFrame({ dimensions: t2.dimensions, frame: o, preEffect: (s) => applyFilter(s, { blur: n }) })) }), bounce = buildEffect({ name: "Bounce", group: "Transform", description: "Make the image bounce up and down", requiresAnimation: true, params: [intParam({ name: "Bounce Height %", description: "Percentage of the image height", defaultValue: 50, min: 0, max: 100 }), bezierParam({ name: "Easing", defaultValue: LINEAR_BEZIER }), checkboxParam({ name: "Up and Down", description: 'If checked, the image will bounce in both directions (using "Bounce Height %" in both directions)', defaultValue: false })], fn: mapImageWithPrecompute(({ animationProgress: t2, parameters: [n, o, s], dimensions: [c, l] }) => {
-  const p = bezierCurve(o)(t2), h = n / 100 * l;
-  return { yOffset: Math.round(s ? h * Math.sin(t2 * Math.PI * 2) : h * p) };
+} }), blur = buildEffect({ name: "Blur", group: "Transform", description: "Blurs the image", params: [sliderParam({ name: "Amount", defaultValue: 2, min: 0, max: 20 })], fn: ({ image: t2, parameters: [n] }) => mapFrames(t2, (o) => applyCanvasFromFrame({ dimensions: t2.dimensions, frame: o, preEffect: (s) => applyFilter(s, { blur: n }) })) }), bounce = buildEffect({ name: "Bounce", group: "Transform", description: "Make the image bounce up and down", requiresAnimation: true, params: [radioParam({ name: "Direction", description: "The direction of the bounce", defaultValue: "Up and Down", options: [{ name: "Up and Down", value: "upAndDown" }, { name: "Up", value: "up" }, { name: "Down", value: "down" }] }), intParam({ name: "Bounce Height %", description: "Percentage of the image height", defaultValue: 50, min: 0, max: 100 }), bezierParam({ name: "Easing", defaultValue: LINEAR_BEZIER })], fn: mapImageWithPrecompute(({ animationProgress: t2, parameters: [n, o, s], dimensions: [c, l] }) => {
+  const p = bezierCurve(s)(t2), h = o / 100 * l;
+  let m = 0;
+  switch (n) {
+    case "upAndDown":
+      m = h / 2 * Math.sin(t2 * Math.PI * 2);
+      break;
+    case "up":
+      m = h * p;
+      break;
+    case "down":
+      m = h * p * -1;
+      break;
+  }
+  return { yOffset: Math.round(m) };
 }, ({ computed: { yOffset: t2 }, coord: [n, o], getSrcPixel: s }) => s([n, o + t2])) }), bounceAnimation = buildEffect({ name: "Bounce Animation", group: "Animation", description: "When the animation finishes, it will be replayed in reverse", secondaryDescription: "This doubles the number of animation frames.", requiresAnimation: true, params: [], fn: ({ image: t2 }) => ({ dimensions: t2.dimensions, frames: concat(t2.frames, pipe(t2.frames, drop(1), reverse(), drop(1))) }) }), circle = buildEffect({ name: "Circle", group: "Transform", description: "Make the image move in a circular pattern", requiresAnimation: true, params: [intParam({ name: "Radius", description: "Positive number", defaultValue: (t2) => t2 ? Math.floor(t2.dimensions[0] / 10) : 10, min: 0 })], fn: mapImageWithPrecompute(({ animationProgress: t2, parameters: [n] }) => ({ xOffset: Math.round(n * Math.sin(-2 * Math.PI * t2)), yOffset: Math.round(n * Math.cos(-2 * Math.PI * t2)) }), ({ computed: { xOffset: t2, yOffset: n }, coord: [o, s], getSrcPixel: c }) => c([o + t2, s + n])) }), changingFocus = buildEffect({ name: "Changing Focus", group: "Image", description: "Changes the focus of the image over time", params: [sliderParam({ name: "Max Blur", defaultValue: 50, min: 0, max: 100 }), bezierParam({ name: "Curve", defaultValue: [[0.25, 0.75], [0.75, 0.25]] })], fn: ({ image: t2, parameters: [n, o] }) => mapFrames(t2, (s, c, l) => applyCanvasFromFrame({ dimensions: t2.dimensions, frame: s, preEffect: (p) => {
   const h = c / (l - 1), m = Math.round(bezierCurve(o)(h) * (n / 10));
   return applyFilter(p, { blur: m });
@@ -32143,7 +32155,7 @@ const computationMap = /* @__PURE__ */ new Map(), handleError = (t2) => (n) => {
 }, runEffectsAsync = async (t2) => new Promise((n, o) => {
   const s = `${Date.now().toString()}-${Math.floor(Math.random() * 1e5).toString()}`;
   computationMap.set(s, { resolve: n, reject: o });
-  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-XupqVX9l.js", import.meta.url), { type: "module" }));
+  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-CENeQX3n.js", import.meta.url), { type: "module" }));
   logger.info("Running effect ASYNC", { name: t2.effectInput.effectName, params: t2.effectInput.params }), c.runEffectRPC(t2).then(handleSuccess(s), handleError(s));
 }), computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync, computeGifsForState = async ({ state: t2, startEffectIndex: n }) => {
   assert(t2.baseImage, "No source image, this button should be disabled!");

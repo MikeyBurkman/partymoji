@@ -1,5 +1,5 @@
 import { imageUtil, miscUtil } from '~/domain/utils';
-import { bezierParam, checkboxParam, intParam } from '~/params';
+import { bezierParam, intParam, radioParam } from '~/params';
 import { buildEffect } from './utils';
 
 export const bounce = buildEffect({
@@ -8,6 +8,16 @@ export const bounce = buildEffect({
   description: 'Make the image bounce up and down',
   requiresAnimation: true,
   params: [
+    radioParam({
+      name: 'Direction',
+      description: 'The direction of the bounce',
+      defaultValue: 'Up and Down',
+      options: [
+        { name: 'Up and Down', value: 'upAndDown' },
+        { name: 'Up', value: 'up' },
+        { name: 'Down', value: 'down' },
+      ],
+    }),
     intParam({
       name: 'Bounce Height %',
       description: 'Percentage of the image height',
@@ -19,26 +29,30 @@ export const bounce = buildEffect({
       name: 'Easing',
       defaultValue: miscUtil.LINEAR_BEZIER,
     }),
-    checkboxParam({
-      name: 'Up and Down',
-      description: 'If checked, the image will bounce in both directions (using "Bounce Height %" in both directions)',
-      defaultValue: false,
-    }),
   ] as const,
   fn: imageUtil.mapImageWithPrecompute(
     ({
       animationProgress,
-      parameters: [perc, easing, upAndDown],
+      parameters: [upAndDown, perc, easing],
       dimensions: [_, height],
     }) => {
       const b = miscUtil.bezierCurve(easing, true)(animationProgress);
       const baseOffset = (perc / 100) * height;
+      let yOffset = 0;
+      switch (upAndDown) {
+        case 'upAndDown':
+          yOffset = baseOffset/2 * Math.sin(animationProgress * Math.PI * 2);
+          break;
+        case 'up':
+          yOffset = baseOffset * b;
+          break;
+        case 'down':
+          yOffset = baseOffset * b * -1;
+          break;
+      }
+
       return {
-        yOffset: Math.round(
-          upAndDown
-            ? baseOffset * Math.sin(animationProgress * Math.PI * 2)
-            : baseOffset * b,
-        ),
+        yOffset: Math.round(yOffset),
       };
     },
     ({ computed: { yOffset }, coord: [x, y], getSrcPixel }) =>
