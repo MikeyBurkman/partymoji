@@ -32204,7 +32204,7 @@ const computationMap = /* @__PURE__ */ new Map(), handleError = (t2) => (n) => {
   if (t2.baseImage == null) return null;
   const n = { ...t2, baseImage: t2.baseImage.gif, effects: t2.effects.map((o) => ({ ...o, state: { status: "init" } })) };
   return JSON.stringify(n);
-}, DEBOUNCE_MILLIS = 1e3, CURRENT_APP_STATE_VERSION = 8, DEFAULT_STATE = { version: CURRENT_APP_STATE_VERSION, effects: [], baseImage: void 0, fps: DEFAULT_FPS, frameCount: 1 };
+}, DEBOUNCE_MILLIS = 1e3, CURRENT_APP_STATE_VERSION = 9, DEFAULT_STATE = { version: CURRENT_APP_STATE_VERSION, effects: [], baseImage: void 0, fps: DEFAULT_FPS, frameCount: 1 };
 function useAppState() {
   const [t2, n] = React.useState(DEFAULT_STATE), o = React.useCallback((s, c) => {
     logger.debug("Updating internal app state", { newState: s }), n(s), ((c == null ? void 0 : c.doNotStore) ?? false) || saveAppState(s);
