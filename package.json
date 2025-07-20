@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "pnpm build:wasm:prod && vite",
-    "build": "tsc -b && vite build && pnpm copy-docs",
+    "build": "tsc -b && VITE_BUILD_TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ) vite build && pnpm copy-docs",
     "build:wasm": "wasm-pack build gif/gif_encoder_wasm --target web --dev",
     "build:wasm:prod": "wasm-pack build gif/gif_encoder_wasm --target web --release",
     "build:all": "pnpm build:wasm && pnpm build",
