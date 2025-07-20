@@ -24167,7 +24167,7 @@ const buildEffect = (t2) => ({ name: t2.name, group: t2.group, params: t2.params
     const m = p / g, b = frameToCanvas({ dimensions: t2.dimensions, frame: l }), v = Math.floor(m * c.frames.length), y = frameToCanvas({ dimensions: c.dimensions, frame: c.frames[v] });
     return combineImages({ dimensions: t2.dimensions, background: o === "background" ? y : b, foreground: o === "background" ? b : y });
   });
-} }), blur = buildEffect({ name: "Blur", group: "Transform", description: "Blurs the image", params: [sliderParam({ name: "Amount", defaultValue: 2, min: 0, max: 20 })], fn: ({ image: t2, parameters: [n] }) => mapFrames(t2, (o) => applyCanvasFromFrame({ dimensions: t2.dimensions, frame: o, preEffect: (s) => applyFilter(s, { blur: n }) })) }), bounce = buildEffect({ name: "Bounce", group: "Transform", description: "Make the image bounce up and down", requiresAnimation: true, params: [radioParam({ name: "Direction", description: "The direction of the bounce", defaultValue: "upAndDown", options: [{ name: "Up and Down", value: "upAndDown" }, { name: "Up", value: "up" }, { name: "Down", value: "down" }] }), sliderParam({ name: "Bounce Height %", description: "Percentage of the image height", defaultValue: 30, min: 0, max: 100 }), bezierParam({ name: "Easing", defaultValue: LINEAR_BEZIER })], fn: mapImageWithPrecompute(({ animationProgress: t2, parameters: [n, o, s], dimensions: c }) => {
+} }), blur = buildEffect({ name: "Blur", group: "Transform", description: "Blurs the image", params: [sliderParam({ name: "Amount", defaultValue: 2, min: 0, max: 20 })], fn: ({ image: t2, parameters: [n] }) => mapFrames(t2, (o) => applyCanvasFromFrame({ dimensions: t2.dimensions, frame: o, preEffect: (s) => applyFilter(s, { blur: n }) })) }), bounce = buildEffect({ name: "Bounce", group: "Transform", description: "Make the image bounce up and/or down", requiresAnimation: true, params: [radioParam({ name: "Direction", description: "The direction of the bounce", defaultValue: "upAndDown", options: [{ name: "Up and Down", value: "upAndDown" }, { name: "Up", value: "up" }, { name: "Down", value: "down" }] }), sliderParam({ name: "Bounce Height %", description: "Percentage of the image height", defaultValue: 30, min: 0, max: 100 }), bezierParam({ name: "Easing", defaultValue: LINEAR_BEZIER })], fn: mapImageWithPrecompute(({ animationProgress: t2, parameters: [n, o, s], dimensions: c }) => {
   const l = c[1], p = o / 100 * l;
   if (n === "upAndDown") {
     const m = t2 < 0.5, b = bezierCurve(s)(Math.abs(t2 - (m ? 0 : 0.5)) * 2);
@@ -31929,7 +31929,7 @@ function __wbg_finalize_init(t2, n) {
 }
 async function __wbg_init(t2) {
   if (wasm !== void 0) return wasm;
-  typeof t2 < "u" && (Object.getPrototypeOf(t2) === Object.prototype ? { module_or_path: t2 } = t2 : console.warn("using deprecated parameters for the initialization function; pass a single object instead")), typeof t2 > "u" && (t2 = new URL("/partymoji/assets/gif_encoder_wasm_bg-4EUPuwXC.wasm", import.meta.url));
+  typeof t2 < "u" && (Object.getPrototypeOf(t2) === Object.prototype ? { module_or_path: t2 } = t2 : console.warn("using deprecated parameters for the initialization function; pass a single object instead")), typeof t2 > "u" && (t2 = new URL("/partymoji/assets/gif_encoder_wasm_bg-Br2U5Mbr.wasm", import.meta.url));
   const n = __wbg_get_imports();
   (typeof t2 == "string" || typeof Request == "function" && t2 instanceof Request || typeof URL == "function" && t2 instanceof URL) && (t2 = fetch(t2));
   const { instance: o, module: s } = await __wbg_load(await t2, n);
@@ -32148,7 +32148,7 @@ const computationMap = /* @__PURE__ */ new Map(), handleError = (t2) => (n) => {
 }, runEffectsAsync = async (t2) => new Promise((n, o) => {
   const s = `${Date.now().toString()}-${Math.floor(Math.random() * 1e5).toString()}`;
   computationMap.set(s, { resolve: n, reject: o });
-  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-m-wCeMxK.js", import.meta.url), { type: "module" }));
+  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-R5PxdMae.js", import.meta.url), { type: "module" }));
   logger.info("Running effect ASYNC", { name: t2.effectInput.effectName, params: t2.effectInput.params }), c.runEffectRPC(t2).then(handleSuccess(s), handleError(s));
 }), computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync, computeGifsForState = async ({ state: t2, startEffectIndex: n }) => {
   assert(t2.baseImage, "No source image, this button should be disabled!");

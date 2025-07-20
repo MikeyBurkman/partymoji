@@ -5,7 +5,7 @@ import { buildEffect } from './utils';
 export const bounce = buildEffect({
   name: 'Bounce',
   group: 'Transform',
-  description: 'Make the image bounce up and down',
+  description: 'Make the image bounce up and/or down',
   requiresAnimation: true,
   params: [
     radioParam({
