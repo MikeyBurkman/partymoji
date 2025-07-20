@@ -1,5 +1,5 @@
 import { imageUtil, miscUtil } from '~/domain/utils';
-import { bezierParam, intParam, radioParam } from '~/params';
+import { bezierParam, radioParam, sliderParam } from '~/params';
 import { buildEffect } from './utils';
 
 export const bounce = buildEffect({
@@ -11,17 +11,17 @@ export const bounce = buildEffect({
     radioParam({
       name: 'Direction',
       description: 'The direction of the bounce',
-      defaultValue: 'Up and Down',
+      defaultValue: 'upAndDown',
       options: [
         { name: 'Up and Down', value: 'upAndDown' },
         { name: 'Up', value: 'up' },
         { name: 'Down', value: 'down' },
       ],
     }),
-    intParam({
+    sliderParam({
       name: 'Bounce Height %',
       description: 'Percentage of the image height',
-      defaultValue: 50,
+      defaultValue: 30,
       min: 0,
       max: 100,
     }),
@@ -33,26 +33,26 @@ export const bounce = buildEffect({
   fn: imageUtil.mapImageWithPrecompute(
     ({
       animationProgress,
-      parameters: [upAndDown, perc, easing],
-      dimensions: [_, height],
+      parameters: [bounceDir, bounceHeight, easing],
+      dimensions,
     }) => {
-      const b = miscUtil.bezierCurve(easing, true)(animationProgress);
-      const baseOffset = (perc / 100) * height;
-      let yOffset = 0;
-      switch (upAndDown) {
-        case 'upAndDown':
-          yOffset = baseOffset/2 * Math.sin(animationProgress * Math.PI * 2);
-          break;
-        case 'up':
-          yOffset = baseOffset * b;
-          break;
-        case 'down':
-          yOffset = baseOffset * b * -1;
-          break;
+      const imageHeight = dimensions[1];
+      const baseOffset = (bounceHeight / 100) * imageHeight;
+
+      if (bounceDir === 'upAndDown') {
+        const firstHalf = animationProgress < 0.5;
+        const b = miscUtil.bezierCurve(
+          easing,
+          true,
+        )(Math.abs(animationProgress - (firstHalf ? 0 : 0.5)) * 2);
+        return {
+          yOffset: Math.round(baseOffset * b * (firstHalf ? 1 : -1)),
+        };
       }
 
+      const b = miscUtil.bezierCurve(easing, true)(animationProgress);
       return {
-        yOffset: Math.round(yOffset),
+        yOffset: Math.round(baseOffset * b * (bounceDir === 'up' ? 1 : -1)),
       };
     },
     ({ computed: { yOffset }, coord: [x, y], getSrcPixel }) =>
