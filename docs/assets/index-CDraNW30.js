@@ -24167,9 +24167,14 @@ const buildEffect = (t2) => ({ name: t2.name, group: t2.group, params: t2.params
     const m = p / g, b = frameToCanvas({ dimensions: t2.dimensions, frame: l }), v = Math.floor(m * c.frames.length), y = frameToCanvas({ dimensions: c.dimensions, frame: c.frames[v] });
     return combineImages({ dimensions: t2.dimensions, background: o === "background" ? y : b, foreground: o === "background" ? b : y });
   });
-} }), blur = buildEffect({ name: "Blur", group: "Transform", description: "Blurs the image", params: [sliderParam({ name: "Amount", defaultValue: 2, min: 0, max: 20 })], fn: ({ image: t2, parameters: [n] }) => mapFrames(t2, (o) => applyCanvasFromFrame({ dimensions: t2.dimensions, frame: o, preEffect: (s) => applyFilter(s, { blur: n }) })) }), bounce = buildEffect({ name: "Bounce", group: "Transform", description: "Make the image bounce up and down", requiresAnimation: true, params: [intParam({ name: "Bounce Height", description: "Positive number", defaultValue: (t2) => t2 ? Math.floor(t2.dimensions[1] / 10) : 10, min: 0 }), bezierParam({ name: "Easing", defaultValue: LINEAR_BEZIER })], fn: mapImageWithPrecompute(({ animationProgress: t2, parameters: [n, o] }) => {
-  const s = bezierCurve(o)(t2);
-  return { yOffset: Math.round(n * s) };
+} }), blur = buildEffect({ name: "Blur", group: "Transform", description: "Blurs the image", params: [sliderParam({ name: "Amount", defaultValue: 2, min: 0, max: 20 })], fn: ({ image: t2, parameters: [n] }) => mapFrames(t2, (o) => applyCanvasFromFrame({ dimensions: t2.dimensions, frame: o, preEffect: (s) => applyFilter(s, { blur: n }) })) }), bounce = buildEffect({ name: "Bounce", group: "Transform", description: "Make the image bounce up and/or down", requiresAnimation: true, params: [radioParam({ name: "Direction", description: "The direction of the bounce", defaultValue: "upAndDown", options: [{ name: "Up and Down", value: "upAndDown" }, { name: "Up", value: "up" }, { name: "Down", value: "down" }] }), sliderParam({ name: "Bounce Height %", description: "Percentage of the image height", defaultValue: 30, min: 0, max: 100 }), bezierParam({ name: "Easing", defaultValue: LINEAR_BEZIER })], fn: mapImageWithPrecompute(({ animationProgress: t2, parameters: [n, o, s], dimensions: c }) => {
+  const l = c[1], p = o / 100 * l;
+  if (n === "upAndDown") {
+    const m = t2 < 0.5, b = bezierCurve(s)(Math.abs(t2 - (m ? 0 : 0.5)) * 2);
+    return { yOffset: Math.round(p * b * (m ? 1 : -1)) };
+  }
+  const g = bezierCurve(s)(t2);
+  return { yOffset: Math.round(p * g * (n === "up" ? 1 : -1)) };
 }, ({ computed: { yOffset: t2 }, coord: [n, o], getSrcPixel: s }) => s([n, o + t2])) }), bounceAnimation = buildEffect({ name: "Bounce Animation", group: "Animation", description: "When the animation finishes, it will be replayed in reverse", secondaryDescription: "This doubles the number of animation frames.", requiresAnimation: true, params: [], fn: ({ image: t2 }) => ({ dimensions: t2.dimensions, frames: concat(t2.frames, pipe(t2.frames, drop(1), reverse(), drop(1))) }) }), circle = buildEffect({ name: "Circle", group: "Transform", description: "Make the image move in a circular pattern", requiresAnimation: true, params: [intParam({ name: "Radius", description: "Positive number", defaultValue: (t2) => t2 ? Math.floor(t2.dimensions[0] / 10) : 10, min: 0 })], fn: mapImageWithPrecompute(({ animationProgress: t2, parameters: [n] }) => ({ xOffset: Math.round(n * Math.sin(-2 * Math.PI * t2)), yOffset: Math.round(n * Math.cos(-2 * Math.PI * t2)) }), ({ computed: { xOffset: t2, yOffset: n }, coord: [o, s], getSrcPixel: c }) => c([o + t2, s + n])) }), changingFocus = buildEffect({ name: "Changing Focus", group: "Image", description: "Changes the focus of the image over time", params: [sliderParam({ name: "Max Blur", defaultValue: 50, min: 0, max: 100 }), bezierParam({ name: "Curve", defaultValue: [[0.25, 0.75], [0.75, 0.25]] })], fn: ({ image: t2, parameters: [n, o] }) => mapFrames(t2, (s, c, l) => applyCanvasFromFrame({ dimensions: t2.dimensions, frame: s, preEffect: (p) => {
   const g = c / (l - 1), m = Math.round(bezierCurve(o)(g) * (n / 10));
   return applyFilter(p, { blur: m });
@@ -31924,7 +31929,7 @@ function __wbg_finalize_init(t2, n) {
 }
 async function __wbg_init(t2) {
   if (wasm !== void 0) return wasm;
-  typeof t2 < "u" && (Object.getPrototypeOf(t2) === Object.prototype ? { module_or_path: t2 } = t2 : console.warn("using deprecated parameters for the initialization function; pass a single object instead")), typeof t2 > "u" && (t2 = new URL("/partymoji/assets/gif_encoder_wasm_bg-4EUPuwXC.wasm", import.meta.url));
+  typeof t2 < "u" && (Object.getPrototypeOf(t2) === Object.prototype ? { module_or_path: t2 } = t2 : console.warn("using deprecated parameters for the initialization function; pass a single object instead")), typeof t2 > "u" && (t2 = new URL("/partymoji/assets/gif_encoder_wasm_bg-Br2U5Mbr.wasm", import.meta.url));
   const n = __wbg_get_imports();
   (typeof t2 == "string" || typeof Request == "function" && t2 instanceof Request || typeof URL == "function" && t2 instanceof URL) && (t2 = fetch(t2));
   const { instance: o, module: s } = await __wbg_load(await t2, n);
@@ -32143,7 +32148,7 @@ const computationMap = /* @__PURE__ */ new Map(), handleError = (t2) => (n) => {
 }, runEffectsAsync = async (t2) => new Promise((n, o) => {
   const s = `${Date.now().toString()}-${Math.floor(Math.random() * 1e5).toString()}`;
   computationMap.set(s, { resolve: n, reject: o });
-  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-BbASWcp5.js", import.meta.url), { type: "module" }));
+  const c = wrap(new Worker(new URL("/partymoji/assets/effect.worker-R5PxdMae.js", import.meta.url), { type: "module" }));
   logger.info("Running effect ASYNC", { name: t2.effectInput.effectName, params: t2.effectInput.params }), c.runEffectRPC(t2).then(handleSuccess(s), handleError(s));
 }), computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync, computeGifsForState = async ({ state: t2, startEffectIndex: n }) => {
   assert(t2.baseImage, "No source image, this button should be disabled!");
@@ -32199,7 +32204,7 @@ const computationMap = /* @__PURE__ */ new Map(), handleError = (t2) => (n) => {
   if (t2.baseImage == null) return null;
   const n = { ...t2, baseImage: t2.baseImage.gif, effects: t2.effects.map((o) => ({ ...o, state: { status: "init" } })) };
   return JSON.stringify(n);
-}, DEBOUNCE_MILLIS = 1e3, CURRENT_APP_STATE_VERSION = 8, DEFAULT_STATE = { version: CURRENT_APP_STATE_VERSION, effects: [], baseImage: void 0, fps: DEFAULT_FPS, frameCount: 1 };
+}, DEBOUNCE_MILLIS = 1e3, CURRENT_APP_STATE_VERSION = 9, DEFAULT_STATE = { version: CURRENT_APP_STATE_VERSION, effects: [], baseImage: void 0, fps: DEFAULT_FPS, frameCount: 1 };
 function useAppState() {
   const [t2, n] = React.useState(DEFAULT_STATE), o = React.useCallback((s, c) => {
     logger.debug("Updating internal app state", { newState: s }), n(s), ((c == null ? void 0 : c.doNotStore) ?? false) || saveAppState(s);

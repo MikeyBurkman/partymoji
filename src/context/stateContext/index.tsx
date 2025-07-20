@@ -11,7 +11,7 @@ const DEBOUNCE_MILLIS = 1000;
 
 // Increase this by 1 when there's a breaking change to the app state.
 // Don't change this unless we have to!
-const CURRENT_APP_STATE_VERSION = 8;
+const CURRENT_APP_STATE_VERSION = 9;
 
 const DEFAULT_STATE: AppState = {
   version: CURRENT_APP_STATE_VERSION,
