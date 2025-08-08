@@ -74,6 +74,7 @@ const Header: React.FC<{
           setAlert={setAlert}
         />
       </Section>
+      <Section></Section>
     </>
   );
 };
@@ -163,6 +164,30 @@ const Inner: React.FC = () => {
       <Stack pt={8}>
         <AlertSnackbar />
       </Stack>
+
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 16,
+          right: 16,
+          padding: '6px 16px',
+          zIndex: 9999,
+          pointerEvents: 'none', // so it doesn't block clicks
+        }}
+      >
+        <Typography
+          variant="caption"
+          align="center"
+          color="textSecondary"
+          sx={{ pt: 2 }}
+        >
+          {new Date(import.meta.env.VITE_BUILD_TIMESTAMP).toLocaleString(
+            'en-US',
+            { timeZone: 'America/New_York' },
+          )}{' '}
+          EST
+        </Typography>
+      </div>
     </>
   );
 };
