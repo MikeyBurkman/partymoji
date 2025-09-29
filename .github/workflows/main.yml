@@ -19,10 +19,18 @@ jobs:
       - name: Install dependencies
         run: pnpm i
 
-      - name: Install wasm-pack
-        uses: jetli/wasm-pack-action@v0.4.0
+      - name: Lint
+        run: pnpm lint
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
         with:
-          version: '0.13.1'
+            target: wasm32-unknown-unknown
+          
+      - name: Install wasm-pack
+        # Use workspace target directory for cargo install's build,
+        # so that the build of wasm-pack will be cached by rust-cache action.
+        run: CARGO_TARGET_DIR=`pwd`/target cargo install wasm-pack
 
       - name: Compile project
         run: pnpm build:all:prod
@@ -30,4 +38,4 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: docs # The folder the action should deploy.
+          folder: docs # The folder the action should deploy by pushing to the gh-pages branch
