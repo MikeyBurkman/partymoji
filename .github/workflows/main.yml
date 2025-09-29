@@ -5,8 +5,8 @@ on:
       - main
 permissions:
   contents: write
-  
-jobs:     
+
+jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
@@ -22,8 +22,8 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-            target: wasm32-unknown-unknown
-          
+          target: wasm32-unknown-unknown
+
       - name: Install wasm-pack
         # Use workspace target directory for cargo install's build,
         # so that the build of wasm-pack will be cached by rust-cache action.
@@ -31,7 +31,7 @@ jobs:
 
       - name: Compile WASM
         run: pnpm build:wasm:prod
-      
+
       - name: Lint
         run: pnpm lint
 
@@ -41,4 +41,4 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: docs # The folder the action should deploy by pushing to the gh-pages branch
+          folder: dist # The folder the action should deploy by pushing to the gh-pages branch
