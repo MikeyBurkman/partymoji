@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "pnpm build:wasm:prod && vite",
-    "build": "tsc -b && VITE_BUILD_TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ) vite build && pnpm copy-docs",
+    "build": "tsc -b && VITE_BUILD_TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ) vite build",
     "build:wasm": "wasm-pack build gif/gif_encoder_wasm --target web --dev",
     "build:wasm:prod": "wasm-pack build gif/gif_encoder_wasm --target web --release",
     "build:all": "pnpm build:wasm && pnpm build",
@@ -18,11 +18,10 @@
     "lint-fix": "eslint --fix .",
     "preview": "vite preview",
     "preview:watch": "concurrently \"vite preview\" \"vite build --watch\"",
-    "copy-docs": "rimraf docs && cp -R dist docs",
     "pretty": "prettier --write \"**/*.{js,md,ts,html,tsx,json}\"",
     "preinstall": "npx --yes only-allow pnpm",
     "prepare": "husky",
-    "clean": "rimraf dist docs gif/**/{pkg,target}"
+    "clean": "rimraf dist gif/**/{pkg,target}"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -62,7 +61,6 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "eslint-plugin-react-x": "^1.48.4",
     "globals": "^15.15.0",
-    "husky": "^9.1.7",
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
     "typescript": "~5.8.3",
