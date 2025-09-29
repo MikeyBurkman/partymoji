@@ -20,7 +20,6 @@
     "preview:watch": "concurrently \"vite preview\" \"vite build --watch\"",
     "pretty": "prettier --write \"**/*.{js,md,ts,html,tsx,json}\"",
     "preinstall": "npx --yes only-allow pnpm",
-    "prepare": "husky",
     "clean": "rimraf dist gif/**/{pkg,target}"
   },
   "dependencies": {
