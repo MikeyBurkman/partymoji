@@ -6,16 +6,23 @@ on:
 permissions:
   contents: write
   
-jobs:
+jobs:     
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v4
 
-      - name: Install and Build 🔧 # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
-        run: |
-          npm run build:all:prod
+      - name: Install PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Compile project
+        run: pnpm build:all:prod
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
