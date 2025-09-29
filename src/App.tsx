@@ -181,10 +181,9 @@ const Inner: React.FC = () => {
           color="textSecondary"
           sx={{ pt: 2 }}
         >
-          {new Date(import.meta.env.VITE_BUILD_TIMESTAMP).toLocaleString(
-            'en-US',
-            { timeZone: 'America/New_York' },
-          )}{' '}
+          {new Date(
+            import.meta.env.VITE_BUILD_TIMESTAMP as string,
+          ).toLocaleString('en-US', { timeZone: 'America/New_York' })}{' '}
           EST
         </Typography>
       </div>

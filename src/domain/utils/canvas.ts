@@ -141,6 +141,7 @@ export const applyFilter = (
     saturation,
     hueRotate,
     sepia,
+    invert,
     dropShadow,
   }: {
     /** Number of pixels */
@@ -157,6 +158,9 @@ export const applyFilter = (
     hueRotate?: number;
     /** [0, 100) percent */
     sepia?: number;
+    /** [0, 100) percent */
+    invert?: number;
+    /** Adds a drop shadow effect */
     dropShadow?: {
       offsetX: number;
       offsetY: number;
@@ -183,6 +187,7 @@ export const applyFilter = (
     saturation == null ? '' : `saturate(${saturation}%)`,
     hueRotate == null ? '' : `hue-rotate(${hueRotate}deg)`,
     sepia == null ? '' : `sepia(${sepia}%)`,
+    invert == null ? '' : `invert(${invert}%)`,
     shadow == null ? '' : `drop-shadow(${shadow})`,
   ].filter((x) => x.length > 0);
 

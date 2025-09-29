@@ -25,6 +25,7 @@ import { hueChange } from './hue-change';
 import { hueShift } from './hue-shift';
 import { hueShiftPulse } from './hue-shift-pulse';
 import { hueWave } from './hue-wave';
+import { invertColors } from './inverse-colors';
 import { lightning } from './lightning';
 import { mirror } from './mirror';
 import { nuke } from './nuke';
@@ -92,6 +93,7 @@ export const POSSIBLE_EFFECTS = pipe(
     hueShift,
     hueShiftPulse,
     hueWave,
+    invertColors,
     lightning,
     mirror,
     nuke,
