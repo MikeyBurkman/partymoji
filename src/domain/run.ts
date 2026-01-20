@@ -71,13 +71,6 @@ export const runEffects = async ({
             fps,
           }),
   };
-
-  return {
-    gif,
-    image: result,
-    partiallyTransparent: false,
-    gifWithBackgroundColor: gif,
-  };
 };
 
 const createGif = async ({
