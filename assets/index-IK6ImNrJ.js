@@ -31569,7 +31569,7 @@ const seedrandom = getDefaultExportFromCjs$1(seedrandomExports), lightningIntens
   for (let p = 0; p < t2.frames.length; p += 1) {
     const h = createCanvas(t2.dimensions);
     for (let m = n; m > 0; m -= 1) {
-      const b = p - m + 1, v = b >= 0 ? b : t2.frames.length + b, y = t2.frames[v];
+      const b = Math.max(p - m + 1, 0), v = b >= 0 ? b : t2.frames.length + b, y = t2.frames[v];
       applyFilter(h, { opacity: Math.floor(m / n * o), blur: Math.floor(m * c) }), drawImageOnCanvas({ ctx: h.ctx, dimensions: t2.dimensions, frame: y });
     }
     applyFilter(h, { opacity: 100, blur: 0 }), drawImageOnCanvas({ ctx: h.ctx, dimensions: t2.dimensions, frame: t2.frames[p] }), l.push(canvasToFrame(h));
@@ -32148,7 +32148,7 @@ const computationMap = /* @__PURE__ */ new Map(), handleError = (t2) => (n) => {
 }, runEffectsAsync = async (t2) => new Promise((n, o) => {
   const s = `${Date.now().toString()}-${Math.floor(Math.random() * 1e5).toString()}`;
   computationMap.set(s, { resolve: n, reject: o });
-  const c = wrap$1(new Worker(new URL("/partymoji/assets/effect.worker-DLaU9v81.js", import.meta.url), { type: "module" }));
+  const c = wrap$1(new Worker(new URL("/partymoji/assets/effect.worker-Cg2MYRWh.js", import.meta.url), { type: "module" }));
   logger.info("Running effect ASYNC", { name: t2.effectInput.effectName, params: t2.effectInput.params }), c.runEffectRPC(t2).then(handleSuccess(s), handleError(s));
 }), computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync, computeGifsForState = async ({ state: t2, startEffectIndex: n }) => {
   assert(t2.baseImage, "No source image, this button should be disabled!");
@@ -32364,13 +32364,13 @@ const AppStateContext = React.createContext({ state: DEFAULT_STATE, setState: ()
   n((c) => ({ ...c, fps: s }), "debounce");
 }, onFrameCountChange: (s) => {
   logger.info("Frame count changed", { frameCount: s }), n((c) => ({ ...c, frameCount: s }), "debounce");
-}, setAlert: o }) }), jsxRuntimeExports.jsx(Section, {})] }), Inner = () => {
+}, setAlert: o }) })] }), Inner = () => {
   const t2 = useSetAlert(), { state: n, setState: o, resetState: s } = React.use(AppStateContext);
   return React.useEffect(() => {
     IS_MOBILE && t2({ severity: "warning", message: "This app is not well optimized for mobile. Your experience may not be great." });
   }, [t2]), jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(ScopedCssBaseline, {}), jsxRuntimeExports.jsx(Container, { maxWidth: IS_MOBILE ? "sm" : "md", children: jsxRuntimeExports.jsxs(Stack, { spacing: 4, justifyContent: "space-evenly", alignItems: "center", width: IS_MOBILE ? "sm" : void 0, divider: jsxRuntimeExports.jsx(Divider, {}), children: [jsxRuntimeExports.jsx(Typography, { variant: "h2", pt: 4, children: "Partymoji" }), jsxRuntimeExports.jsxs(Stack, { spacing: 4, divider: jsxRuntimeExports.jsx(Divider, {}), children: [jsxRuntimeExports.jsx(Header, { state: n, setState: o, setAlert: t2 }), n.baseImage != null && jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsx(ImageEffectList, { appState: n, onEffectsChange: (c) => {
     o((l) => ({ ...l, effects: c }));
-  } }) }), jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsxs(Stack, { spacing: 3, children: [jsxRuntimeExports.jsx(Typography, { variant: "h5", children: "Reset" }), jsxRuntimeExports.jsxs(Typography, { variant: "body1", children: [jsxRuntimeExports.jsx(Icon, { name: "Warning", color: "warning" }), " Clicking this button will clear the image and all effects on it"] }), jsxRuntimeExports.jsx(Stack, { alignItems: "center", children: jsxRuntimeExports.jsx(Button, { startIcon: jsxRuntimeExports.jsx(Icon, { name: "Clear" }), sx: { maxWidth: "300px" }, variant: "contained", color: "error", onClick: s, children: "Reset GIF" }) })] }) })] }), jsxRuntimeExports.jsx("a", { href: "https://github.com/MikeyBurkman/partymoji", target: "_blank", rel: "noreferrer", children: jsxRuntimeExports.jsx("img", { src: "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg", width: 64, height: 64, alt: "Github Link" }) })] })] }) }), jsxRuntimeExports.jsx(Stack, { pt: 8, children: jsxRuntimeExports.jsx(AlertSnackbar, {}) }), jsxRuntimeExports.jsx("div", { style: { position: "fixed", bottom: 16, right: 16, padding: "6px 16px", zIndex: 9999, pointerEvents: "none" }, children: jsxRuntimeExports.jsxs(Typography, { variant: "caption", align: "center", color: "textSecondary", sx: { pt: 2 }, children: [(/* @__PURE__ */ new Date("2026-01-25T20:36:03Z")).toLocaleString("en-US", { timeZone: "America/New_York" }), " ", "EST"] }) })] });
+  } }) }), jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsxs(Stack, { spacing: 3, children: [jsxRuntimeExports.jsx(Typography, { variant: "h5", children: "Reset" }), jsxRuntimeExports.jsxs(Typography, { variant: "body1", children: [jsxRuntimeExports.jsx(Icon, { name: "Warning", color: "warning" }), " Clicking this button will clear the image and all effects on it"] }), jsxRuntimeExports.jsx(Stack, { alignItems: "center", children: jsxRuntimeExports.jsx(Button, { startIcon: jsxRuntimeExports.jsx(Icon, { name: "Clear" }), sx: { maxWidth: "300px" }, variant: "contained", color: "error", onClick: s, children: "Reset GIF" }) })] }) })] }), jsxRuntimeExports.jsx("a", { href: "https://github.com/MikeyBurkman/partymoji", target: "_blank", rel: "noreferrer", children: jsxRuntimeExports.jsx("img", { src: "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg", width: 64, height: 64, alt: "Github Link" }) })] })] }) }), jsxRuntimeExports.jsx(Stack, { pt: 8, children: jsxRuntimeExports.jsx(AlertSnackbar, {}) }), jsxRuntimeExports.jsx("div", { style: { position: "fixed", bottom: 16, right: 16, padding: "6px 16px", zIndex: 9999, pointerEvents: "none" }, children: jsxRuntimeExports.jsxs(Typography, { variant: "caption", align: "center", color: "textSecondary", sx: { pt: 2 }, children: [(/* @__PURE__ */ new Date("2026-01-25T21:01:32Z")).toLocaleString("en-US", { timeZone: "America/New_York" }), " ", "EST"] }) })] });
 }, Section = ({ children: t2 }) => jsxRuntimeExports.jsx(Paper, { style: { padding: 16, maxWidth: IS_MOBILE ? "300px" : void 0 }, children: t2 }), App = () => jsxRuntimeExports.jsx(AppStateProvider, { children: jsxRuntimeExports.jsx(AlertProvider, { children: jsxRuntimeExports.jsx(Inner, {}) }) });
 class TopLevelErrorBoundary extends React.Component {
   constructor() {
