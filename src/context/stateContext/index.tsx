@@ -5,7 +5,7 @@ import { DEFAULT_FPS } from '~/config';
 import { computeGifsForState, getStateDiff } from '~/domain/computeGifs';
 import { AppState } from '~/domain/types';
 import { IS_DEV } from '~/domain/utils';
-import * as localStorage from '~/localStorage';
+import * as storage from '~/domain/storage';
 
 const DEBOUNCE_MILLIS = 1000;
 
@@ -32,7 +32,7 @@ type UseAppStateRet = [
 ];
 
 /**
- * Makes sure that all calls to setState() will also update localStorage
+ * Makes sure that all calls to setState() will also update the local store
  */
 function useAppState(): UseAppStateRet {
   const [state, setState_internal] = React.useState<AppState>(DEFAULT_STATE);
@@ -43,7 +43,9 @@ function useAppState(): UseAppStateRet {
       });
       setState_internal(newState);
       if (!(opts?.doNotStore ?? false)) {
-        localStorage.saveAppState(newState);
+        storage.saveAppState(newState).catch((err: unknown) => {
+          logger.error('Error saving app state', { err });
+        });
       }
       if (IS_DEV) {
         // eslint-disable-next-line
@@ -83,7 +85,13 @@ export const AppStateProvider: React.FC<{
   const computeTimer = React.useRef<NodeJS.Timeout | null>(null);
 
   const compute = useProcessingQueue({
-    processFn: ({ state, startEffectIndex }: { state: AppState, startEffectIndex: number }) => {
+    processFn: ({
+      state,
+      startEffectIndex,
+    }: {
+      state: AppState;
+      startEffectIndex: number;
+    }) => {
       // Handle frame count changes
       const newBaseImage = (() => {
         const baseImage = state.baseImage;
@@ -123,7 +131,7 @@ export const AppStateProvider: React.FC<{
     initialized.current = true;
 
     (async () => {
-      const savedState = await localStorage.getStoredAppState();
+      const savedState = await storage.getStoredAppState();
       if (savedState != null) {
         if (savedState.version === CURRENT_APP_STATE_VERSION) {
           setState_internal(savedState, { doNotStore: true });

@@ -38,6 +38,7 @@
     "get-pixels": "^3.3.3",
     "gif_encoder_wasm": "link:gif/gif_encoder_wasm/pkg",
     "gifuct-js": "^2.1.2",
+    "idb": "^8.0.3",
     "mobile-detect": "^1.4.5",
     "react": "^19.1.0",
     "react-best-gradient-color-picker": "^3.0.14",

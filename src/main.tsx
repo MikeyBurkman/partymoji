@@ -5,7 +5,7 @@ import { App } from './App.tsx';
 import { ThemeProvider } from '@emotion/react';
 import { TopLevelErrorBoundary } from './components/TopLevelErrorBoundary.tsx';
 import { createTheme } from '@mui/material';
-import * as localStorage from '~/localStorage';
+import * as storage from '~/domain/storage';
 
 const theme = createTheme({
   typography: {
@@ -18,9 +18,15 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <TopLevelErrorBoundary
-        onClearLocalStorage={() => {
-          localStorage.clearAppState();
-          window.location.reload();
+        onClearLocalStore={() => {
+          storage
+            .clearAppState()
+            .then(() => {
+              window.location.reload();
+            })
+            .catch((err: unknown) => {
+              console.error('Error clearing storage', { err });
+            });
         }}
       >
         <App />
