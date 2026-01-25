@@ -13464,7 +13464,7 @@ function requireSrc() {
 var srcExports = requireSrc();
 const bezier = getDefaultExportFromCjs$1(srcExports);
 function assert(t2, n = "Unexpected falsy value", o) {
-  if (!t2) throw new Error(`AssertionFailure: ${n}`);
+  if (!t2) throw new Error(`AssertionFailure: ${n}${o ? ` - ${JSON.stringify(o)}` : ""}`);
 }
 const replaceIndex = (t2, n, o) => t2.map((s, c) => n === c ? o(s) : s), removeIndex = (t2, n) => t2.filter((o, s) => n !== s), getLast = (t2) => t2.length === 0 ? null : t2[t2.length - 1], insertInto = (t2, n, o) => [...t2.slice(0, n), o, ...t2.slice(n)], isUrl = (t2) => /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(t2), clamp = (t2, n, o) => Math.max(Math.min(t2, o), n), weightedValue = (t2, n, o) => (1 - t2 / 100) * n + t2 / 100 * o, calculateAngle = (t2, n) => {
   const o = n[0] - t2[0], s = n[1] - t2[1];
@@ -32153,7 +32153,11 @@ const computationMap = /* @__PURE__ */ new Map(), handleError = (t2) => (n) => {
 }), computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync, computeGifsForState = async ({ state: t2, startEffectIndex: n }) => {
   assert(t2.baseImage, "No source image, this button should be disabled!");
   let o;
-  o = t2.baseImage.image;
+  if (n === 0) o = t2.baseImage.image;
+  else {
+    const c = t2.effects[n - 1].state;
+    assert(c.status === "done", "We should not be starting with this effect if the previous is not done computing", { startEffectIndex: n, prevEffectState: c }), o = c.image.image;
+  }
   const s = [];
   for (let c = 0; c < t2.effects.length; c += 1) {
     if (c < n) {
@@ -32212,19 +32216,19 @@ function useAppState() {
   return React.useMemo(() => [t2, o], [t2, o]);
 }
 const AppStateContext = React.createContext({ state: DEFAULT_STATE, setState: () => null, resetState: () => null }), AppStateProvider = ({ children: t2 }) => {
-  const [n, o] = useAppState(), s = React.useRef(null), c = useProcessingQueue({ processFn: ({ state: b }) => {
-    const v = (() => {
-      const y = b.baseImage;
-      return !y || y.image.frames.length === b.frameCount ? (logger.info("Base image frame count did not change", { frameCount: b.frameCount }), y) : { ...y, image: changeFrameCount(y.image, b.frameCount) };
+  const [n, o] = useAppState(), s = React.useRef(null), c = useProcessingQueue({ processFn: ({ state: b, startEffectIndex: v }) => {
+    const y = (() => {
+      const B = b.baseImage;
+      return !B || B.image.frames.length === b.frameCount ? (logger.info("Base image frame count did not change", { frameCount: b.frameCount }), B) : { ...B, image: changeFrameCount(B.image, b.frameCount) };
     })();
-    return computeGifsForState({ state: { ...b, baseImage: v }, startEffectIndex: 0 });
+    return computeGifsForState({ state: { ...b, baseImage: y }, startEffectIndex: v });
   }, onComplete: (b) => {
     logger.debug("Compute finished", { computedState: b }), o(b);
   } }), l = React.useRef(false);
   React.useEffect(() => {
     l.current || (l.current = true, (async () => {
       const b = await getStoredAppState();
-      b != null && (b.version === CURRENT_APP_STATE_VERSION ? (o(b, { doNotStore: true }), c({ state: b })) : o(DEFAULT_STATE));
+      b != null && (b.version === CURRENT_APP_STATE_VERSION ? (o(b, { doNotStore: true }), c({ state: b, startEffectIndex: 0 })) : o(DEFAULT_STATE));
     })().catch((b) => {
       console.error("Error loading state from local storage", b.stack ?? b.message);
     }));
@@ -32233,7 +32237,7 @@ const AppStateContext = React.createContext({ state: DEFAULT_STATE, setState: ()
     s.current != null && (clearTimeout(s.current), s.current = null), logger.debug("Setting app state", { debounce: v });
     const B = setTimeout(() => {
       const x = b(n), C = getStateDiff({ prevState: n, currState: x });
-      logger.debug("Calculated state diff", { newState: x, stateDiff: C }), C.changed ? (o({ ...n, effects: n.effects.map((S) => ({ ...S, state: { status: "computing" } })) }, { doNotStore: true }), c({ state: x })) : logger.debug("No changes detected, skipping compute"), s.current === B && (s.current = null);
+      logger.debug("Calculated state diff", { newState: x, stateDiff: C }), C.changed ? (o({ ...n, effects: n.effects.map((S) => ({ ...S, state: { status: "computing" } })) }, { doNotStore: true }), c({ state: x, startEffectIndex: C.index })) : logger.debug("No changes detected, skipping compute"), s.current === B && (s.current = null);
     }, v === "debounce" ? DEBOUNCE_MILLIS : 0);
     s.current = B;
   }, [c, o, n]), g = React.useCallback(() => {
@@ -32252,7 +32256,7 @@ const AppStateContext = React.createContext({ state: DEFAULT_STATE, setState: ()
     IS_MOBILE && t2({ severity: "warning", message: "This app is not well optimized for mobile. Your experience may not be great." });
   }, [t2]), jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(ScopedCssBaseline, {}), jsxRuntimeExports.jsx(Container, { maxWidth: IS_MOBILE ? "sm" : "md", children: jsxRuntimeExports.jsxs(Stack, { spacing: 4, justifyContent: "space-evenly", alignItems: "center", width: IS_MOBILE ? "sm" : void 0, divider: jsxRuntimeExports.jsx(Divider, {}), children: [jsxRuntimeExports.jsx(Typography, { variant: "h2", pt: 4, children: "Partymoji" }), jsxRuntimeExports.jsxs(Stack, { spacing: 4, divider: jsxRuntimeExports.jsx(Divider, {}), children: [jsxRuntimeExports.jsx(Header, { state: n, setState: o, setAlert: t2 }), n.baseImage != null && jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsx(ImageEffectList, { appState: n, onEffectsChange: (c) => {
     o((l) => ({ ...l, effects: c }));
-  } }) }), jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsxs(Stack, { spacing: 3, children: [jsxRuntimeExports.jsx(Typography, { variant: "h5", children: "Reset" }), jsxRuntimeExports.jsxs(Typography, { variant: "body1", children: [jsxRuntimeExports.jsx(Icon, { name: "Warning", color: "warning" }), " Clicking this button will clear the image and all effects on it"] }), jsxRuntimeExports.jsx(Stack, { alignItems: "center", children: jsxRuntimeExports.jsx(Button, { startIcon: jsxRuntimeExports.jsx(Icon, { name: "Clear" }), sx: { maxWidth: "300px" }, variant: "contained", color: "error", onClick: s, children: "Reset GIF" }) })] }) })] }), jsxRuntimeExports.jsx("a", { href: "https://github.com/MikeyBurkman/partymoji", target: "_blank", rel: "noreferrer", children: jsxRuntimeExports.jsx("img", { src: "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg", width: 64, height: 64, alt: "Github Link" }) })] })] }) }), jsxRuntimeExports.jsx(Stack, { pt: 8, children: jsxRuntimeExports.jsx(AlertSnackbar, {}) }), jsxRuntimeExports.jsx("div", { style: { position: "fixed", bottom: 16, right: 16, padding: "6px 16px", zIndex: 9999, pointerEvents: "none" }, children: jsxRuntimeExports.jsxs(Typography, { variant: "caption", align: "center", color: "textSecondary", sx: { pt: 2 }, children: [(/* @__PURE__ */ new Date("2026-01-25T19:21:31Z")).toLocaleString("en-US", { timeZone: "America/New_York" }), " ", "EST"] }) })] });
+  } }) }), jsxRuntimeExports.jsx(Section, { children: jsxRuntimeExports.jsxs(Stack, { spacing: 3, children: [jsxRuntimeExports.jsx(Typography, { variant: "h5", children: "Reset" }), jsxRuntimeExports.jsxs(Typography, { variant: "body1", children: [jsxRuntimeExports.jsx(Icon, { name: "Warning", color: "warning" }), " Clicking this button will clear the image and all effects on it"] }), jsxRuntimeExports.jsx(Stack, { alignItems: "center", children: jsxRuntimeExports.jsx(Button, { startIcon: jsxRuntimeExports.jsx(Icon, { name: "Clear" }), sx: { maxWidth: "300px" }, variant: "contained", color: "error", onClick: s, children: "Reset GIF" }) })] }) })] }), jsxRuntimeExports.jsx("a", { href: "https://github.com/MikeyBurkman/partymoji", target: "_blank", rel: "noreferrer", children: jsxRuntimeExports.jsx("img", { src: "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg", width: 64, height: 64, alt: "Github Link" }) })] })] }) }), jsxRuntimeExports.jsx(Stack, { pt: 8, children: jsxRuntimeExports.jsx(AlertSnackbar, {}) }), jsxRuntimeExports.jsx("div", { style: { position: "fixed", bottom: 16, right: 16, padding: "6px 16px", zIndex: 9999, pointerEvents: "none" }, children: jsxRuntimeExports.jsxs(Typography, { variant: "caption", align: "center", color: "textSecondary", sx: { pt: 2 }, children: [(/* @__PURE__ */ new Date("2026-01-25T20:07:58Z")).toLocaleString("en-US", { timeZone: "America/New_York" }), " ", "EST"] }) })] });
 }, Section = ({ children: t2 }) => jsxRuntimeExports.jsx(Paper, { style: { padding: 16, maxWidth: IS_MOBILE ? "300px" : void 0 }, children: t2 }), App = () => jsxRuntimeExports.jsx(AppStateProvider, { children: jsxRuntimeExports.jsx(AlertProvider, { children: jsxRuntimeExports.jsx(Inner, {}) }) });
 class TopLevelErrorBoundary extends React.Component {
   constructor() {
