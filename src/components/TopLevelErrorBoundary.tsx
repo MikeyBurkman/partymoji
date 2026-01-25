@@ -3,7 +3,7 @@ import { Button, Stack, Typography } from '@mui/material';
 import { Icon } from './Icon';
 
 interface Props {
-  onClearLocalStorage: () => void;
+  onClearLocalStore: () => void;
   children?: React.ReactNode;
 }
 
@@ -42,7 +42,7 @@ export class TopLevelErrorBoundary extends React.Component<Props, State> {
             sx={{ maxWidth: '300px' }}
             endIcon={<Icon name="PriorityHigh" />}
             startIcon={<Icon name="PriorityHigh" />}
-            onClick={this.props.onClearLocalStorage}
+            onClick={this.props.onClearLocalStore}
           >
             Clear storage and reload
           </Button>

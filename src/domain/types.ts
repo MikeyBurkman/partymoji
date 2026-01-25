@@ -162,6 +162,12 @@ export interface AppState {
   frameCount: number;
 }
 
+/** An AppState that does not contain derived data */
+export interface SerializedAppState extends Omit<AppState, 'baseImage'> {
+  baseImage: string;
+  fname?: string | undefined;
+}
+
 export type ImageEffectResult = {
   gif: string;
   image: Image;
