@@ -13,7 +13,7 @@
     "build:wasm": "wasm-pack build gif/gif_encoder_wasm --target web --dev",
     "build:wasm:prod": "wasm-pack build gif/gif_encoder_wasm --target web --release",
     "build:all": "pnpm build:wasm && pnpm build",
-    "build:all:prod": "build:wasm:prod && VITE_LOG_LEVEL=warn pnpm build",
+    "build:all:prod": "build:wasm:prod && pnpm build",
     "tsc": "tsc -b",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",

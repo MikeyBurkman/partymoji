@@ -38,7 +38,7 @@ jobs:
         run: pnpm lint
 
       - name: Build TS
-        run: pnpm build
+        run: VITE_LOG_LEVEL=warn pnpm build
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
