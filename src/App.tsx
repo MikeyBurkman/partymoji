@@ -74,7 +74,6 @@ const Header: React.FC<{
           setAlert={setAlert}
         />
       </Section>
-      <Section></Section>
     </>
   );
 };

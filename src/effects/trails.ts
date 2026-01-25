@@ -49,7 +49,7 @@ export const trails = buildEffect({
     for (let i = 0; i < image.frames.length; i += 1) {
       const canvas = canvasUtil.createCanvas(image.dimensions);
       for (let n = numTrails; n > 0; n -= 1) {
-        const idx = i - n + 1;
+        const idx = Math.max(i - n + 1, 0);
         const frameIdx = idx >= 0 ? idx : image.frames.length + idx;
 
         const frameToCopy = image.frames[frameIdx];
