@@ -52,8 +52,6 @@ export const trails = buildEffect({
         const idx = Math.max(i - n + 1, 0);
         const frameIdx = idx >= 0 ? idx : image.frames.length + idx;
 
-        console.log('DATA', { n, idx, frameIdx });
-
         const frameToCopy = image.frames[frameIdx];
         canvasUtil.applyFilter(canvas, {
           opacity: Math.floor((n / numTrails) * trailOpacity),
