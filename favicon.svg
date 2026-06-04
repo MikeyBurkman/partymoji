@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ff6ec7">
+        <animate attributeName="stop-color"
+          values="#ff6ec7;#ffdd57;#57ff8e;#57cfff;#b57bff;#ff6ec7"
+          dur="2s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stop-color="#ff3030">
+        <animate attributeName="stop-color"
+          values="#ff3030;#ff8c00;#00c853;#0088ff;#8800ff;#ff3030"
+          dur="2s" repeatCount="indefinite"/>
+      </stop>
+    </radialGradient>
+  </defs>
+  <circle cx="16" cy="16" r="15" fill="url(#bg)"/>
+  <text x="16" y="22" font-size="18" text-anchor="middle" font-family="serif">🎉</text>
+</svg>
