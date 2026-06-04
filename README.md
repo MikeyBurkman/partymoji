@@ -10,9 +10,23 @@ https://mikeyburkman.github.io/partymoji/
 
 ### Develop it locally
 
+#### Prerequisites
+
+- [Rust](https://www.rust-lang.org/tools/install) — required to compile the GIF encoder
+- [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) — required to build the Rust code to WebAssembly:
+  ```sh
+  curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+  ```
+
+#### Steps
+
 1. `pnpm i` to install dependencies
-2. `pnpm dev` to run a local debug version at `http://localhost:5173`
-3. `pnpm build && pnpm preview` to run a prod build at `http://localhost:4173`
+2. Build the WASM module (only needed once, or after changing Rust code):
+   ```sh
+   cd gif && wasm-pack build gif_encoder_wasm --target web
+   ```
+3. `pnpm dev` to run a local debug version at `http://localhost:5173`
+4. `pnpm build && pnpm preview` to run a prod build at `http://localhost:4173`
 
 ### TODO
 
