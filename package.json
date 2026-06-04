@@ -72,5 +72,5 @@
     "vite-plugin-top-level-await": "^1.5.0",
     "vite-tsconfig-paths": "^5.1.4"
   },
-  "packageManager": "pnpm@10.7.0"
+  "packageManager": "pnpm@11.5.1"
 }
