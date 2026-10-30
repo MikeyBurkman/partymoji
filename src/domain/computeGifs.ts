@@ -1,6 +1,6 @@
 import { runEffects } from './run';
 import { runEffectsAsync } from './runAsync';
-import { AppState, AppStateEffect, Image } from './types';
+import { AppState, AppStateEffect, Image, ImageEffectResult } from './types';
 import { IS_MOBILE } from './utils/isMobile';
 import { miscUtil, logger, IS_DEV } from './utils';
 
@@ -13,18 +13,20 @@ export const computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync;
 export const computeGifsForState = async ({
   state,
   startEffectIndex,
+  previousState,
 }: {
   state: AppState;
   startEffectIndex: number;
+  previousState?: AppState;
 }): Promise<AppState> => {
   miscUtil.assert(
     state.baseImage,
     'No source image, this button should be disabled!',
   );
 
-  let image: Image;
+  let previousResult: ImageEffectResult;
   if (startEffectIndex === 0) {
-    image = state.baseImage.image;
+    previousResult = state.baseImage;
   } else {
     const prevEffectState = state.effects[startEffectIndex - 1].state;
     miscUtil.assert(
@@ -32,10 +34,26 @@ export const computeGifsForState = async ({
       'We should not be starting with this effect if the previous is not done computing',
       { startEffectIndex, prevEffectState },
     );
-    image = prevEffectState.image.image;
+    previousResult = prevEffectState.image;
   }
 
   const images: Array<AppStateEffect> = [];
+  const previousInputs = new Map<AppStateEffect, Image>();
+  if (
+    previousState?.baseImage &&
+    previousState.fps === state.fps &&
+    previousState.frameCount === state.frameCount &&
+    previousState.baseImage.gif === state.baseImage.gif
+  ) {
+    let input = previousState.baseImage.image;
+    for (const effect of previousState.effects) {
+      if (effect.state.status !== 'done') {
+        break;
+      }
+      previousInputs.set(effect, input);
+      input = effect.state.image.image;
+    }
+  }
 
   for (let i = 0; i < state.effects.length; i += 1) {
     if (i < startEffectIndex) {
@@ -46,17 +64,31 @@ export const computeGifsForState = async ({
 
     const effect = state.effects[i];
 
-    const result = await computeGif({
-      randomSeed: state.baseImage.gif,
-      image,
-      effectInput: {
-        effectName: effect.effectName,
-        params: effect.paramsValues,
-      },
-      fps: state.fps,
-    });
+    // Inserting/removing an empty entry preserves the input of existing effects.
+    if (
+      effect.state.status === 'done' &&
+      previousInputs.get(effect) === previousResult.image
+    ) {
+      previousResult = effect.state.image;
+      images.push(effect);
+      continue;
+    }
 
-    image = result.image;
+    // A placeholder reuses the complete result, avoiding rendering and GIF encoding.
+    const result =
+      effect.effectName === null
+        ? previousResult
+        : await computeGif({
+            randomSeed: state.baseImage.gif,
+            image: previousResult.image,
+            effectInput: {
+              effectName: effect.effectName,
+              params: effect.paramsValues,
+            },
+            fps: state.fps,
+          });
+
+    previousResult = result;
     images.push({
       effectName: effect.effectName,
       state: {

@@ -88,9 +88,11 @@ export const AppStateProvider: React.FC<{
     processFn: ({
       state,
       startEffectIndex,
+      previousState,
     }: {
       state: AppState;
       startEffectIndex: number;
+      previousState?: AppState;
     }) => {
       // Handle frame count changes
       const newBaseImage = (() => {
@@ -114,6 +116,7 @@ export const AppStateProvider: React.FC<{
           baseImage: newBaseImage,
         },
         startEffectIndex,
+        previousState,
       });
     },
     onComplete: (computedState) => {
@@ -194,6 +197,7 @@ export const AppStateProvider: React.FC<{
           compute({
             state: newState,
             startEffectIndex: stateDiff.index,
+            previousState: state,
           });
         } else {
           // If no changes, we don't need to compute anything

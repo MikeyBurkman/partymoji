@@ -148,7 +148,8 @@ export interface AppStateEffectDoneState {
 }
 
 export interface AppStateEffect {
-  effectName: string;
+  /** Null until the user chooses an effect. */
+  effectName: string | null;
   state: { status: 'init' } | { status: 'computing' } | AppStateEffectDoneState;
   paramsValues: Array<JsonType>;
 }

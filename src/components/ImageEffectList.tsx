@@ -16,14 +16,13 @@ import { logger } from '~/domain/utils';
 
 import type {
   AppStateEffect,
-  Image,
   AppState,
   ImageEffectResult,
   AnyEffect,
   JsonType,
 } from '~/domain/types';
 import { miscUtil } from '~/domain/utils';
-import { DEFAULT_EFFECT, effectByName, POSSIBLE_EFFECTS } from '~/effects';
+import { effectByName, POSSIBLE_EFFECTS } from '~/effects';
 import { Gif } from './Gif';
 import { Icon, ClickableIcon } from './Icon';
 import { EffectImage } from './EffectImage';
@@ -56,7 +55,7 @@ interface ImageEffectProps {
   currentEffects: Array<AppStateEffect>;
   possibleEffects: Array<AnyEffect>;
   onEffectsChange: EffectListProps['onEffectsChange'];
-  newDefaultEffect: (index: number) => AppStateEffect;
+  newDefaultEffect: () => AppStateEffect;
 }
 
 export const ImageEffect: React.FC<ImageEffectProps> = ({
@@ -68,7 +67,7 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
   newDefaultEffect,
 }) => {
   const currEffect = React.useMemo(
-    () => effectByName(effect.effectName),
+    () => (effect.effectName === null ? null : effectByName(effect.effectName)),
     [effect],
   );
 
@@ -79,7 +78,7 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
 
   const onAddAfter = React.useCallback(() => {
     onEffectsChange(
-      miscUtil.insertInto(currentEffects, index + 1, newDefaultEffect(index)),
+      miscUtil.insertInto(currentEffects, index + 1, newDefaultEffect()),
     );
   }, [currentEffects, index, newDefaultEffect, onEffectsChange]);
 
@@ -88,17 +87,19 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
       return null;
     }
 
-    const e = effectByName(effect.effectName);
-    if (e.requiresAnimation && effect.state.image.image.frames.length <= 1) {
+    if (
+      currEffect?.requiresAnimation &&
+      effect.state.image.image.frames.length <= 1
+    ) {
       return <RequiresAnimationTooltip />;
     }
 
     return null;
-  }, [effect]);
+  }, [effect, currEffect]);
 
   const onPickNewEffect = React.useCallback(
-    (_: unknown, newEffect: AnyEffect) => {
-      if (effect.state.status !== 'done') {
+    (_: unknown, newEffect: AnyEffect | null) => {
+      if (effect.state.status !== 'done' || newEffect === null) {
         // This button should be disabled anyhow
         return;
       }
@@ -119,6 +120,9 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
 
   const updateEffectParam = React.useCallback(
     (paramValue: JsonType, paramIndex: number) => {
+      if (currEffect === null) {
+        return;
+      }
       onEffectsChange(
         miscUtil.replaceIndex(currentEffects, index, () => ({
           effectName: currEffect.name,
@@ -138,7 +142,7 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
     // Create elements for each of the parameters for the selected effect.
     // Each of these would get an onChange event so we know when the user has
     //  selected a value.
-    const renderedParams = currEffect.params.map((param, paramIdx: number) => {
+    const renderedParams = currEffect?.params.map((param, paramIdx: number) => {
       const ele = param.fn({
         value: effect.paramsValues[paramIdx],
         onChange: (v) => {
@@ -171,7 +175,7 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
           <Stack direction="row" spacing={2} width="100%">
             <Autocomplete
               fullWidth
-              disableClearable
+              disableClearable={currEffect !== null}
               value={currEffect}
               options={possibleEffects}
               groupBy={(e) => e.group}
@@ -197,15 +201,24 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
                   </Stack>
                 </li>
               )}
-              renderInput={(params) => <TextField {...params} label="Effect" />}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label={currEffect === null ? undefined : 'Effect'}
+                  placeholder="Choose an effect"
+                />
+              )}
             />
             <Stack spacing={2} justifyContent="center">
               <ClickableIcon name="Delete" onClick={onDelete} />
             </Stack>
             {requiresAnimation}
           </Stack>
-          <Typography variant="subtitle1">{currEffect.description}</Typography>
-          {currEffect.secondaryDescription != null && (
+          <Typography variant="subtitle1">
+            {currEffect?.description ??
+              'Choose an effect to apply to this image.'}
+          </Typography>
+          {currEffect?.secondaryDescription != null && (
             <Typography variant="caption">
               {currEffect.secondaryDescription}
             </Typography>
@@ -250,31 +263,16 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
   }, [appState, baseImage]);
 
   const newDefaultEffect = React.useCallback(
-    (tIdx: number): AppStateEffect => ({
-      effectName: DEFAULT_EFFECT.name,
-      paramsValues: DEFAULT_EFFECT.params.map((p) => {
-        let image: Image | undefined = undefined;
-        if (tIdx === 0) {
-          image = appState.baseImage?.image;
-        } else {
-          const previousEffect = currentEffects[tIdx];
-          console.log('HERE', { tIdx, previousEffect, currentEffects });
-          if (previousEffect.state.status === 'done') {
-            image = previousEffect.state.image.image;
-          }
-        }
-
-        return p.defaultValue(image);
-      }),
+    (): AppStateEffect => ({
+      effectName: null,
+      paramsValues: [],
       state: { status: 'init' },
     }),
-    [appState, currentEffects],
+    [],
   );
 
   const onAddNew = React.useCallback(() => {
-    onEffectsChange(
-      miscUtil.insertInto(currentEffects, 0, newDefaultEffect(0)),
-    );
+    onEffectsChange(miscUtil.insertInto(currentEffects, 0, newDefaultEffect()));
   }, [currentEffects, newDefaultEffect, onEffectsChange]);
 
   const finalGif = React.useMemo((): string | null => {
