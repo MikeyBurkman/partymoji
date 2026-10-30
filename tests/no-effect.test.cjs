@@ -5,7 +5,7 @@ const { test } = require('node:test');
 const { transpileModule, ModuleKind } = require('typescript');
 
 // Isolate the browser/worker rendering boundary so these tests run in Node.
-function loadCompute(render) {
+function loadModule(render) {
   const filename = resolve(__dirname, '../src/domain/computeGifs.ts');
   const { outputText } = transpileModule(readFileSync(filename, 'utf8'), {
     compilerOptions: { module: ModuleKind.CommonJS },
@@ -25,8 +25,10 @@ function loadCompute(render) {
     assert.ok(name in dependencies, `Unexpected dependency: ${name}`);
     return dependencies[name];
   }, module.exports);
-  return module.exports.computeGifsForState;
+  return module.exports;
 }
+
+const loadCompute = (render) => loadModule(render).computeGifsForState;
 
 const source = {
   image: {
@@ -49,6 +51,33 @@ const stateWith = (effects) => ({
   frameCount: 1,
   effects,
 });
+
+for (const status of ['init', 'computing']) {
+  test(`prepending an unfinished empty row (${status}) computes from the state diff`, async () => {
+    const { computeGifsForState, getStateDiff } = loadModule(() =>
+      assert.fail('Empty rows must skip rendering'),
+    );
+    const completed = {
+      ...pending(null),
+      state: { status: 'done', image: source },
+    };
+    const previousState = stateWith([completed]);
+    const state = stateWith([
+      { ...pending(null), state: { status } },
+      completed,
+    ]);
+    const diff = getStateDiff({ currState: state, prevState: previousState });
+    assert.deepEqual(diff, { changed: true, index: 0 });
+    const result = await computeGifsForState({
+      state,
+      previousState,
+      startEffectIndex: diff.index,
+    });
+    assert.ok(result.effects.every((effect) => effect.state.status === 'done'));
+    assert.equal(result.effects[0].state.image, source);
+    assert.equal(result.effects[1].state.image, source);
+  });
+}
 
 test('consecutive no effects reuse the source result without rendering', async () => {
   const compute = loadCompute(() =>
@@ -163,3 +192,41 @@ for (const change of ['fps', 'frameCount', 'source', 'params', 'upstream']) {
     assert.equal(result.effects[1].state.image, freshResult);
   });
 }
+
+for (const format of ['png', 'jpeg', 'gif']) {
+  test(`empty rows with a ${format} upload cannot export an unencoded source`, async () => {
+    const { computeGifsForState, getGifForExport } = loadModule(() =>
+      assert.fail('Empty rows must skip rendering'),
+    );
+    const state = {
+      ...stateWith([pending(null), pending(null)]),
+      baseImage: { ...source, gif: `data:image/${format};base64,original` },
+      fps: 30,
+      frameCount: 2,
+    };
+    const result = await computeGifsForState({ state, startEffectIndex: 0 });
+    assert.equal(result.effects[1].state.image, state.baseImage);
+    assert.equal(getGifForExport(result), null);
+  });
+}
+
+test('GIF export uses an encoded effect result through trailing empty rows', async () => {
+  const encoded = { ...source, gif: 'data:image/gif;base64,encoded' };
+  const { computeGifsForState, getGifForExport } = loadModule(async () => encoded);
+  const result = await computeGifsForState({
+    state: stateWith([pending(null), pending('Party'), pending(null)]),
+    startEffectIndex: 0,
+  });
+  assert.equal(getGifForExport(result), encoded.gif);
+});
+
+test('GIF export is unavailable without rows or while any row is unfinished', () => {
+  const { getGifForExport } = loadModule();
+  const completed = {
+    ...pending('Party'),
+    state: { status: 'done', image: source },
+  };
+  assert.equal(getGifForExport(stateWith([])), null);
+  assert.equal(getGifForExport(stateWith([completed, pending(null)])), null);
+  assert.equal(getGifForExport(stateWith([pending('Party'), completed])), null);
+});

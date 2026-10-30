@@ -10,6 +10,19 @@ import { miscUtil, logger, IS_DEV } from './utils';
 //  version if not a prod build.
 export const computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync;
 
+export const getGifForExport = (state: AppState): string | null => {
+  // Empty entries can preview the upload, which may not be a GIF or match
+  // the current FPS/frame count. A selected effect encodes those settings.
+  if (
+    !state.effects.some((effect) => effect.effectName !== null) ||
+    state.effects.some((effect) => effect.state.status !== 'done')
+  ) {
+    return null;
+  }
+  const lastEffect = state.effects[state.effects.length - 1];
+  return lastEffect.state.status === 'done' ? lastEffect.state.image.gif : null;
+};
+
 export const computeGifsForState = async ({
   state,
   startEffectIndex,
@@ -135,8 +148,8 @@ export const getStateDiff = ({
       return { changed: true, index: i };
     }
 
-    if (prevE.state.status !== 'done') {
-      logger.debug('PrevE not done ', i);
+    if (currE.state.status !== 'done' || prevE.state.status !== 'done') {
+      logger.debug('Current or previous effect not done ', i);
       return { changed: true, index: i };
     }
 

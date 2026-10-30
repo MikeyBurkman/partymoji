@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { saveAs } from 'file-saver';
 import { logger } from '~/domain/utils';
+import { getGifForExport } from '~/domain/computeGifs';
 
 import type {
   AppStateEffect,
@@ -286,13 +287,15 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
       : lastEffect.state.image.gif;
   }, [currentEffects]);
 
+  const exportGif = getGifForExport(appState);
+
   const onSaveGif = React.useCallback(() => {
-    if (finalGif != null) {
+    if (exportGif != null) {
       const fileName =
         (appState.fname ?? 'image').replace(/\.[^/.]+$/, '') + '.gif';
-      saveAs(finalGif, fileName);
+      saveAs(exportGif, fileName);
     }
-  }, [finalGif, appState]);
+  }, [exportGif, appState]);
 
   return (
     <Stack>
@@ -321,11 +324,17 @@ export const ImageEffectList: React.FC<EffectListProps> = ({
             <Gif src={finalGif} alt={appState.fname ?? 'image.gif'} />
             <Button
               variant="contained"
+              disabled={exportGif === null}
               onClick={onSaveGif}
               startIcon={<Icon name="SaveAlt" />}
             >
               Save Gif
             </Button>
+            {exportGif === null && (
+              <Typography variant="caption">
+                Choose an effect to enable GIF export.
+              </Typography>
+            )}
           </Stack>
         </Paper>
       )}
