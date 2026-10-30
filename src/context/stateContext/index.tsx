@@ -80,18 +80,23 @@ export const AppStateProvider: React.FC<{
   children?: React.ReactNode;
 }> = ({ children }) => {
   const [state, setState_internal] = useAppState();
+  const stateRef = React.useRef(state);
+  stateRef.current = state;
 
   // Used to set a debounce timer for computing gifs
   const computeTimer = React.useRef<NodeJS.Timeout | null>(null);
 
-  const compute = useProcessingQueue({
-    processFn: ({
-      state,
-      startEffectIndex,
-    }: {
-      state: AppState;
-      startEffectIndex: number;
-    }) => {
+  const { compute, cancel } = useProcessingQueue({
+    processFn: (
+      {
+        state,
+        startEffectIndex,
+      }: {
+        state: AppState;
+        startEffectIndex: number;
+      },
+      onProgress: (state: AppState) => void,
+    ) => {
       // Handle frame count changes
       const newBaseImage = (() => {
         const baseImage = state.baseImage;
@@ -114,7 +119,11 @@ export const AppStateProvider: React.FC<{
           baseImage: newBaseImage,
         },
         startEffectIndex,
+        onProgress,
       });
+    },
+    onProgress: (computedState) => {
+      setState_internal(computedState, { doNotStore: true });
     },
     onComplete: (computedState) => {
       logger.debug('Compute finished', { computedState });
@@ -154,6 +163,7 @@ export const AppStateProvider: React.FC<{
 
   const setState = React.useCallback<AppStateContextProps['setState']>(
     (cb, debounce) => {
+      cancel();
       if (computeTimer.current != null) {
         clearTimeout(computeTimer.current);
         computeTimer.current = null;
@@ -165,9 +175,10 @@ export const AppStateProvider: React.FC<{
 
       const delay = debounce === 'debounce' ? DEBOUNCE_MILLIS : 0;
       const newTimeout = setTimeout(() => {
-        const newState = cb(state);
+        const currentState = stateRef.current;
+        const newState = cb(currentState);
         const stateDiff = getStateDiff({
-          prevState: state,
+          prevState: currentState,
           currState: newState,
         });
 
@@ -177,20 +188,6 @@ export const AppStateProvider: React.FC<{
         });
 
         if (stateDiff.changed) {
-          // Mark everything as computing
-          setState_internal(
-            {
-              ...state,
-              effects: state.effects.map((e) => ({
-                ...e,
-                state: { status: 'computing' },
-              })),
-            },
-            {
-              doNotStore: true,
-            },
-          );
-
           compute({
             state: newState,
             startEffectIndex: stateDiff.index,
@@ -208,12 +205,17 @@ export const AppStateProvider: React.FC<{
 
       computeTimer.current = newTimeout;
     },
-    [compute, setState_internal, state],
+    [compute, cancel],
   );
 
   const resetState = React.useCallback(() => {
+    cancel();
+    if (computeTimer.current != null) {
+      clearTimeout(computeTimer.current);
+      computeTimer.current = null;
+    }
     setState_internal(DEFAULT_STATE);
-  }, [setState_internal]);
+  }, [cancel, setState_internal]);
 
   const context = React.useMemo<AppStateContextProps>(
     () => ({

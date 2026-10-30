@@ -1,9 +1,8 @@
 import React from 'react';
-import { Stack, Typography, Checkbox } from '@mui/material';
-import { AppStateEffect, Dimensions, ImageEffectResult } from '~/domain/types';
+import { Stack, Typography, Checkbox, CircularProgress } from '@mui/material';
+import { AppStateEffect, ImageEffectResult } from '~/domain/types';
 import { Gif } from './Gif';
 import { BackgroundPreviewTooltip } from './BackgroundPreviewTooltip';
-import { Shimmer } from './Shimmer';
 
 interface InnerProps {
   result: ImageEffectResult;
@@ -61,19 +60,30 @@ interface ImageRowProps {
 }
 
 export const EffectImage: React.FC<ImageRowProps> = ({ appStateEffect }) => {
-  const cachedDimensions = React.useRef<Dimensions>([120, 120]);
-  React.useEffect(() => {
-    if (appStateEffect.state.status === 'done') {
-      cachedDimensions.current = appStateEffect.state.image.image.dimensions;
-    }
-  }, [appStateEffect]);
-
   if (appStateEffect.state.status !== 'done') {
     return (
-      <Shimmer
-        width={cachedDimensions.current[0]}
-        height={cachedDimensions.current[1]}
-      />
+      <Stack
+        role="status"
+        aria-label={`${appStateEffect.effectName}: ${appStateEffect.state.status === 'computing' ? 'Processing' : 'Queued'}`}
+        alignItems="center"
+        justifyContent="center"
+        spacing={1}
+        sx={{
+          width: 128,
+          height: 128,
+          bgcolor: 'action.hover',
+          borderRadius: 1,
+        }}
+      >
+        {appStateEffect.state.status === 'computing' && (
+          <CircularProgress size={24} aria-label="Processing effect" />
+        )}
+        <Typography variant="caption" color="text.secondary">
+          {appStateEffect.state.status === 'computing'
+            ? 'Processing…'
+            : 'Queued'}
+        </Typography>
+      </Stack>
     );
   }
 

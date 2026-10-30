@@ -149,7 +149,7 @@ export interface AppStateEffectDoneState {
 
 export interface AppStateEffect {
   effectName: string;
-  state: { status: 'init' } | { status: 'computing' } | AppStateEffectDoneState;
+  state: { status: 'init' | 'queued' | 'computing' } | AppStateEffectDoneState;
   paramsValues: Array<JsonType>;
 }
 
