@@ -80,7 +80,7 @@ export const EffectImage: React.FC<ImageRowProps> = ({ appStateEffect }) => {
   return (
     <>
       <Inner
-        effectName={appStateEffect.effectName}
+        effectName={appStateEffect.effectName ?? 'Unchanged image'}
         result={appStateEffect.state.image}
       />
     </>
