@@ -8,7 +8,7 @@
     "skipLibCheck": true,
     "paths": {
       "~/*": ["./src/*"],
-      "@wasm/*": ["./gif/gif_encoder_wasm/pkg/*"],
+      "@wasm/*": ["./gif/gif_encoder_wasm/pkg/*"]
     },
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -25,5 +25,5 @@
     "noUncheckedSideEffectImports": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src"]
+  "include": ["src", "tests"]
 }
