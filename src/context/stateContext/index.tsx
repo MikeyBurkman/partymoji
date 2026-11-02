@@ -177,11 +177,11 @@ export const AppStateProvider: React.FC<{
         });
 
         if (stateDiff.changed) {
-          // Mark everything as computing
+          // Publish the selected values while their images are computing.
           setState_internal(
             {
-              ...state,
-              effects: state.effects.map((e) => ({
+              ...newState,
+              effects: newState.effects.map((e) => ({
                 ...e,
                 state: { status: 'computing' },
               })),
