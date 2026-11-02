@@ -46,9 +46,7 @@ interface EffectListProps {
 }
 
 const effectKey = (t: AppStateEffect, idx: number): string =>
-  `${t.effectName}-${idx}-${
-    t.state.status === 'done' ? t.state.image.gif.substring(0, 16) : 'pending'
-  }`;
+  `${t.effectName}-${idx}`;
 
 interface ImageEffectProps {
   effect: AppStateEffect;
@@ -127,7 +125,7 @@ export const ImageEffect: React.FC<ImageEffectProps> = ({
             paramIndex,
             () => paramValue,
           ),
-          state: { status: 'computing' },
+          state: { status: 'queued' },
         })),
       );
     },

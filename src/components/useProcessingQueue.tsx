@@ -2,12 +2,14 @@ import React from 'react';
 import { logger } from '~/domain/utils';
 
 interface InitProps<TArgs, TRet> {
-  processFn: (args: TArgs) => TRet | Promise<TRet>;
+  processFn: (
+    args: TArgs,
+    onProgress: (ret: TRet) => void,
+  ) => TRet | Promise<TRet>;
+  onProgress?: (ret: TRet) => void;
   onComplete: (ret: TRet) => void;
   onError?: (err: Error) => void;
 }
-
-type ComputeFn<TArgs> = (args: TArgs) => void;
 
 /**
  * Computes an asynchronous function, calling the given callback when finished.
@@ -18,19 +20,29 @@ type ComputeFn<TArgs> = (args: TArgs) => void;
  */
 export function useProcessingQueue<TArgs, TRet>({
   processFn,
+  onProgress,
   onComplete,
   onError,
-}: InitProps<TArgs, TRet>): ComputeFn<TArgs> {
-  // Each compute gets a unique(-ish) ID. If we finish computing and
-  //  that compute's ID doesn't match our current one, then we drop that result.
+}: InitProps<TArgs, TRet>) {
+  // Progress and completion from superseded runs must both be ignored.
   const latestRunIdRef = React.useRef(0);
+  const cancel = React.useCallback(() => {
+    latestRunIdRef.current += 1;
+  }, []);
 
-  return React.useCallback(
-    (args): void => {
-      const runId = Math.floor(Math.random() * 1000000);
+  React.useEffect(() => cancel, [cancel]);
+
+  const compute = React.useCallback(
+    (args: TArgs): void => {
+      const runId = ++latestRunIdRef.current;
       logger.debug('Computing: ', { runId, args });
-      latestRunIdRef.current = runId;
-      void Promise.resolve(processFn(args))
+      void Promise.resolve(
+        processFn(args, (result) => {
+          if (runId === latestRunIdRef.current) {
+            onProgress?.(result);
+          }
+        }),
+      )
         .then((results) => {
           logger.debug('Finished processing', {
             runId,
@@ -45,6 +57,8 @@ export function useProcessingQueue<TArgs, TRet>({
         })
         .catch(onError);
     },
-    [processFn, onError, onComplete],
+    [processFn, onProgress, onError, onComplete],
   );
+
+  return { compute, cancel };
 }

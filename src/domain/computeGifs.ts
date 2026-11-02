@@ -13,9 +13,11 @@ export const computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync;
 export const computeGifsForState = async ({
   state,
   startEffectIndex,
+  onProgress,
 }: {
   state: AppState;
   startEffectIndex: number;
+  onProgress?: (state: AppState) => void;
 }): Promise<AppState> => {
   miscUtil.assert(
     state.baseImage,
@@ -35,16 +37,39 @@ export const computeGifsForState = async ({
     image = prevEffectState.image.image;
   }
 
-  const images: Array<AppStateEffect> = [];
+  let images: Array<AppStateEffect> = state.effects.map((effect, index) =>
+    index < startEffectIndex
+      ? effect
+      : { ...effect, state: { status: 'queued' } },
+  );
 
   for (let i = 0; i < state.effects.length; i += 1) {
     if (i < startEffectIndex) {
       // Skip effects that have already been computed
-      images.push(state.effects[i]);
       continue;
     }
 
     const effect = state.effects[i];
+
+    images = miscUtil.replaceIndex(images, i, () => ({
+      ...effect,
+      state: { status: 'computing' },
+    }));
+    onProgress?.({ ...state, effects: images });
+
+    // Let React paint progress before processing on the main thread (dev/mobile).
+    await new Promise<void>((resolve) => {
+      if (
+        typeof requestAnimationFrame === 'function' &&
+        document.visibilityState === 'visible'
+      ) {
+        requestAnimationFrame(() => {
+          setTimeout(resolve, 0);
+        });
+      } else {
+        setTimeout(resolve, 0);
+      }
+    });
 
     const result = await computeGif({
       randomSeed: state.baseImage.gif,
@@ -57,14 +82,15 @@ export const computeGifsForState = async ({
     });
 
     image = result.image;
-    images.push({
+    images = miscUtil.replaceIndex(images, i, () => ({
       effectName: effect.effectName,
       state: {
         status: 'done',
         image: result,
       },
       paramsValues: effect.paramsValues,
-    });
+    }));
+    onProgress?.({ ...state, effects: images });
   }
 
   return {
@@ -103,8 +129,8 @@ export const getStateDiff = ({
       return { changed: true, index: i };
     }
 
-    if (prevE.state.status !== 'done') {
-      logger.debug('PrevE not done ', i);
+    if (prevE.state.status !== 'done' || currE.state.status !== 'done') {
+      logger.debug('Effect not done ', i);
       return { changed: true, index: i };
     }
 
