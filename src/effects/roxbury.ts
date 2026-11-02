@@ -30,7 +30,8 @@ export const roxbury = buildEffect({
               : (1 - phaseIdx) * maxAngle; // Rotate counter-clockwise
 
       return {
-        angle,
+        xShift: 8 * Math.sin(angle),
+        yShift: 8 * Math.cos(angle),
         cos: Math.cos(-angle * 1.35),
         sin: Math.sin(-angle * 1.35),
         rotatePointX: width * 0.25,
@@ -38,12 +39,12 @@ export const roxbury = buildEffect({
       };
     },
     ({
-      computed: { angle, cos, sin, rotatePointX, rotatePointY },
+      computed: { xShift, yShift, cos, sin, rotatePointX, rotatePointY },
       coord: [x, y],
       getSrcPixel,
     }) => {
-      const xRelCenter = Math.floor(x - rotatePointX + 8 * Math.sin(angle));
-      const yRelCenter = Math.floor(y - rotatePointY + 8 * Math.cos(angle));
+      const xRelCenter = Math.floor(x - rotatePointX + xShift);
+      const yRelCenter = Math.floor(y - rotatePointY + yShift);
 
       const newCoord: Coord = [
         Math.round(rotatePointX + xRelCenter * cos - yRelCenter * sin),

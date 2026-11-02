@@ -1,5 +1,5 @@
 import type { Coord } from '~/domain/types';
-import { canvasUtil, colorUtil, miscUtil, imageUtil } from '~/domain/utils';
+import { colorUtil, miscUtil, imageUtil } from '~/domain/utils';
 import {
   colorPickerParam,
   intParam,
@@ -7,6 +7,8 @@ import {
   variableLengthParam,
 } from '~/params';
 import { buildEffect } from './utils';
+import { precomputeValues } from './precompute-values';
+import { createBackgroundCompositor } from './background-compositor';
 
 const DEFAULT_COLORS = [
   '#FF0000',
@@ -65,7 +67,7 @@ export const pinwheelColors = buildEffect({
     parameters: [groupCount, colors, offsetX, offsetY, opacity],
   }) => {
     const [width, height] = image.dimensions;
-
+    const composite = createBackgroundCompositor(image.dimensions, opacity);
     const ribbonCount = colors.length * groupCount;
     const ribbonArcDegrees = Math.round(360 / ribbonCount);
     // Need to make sure ribbonCount is always a multiple of the number of images, otherwise we
@@ -77,38 +79,21 @@ export const pinwheelColors = buildEffect({
     }
 
     const center: Coord = [width / 2 + offsetX, height / 2 - offsetY];
-
+    const baseValues =
+      image.frames.length === 0
+        ? []
+        : precomputeValues(image.dimensions, (coord) => {
+            const angle = miscUtil.calculateAngle(coord, center);
+            return Math.floor(angle / ribbonArcDegrees) % colorsLength;
+          });
     return imageUtil.mapFrames(image, (frame, frameIndex, frameCount) => {
       const animationProgress = frameIndex / frameCount;
-
-      const background = imageUtil.mapCoords(image.dimensions, (coord) => {
-        const pointAngle = miscUtil.calculateAngle(coord, center);
-
-        const colorIdx =
-          Math.floor(pointAngle / ribbonArcDegrees) % colorsLength;
-
-        // Increment colorIdx based on current frame progress
-        const idx =
-          (Math.floor(animationProgress * colorsLength) + colorIdx) %
-          colorsLength;
-        return colors[idx];
-      });
-
-      const foreground =
-        opacity === 100
-          ? frame
-          : canvasUtil.applyCanvasFromFrame({
-              dimensions: image.dimensions,
-              frame,
-              preEffect: (canvasData) =>
-                canvasUtil.applyFilter(canvasData, { opacity }),
-            });
-
-      return canvasUtil.combineImages({
-        dimensions: image.dimensions,
-        background,
-        foreground,
-      });
+      const shift = Math.floor(animationProgress * colorsLength);
+      const background = imageUtil.mapCoords(
+        image.dimensions,
+        ([x, y]) => colors[(shift + baseValues[y * width + x]) % colorsLength],
+      );
+      return composite(background, frame);
     });
   },
 });

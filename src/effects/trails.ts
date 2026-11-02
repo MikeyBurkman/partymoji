@@ -1,7 +1,7 @@
 import { canvasUtil } from '~/domain/utils';
 import { sliderParam } from '~/params';
 import { buildEffect } from './utils';
-import { FrameData } from '~/domain/types';
+import type { CanvasData, FrameData } from '~/domain/types';
 
 export const trails = buildEffect({
   name: 'Trails',
@@ -35,43 +35,43 @@ export const trails = buildEffect({
     const blurCoefficient =
       (Math.max(image.dimensions[0], image.dimensions[1]) / 10000) * blur;
 
-    /*
-    // assume numTrails = 3, numFrames = 6
-    frames[0] = src[4]*25% > src[5]*25% > src[0]
-    frames[1] = src[5]*25% > src[0]*25% > src[1]
-    frames[2] = src[0]*25% > src[1]*25% > src[2]
-    frames[3] = src[1]*25% > src[2]*25% > src[3]
-    frames[4] = src[2]*25% > src[3]*25% > src[4]
-    frames[5] = src[3]*25% > src[4]*25% > src[5]
-    ...
-    */
+    // Retain only the source canvases needed by the current history window.
+    const sources = new Map<number, CanvasData>();
+    const sourceCanvas = (index: number) => {
+      let canvas = sources.get(index);
+      if (!canvas) {
+        canvas = canvasUtil.frameToCanvas({
+          dimensions: image.dimensions,
+          frame: image.frames[index],
+        });
+        sources.set(index, canvas);
+      }
+      return canvas;
+    };
+    let canvas: CanvasData | undefined;
     const frames: Array<FrameData> = [];
     for (let i = 0; i < image.frames.length; i += 1) {
-      const canvas = canvasUtil.createCanvas(image.dimensions);
+      canvas ??= canvasUtil.createCanvas(image.dimensions);
+      canvas.ctx.clearRect(0, 0, image.dimensions[0], image.dimensions[1]);
+      for (const index of sources.keys()) {
+        if (index < Math.max(i - numTrails + 1, 0)) sources.delete(index);
+      }
       for (let n = numTrails; n > 0; n -= 1) {
         const idx = Math.max(i - n + 1, 0);
         const frameIdx = idx >= 0 ? idx : image.frames.length + idx;
 
-        const frameToCopy = image.frames[frameIdx];
+        const frameToCopy = sourceCanvas(frameIdx);
         canvasUtil.applyFilter(canvas, {
           opacity: Math.floor((n / numTrails) * trailOpacity),
           blur: Math.floor(n * blurCoefficient),
         });
-        canvasUtil.drawImageOnCanvas({
-          ctx: canvas.ctx,
-          dimensions: image.dimensions,
-          frame: frameToCopy,
-        });
+        canvas.ctx.drawImage(frameToCopy.canvas, 0, 0);
       }
       canvasUtil.applyFilter(canvas, {
         opacity: 100,
         blur: 0,
       });
-      canvasUtil.drawImageOnCanvas({
-        ctx: canvas.ctx,
-        dimensions: image.dimensions,
-        frame: image.frames[i],
-      });
+      canvas.ctx.drawImage(sourceCanvas(i).canvas, 0, 0);
       frames.push(canvasUtil.canvasToFrame(canvas));
     }
 

@@ -2,6 +2,7 @@ import type { Coord } from '~/domain/types';
 import { colorUtil, miscUtil, imageUtil } from '~/domain/utils';
 import { intParam, sliderParam } from '~/params';
 import { buildEffect } from './utils';
+import { precomputeValues } from './precompute-values';
 
 export const pinwheelRainbow = buildEffect({
   name: 'Pinwheel Rainbow',
@@ -34,24 +35,26 @@ export const pinwheelRainbow = buildEffect({
       defaultValue: 0,
     }),
   ] as const,
-  fn: imageUtil.mapImageWithPrecompute(
-    ({ dimensions: [width, height], parameters: [, , offsetX, offsetY] }) => {
-      const center: Coord = [width / 2 + offsetX, height / 2 - offsetY];
-      return { center };
-    },
-    ({
-      computed: { center },
-      coord,
-      animationProgress,
-      getSrcPixel,
-      parameters: [groupCount, strength],
-    }) => {
-      const srcPixel = getSrcPixel(coord);
-
-      const pointAngle = miscUtil.calculateAngle(coord, center);
-      const newH = (pointAngle * groupCount + animationProgress * 360) % 360;
-
-      return colorUtil.shiftTowardsHue(srcPixel, newH, strength);
-    },
-  ),
+  fn: ({ image, parameters: [groupCount, strength, offsetX, offsetY] }) => {
+    const [width, height] = image.dimensions;
+    const center: Coord = [width / 2 + offsetX, height / 2 - offsetY];
+    const baseHues =
+      image.frames.length === 0
+        ? []
+        : precomputeValues(
+            image.dimensions,
+            (coord) => miscUtil.calculateAngle(coord, center) * groupCount,
+          );
+    return imageUtil.mapFrames(image, (frame, frameIndex, frameCount) => {
+      const shift = (frameIndex / frameCount) * 360;
+      return imageUtil.mapCoords(image.dimensions, (coord) => {
+        const hue = (baseHues[coord[1] * width + coord[0]] + shift) % 360;
+        return colorUtil.shiftTowardsHue(
+          imageUtil.getPixelFromSource(image.dimensions, frame, coord),
+          hue,
+          strength,
+        );
+      });
+    });
+  },
 });

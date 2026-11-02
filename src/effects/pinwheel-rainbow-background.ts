@@ -1,7 +1,9 @@
 import type { Coord } from '~/domain/types';
-import { canvasUtil, colorUtil, miscUtil, imageUtil } from '~/domain/utils';
+import { colorUtil, miscUtil, imageUtil } from '~/domain/utils';
 import { intParam, sliderParam } from '~/params';
 import { buildEffect } from './utils';
+import { precomputeValues } from './precompute-values';
+import { createBackgroundCompositor } from './background-compositor';
 
 export const pinwheelRainbowBackground = buildEffect({
   name: 'Pinwheel Rainbow Background',
@@ -33,32 +35,24 @@ export const pinwheelRainbowBackground = buildEffect({
       max: 100,
     }),
   ] as const,
-  fn: ({ image, parameters: [groupCount, offsetX, offsetY, opacity] }) =>
-    imageUtil.mapFrames(image, (frame, frameIndex, frameCount) => {
+  fn: ({ image, parameters: [groupCount, offsetX, offsetY, opacity] }) => {
+    const [width, height] = image.dimensions;
+    const composite = createBackgroundCompositor(image.dimensions, opacity);
+    const center: Coord = [width / 2 + offsetX, height / 2 - offsetY];
+    const baseValues =
+      image.frames.length === 0
+        ? []
+        : precomputeValues(image.dimensions, (coord) => {
+            const angle = miscUtil.calculateAngle(coord, center);
+            return angle * groupCount;
+          });
+    return imageUtil.mapFrames(image, (frame, frameIndex, frameCount) => {
       const animationProgress = frameIndex / frameCount;
-      const [width, height] = image.dimensions;
-      const center: Coord = [width / 2 + offsetX, height / 2 - offsetY];
-
-      const background = imageUtil.mapCoords(image.dimensions, (coord) => {
-        const pointAngle = miscUtil.calculateAngle(coord, center);
-        const newH = (pointAngle * groupCount + animationProgress * 360) % 360;
-        return colorUtil.colorFromHue(newH);
-      });
-
-      const foreground =
-        opacity === 100
-          ? frame
-          : canvasUtil.applyCanvasFromFrame({
-              dimensions: image.dimensions,
-              frame,
-              preEffect: (canvasData) =>
-                canvasUtil.applyFilter(canvasData, { opacity }),
-            });
-
-      return canvasUtil.combineImages({
-        dimensions: image.dimensions,
-        background,
-        foreground,
-      });
-    }),
+      const shift = animationProgress * 360;
+      const background = imageUtil.mapCoords(image.dimensions, ([x, y]) =>
+        colorUtil.colorFromHue((baseValues[y * width + x] + shift) % 360),
+      );
+      return composite(background, frame);
+    });
+  },
 });

@@ -25,22 +25,20 @@ export const hueWave = buildEffect({
     }),
   ] as const,
   fn: imageUtil.mapImageWithPrecompute(
-    ({ animationProgress }) => ({
-      shift: -1 * animationProgress * 2 * Math.PI,
-    }),
     ({
-      computed: { shift },
-      coord,
+      animationProgress,
       dimensions: [, height],
       parameters: [amplitude, period],
-      getSrcPixel,
     }) => {
-      const [, y] = coord;
-      const amount = Math.round(
-        amplitude * Math.sin((y / height) * period * Math.PI + shift),
-      );
-
-      return colorUtil.shiftHue(getSrcPixel(coord), (amount / 100) * 360);
+      const shift = -1 * animationProgress * 2 * Math.PI;
+      return Array.from({ length: height }, (_, y) => {
+        const amount = Math.round(
+          amplitude * Math.sin((y / height) * period * Math.PI + shift),
+        );
+        return (amount / 100) * 360;
+      });
     },
+    ({ computed: offsets, coord, getSrcPixel }) =>
+      colorUtil.shiftHue(getSrcPixel(coord), offsets[coord[1]]),
   ),
 });

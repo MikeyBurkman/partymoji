@@ -20,10 +20,16 @@ export default defineConfig({
       'gifuct-js',
       'remeda',
       'seedrandom',
+      // Effect metadata imports parameter editors; prebundle their CJS dependencies.
+      '@mui/material',
+      '@mui/icons-material',
+      '@emotion/react',
+      '@emotion/styled',
+      'react-best-gradient-color-picker',
     ],
   },
   test: {
-    include: ['tests/domain-utils/**/*.test.{ts,tsx}'],
+    include: ['tests/{domain-utils,effects}/**/*.test.{ts,tsx}'],
     fileParallelism: false,
     browser: {
       enabled: true,
@@ -33,7 +39,7 @@ export default defineConfig({
       screenshotFailures: false,
     },
     benchmark: {
-      include: ['tests/domain-utils/**/*.bench.ts'],
+      include: ['tests/{domain-utils,effects}/**/*.bench.ts'],
     },
   },
 });

@@ -20,19 +20,10 @@ export const hueShiftPulse = buildEffect({
       ],
     }),
   ] as const,
-  fn: imageUtil.mapImage(
-    ({
-      coord,
-      getSrcPixel,
-      frameCount,
-      frameIndex,
-      parameters: [hue, easing],
-    }) => {
-      const amount = miscUtil.bezierCurve(
-        easing,
-        true,
-      )(frameIndex / frameCount);
-      return colorUtil.shiftTowardsHue(getSrcPixel(coord), hue, amount * 360);
-    },
+  fn: imageUtil.mapImageWithPrecompute(
+    ({ animationProgress, parameters: [, easing] }) =>
+      miscUtil.bezierCurve(easing, true)(animationProgress) * 360,
+    ({ coord, getSrcPixel, computed: amount, parameters: [hue] }) =>
+      colorUtil.shiftTowardsHue(getSrcPixel(coord), hue, amount),
   ),
 });
