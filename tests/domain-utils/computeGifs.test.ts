@@ -1,7 +1,11 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-import { computeGifsForState } from '~/domain/computeGifs';
+import { computeGifsForState, getStateDiff } from '~/domain/computeGifs';
 import { runEffects } from '~/domain/run';
-import type { AppState, ImageEffectResult } from '~/domain/types';
+import type {
+  AppState,
+  AppStateEffect,
+  ImageEffectResult,
+} from '~/domain/types';
 
 // Keep the real chain orchestration; control the expensive effect/encoder boundary.
 vi.mock('~/domain/run', () => ({ runEffects: vi.fn() }));
@@ -28,6 +32,79 @@ const state: AppState = {
 };
 
 beforeEach(() => vi.mocked(runEffects).mockReset().mockResolvedValue(source));
+
+function completedRepeatedEffects(): AppState {
+  return {
+    ...state,
+    effects: Array.from(
+      { length: 3 },
+      (): AppStateEffect => ({
+        effectName: 'first',
+        paramsValues: [],
+        state: { status: 'done', image: source },
+      }),
+    ),
+  };
+}
+
+it.each([0, 1])(
+  'recomputes an identical effect inserted at index %i and every dependent effect',
+  async (index) => {
+    const prevState = completedRepeatedEffects();
+    const inserted: AppStateEffect = {
+      effectName: 'first',
+      paramsValues: [],
+      state: { status: 'init' },
+    };
+    const currState = {
+      ...prevState,
+      effects: [
+        ...prevState.effects.slice(0, index),
+        inserted,
+        ...prevState.effects.slice(index),
+      ],
+    };
+    const diff = getStateDiff({ currState, prevState });
+    expect(diff).toEqual({ changed: true, index });
+    if (!diff.changed) throw new Error('Insertion must trigger computation');
+    const result = await computeGifsForState({
+      state: currState,
+      startEffectIndex: diff.index,
+    });
+    expect(runEffects).toHaveBeenCalledTimes(4 - index);
+    expect(result.effects.map((effect) => effect.state.status)).toEqual([
+      'done',
+      'done',
+      'done',
+      'done',
+    ]);
+    if (index > 0) expect(result.effects[0]).toBe(prevState.effects[0]);
+  },
+);
+
+it.each([0, 1, 2])(
+  'invalidates displaced identical cached effects when removing index %i',
+  (index) => {
+    const prevState = completedRepeatedEffects();
+    const currState = {
+      ...prevState,
+      effects: prevState.effects.filter((_, i) => i !== index),
+    };
+    expect(getStateDiff({ currState, prevState })).toEqual({
+      changed: true,
+      index,
+    });
+  },
+);
+
+it('retains a completed prefix when rows are copied without changing their cached results', () => {
+  const prevState = completedRepeatedEffects();
+  const currState = {
+    ...prevState,
+    effects: prevState.effects.map((effect) => ({ ...effect })),
+  };
+  expect(getStateDiff({ currState, prevState })).toEqual({ changed: false });
+});
 
 it('does not start any effect when already canceled', async () => {
   const controller = new AbortController();

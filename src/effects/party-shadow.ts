@@ -44,15 +44,16 @@ export const partyShadow = buildEffect({
       for (let i = 0; i < layers; i += 1) {
         source.ctx.putImageData(new ImageData(result, width, height), 0, 0);
         target.ctx.clearRect(0, 0, width, height);
-        // Some negative hues produce an invalid CSS color. A rejected filter
-        // assignment must leave the fresh-canvas default, not the previous layer.
+        // Reset the reused context before applying this layer's filter.
         target.ctx.filter = 'none';
         canvasUtil.applyFilter(target, {
           dropShadow: {
             offsetX,
             offsetY,
             blurRadius,
-            color: colorUtil.colorFromHue((startHue - hueSize * i) % 360),
+            color: colorUtil.colorFromHue(
+              (((startHue - hueSize * i) % 360) + 360) % 360,
+            ),
           },
         });
         target.ctx.drawImage(source.canvas, 0, 0);

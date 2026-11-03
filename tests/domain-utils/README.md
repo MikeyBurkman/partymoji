@@ -26,25 +26,17 @@ The test framework and browser driver versions are pinned because Vitest's
 benchmarking interface is experimental. Browser binaries are installed separately
 and are not part of the repository.
 
-### Missing Linux libraries on this host
+### Missing Linux libraries
 
 If Chromium fails to launch with a missing-library error such as `libnspr4.so`,
 run `pnpm exec playwright install-deps chromium` in an interactive terminal and
 enter your sudo password. Then the plain test and benchmark commands above work.
 
-For this host, the missing libraries have also been downloaded and extracted
-under `/tmp/partymoji-browser-deps/root`. Until the system dependencies are
-installed, enable that temporary workaround in each terminal before running tests
-or capturing either benchmark report:
-
-```sh
-export LD_LIBRARY_PATH="/tmp/partymoji-browser-deps/root/usr/lib/x86_64-linux-gnu${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-pnpm bench --outputJson /tmp/partymoji-utils-before.json
-```
-
-The `/tmp` files may disappear after a reboot. A JSON file with empty `groups`
-from a failed browser launch is not a usable baseline; rerun the capture after
-resolving the launch error.
+The system dependencies on this host are installed as of November 3, 2026.
+Browser tests pass with `LD_LIBRARY_PATH` unset; the earlier `/tmp` library
+workaround is no longer needed. A JSON file with empty `groups` from a failed
+browser launch is not a usable baseline; rerun the capture after resolving the
+launch error.
 
 ## Behavior covered
 

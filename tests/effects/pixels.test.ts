@@ -83,6 +83,10 @@ describe('hand-checked pixel behavior', () => {
 
   it('Hue Shift Pulse uses one mirrored easing amount per frame and preserves alpha', async () => {
     const frame = new Uint8ClampedArray([
+      255,
+      0,
+      0,
+      0,
       ...red,
       255,
       0,
@@ -94,7 +98,7 @@ describe('hand-checked pixel behavior', () => {
       128,
     ]);
     const source: Image = {
-      dimensions: [3, 1],
+      dimensions: [4, 1],
       frames: Array.from({ length: 8 }, () => frame.slice()),
     };
     const output = await effectCase('pulse', hueShiftPulse.fn, [
@@ -107,9 +111,12 @@ describe('hand-checked pixel behavior', () => {
     expect(output.frames[0]).toEqual(frame);
     expect(output.frames[1]).toEqual(output.frames[7]);
     expect(output.frames[2]).toEqual(output.frames[6]);
-    expect(output.frames[4]).not.toEqual(frame);
+    expect(Array.from(output.frames[1].slice(0, 4))).toEqual([191, 64, 0, 0]);
+    expect(Array.from(output.frames[2].slice(0, 4))).toEqual([128, 128, 0, 0]);
+    expect(Array.from(output.frames[3].slice(0, 4))).toEqual([64, 191, 0, 0]);
+    expect(Array.from(output.frames[4].slice(0, 4))).toEqual([0, 255, 0, 0]);
     for (const data of output.frames) {
-      expect([data[3], data[7], data[11]]).toEqual([255, 63, 128]);
+      expect([data[3], data[7], data[11], data[15]]).toEqual([0, 255, 63, 128]);
       expect(Array.from(data.slice(0, 3))).toEqual(
         Array.from(data.slice(4, 7)),
       );

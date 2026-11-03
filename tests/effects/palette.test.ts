@@ -16,8 +16,7 @@ function run(image: Image, reduction: number) {
   });
 }
 
-// Literal expectations preserve stable tie-breaking, whole-animation palette selection,
-// the current omission of the first color's vote, and alpha-discarding RGB keys.
+// Literal expectations cover stable ties, whole-animation palettes, and source alpha.
 describe('Reduce Color Palette', () => {
   it('selects a shared palette using colors from later frames and breaks ranking ties in encounter order', async () => {
     const image: Image = {
@@ -28,20 +27,56 @@ describe('Reduce Color Palette', () => {
       ],
     };
     expect(pixels(await run(image, 50))).toEqual([
-      [...black, ...black],
-      [...light, ...light],
+      [...black, ...dark],
+      [...dark, ...dark],
     ]);
   });
 
-  it('retains RGB values at zero reduction but currently makes all pixels opaque', async () => {
+  it('preserves all bytes at zero reduction without mutating or aliasing the input', async () => {
+    const bytes = [
+      0, 0, 0, 0, 8, 8, 8, 63, 240, 240, 240, 128, 255, 255, 255, 255,
+    ];
     const image: Image = {
-      dimensions: [3, 1],
+      dimensions: [4, 1],
+      frames: [new Uint8ClampedArray(bytes)],
+    };
+    const output = await run(image, 0);
+    expect(pixels(output)).toEqual([bytes]);
+    expect(pixels(image)).toEqual([bytes]);
+    expect(output.frames[0].buffer).not.toBe(image.frames[0].buffer);
+  });
+
+  it.each([50, 100])(
+    'preserves source alpha at %i percent reduction',
+    async (reduction) => {
+      const bytes = [
+        0, 0, 0, 0, 8, 8, 8, 63, 240, 240, 240, 128, 255, 255, 255, 255,
+      ];
+      const image: Image = {
+        dimensions: [4, 1],
+        frames: [new Uint8ClampedArray(bytes)],
+      };
+      expect(pixels(await run(image, reduction))).toEqual([
+        reduction === 50
+          ? [0, 0, 0, 0, 8, 8, 8, 63, 8, 8, 8, 128, 8, 8, 8, 255]
+          : [0, 0, 0, 0, 0, 0, 0, 63, 0, 0, 0, 128, 0, 0, 0, 255],
+      ]);
+      expect(pixels(image)).toEqual([bytes]);
+    },
+  );
+
+  it('includes the first distinct RGB color when voting for nearest palette colors', async () => {
+    // Green=0 votes for 1, giving 1 two votes instead of a three-way tie.
+    const image: Image = {
+      dimensions: [4, 1],
       frames: [
-        new Uint8ClampedArray([0, 0, 0, 0, 8, 8, 8, 63, 240, 240, 240, 128]),
+        new Uint8ClampedArray([
+          0, 0, 0, 255, 0, 1, 0, 255, 0, 2, 0, 255, 0, 10, 0, 255,
+        ]),
       ],
     };
-    expect(pixels(await run(image, 0))).toEqual([
-      [...black, ...dark, ...light],
+    expect(pixels(await run(image, 100))).toEqual([
+      [0, 1, 0, 255, 0, 1, 0, 255, 0, 1, 0, 255, 0, 1, 0, 255],
     ]);
   });
 
@@ -60,22 +95,25 @@ describe('Reduce Color Palette', () => {
       dimensions: [2, 1],
       frames: [new Uint8ClampedArray([8, 8, 8, 0, 8, 8, 8, 128])],
     };
-    expect(pixels(await run(image, 100))).toEqual([[...dark, ...dark]]);
+    expect(pixels(await run(image, 100))).toEqual([[8, 8, 8, 0, 8, 8, 8, 128]]);
   });
 
   it('uses the first palette entry for an equal-distance pixel', async () => {
-    // Encounter order makes green=0 and green=20 the selected palette.
-    // The green=10 pixel is equidistant and must choose the first entry.
+    // Four endpoint colors survive; green=20 is equidistant from 10 and 30.
     const image: Image = {
-      dimensions: [4, 1],
+      dimensions: [5, 1],
       frames: [
         new Uint8ClampedArray([
-          0, 0, 0, 255, 0, 20, 0, 255, 0, 10, 0, 255, 0, 30, 0, 255,
+          0, 10, 0, 255, 0, 30, 0, 255, 0, 9, 0, 255, 0, 31, 0, 255, 0, 20, 0,
+          255,
         ]),
       ],
     };
-    expect(pixels(await run(image, 50))).toEqual([
-      [0, 0, 0, 255, 0, 20, 0, 255, 0, 0, 0, 255, 0, 20, 0, 255],
+    expect(pixels(await run(image, 20))).toEqual([
+      [
+        0, 10, 0, 255, 0, 30, 0, 255, 0, 9, 0, 255, 0, 31, 0, 255, 0, 10, 0,
+        255,
+      ],
     ]);
   });
 });

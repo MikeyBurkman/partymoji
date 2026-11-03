@@ -84,8 +84,13 @@ export const radianceColors = buildEffect({
             const distance = Math.sqrt(
               yRelCenter * yRelCenter + xRelCenter * xRelCenter,
             );
+            // calculate which ring a pixel belongs to
+            const ringIndex = Math.floor(
+              (1 - distance / maxDist) * colorList.length,
+            );
+            // Some pixels can be beyond maxDist, making rings negative. Need to guarantee positive
             return (
-              Math.floor((1 - distance / maxDist) * colorList.length) %
+              ((ringIndex % colorList.length) + colorList.length) %
               colorList.length
             );
           });

@@ -4,13 +4,14 @@ Characterization coverage for the 14 effects identified in the performance revie
 Reduce Color Palette, Hue Shift Pulse, Ripple, Hue Wave, Grid, Roxbury, Trails,
 Party Shadow, Pinwheel Colors, Radiance Colors, and the foreground/background
 Pinwheel Rainbow and Radiance Rainbow variants. Tests were established before
-optimization; their original pixel snapshots remain the expected results.
+optimization. Snapshots preserve their original pixels except for the intentional
+bug fixes described below.
 
 ## Run
 
 Uses the existing Vitest Browser Mode / Playwright Chromium setup. See
 [the utility suite setup](../domain-utils/README.md#setup-and-commands) for browser
-installation and this host's temporary Linux library workaround.
+installation and Linux system dependency setup.
 
 ```sh
 pnpm test tests/effects
@@ -23,12 +24,8 @@ pnpm bench tests/effects --outputJson /tmp/partymoji-effects-before.json
 pnpm bench tests/effects --compare tests/effects/baseline.json --outputJson /tmp/partymoji-effects-after.json
 ```
 
-On this host, prefix browser commands with:
-
-```sh
-LD_LIBRARY_PATH=/tmp/partymoji-browser-deps/root/usr/lib/x86_64-linux-gnu pnpm test tests/effects
-LD_LIBRARY_PATH=/tmp/partymoji-browser-deps/root/usr/lib/x86_64-linux-gnu pnpm bench tests/effects --outputJson /tmp/partymoji-effects-before.json
-```
+This host's browser dependencies are now installed. The plain commands above
+work without setting `LD_LIBRARY_PATH`.
 
 ## What the tests protect
 
@@ -56,18 +53,21 @@ an optimization. Only intentionally recapture with:
 pnpm test tests/effects/effects.test.ts --update
 ```
 
-These tests deliberately preserve existing behavior, including quirks:
+The November 3, 2026 fixes add explicit coverage for:
 
-- Palette reduction ignores source alpha when collecting RGB colors and makes
-  output opaque even at 0% reduction. Ranking omits the first color's vote.
-- Hue Shift Pulse currently passes the easing result multiplied by **360** to
-  `shiftTowardsHue`; this suite does not change that amount to 100.
+- Palette reduction preserves alpha and all bytes at 0% reduction, includes the
+  first color's nearest-neighbor vote, and retains stable encounter-order ties.
+- Hue Shift Pulse scales easing to the interpolation helper's 0–100 range, with
+  exact intermediate/peak colors and preserved source alpha.
+- Radiance Colors wraps negative ring indices for positive and negative offsets
+  across animation phases instead of throwing `TypeError`.
+- Party Shadow wraps negative hues before creating CSS colors so all layers render.
+
+These tests also preserve existing behavior, including quirks:
+
 - Trails clamps early history to the first frame rather than wrapping. Chromium
   quantizes 50% filter opacity to alpha 127 before subsequent compositing.
 - Roxbury's zero-angle phase still shifts the sampled row by eight pixels.
-- Radiance Colors can throw `TypeError` when an offset creates a negative palette
-  index. A separate test records this failure; successful benchmarks use zero
-  offsets for this effect. A behavior correction should be a separate change.
 
 Snapshots involving canvas filters and partial-alpha rounding are tied to the
 recorded Chromium environment. Other browser engines/renderers may differ.
@@ -124,8 +124,9 @@ Thirteen effects preserve their existing interfaces and pixel output:
 - Reduce Color Palette builds the whole-animation palette once per invocation,
   scans RGBA buffers without discarded output images, uses packed RGB keys in
   encounter order, and selects the nearest palette color once per unique RGB.
-  Alpha handling, stable ties, the first-color voting omission, and color-distance
-  calculations are unchanged. Ranking remains quadratic in unique color count;
+  Stable ties and color-distance calculations are retained. The November 3 bug
+  fixes preserve source alpha and include the first color's vote. Ranking remains
+  quadratic in unique color count;
   large photographic palettes can still be expensive.
 - Hue Shift Pulse evaluates easing once per frame. Ripple and Hue Wave compute
   sine-based amounts once per row per frame. Roxbury hoists its remaining
@@ -139,22 +140,25 @@ Thirteen effects preserve their existing interfaces and pixel output:
 - Trails reuses its output canvas and uploads each source frame once; retained
   source canvases are bounded by the requested history window.
 - Party Shadow reuses two canvases and retains intermediate layer readback/upload.
-  Each layer resets the filter before assigning it: negative hues can produce an
-  invalid CSS shadow color, and a rejected assignment must leave the original
-  fresh-canvas default instead of reusing the previous layer's shadow.
+  Each layer resets the filter before assigning it. The November 3 bug fix also
+  wraps negative hues so every layer receives a valid CSS shadow color.
 
 No global image/canvas caches, parameter changes, or dependency changes were
 introduced. Foreground Radiance Rainbow remains unchanged: the geometry-cache
 experiment showed no convincing gain (its first run was about 4–7% slower)
 and was removed. Its benchmark remains an unchanged control.
 
-The existing 168 tests pass without updating snapshots. An additional temporary
+At optimization time, all 168 tests passed without updating snapshots. An additional temporary
 comparison ran all 23 configurations against frozen original implementations on
 32×24 / 12 frames, 8×9 / 8 frames / 256 colors, and 1×1 / one frame; all pixels
 matched. The temporary copies/comparison were local validation, not added as a
 second maintained implementation in the test suite.
 
 ## Recorded results after optimization
+
+These timings predate the November 3 bug fixes above. Palette, pulse, and shadow
+pixels have intentionally changed since those measurements; the reports remain
+a record of the optimization work rather than timings for the corrected outputs.
 
 `optimized.json` preserves the final full 48-case capture using the same benchmark
 names, parameters, browser and hardware as `baseline.json`. The baseline and

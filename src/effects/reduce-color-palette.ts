@@ -22,7 +22,7 @@ export const reduceColorPalette = buildEffect({
     }),
   ] as const,
   fn: ({ image, parameters: [percentReduction] }) => {
-    // RGB keys deliberately ignore alpha, just like the original hex keys.
+    // Rank RGB colors together while preserving each source pixel's alpha.
     // Insertion order preserves palette ranking and nearest-color tie-breaking.
     const allColorsSet = new Set<number>();
     const byteLength = image.dimensions[0] * image.dimensions[1] * 4;
@@ -44,10 +44,9 @@ export const reduceColorPalette = buildEffect({
       1,
     );
     const colorMap = allColors.map((color) => ({ color, numClosestColors: 0 }));
-    // Preserve the original omission of the first color's vote.
-    for (let i = 1; i < allColors.length; i += 1) {
-      let closestColorIdx = 0;
-      let closestColorDist = colorUtil.colorDiff(allColors[i], allColors[0]);
+    for (let i = 0; i < allColors.length; i += 1) {
+      let closestColorIdx = -1;
+      let closestColorDist = Infinity;
       for (let k = 0; k < allColors.length; k += 1) {
         if (k === i) continue;
         const dist = colorUtil.colorDiff(allColors[k], allColors[i]);
@@ -56,7 +55,9 @@ export const reduceColorPalette = buildEffect({
           closestColorDist = dist;
         }
       }
-      colorMap[closestColorIdx].numClosestColors += 1;
+      if (closestColorIdx !== -1) {
+        colorMap[closestColorIdx].numClosestColors += 1;
+      }
     }
     const colorPalette = sortBy(colorMap, [(c) => c.numClosestColors, 'desc'])
       .slice(0, numColors)
@@ -80,7 +81,7 @@ export const reduceColorPalette = buildEffect({
         output[offset] = color[0];
         output[offset + 1] = color[1];
         output[offset + 2] = color[2];
-        output[offset + 3] = color[3];
+        output[offset + 3] = frame[offset + 3]; // original alpha
       }
       return output;
     });

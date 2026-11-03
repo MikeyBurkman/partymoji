@@ -109,8 +109,10 @@ export const getStateDiff = ({
       return { changed: true, index: i };
     }
 
-    if (prevE.state.status !== 'done') {
-      logger.debug('PrevE not done ', i);
+    // An inserted/replaced row has no valid result at this position, even if
+    // its parameters match. Moved identical rows also carry a different cache.
+    if (prevE.state.status !== 'done' || currE.state !== prevE.state) {
+      logger.debug('Effect cache changed or incomplete ', i);
       return { changed: true, index: i };
     }
 
