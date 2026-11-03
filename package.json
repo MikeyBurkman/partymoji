@@ -8,6 +8,9 @@
     "url": "https://github.com/MikeyBurkman/partymoji"
   },
   "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "bench": "vitest bench --run",
     "dev": "pnpm build:wasm:prod && vite",
     "build": "tsc -b && VITE_BUILD_TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ) vite build",
     "build:wasm": "wasm-pack build gif/gif_encoder_wasm --target web --dev",
@@ -55,6 +58,7 @@
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.4.1",
+    "@vitest/browser": "3.2.7",
     "concurrently": "^9.1.2",
     "eslint": "^9.25.0",
     "eslint-plugin-react-dom": "^1.48.4",
@@ -62,6 +66,7 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "eslint-plugin-react-x": "^1.48.4",
     "globals": "^15.15.0",
+    "playwright": "1.64.1",
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
     "typescript": "~5.8.3",
@@ -70,7 +75,8 @@
     "vite-plugin-comlink": "^5.1.0",
     "vite-plugin-node-polyfills": "^0.23.0",
     "vite-plugin-top-level-await": "^1.5.0",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "3.2.7"
   },
   "packageManager": "pnpm@11.5.1"
 }

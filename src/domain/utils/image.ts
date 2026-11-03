@@ -1,6 +1,7 @@
 import { range } from 'remeda';
 import type {
   Color,
+  CanvasData,
   Coord,
   Dimensions,
   EffectFn,
@@ -53,7 +54,8 @@ export const mapCoords = (
   const transformedImageData = new Uint8ClampedArray(width * height * 4);
   for (let y = 0; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
-      const c = colorUtil.clampColor(cb([x, y]));
+      // Typed-array writes already clamp and round every channel.
+      const c = cb([x, y]);
       const idx = getImageIndex(dimensions, x, y);
       transformedImageData[idx] = c[0];
       transformedImageData[idx + 1] = c[1];
@@ -83,8 +85,11 @@ export const mapImage = <T>(
   }) => Color,
 ): EffectFn<T> => {
   return ({ image, random, parameters }: EffectFnOpts<T>) =>
-    mapFrames(image, (imageData, frameIndex, frameCount) =>
-      mapCoords(image.dimensions, (coord) =>
+    mapFrames(image, (imageData, frameIndex, frameCount) => {
+      const animationProgress = frameIndex / frameCount;
+      const getSrcPixel = (coord: Coord) =>
+        getPixelFromSource(image.dimensions, imageData, coord);
+      return mapCoords(image.dimensions, (coord) =>
         cb({
           image,
           dimensions: image.dimensions,
@@ -93,12 +98,11 @@ export const mapImage = <T>(
           coord,
           frameCount,
           frameIndex,
-          animationProgress: frameIndex / frameCount,
-          getSrcPixel: (c: Coord) =>
-            getPixelFromSource(image.dimensions, imageData, c),
+          animationProgress,
+          getSrcPixel,
         }),
-      ),
-    );
+      );
+    });
 };
 
 /**
@@ -144,6 +148,8 @@ export const mapImageWithPrecompute = <T, R>(
         frameIndex,
         animationProgress,
       });
+      const getSrcPixel = (coord: Coord) =>
+        getPixelFromSource(image.dimensions, imageData, coord);
 
       return mapCoords(image.dimensions, (coord) =>
         cb({
@@ -156,8 +162,7 @@ export const mapImageWithPrecompute = <T, R>(
           frameCount,
           frameIndex,
           animationProgress,
-          getSrcPixel: (c: Coord) =>
-            getPixelFromSource(image.dimensions, imageData, c),
+          getSrcPixel,
         }),
       );
     });
@@ -218,12 +223,24 @@ export const resizeImage = ({
   newHeight: number;
   keepScale: boolean;
 }): Image => {
+  // Keep scratch canvases local; readback still creates an independent frame.
+  // Lazily initialize so empty images do not allocate canvases.
+  let rootCanvas: CanvasData | undefined;
+  let imgCanvas: CanvasData | undefined;
   const newFrames = mapFrames(image, (frame) => {
-    const rootCanvas = canvasUtil.createCanvas([newWidth, newHeight]);
-    const imgCanvas = canvasUtil.frameToCanvas({
-      dimensions: image.dimensions,
-      frame,
-    });
+    rootCanvas ??= canvasUtil.createCanvas([newWidth, newHeight]);
+    imgCanvas ??= canvasUtil.createCanvas(image.dimensions);
+    imgCanvas.ctx.putImageData(
+      new ImageData(frame, image.dimensions[0], image.dimensions[1]),
+      0,
+      0,
+    );
+    rootCanvas.ctx.clearRect(
+      0,
+      0,
+      rootCanvas.canvas.width,
+      rootCanvas.canvas.height,
+    );
 
     if (keepScale) {
       // Just blow it up
@@ -333,12 +350,25 @@ export const somePixel = (image: Image, cb: (c: Color) => boolean): boolean => {
  * These pixels are fine for intermediate effects, but not for final output.
  */
 export const isPartiallyTransparent = (image: Image): boolean => {
-  return somePixel(image, colorUtil.isPartiallyTransparent);
+  const byteLength = image.dimensions[0] * image.dimensions[1] * 4;
+  for (const frame of image.frames) {
+    for (let offset = 3; offset < byteLength; offset += 4) {
+      const alpha = frame[offset];
+      if (alpha >= 64 && alpha < 128) return true;
+    }
+  }
+  return false;
 };
 
 /**
  * Returns true if the image has any fully-transparent pixels.
  */
 export const hasTransparentPixels = (image: Image): boolean => {
-  return somePixel(image, colorUtil.isTransparent);
+  const byteLength = image.dimensions[0] * image.dimensions[1] * 4;
+  for (const frame of image.frames) {
+    for (let offset = 3; offset < byteLength; offset += 4) {
+      if (frame[offset] < 64) return true;
+    }
+  }
+  return false;
 };

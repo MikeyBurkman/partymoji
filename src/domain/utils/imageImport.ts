@@ -1,6 +1,6 @@
 import getPixels from 'get-pixels';
 import { parseGIF, decompressFrames } from 'gifuct-js';
-import type { Dimensions, Image } from '~/domain/types';
+import type { CanvasData, Dimensions, Image } from '~/domain/types';
 import { canvasToFrame, createCanvas } from './canvas';
 import * as miscUtil from './misc';
 
@@ -23,6 +23,7 @@ const readGifFromFile = async (
   const finalCanvas = createCanvas(dimensions);
 
   const frameDelays: Array<number> = [];
+  let patch: CanvasData | undefined;
 
   const frames = decompressFrames(gif, true).map(
     (parsedFrame): Uint8ClampedArray => {
@@ -45,10 +46,21 @@ const readGifFromFile = async (
         parsedFrame.dims.height,
       ];
 
-      // This is somewhat stolen from the gifuct-js demo.js file
-      const patch = createCanvas(frameDims);
-      const imageData = patch.ctx.createImageData(frameDims[0], frameDims[1]);
-      imageData.data.set(parsedFrame.patch);
+      if (!patch) {
+        patch = createCanvas(frameDims);
+      } else if (
+        patch.canvas.width !== frameDims[0] ||
+        patch.canvas.height !== frameDims[1]
+      ) {
+        patch.canvas.width = frameDims[0];
+        patch.canvas.height = frameDims[1];
+      }
+      // Wrap the decoded pixels directly instead of copying them into a new buffer.
+      const imageData = new ImageData(
+        parsedFrame.patch,
+        frameDims[0],
+        frameDims[1],
+      );
       patch.ctx.putImageData(imageData, 0, 0);
 
       finalCanvas.ctx.drawImage(
@@ -109,7 +121,10 @@ export const readImage = async (
   const image = await new Promise<Image>((res, rej) => {
     getPixels(
       dataUrl,
-      (err: Error | null, results: { shape: Array<number>; data: Uint8Array }) => {
+      (
+        err: Error | null,
+        results: { shape: Array<number>; data: Uint8Array },
+      ) => {
         if (err) {
           rej(err);
           return;

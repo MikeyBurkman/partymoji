@@ -1,50 +1,78 @@
 import React from 'react';
-import { logger } from '~/domain/utils';
 
 interface InitProps<TArgs, TRet> {
-  processFn: (args: TArgs) => TRet | Promise<TRet>;
+  processFn: (args: TArgs, signal: AbortSignal) => TRet | Promise<TRet>;
   onComplete: (ret: TRet) => void;
   onError?: (err: Error) => void;
 }
 
-type ComputeFn<TArgs> = (args: TArgs) => void;
+type ComputeFn<TArgs> = ((args: TArgs) => void) & { cancel: () => void };
 
 /**
- * Computes an asynchronous function, calling the given callback when finished.
- *
- * If a compute is called while an existing one is in progress, then the
- *  result for the previous compute will be thrown away. The callback will
- *  only be called a single time. Think of it like an async debounce.
+ * Runs one computation at a time, keeping only the newest waiting request.
+ * Superseded work receives an abort signal and cannot publish results or errors.
+ * The processor must check the signal at safe boundaries to stop work early.
  */
 export function useProcessingQueue<TArgs, TRet>({
   processFn,
   onComplete,
   onError,
 }: InitProps<TArgs, TRet>): ComputeFn<TArgs> {
-  // Each compute gets a unique(-ish) ID. If we finish computing and
-  //  that compute's ID doesn't match our current one, then we drop that result.
-  const latestRunIdRef = React.useRef(0);
+  const queueRef = React.useRef<{
+    active: AbortController | null;
+    pending: (() => Promise<void>) | null;
+  }>({ active: null, pending: null });
+  const mountedRef = React.useRef(true);
 
-  return React.useCallback(
-    (args): void => {
-      const runId = Math.floor(Math.random() * 1000000);
-      logger.debug('Computing: ', { runId, args });
-      latestRunIdRef.current = runId;
-      void Promise.resolve(processFn(args))
-        .then((results) => {
-          logger.debug('Finished processing', {
-            runId,
-            latestRunId: latestRunIdRef.current,
-          });
-          if (runId === latestRunIdRef.current) {
-            onComplete(results);
-          } else {
-            // Throw away this result -- it's been superseded by another compute
-            logger.debug('Throwing away an old compute');
+  const cancel = React.useCallback(() => {
+    queueRef.current.pending = null;
+    queueRef.current.active?.abort();
+  }, []);
+
+  React.useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      cancel();
+    };
+  }, [cancel]);
+
+  const compute = React.useCallback(
+    (args: TArgs): void => {
+      if (!mountedRef.current) return;
+      const queue = queueRef.current;
+      const run = async () => {
+        const controller = new AbortController();
+        queue.active = controller;
+        try {
+          const result = await processFn(args, controller.signal);
+          if (!controller.signal.aborted) onComplete(result);
+        } catch (error) {
+          if (!controller.signal.aborted) {
+            onError?.(
+              error instanceof Error ? error : new Error(String(error)),
+            );
           }
-        })
-        .catch(onError);
+        } finally {
+          queue.active = null;
+          const next = queue.pending;
+          queue.pending = null;
+          if (next) void next();
+        }
+      };
+
+      if (queue.active) {
+        queue.pending = run;
+        queue.active.abort();
+      } else {
+        void run();
+      }
     },
     [processFn, onError, onComplete],
+  );
+
+  return React.useMemo(
+    () => Object.assign(compute, { cancel }),
+    [compute, cancel],
   );
 }

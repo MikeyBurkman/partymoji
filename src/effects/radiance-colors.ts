@@ -1,5 +1,5 @@
 import { range } from 'remeda';
-import { canvasUtil, colorUtil, imageUtil } from '~/domain/utils';
+import { colorUtil, imageUtil } from '~/domain/utils';
 import {
   colorPickerParam,
   intParam,
@@ -7,6 +7,8 @@ import {
   variableLengthParam,
 } from '~/params';
 import { buildEffect } from './utils';
+import { precomputeValues } from './precompute-values';
+import { createBackgroundCompositor } from './background-compositor';
 
 const DEFAULT_COLORS = [
   '#FF0000',
@@ -64,51 +66,43 @@ export const radianceColors = buildEffect({
     image,
     parameters: [groupCount, colors, offsetX, offsetY, opacity],
   }) => {
+    const [width, height] = image.dimensions;
+    const composite = createBackgroundCompositor(image.dimensions, opacity);
+    const colorList = range(0, groupCount).flatMap(() => colors);
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const maxDist = Math.sqrt(
+      (width / 2) * (width / 2) + (height / 2) * (height / 2),
+    );
+    const baseValues =
+      image.frames.length === 0
+        ? []
+        : precomputeValues(image.dimensions, (coord) => {
+            const [x, y] = coord;
+            const xRelCenter = x - centerX - offsetX;
+            const yRelCenter = y - centerY + offsetY;
+            const distance = Math.sqrt(
+              yRelCenter * yRelCenter + xRelCenter * xRelCenter,
+            );
+            // calculate which ring a pixel belongs to
+            const ringIndex = Math.floor(
+              (1 - distance / maxDist) * colorList.length,
+            );
+            // Some pixels can be beyond maxDist, making rings negative. Need to guarantee positive
+            return (
+              ((ringIndex % colorList.length) + colorList.length) %
+              colorList.length
+            );
+          });
     return imageUtil.mapFrames(image, (frame, frameIndex, frameCount) => {
       const animationProgress = frameIndex / frameCount;
-      const [width, height] = image.dimensions;
-
-      const colorList = range(0, groupCount).flatMap(() => colors);
-      const centerX = width / 2;
-      const centerY = height / 2;
-
-      const background = imageUtil.mapCoords(image.dimensions, ([x, y]) => {
-        const xRelCenter = x - centerX - offsetX;
-        const yRelCenter = y - centerY + offsetY;
-
-        const maxDist = Math.sqrt(
-          (width / 2) * (width / 2) + (height / 2) * (height / 2),
-        );
-        const distFromCenter = Math.sqrt(
-          yRelCenter * yRelCenter + xRelCenter * xRelCenter,
-        );
-
-        const colorIdx =
-          Math.floor((1 - distFromCenter / maxDist) * colorList.length) %
-          colorList.length;
-
-        // Increment colorIdx based on current frame progress
-        const idx =
-          (Math.floor(animationProgress * colorList.length) + colorIdx) %
-          colorList.length;
-        return colorList[idx];
-      });
-
-      const foreground =
-        opacity === 100
-          ? frame
-          : canvasUtil.applyCanvasFromFrame({
-              dimensions: image.dimensions,
-              frame,
-              preEffect: (canvasData) =>
-                canvasUtil.applyFilter(canvasData, { opacity }),
-            });
-
-      return canvasUtil.combineImages({
-        dimensions: image.dimensions,
-        background,
-        foreground,
-      });
+      const shift = Math.floor(animationProgress * colorList.length);
+      const background = imageUtil.mapCoords(
+        image.dimensions,
+        ([x, y]) =>
+          colorList[(shift + baseValues[y * width + x]) % colorList.length],
+      );
+      return composite(background, frame);
     });
   },
 });

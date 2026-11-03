@@ -25,21 +25,20 @@ export const ripple = buildEffect({
     }),
   ] as const,
   fn: imageUtil.mapImageWithPrecompute(
-    ({ animationProgress }) => ({
-      shift: animationProgress * 2 * Math.PI,
-    }),
     ({
-      computed: { shift },
-      coord: [x, y],
+      animationProgress,
       dimensions: [, height],
       parameters: [amplitude, period],
-      getSrcPixel,
     }) => {
-      const offset = Math.round(
-        amplitude * Math.sin((y / height) * period * Math.PI + shift),
-      );
-
-      return getSrcPixel([x + offset, y]);
+      const shift = animationProgress * 2 * Math.PI;
+      return Array.from({ length: height }, (_, y) => {
+        const amount = Math.round(
+          amplitude * Math.sin((y / height) * period * Math.PI + shift),
+        );
+        return amount;
+      });
     },
+    ({ computed: offsets, coord: [x, y], getSrcPixel }) =>
+      getSrcPixel([x + offsets[y], y]),
   ),
 });

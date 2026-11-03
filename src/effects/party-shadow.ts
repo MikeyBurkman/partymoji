@@ -1,4 +1,4 @@
-import type { Color, Dimensions, FrameData } from '~/domain/types';
+import type { CanvasData } from '~/domain/types';
 import { canvasUtil, colorUtil, imageUtil } from '~/domain/utils';
 import { intParam, sliderParam } from '~/params';
 import { buildEffect } from './utils';
@@ -31,68 +31,37 @@ export const partyShadow = buildEffect({
       defaultValue: 10,
     }),
   ] as const,
-  fn: ({ image, parameters: [layers, blurRadius, offsetX, offsetY] }) =>
-    imageUtil.mapFrames(image, (frame, frameIndex, frameCount) => {
-      const animationProgress = frameIndex / frameCount;
-      const colors: Array<Color> = [];
-      const startHue = animationProgress * 360;
-      const hueSize = 360 / layers;
+  fn: ({ image, parameters: [layers, blurRadius, offsetX, offsetY] }) => {
+    let source: CanvasData | undefined;
+    let target: CanvasData | undefined;
+    const [width, height] = image.dimensions;
+    const hueSize = 360 / layers;
+    return imageUtil.mapFrames(image, (frame, frameIndex, frameCount) => {
+      source ??= canvasUtil.createCanvas(image.dimensions);
+      target ??= canvasUtil.createCanvas(image.dimensions);
+      const startHue = (frameIndex / frameCount) * 360;
+      let result = frame;
       for (let i = 0; i < layers; i += 1) {
-        colors.push(colorUtil.colorFromHue((startHue - hueSize * i) % 360));
+        source.ctx.putImageData(new ImageData(result, width, height), 0, 0);
+        target.ctx.clearRect(0, 0, width, height);
+        // Reset the reused context before applying this layer's filter.
+        target.ctx.filter = 'none';
+        canvasUtil.applyFilter(target, {
+          dropShadow: {
+            offsetX,
+            offsetY,
+            blurRadius,
+            color: colorUtil.colorFromHue(
+              (((startHue - hueSize * i) % 360) + 360) % 360,
+            ),
+          },
+        });
+        target.ctx.drawImage(source.canvas, 0, 0);
+        // Keep the intermediate readback/upload: it defines alpha rounding
+        // between layers. Drawing canvas-to-canvas would change those pixels.
+        result = canvasUtil.canvasToFrame(target);
       }
-
-      return applyShadows({
-        frame,
-        colors,
-        blurRadius,
-        dimensions: image.dimensions,
-        offsetX,
-        offsetY,
-      });
-    }),
-});
-
-const applyShadows = ({
-  frame,
-  dimensions,
-  colors,
-  offsetX,
-  offsetY,
-  blurRadius,
-}: {
-  frame: FrameData;
-  dimensions: Dimensions;
-  colors: Array<Color>;
-  offsetX: number;
-  offsetY: number;
-  blurRadius: number;
-}): FrameData => {
-  const [color, ...rest] = colors;
-  const newFrame = canvasUtil.applyCanvasFromFrame({
-    dimensions,
-    frame,
-    preEffect: (canvasData) =>
-      canvasUtil.applyFilter(canvasData, {
-        dropShadow: {
-          offsetX,
-          offsetY,
-          blurRadius,
-          color,
-        },
-      }),
-  });
-
-  if (rest.length === 0) {
-    return newFrame;
-  } else {
-    // Apply it recursively but with more offset
-    return applyShadows({
-      frame: newFrame,
-      colors: rest,
-      dimensions,
-      blurRadius,
-      offsetX,
-      offsetY,
+      return result;
     });
-  }
-};
+  },
+});

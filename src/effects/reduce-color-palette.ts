@@ -21,74 +21,69 @@ export const reduceColorPalette = buildEffect({
       max: 100,
     }),
   ] as const,
-  fn: imageUtil.mapImageWithPrecompute(
-    ({ image, parameters: [percentReduction] }) => {
-      // Buid up a set of all unique colors.
-      // These will be our data points that we're going to group into to N clusters
-      const allColorsSet = new Set<string>();
-      imageUtil.mapFrames(image, (frame) =>
-        imageUtil.mapCoords(image.dimensions, (coord) => {
-          const px = imageUtil.getPixelFromSource(
-            image.dimensions,
-            frame,
-            coord,
-          );
-          allColorsSet.add(colorUtil.toHexColor(px));
-          return colorUtil.TRANSPARENT_COLOR; // Not actually used, just makes TS happy
-        }),
-      );
-
-      const allColors = Array.from(allColorsSet).map(colorUtil.fromHexColor);
-      const numColors = Math.max(
-        Math.floor((allColors.length * (100 - percentReduction)) / 100),
-        1,
-      );
-
-      // Create a mapping of each unique color to the list of colors are the closest to it.
-      // We'll then pick the top N colors.
-      // Lastly, we'll replace every pixel with the color that it reduces to.
-
-      // colorMap[i].numClosestColors is the number of colors closest to allColors[i]
-      const colorMap: Array<{ color: Color; numClosestColors: number }> =
-        allColors.map((c) => ({
-          color: c,
-          numClosestColors: 0,
-        }));
-
-      for (let i = 1; i < allColors.length; i += 1) {
-        let closestColorIdx = 0;
-        let closetsColorDist = colorUtil.colorDiff(
-          allColors[i],
-          allColors[closestColorIdx],
-        );
-        // Find the other color that is closest to this one
-        for (let k = 0; k < allColors.length; k += 1) {
-          if (k === i) {
-            // Don't check the distance between this color and itself
-            continue;
-          }
-          const dist = colorUtil.colorDiff(allColors[k], allColors[i]);
-          if (dist < closetsColorDist) {
-            closestColorIdx = k;
-            closetsColorDist = dist;
-          }
+  fn: ({ image, parameters: [percentReduction] }) => {
+    // Rank RGB colors together while preserving each source pixel's alpha.
+    // Insertion order preserves palette ranking and nearest-color tie-breaking.
+    const allColorsSet = new Set<number>();
+    const byteLength = image.dimensions[0] * image.dimensions[1] * 4;
+    const keyAt = (frame: Uint8ClampedArray, offset: number) =>
+      (frame[offset] << 16) | (frame[offset + 1] << 8) | frame[offset + 2];
+    for (const frame of image.frames) {
+      for (let offset = 0; offset < byteLength; offset += 4) {
+        allColorsSet.add(keyAt(frame, offset));
+      }
+    }
+    const allColors: Array<Color> = Array.from(allColorsSet, (key) => [
+      key >>> 16,
+      (key >>> 8) & 255,
+      key & 255,
+      255,
+    ]);
+    const numColors = Math.max(
+      Math.floor((allColors.length * (100 - percentReduction)) / 100),
+      1,
+    );
+    const colorMap = allColors.map((color) => ({ color, numClosestColors: 0 }));
+    for (let i = 0; i < allColors.length; i += 1) {
+      let closestColorIdx = -1;
+      let closestColorDist = Infinity;
+      for (let k = 0; k < allColors.length; k += 1) {
+        if (k === i) continue;
+        const dist = colorUtil.colorDiff(allColors[k], allColors[i]);
+        if (dist < closestColorDist) {
+          closestColorIdx = k;
+          closestColorDist = dist;
         }
+      }
+      if (closestColorIdx !== -1) {
         colorMap[closestColorIdx].numClosestColors += 1;
       }
-
-      const colorPalette = sortBy(colorMap, [(c) => c.numClosestColors, 'desc'])
-        .slice(0, numColors)
-        .map(({ color }) => color);
-
-      return { colorPalette };
-    },
-    ({ coord, getSrcPixel, computed: { colorPalette } }) => {
-      const px = getSrcPixel(coord);
-      // Find the color in the palette this one is closest to
-      const closestColor = minBy(colorPalette, (top) =>
-        colorUtil.colorDiff(top, px),
+    }
+    const colorPalette = sortBy(colorMap, [(c) => c.numClosestColors, 'desc'])
+      .slice(0, numColors)
+      .map(({ color }) => color);
+    const replacements = new Map<number, Color>();
+    let colorIndex = 0;
+    for (const key of allColorsSet) {
+      const color = allColors[colorIndex++];
+      replacements.set(
+        key,
+        minBy(colorPalette, (top) => colorUtil.colorDiff(top, color)) ?? [
+          0, 0, 0, 0,
+        ],
       );
-      return closestColor ?? [0, 0, 0, 0]; // Should never happen, but just in case
-    },
-  ),
+    }
+    return imageUtil.mapFrames(image, (frame) => {
+      const output = new Uint8ClampedArray(byteLength);
+      for (let offset = 0; offset < byteLength; offset += 4) {
+        const color =
+          replacements.get(keyAt(frame, offset)) ?? colorUtil.TRANSPARENT_COLOR;
+        output[offset] = color[0];
+        output[offset + 1] = color[1];
+        output[offset + 2] = color[2];
+        output[offset + 3] = frame[offset + 3]; // original alpha
+      }
+      return output;
+    });
+  },
 });

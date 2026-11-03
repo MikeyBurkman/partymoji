@@ -92,6 +92,33 @@ export const pointDistance = ([x1, y1]: Coord, [x2, y2]: Coord): number => {
   return Math.sqrt(xDiff + yDiff);
 };
 
+const bezierCache: Array<{
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  fn: ReturnType<typeof bezier>;
+}> = [];
+
+const getBezier = (x1: number, y1: number, x2: number, y2: number) => {
+  // Compare values rather than tuple identities: callers can edit control points.
+  // New entries go first so repeated per-pixel calls hit the first entry.
+  for (const cached of bezierCache) {
+    if (
+      cached.x1 === x1 &&
+      cached.y1 === y1 &&
+      cached.x2 === x2 &&
+      cached.y2 === y2
+    ) {
+      return cached.fn;
+    }
+  }
+  const fn = bezier(x1, y1, x2, y2);
+  if (bezierCache.length === 32) bezierCache.pop();
+  bezierCache.unshift({ x1, y1, x2, y2, fn });
+  return fn;
+};
+
 /**
  * Calculates a cubic bezier curve for a given value.
  * Each value in the BezierTuple must also be between 0 and 1.
@@ -100,7 +127,7 @@ export const pointDistance = ([x1, y1]: Coord, [x2, y2]: Coord): number => {
  * The returned value will be between 0 and 1
  */
 export const bezierCurve = (easing: BezierTuple, mirror?: boolean) => {
-  const fn = bezier(easing[0][0], easing[0][1], easing[1][0], easing[1][1]);
+  const fn = getBezier(easing[0][0], easing[0][1], easing[1][0], easing[1][1]);
   if (!mirror) {
     return (amount: number): number => fn(amount);
   }

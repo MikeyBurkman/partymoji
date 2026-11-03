@@ -1,58 +1,96 @@
+import { endpointSymbol } from 'vite-plugin-comlink/symbol';
 import { RunArgs } from './RunArgs';
 import { logger } from './utils';
 import { ImageEffectResult } from './types';
 
-interface Computation {
-  resolve: (result: ImageEffectResult) => void;
-  reject: (err: unknown) => void;
+type EffectWorker = InstanceType<
+  typeof ComlinkWorker<typeof import('./effect.worker')>
+>;
+
+interface WorkerSession {
+  api: EffectWorker;
+  pending: Set<(error: Error) => void>;
+  removeListeners: () => void;
 }
 
-// The order of computations is not guaranteed, so add each computation to a map
-const computationMap = new Map<string, Computation>();
+let session: WorkerSession | undefined;
 
-const handleError = (computationId: string) => (error: unknown) => {
-  const computation = computationMap.get(computationId);
-  if (!computation) {
-    return;
-  }
-  computation.reject(error);
-  computationMap.delete(computationId);
+const stopWorker = (current: WorkerSession, error: Error) => {
+  if (session === current) session = undefined;
+  current.removeListeners();
+  current.api[endpointSymbol].terminate();
+  for (const reject of current.pending) reject(error);
+  current.pending.clear();
 };
 
-const handleSuccess =
-  (computationId: string) => (result: ImageEffectResult) => {
-    const computation = computationMap.get(computationId);
-    if (!computation) {
-      return;
-    }
-    computation.resolve(result);
-    computationMap.delete(computationId);
+const getWorker = (): WorkerSession => {
+  if (session) return session;
+
+  const api = new ComlinkWorker<typeof import('./effect.worker')>(
+    new URL('./effect.worker', import.meta.url),
+    { type: 'module' },
+  );
+  const worker = api[endpointSymbol];
+  const onError = (event: ErrorEvent) => {
+    stopWorker(current, new Error(event.message || 'Effect worker failed'));
   };
-
-export const runEffectsAsync = async (args: RunArgs) => {
-  return new Promise<ImageEffectResult>((resolve, reject) => {
-    const computationId = `${Date.now().toString()}-${Math.floor(
-      Math.random() * 100000,
-    ).toString()}`;
-    computationMap.set(computationId, {
-      resolve,
-      reject,
-    });
-
-    const worker = new ComlinkWorker<typeof import('./effect.worker')>(
-      new URL('./effect.worker', import.meta.url),
-      {
-        type: 'module',
-      },
+  const onMessageError = () => {
+    stopWorker(
+      current,
+      new Error('Unable to deserialize effect worker message'),
     );
+  };
+  const current: WorkerSession = {
+    api,
+    pending: new Set(),
+    removeListeners: () => {
+      worker.removeEventListener('error', onError);
+      worker.removeEventListener('messageerror', onMessageError);
+    },
+  };
+  worker.addEventListener('error', onError);
+  worker.addEventListener('messageerror', onMessageError);
+  session = current;
+  return current;
+};
 
-    logger.info('Running effect ASYNC', {
-      name: args.effectInput.effectName,
-      params: args.effectInput.params,
-    });
+const disposeWorker = () => {
+  if (session) stopWorker(session, new Error('Effect worker stopped'));
+};
 
-    worker
-      .runEffectRPC(args)
-      .then(handleSuccess(computationId), handleError(computationId));
+// pagehide also covers the back/forward cache; a later call recreates the worker.
+window.addEventListener('pagehide', disposeWorker);
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    window.removeEventListener('pagehide', disposeWorker);
+    disposeWorker();
+  });
+}
+
+export const runEffectsAsync = async (
+  args: RunArgs,
+): Promise<ImageEffectResult> => {
+  const current = getWorker();
+  logger.info('Running effect ASYNC', {
+    name: args.effectInput.effectName,
+    params: args.effectInput.params,
+  });
+
+  // Comlink routes each RPC response. Track rejects only so a fatal worker
+  // error or shutdown settles every outstanding call instead of leaving it hung.
+  return new Promise<ImageEffectResult>((resolve, reject) => {
+    current.pending.add(reject);
+    const fail = (error: unknown) => {
+      current.pending.delete(reject);
+      reject(error instanceof Error ? error : new Error(String(error)));
+    };
+    try {
+      void current.api.runEffectRPC(args).then((result) => {
+        current.pending.delete(reject);
+        resolve(result);
+      }, fail);
+    } catch (error) {
+      fail(error);
+    }
   });
 };
