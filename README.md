@@ -28,6 +28,8 @@
 
 ### TODO
 
+Known bugs and deferred fixes are tracked in [BUGS.md](BUGS.md).
+
 - Custom bezier library -> more points?
   - Would be nice to have start and end points instead of always [0,0],[1,1]. For instance, support curves that start or end at [0,0.5]
 - Bezier param does not detect mobile taps, only mouse clicks

@@ -20,6 +20,7 @@ export default defineConfig({
       'gifuct-js',
       'remeda',
       'seedrandom',
+      'mobile-detect',
       // Effect metadata imports parameter editors; prebundle their CJS dependencies.
       '@mui/material',
       '@mui/icons-material',

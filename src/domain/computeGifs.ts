@@ -13,10 +13,13 @@ export const computeGif = IS_MOBILE || IS_DEV ? runEffects : runEffectsAsync;
 export const computeGifsForState = async ({
   state,
   startEffectIndex,
+  signal,
 }: {
   state: AppState;
   startEffectIndex: number;
+  signal?: AbortSignal;
 }): Promise<AppState> => {
+  signal?.throwIfAborted();
   miscUtil.assert(
     state.baseImage,
     'No source image, this button should be disabled!',
@@ -38,6 +41,7 @@ export const computeGifsForState = async ({
   const images: Array<AppStateEffect> = [];
 
   for (let i = 0; i < state.effects.length; i += 1) {
+    signal?.throwIfAborted();
     if (i < startEffectIndex) {
       // Skip effects that have already been computed
       images.push(state.effects[i]);
@@ -55,6 +59,8 @@ export const computeGifsForState = async ({
       },
       fps: state.fps,
     });
+
+    signal?.throwIfAborted();
 
     image = result.image;
     images.push({

@@ -85,13 +85,13 @@ export const AppStateProvider: React.FC<{
   const computeTimer = React.useRef<NodeJS.Timeout | null>(null);
 
   const compute = useProcessingQueue({
-    processFn: ({
-      state,
-      startEffectIndex,
-    }: {
-      state: AppState;
-      startEffectIndex: number;
-    }) => {
+    processFn: (
+      {
+        state,
+        startEffectIndex,
+      }: { state: AppState; startEffectIndex: number },
+      signal,
+    ) => {
       // Handle frame count changes
       const newBaseImage = (() => {
         const baseImage = state.baseImage;
@@ -114,6 +114,7 @@ export const AppStateProvider: React.FC<{
           baseImage: newBaseImage,
         },
         startEffectIndex,
+        signal,
       });
     },
     onComplete: (computedState) => {
@@ -212,8 +213,13 @@ export const AppStateProvider: React.FC<{
   );
 
   const resetState = React.useCallback(() => {
+    if (computeTimer.current != null) {
+      clearTimeout(computeTimer.current);
+      computeTimer.current = null;
+    }
+    compute.cancel();
     setState_internal(DEFAULT_STATE);
-  }, [setState_internal]);
+  }, [compute, setState_internal]);
 
   const context = React.useMemo<AppStateContextProps>(
     () => ({
